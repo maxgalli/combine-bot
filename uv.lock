@@ -273,6 +273,7 @@ dependencies = [
     { name = "langchain-community" },
     { name = "langchain-huggingface" },
     { name = "langchain-text-splitters" },
+    { name = "pyyaml" },
     { name = "requests" },
     { name = "sentence-transformers" },
 ]
@@ -290,6 +291,7 @@ requires-dist = [
     { name = "langchain-community", specifier = ">=0.4.2" },
     { name = "langchain-huggingface", specifier = ">=1.2.2" },
     { name = "langchain-text-splitters", specifier = ">=1.1.2" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "requests", specifier = ">=2.31" },
     { name = "sentence-transformers", specifier = ">=5.5.1" },
 ]

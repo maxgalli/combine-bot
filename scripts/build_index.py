@@ -5,6 +5,9 @@ Sources currently ingested:
   - paper:  knowledge_base/paper/paper_clean.txt
   - code:   selected files from knowledge_base/combine/
             (python/, scripts/, interface/*.h, bin/*.cpp)
+  - docs:   Markdown files listed in knowledge_base/combine/mkdocs.yml's
+            nav (so we skip orphan/draft docs); split by Markdown headers
+            with the nav breadcrumb prepended to each chunk for context.
 
 Each source has its own loader; their chunks are merged and embedded into
 a single Chroma collection under vectorstore/. Re-running wipes and
@@ -22,12 +25,20 @@ import shutil
 import sys
 from pathlib import Path
 
+import yaml
 from langchain_chroma import Chroma
+from langchain_core.documents import Document
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_text_splitters import Language, RecursiveCharacterTextSplitter
+from langchain_text_splitters import (
+    Language,
+    MarkdownHeaderTextSplitter,
+    RecursiveCharacterTextSplitter,
+)
 
 PAPER_PATH = Path("knowledge_base/paper/paper_clean.txt")
 COMBINE_ROOT = Path("knowledge_base/combine")
+DOCS_ROOT = COMBINE_ROOT / "docs"
+MKDOCS_PATH = COMBINE_ROOT / "mkdocs.yml"
 COMBINE_VERSION = "v10.6.0"  # the submodule is pinned to this tag
 GITHUB_BASE = (
     f"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/{COMBINE_VERSION}"
@@ -45,6 +56,8 @@ CODE_INCLUDES: list[tuple[str, str, Language | None]] = [
     ("interface/*.h",    "header", Language.CPP),
     ("bin/*.cpp",        "cpp",    Language.CPP),
 ]
+
+HEADERS_TO_SPLIT_ON = [("#", "h1"), ("##", "h2"), ("###", "h3")]
 
 
 def _splitter(language: Language | None, chunk_size: int, chunk_overlap: int):
@@ -72,6 +85,85 @@ def load_paper_chunks(path: Path, chunk_size: int, chunk_overlap: int):
             }
         ],
     )
+
+
+def _walk_nav(items, breadcrumbs: tuple[str, ...] = ()):
+    """Yield (breadcrumbs, target) leaves from an mkdocs nav list."""
+    for entry in items:
+        for label, value in entry.items():
+            if isinstance(value, list):
+                yield from _walk_nav(value, breadcrumbs + (label,))
+            else:
+                yield breadcrumbs + (label,), value
+
+
+def load_docs_chunks(
+    docs_root: Path, mkdocs_path: Path, chunk_size: int, chunk_overlap: int
+):
+    """Ingest the Markdown docs listed in mkdocs.yml's nav.
+
+    Two-pass split: MarkdownHeaderTextSplitter on # / ## / ### (one chunk per
+    section), then RecursiveCharacterTextSplitter for any section that exceeds
+    chunk_size. Each final chunk gets the nav breadcrumb + in-doc section path
+    prepended to its text so the embedder sees the topic labels.
+    """
+    nav = yaml.safe_load(mkdocs_path.read_text())["nav"]
+    pages = list(_walk_nav(nav))
+
+    header_splitter = MarkdownHeaderTextSplitter(
+        headers_to_split_on=HEADERS_TO_SPLIT_ON, strip_headers=False
+    )
+    char_splitter = RecursiveCharacterTextSplitter.from_language(
+        language=Language.MARKDOWN, chunk_size=chunk_size, chunk_overlap=chunk_overlap
+    )
+
+    all_chunks: list[Document] = []
+    used = missing = non_md = 0
+    for breadcrumbs, target in pages:
+        if not isinstance(target, str) or not target.endswith(".md"):
+            non_md += 1
+            continue
+        rel = Path(target)
+        path = docs_root / rel
+        if not path.exists():
+            print(f"  missing doc: {path}", file=sys.stderr)
+            missing += 1
+            continue
+        used += 1
+        nav_path = " > ".join(breadcrumbs)
+        text = path.read_text()
+
+        sections = header_splitter.split_text(text) or [
+            Document(page_content=text, metadata={})
+        ]
+
+        for sec in sections:
+            section_titles = [sec.metadata.get(k) for k in ("h1", "h2", "h3")]
+            section_path = " > ".join(t for t in section_titles if t)
+            base_metadata = {
+                "source_type": "docs",
+                "source_path": str(path),
+                "nav_path": nav_path,
+                "section_path": section_path,
+                "github_url": f"{GITHUB_BASE}/docs/{rel.as_posix()}",
+            }
+
+            pieces = (
+                char_splitter.split_documents([sec])
+                if len(sec.page_content) > chunk_size
+                else [sec]
+            )
+            for piece in pieces:
+                header = f"[{nav_path}]"
+                if section_path:
+                    header += f"\n{section_path}"
+                content = f"{header}\n\n{piece.page_content}"
+                all_chunks.append(
+                    Document(page_content=content, metadata=dict(base_metadata))
+                )
+
+    print(f"  pages from nav: {used} used, {missing} missing, {non_md} non-md skipped")
+    return all_chunks
 
 
 def load_code_chunks(root: Path, chunk_size: int, chunk_overlap: int):
@@ -146,6 +238,15 @@ def main() -> int:
     code_chunks = load_code_chunks(args.combine_root, args.chunk_size, args.chunk_overlap)
     print(f"  -> {len(code_chunks)} code chunks total")
     all_chunks.extend(code_chunks)
+
+    docs_root = args.combine_root / "docs"
+    mkdocs_path = args.combine_root / "mkdocs.yml"
+    print(f"\nloading docs from {docs_root}")
+    docs_chunks = load_docs_chunks(
+        docs_root, mkdocs_path, args.chunk_size, args.chunk_overlap
+    )
+    print(f"  -> {len(docs_chunks)} docs chunks")
+    all_chunks.extend(docs_chunks)
 
     print(f"\ntotal: {len(all_chunks)} chunks (chunk_size={args.chunk_size}, overlap={args.chunk_overlap})")
 
