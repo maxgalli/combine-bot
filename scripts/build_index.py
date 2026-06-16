@@ -8,6 +8,9 @@ Sources currently ingested:
   - docs:   Markdown files listed in knowledge_base/combine/mkdocs.yml's
             nav (so we skip orphan/draft docs); split by Markdown headers
             with the nav breadcrumb prepended to each chunk for context.
+  - forum:  per-post chunks from knowledge_base/forum/topic_*.json with the
+            original question prepended for context; one synthesized
+            "QUESTION + ACCEPTED ANSWER" chunk per solved thread.
 
 Each source has its own loader; their chunks are merged and embedded into
 a single Chroma collection under vectorstore/. Re-running wipes and
@@ -21,6 +24,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -39,10 +43,15 @@ PAPER_PATH = Path("knowledge_base/paper/paper_clean.txt")
 COMBINE_ROOT = Path("knowledge_base/combine")
 DOCS_ROOT = COMBINE_ROOT / "docs"
 MKDOCS_PATH = COMBINE_ROOT / "mkdocs.yml"
+FORUM_ROOT = Path("knowledge_base/forum")
 COMBINE_VERSION = "v10.6.0"  # the submodule is pinned to this tag
 GITHUB_BASE = (
     f"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/{COMBINE_VERSION}"
 )
+
+# Forum ingestion knobs
+MIN_POST_CHARS = 50       # skip replies shorter than this ("thanks!", "fixed it", ...)
+Q_CONTEXT_CHARS = 500     # how much of the OP to prepend to each reply chunk
 
 DEFAULT_PERSIST = Path("vectorstore")
 DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
@@ -166,6 +175,118 @@ def load_docs_chunks(
     return all_chunks
 
 
+def load_forum_chunks(root: Path, chunk_size: int, chunk_overlap: int):
+    """Build forum Q&A chunks from the scraped JSON files.
+
+    For each topic:
+      - one OP chunk: just the question, no context prepended.
+      - one chunk per other reply, with the OP (truncated) prepended so the
+        reply is retrievable on the question vocabulary.
+      - if the thread is solved, one synthesized "full Q + full accepted A"
+        chunk; skip the standalone per-reply chunk for the accepted post to
+        avoid a near-duplicate in retrieval.
+    Replies shorter than MIN_POST_CHARS are dropped as noise.
+    """
+    char_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=chunk_size, chunk_overlap=chunk_overlap
+    )
+    all_chunks: list[Document] = []
+    topics_used = 0
+    topics_solved = 0
+    skipped_short = 0
+    files = sorted(root.glob("topic_*.json"))
+
+    def make_chunk(content: str, metadata: dict):
+        if len(content) <= chunk_size:
+            all_chunks.append(Document(page_content=content, metadata=metadata))
+            return
+        pieces = char_splitter.split_documents(
+            [Document(page_content=content, metadata=metadata)]
+        )
+        all_chunks.extend(pieces)
+
+    for path in files:
+        try:
+            data = json.loads(path.read_text())
+        except Exception as e:
+            print(f"  failed to parse {path}: {e}", file=sys.stderr)
+            continue
+        posts = data.get("posts") or []
+        if not posts:
+            continue
+        topics_used += 1
+
+        title = data.get("title") or ""
+        topic_url = data.get("url") or ""
+        topic_id = data.get("topic_id")
+        accepted_n = data.get("accepted_answer_post_number")
+        if accepted_n is not None:
+            topics_solved += 1
+
+        op = next((p for p in posts if p.get("post_number") == 1), posts[0])
+        q_text = (op.get("text") or "").strip()
+        op_user = op.get("username") or "?"
+        q_context = q_text[:Q_CONTEXT_CHARS]
+        if len(q_text) > Q_CONTEXT_CHARS:
+            q_context += " ..."
+
+        def base_metadata(post):
+            return {
+                "source_type": "forum",
+                "topic_id": topic_id,
+                "topic_title": title,
+                "topic_url": topic_url,
+                "post_number": post.get("post_number"),
+                "username": post.get("username") or "?",
+                "is_accepted_answer": (
+                    accepted_n is not None and post.get("post_number") == accepted_n
+                ),
+                "thread_has_accepted_answer": accepted_n is not None,
+                "created_at": post.get("created_at"),
+            }
+
+        for post in posts:
+            n = post.get("post_number")
+            text = (post.get("text") or "").strip()
+            if not text:
+                continue
+            is_accepted = accepted_n is not None and n == accepted_n
+            if is_accepted:
+                continue  # covered by the synthesis chunk below
+            user = post.get("username") or "?"
+            if n == 1:
+                content = f"[{title}]\nQUESTION by {user}:\n{text}"
+            else:
+                if len(text) < MIN_POST_CHARS:
+                    skipped_short += 1
+                    continue
+                content = (
+                    f"[{title}]\n"
+                    f"ORIGINAL QUESTION: {q_context}\n\n"
+                    f"REPLY {n} by {user}:\n{text}"
+                )
+            make_chunk(content, base_metadata(post))
+
+        if accepted_n is not None:
+            accepted = next((p for p in posts if p.get("post_number") == accepted_n), None)
+            if accepted:
+                a_text = (accepted.get("text") or "").strip()
+                a_user = accepted.get("username") or "?"
+                if a_text:
+                    content = (
+                        f"[{title}]\n"
+                        f"QUESTION by {op_user}:\n{q_text}\n\n"
+                        f"ACCEPTED ANSWER (post {accepted_n}) by {a_user}:\n{a_text}"
+                    )
+                    make_chunk(content, base_metadata(accepted))
+
+    print(
+        f"  topics processed: {topics_used}  "
+        f"(solved: {topics_solved}, short replies dropped: {skipped_short})"
+    )
+    return all_chunks
+
+
 def load_code_chunks(root: Path, chunk_size: int, chunk_overlap: int):
     """Walk CODE_INCLUDES under `root`, chunk per language, attach metadata."""
     all_chunks = []
@@ -203,6 +324,8 @@ def main() -> int:
                    help=f"path to cleaned paper text (default: {PAPER_PATH})")
     p.add_argument("--combine-root", type=Path, default=COMBINE_ROOT,
                    help=f"Combine submodule root (default: {COMBINE_ROOT})")
+    p.add_argument("--forum-root", type=Path, default=FORUM_ROOT,
+                   help=f"forum scrape directory (default: {FORUM_ROOT})")
     p.add_argument("--persist", type=Path, default=DEFAULT_PERSIST,
                    help=f"vectorstore directory (default: {DEFAULT_PERSIST})")
     p.add_argument("--model", default=DEFAULT_MODEL,
@@ -247,6 +370,14 @@ def main() -> int:
     )
     print(f"  -> {len(docs_chunks)} docs chunks")
     all_chunks.extend(docs_chunks)
+
+    if args.forum_root.exists():
+        print(f"\nloading forum from {args.forum_root}")
+        forum_chunks = load_forum_chunks(args.forum_root, args.chunk_size, args.chunk_overlap)
+        print(f"  -> {len(forum_chunks)} forum chunks")
+        all_chunks.extend(forum_chunks)
+    else:
+        print(f"\nforum directory not found at {args.forum_root}, skipping")
 
     print(f"\ntotal: {len(all_chunks)} chunks (chunk_size={args.chunk_size}, overlap={args.chunk_overlap})")
 
