@@ -1,0 +1,35 @@
+TOPIC: The meaning of NLL0
+URL: https://cms-talk.web.cern.ch/t/36760
+DATE: 2024-03-13T07:23:00.641Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2024-03-13T07:23:00.809Z):
+Hi,
+This question is a tangential follow up to this post: ln(Lb)-Ln(Ls+b) from RooFit and "FINAL NLL - NLL0 VALUE" from MultiDimFit - #2 by nckw
+I would like to know, what do the values nll, nll0 precisely mean? From some simple checks, nll0 appears to be the NLL value of a kind of zero point of the lhood model, and nll is then simply the delta of the NLL value at a given parameter point wrt to nll0. deltaNLL on the other hand is the same delta, but wrt the best fit point instead.
+Is this understanding correct?
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-03-13T08:09:43.627Z):
+Not exactly,
+you would need to remove the subtractions that combine does under the hood (as explained by Nick) with --X-rtd REMOVE_CONSTANT_ZERO_POINT=1.
+The only relevance I see for us is to show the relative shift of the pdf in the discrete profile method (see here).
+Furthermore, be aware that, depending on the datacard, there may be additional constant values subtracted by root/roofit, as well. For instance, it is unlikely that the factorial terms (n!) is ever evaluated in the Poisson distributions when (e.g.) a likelihood is intended to be used.
+Furthermore, notice that in likelihood based statistical procedures, likelihood ratios carries the information used for statistical inference.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by afiqaize @ 2024-03-13T08:45:24.057Z):
+Hi Andrea,
+Thanks! I’m aware of the --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 option, but it’s not relevant for what I’m after.
+Let me provide a use case I have in mind. So I have multiple “structurally similar” lhood models, in the sense that they have the same set of parameters. Think shape analysis performed with the same templates, but different signal points. Normally I would do N fits for each signal points, but when each fit is expensive, it would be nice to have a proxy that allows reducing N in the first place.
+To do this, I need a fixed value that is consistent across all signal points, to anchor further relative comparisons. One candidate is the absolute NLL value in the background only scenario. But this requires two fits - one to locate the best fit point (which combine does anyway), and another to find the background only case, with NPs profiled.
+Since at this stage I am not interested in the absolute value of the NLL in the background only scenario, I am wondering if nll0 is also fixed in the same sense as above. Then, if nll is the delta between NLL at a given parameter point and nll0, then nll of the best fit point is enough, saving me the costs of the b-only fit.
+I recall seeing that nll0 is the same across signal points, but I might not be aware of any caveats that prevents me from relying on nll as a sorting proxy as described above.
+Cheers,
+Afiq
+----------------------------------------

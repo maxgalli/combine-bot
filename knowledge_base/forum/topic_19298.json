@@ -1,0 +1,78 @@
+{
+  "topic_id": 19298,
+  "title": "Computing expected blind limits with HybridNew",
+  "url": "https://cms-talk.web.cern.ch/t/19298",
+  "category_id": 279,
+  "created_at": "2023-01-17T15:37:27.467Z",
+  "last_posted_at": "2023-02-10T14:37:23.282Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "scooper",
+      "name": "Seth Cooper",
+      "created_at": "2023-01-17T15:37:27.950Z",
+      "updated_at": "2023-02-15T13:49:50.982Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI\u2019m interested in computing expected blind limits using the HybridNew method of combine and I\u2019m a bit confused by the documentation.\nIn the HybridNew documentation at [1], there is a warning that says that one should create a pre-fit Asimov toy dataset in order to obtain completely blind limits.  The link to the \u201ctoy data generation\u201d section there is broken; I assume it\u2019s supposed to link to [2].  From [2] I see that in general I can do\n-M GenerateOnly --saveToys -t -1\nto generate the pre-fit Asimov toys, and then use the option\n--toysFile=myGenerateOnlyToys.root\nto use these toys in the limit calculation as a separate step.\nHowever, there is then a warning referring to HybridNew which says that one \u201cshould not specify the toy generation with -t or the options above and instead follow the specific instructions.\u201d  But the \u201cspecific instructions\u201d I assume are those in [1], which as mentioned, seem to refer back to this section.\nHow does one correctly compute completely blind limits using HybridNew?\nCheers,\nSeth\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys\n[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I\u2019m interested in computing expected blind limits using the HybridNew method of combine and I\u2019m a bit confused by the documentation.</p>\n<p>In the HybridNew documentation at [1], there is a warning that says that one should create a pre-fit Asimov toy dataset in order to obtain completely blind limits.  The link to the \u201ctoy data generation\u201d section there is broken; I assume it\u2019s supposed to link to [2].  From [2] I see that in general I can do<br>\n<code>-M GenerateOnly --saveToys -t -1</code><br>\nto generate the pre-fit Asimov toys, and then use the option<br>\n<code>--toysFile=myGenerateOnlyToys.root</code><br>\nto use these toys in the limit calculation as a separate step.<br>\nHowever, there is then a warning referring to HybridNew which says that one \u201cshould not specify the toy generation with -t or the options above and instead follow the specific instructions.\u201d  But the \u201cspecific instructions\u201d I assume are those in [1], which as mentioned, seem to refer back to this section.</p>\n<p>How does one correctly compute completely blind limits using HybridNew?</p>\n<p>Cheers,<br>\nSeth</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys</a><br>\n[2] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-01-18T09:13:37.563Z",
+      "updated_at": "2023-01-18T09:13:37.563Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Seth,\nThanks for reporting the broken link, we\u2019ll try to fix that soon. For running fully blind expected limits with HybridNew, your approach is right: you can generate the asimov dataset with the command that you linked.\nThen, for using that asimov dataset instead of the real data in the HybridNew method what you can do is specify the dataset with the -D option. For example you can add -D myGenerateOnlyToys.root:toys/toy_asimov to the HybridNew command. (Note that from a quick check, I think you actually get the same result when you add -t -1 --toysFile=myGenerateOnlyToys.root, but it\u2019s probably better to specify the dataset to use directly, since it\u2019s not guaranteed adding -t -1\u2026 to the command for this method will always work in the future).\nThe warning about toy generation related to HybridNew is just to make clear that the toys generated internally by HybridNew do not listen to the option -t (as you have seen here, since you were able to set -t -1 when running HybridNew, and multiple toys were still run inside HybridNew)\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Seth,</p>\n<p>Thanks for reporting the broken link, we\u2019ll try to fix that soon. For running fully blind expected limits with HybridNew, your approach is right: you can generate the asimov dataset with the command that you linked.</p>\n<p>Then, for using that asimov dataset instead of the real data in the HybridNew method what you can do is specify the dataset with the <code>-D</code> option. For example you can add <code>-D myGenerateOnlyToys.root:toys/toy_asimov</code> to the HybridNew command. (Note that from a quick check, I think you actually get the same result when you add <code>-t -1 --toysFile=myGenerateOnlyToys.root</code>, but it\u2019s probably better to specify the dataset to use directly, since it\u2019s not guaranteed adding -t -1\u2026 to the command for this method will always work in the future).</p>\n<p>The warning about toy generation related to HybridNew is just to make clear that the toys generated internally by HybridNew do not listen to the option <code>-t</code> (as you have seen here, since you were able to set <code>-t -1</code> when running HybridNew, and multiple toys were still run inside HybridNew)</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "ncsmith",
+      "name": "Nick Smith",
+      "created_at": "2023-01-26T19:46:01.016Z",
+      "updated_at": "2023-01-26T19:46:01.016Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "For what it\u2019s worth, as far as I can tell,\ncombine -M HybridNew card.root --LHCmode LHC-limits -t -1 --expectedFromGrid 0.5\n\nand\ncombine -M GenerateOnly card.root -t -1 --saveToys -n .asimov\ncombine -M HybridNew card.root --LHCmode LHC-limits --expectedFromGrid 0.5 \\\n-D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov\n\nare functionally equivalent. The latter is much more explicit though, of course.",
+      "cooked_html": "<p>For what it\u2019s worth, as far as I can tell,</p>\n<pre><code class=\"lang-auto\">combine -M HybridNew card.root --LHCmode LHC-limits -t -1 --expectedFromGrid 0.5\n</code></pre>\n<p>and</p>\n<pre><code class=\"lang-auto\">combine -M GenerateOnly card.root -t -1 --saveToys -n .asimov\ncombine -M HybridNew card.root --LHCmode LHC-limits --expectedFromGrid 0.5 \\\n    -D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov\n</code></pre>\n<p>are functionally equivalent. The latter is much more explicit though, of course.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "scooper",
+      "name": "Seth Cooper",
+      "created_at": "2023-02-10T09:42:15.363Z",
+      "updated_at": "2023-02-10T09:42:15.363Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nThanks for the replies, and I see that the documentation has been updated as well!\nI tried this with my counting experiment datacard in combine v9.0.0:\ncombine -M GenerateOnly datacard.txt -t -1 -s -1 --saveToys -n .asimov\ncombine -M HybridNew datacard.txt --LHCmode LHC-limits --expectedFromGrid 0.5 -D higgsCombine.asimov.GenerateOnly.mH120.725554898.root:toys/toy_asimov --fork 4\n\nWhen doing the HybridNew step, I see the following message:\n[#0] ERROR:ObjectHandling -- RooWorkspace::import(w) ERROR dataset with name higgsCombine.asimov.GenerateOnly.mH120.725554898.root:toys/toy_asimov already exists in workspace, import aborted\nAm I doing something wrong here?\nCheers,\nSeth",
+      "cooked_html": "<p>Hi,</p>\n<p>Thanks for the replies, and I see that the documentation has been updated as well!</p>\n<p>I tried this with my counting experiment datacard in combine v9.0.0:</p>\n<pre><code class=\"lang-auto\">combine -M GenerateOnly datacard.txt -t -1 -s -1 --saveToys -n .asimov\ncombine -M HybridNew datacard.txt --LHCmode LHC-limits --expectedFromGrid 0.5 -D higgsCombine.asimov.GenerateOnly.mH120.725554898.root:toys/toy_asimov --fork 4\n</code></pre>\n<p>When doing the HybridNew step, I see the following message:<br>\n<code>[#0] ERROR:ObjectHandling -- RooWorkspace::import(w) ERROR dataset with name higgsCombine.asimov.GenerateOnly.mH120.725554898.root:toys/toy_asimov already exists in workspace, import aborted</code><br>\nAm I doing something wrong here?</p>\n<p>Cheers,<br>\nSeth</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-02-10T11:14:59.468Z",
+      "updated_at": "2023-02-10T11:14:59.468Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Seth,\nCan you try creating the workspace first (text2workspace.py datacard.txt -o ws.root, then run both your commands on ws.root instead of datacard.txt)? I tested your commands on a workspace and I don\u2019t see problems, while when I run directly on a datacard I actually get a different error message than you\nNevertheless, I hope creating the workspace first helps.\nBest,\nAdinda\nPS Combine support is moving to the CAT-statistical tools subgroup, the new forum for queries is: https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279. If you run into any further problems, please post there!",
+      "cooked_html": "<p>Hi Seth,</p>\n<p>Can you try creating the workspace first (<code>text2workspace.py datacard.txt -o ws.root</code>, then run both your commands on <code>ws.root</code> instead of <code>datacard.txt</code>)? I tested your commands on a workspace and I don\u2019t see problems, while when I run directly on a datacard I actually get a different error message than you <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=12\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>Nevertheless, I hope creating the workspace first helps.</p>\n<p>Best,<br>\nAdinda</p>\n<p>PS Combine support is moving to the CAT-statistical tools subgroup, the new forum for queries is: <a href=\"https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279\">https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279</a>. If you run into any further problems, please post there!</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "scooper",
+      "name": "Seth Cooper",
+      "created_at": "2023-02-10T14:37:23.282Z",
+      "updated_at": "2023-02-10T14:37:23.282Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thanks!  I confirm that the message disappears when running on the workspace file.\nCheers,\nSeth",
+      "cooked_html": "<p>Thanks!  I confirm that the message disappears when running on the workspace file.</p>\n<p>Cheers,<br>\nSeth</p>"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "topic_id": 2196,
+  "title": "Toy data from GenerateOnly not distributed as I'd expect",
+  "url": "https://cms-talk.web.cern.ch/t/2196",
+  "category_id": 279,
+  "created_at": "2021-11-03T01:28:01.000Z",
+  "last_posted_at": "2021-11-03T19:17:24.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Lucas_Corcodilos",
+      "name": "Lucas Corcodilos",
+      "created_at": "2021-11-03T01:28:01.000Z",
+      "updated_at": "2023-02-07T10:55:45.427Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear experts,\nI'm generating a toy from a sample workspace with the following command:\ncombine -M GenerateOnly -d toy_test_gen_workspace.root  --toysFrequentist --bypassFrequentistFit -t 1 --saveToys -s 654321 --expectSignal 0 -n _toy_test\nThe purpose of the toy is to serve as a stand-in for signal region fits before unblinding - so the workspace is that of the signal region but with parameters modified according to results of a control region fit.\nI plug the toy into a modified card for the signal region by swapping the real data for the toy. I attempted to just use the RooDataSet stored in \"toys/toy_1\" but saw some errors from RooAbsCategory so instead convert the RooDataSet to a RooDataHist first and then point the card to this RooDataHist.\nI perform the fit with the following command:\ncombine -M FitDiagnostics card.txt --text2workspace \"--channel-masks\" --setParameters r=1 --saveWorkspace --cminDefaultMinimizerStrategy 0 --rMin -5 --rMax 20 -v 0\nand then plot the various distributions, including the toy itself, which I've attached.\nThe distribution in the attached figure is quite strange since the per-bin yields are between 0 and 25 events but in very discrete increments. It's almost as if a Poisson distribution with lower expected events than the input model (~2 events/bin maybe?) is being sampled and then the whole thing is just scaled up to get the integral of the distribution to match the normalization of the generative model.\nCan anyone comment what is actually happening on the back-end? Is this expected behavior? I would expect to have fluctuations in neighboring bins on the scale of the Poisson errors.\nHere are a few more notes from my testing:\n- Regions/categories with larger statistics don't seem to have this issue.\n- Changing the seed changes the toy distribution but the same general behavior exists.\n- An Asimov toy works as expected.\nThanks for any and all help,\nLucas\nAttachment:\nhttps://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/11/03/02:26:18-56922-data_obs_SR_pass_prefit_2D.png",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear experts,</p>\n<p>I'm generating a toy from a sample workspace with the following command:</p>\n<p>\u00a0\u00a0\u00a0\u00a0combine -M GenerateOnly -d toy_test_gen_workspace.root  --toysFrequentist --bypassFrequentistFit -t 1 --saveToys -s 654321 --expectSignal 0 -n _toy_test</p>\n<p>The purpose of the toy is to serve as a stand-in for signal region fits before unblinding - so the workspace is that of the signal region but with parameters modified according to results of a control region fit.</p>\n<p>I plug the toy into a modified card for the signal region by swapping the real data for the toy. I attempted to just use the RooDataSet stored in \"toys/toy_1\" but saw some errors from RooAbsCategory so instead convert the RooDataSet to a RooDataHist first and then point the card to this RooDataHist.</p>\n<p>I perform the fit with the following command:</p>\n<p>\u00a0\u00a0\u00a0\u00a0combine -M FitDiagnostics card.txt --text2workspace \"--channel-masks\" --setParameters r=1 --saveWorkspace --cminDefaultMinimizerStrategy 0 --rMin -5 --rMax 20 -v 0</p>\n<p>and then plot the various distributions, including the toy itself, which I've attached.</p>\n<p>The distribution in the attached figure is quite strange since the per-bin yields are between 0 and 25 events but in very discrete increments. It's almost as if a Poisson distribution with lower expected events than the input model (~2 events/bin maybe?) is being sampled and then the whole thing is just scaled up to get the integral of the distribution to match the normalization of the generative model.</p>\n<p>Can anyone comment what is actually happening on the back-end? Is this expected behavior? I would expect to have fluctuations in neighboring bins on the scale of the Poisson errors.</p>\n<p>Here are a few more notes from my testing:<br>\n- Regions/categories with larger statistics don't seem to have this issue.<br>\n- Changing the seed changes the toy distribution but the same general behavior exists.<br>\n- An Asimov toy works as expected.</p>\n<p>Thanks for any and all help,<br>\nLucas</p>\n<p>\u00a0\u00a0\u00a0Attachment:<br>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0<a href=\"https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/11/03/02:26:18-56922-data_obs_SR_pass_prefit_2D.png\" rel=\"noopener nofollow ugc\">https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/11/03/02:26:18-56922-data_obs_SR_pass_prefit_2D.png</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-11-03T09:43:49.000Z",
+      "updated_at": "2021-11-17T08:39:59.144Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Lucas,\nit is difficult to follow what is happening from your message.\nIn general, the toy or data used by combine are a full representation of the simultaneous fit, while the one that it takes as inputs (from the dc) are not.\nI don't know how you did the conversion, but you would need to select the right category index to extract the dataset, and remove the rooAbsCategory from the dataset itself.\nIf you didn't do the procedure correctly, you may end up with double counts or something strange.\nYou could for instance plot the first toy you produce with combine directly and compare to the second one.\n\ncombine -M GenerateOnly -d toy_test_gen_workspace.root  --toysFrequentist --bypassFrequentistFit -t 1 --saveToys -s 654321 --expectSignal 0 -n _toy_test\n\nUsing for example:\ncombine -M FitDiagnostics -t 1 -d  toy_test_gen_workspace.root  --toysFile higgs...root --saveShapes\nin general, if the dc structure is compatible, you can directly recycle the toys (or data) reading it from a toy file produced by combine. (--toysFile --saveToys). Using channel masking you should have a lot of freedom in this regard.\nUnrelated, notice that you are using toysFrequentist, with byPassFrequentistFit and w/o loading a snapshot, and discarding the constraint centering.\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Lucas,</p>\n<p>it is difficult to follow what is happening from your message.</p>\n<p>In general, the toy or data used by combine are a full representation of the simultaneous fit, while the one that it takes as inputs (from the dc) are not.<br>\nI don't know how you did the conversion, but you would need to select the right category index to extract the dataset, and remove the rooAbsCategory from the dataset itself.</p>\n<p>If you didn't do the procedure correctly, you may end up with double counts or something strange.</p>\n<p>You could for instance plot the first toy you produce with combine directly and compare to the second one.</p>\n<blockquote>\n<p>combine -M GenerateOnly -d toy_test_gen_workspace.root  --toysFrequentist --bypassFrequentistFit -t 1 --saveToys -s 654321 --expectSignal 0 -n _toy_test</p>\n</blockquote>\n<p>Using for example:<br>\ncombine -M FitDiagnostics -t 1 -d  toy_test_gen_workspace.root  --toysFile higgs...root --saveShapes</p>\n<p>in general, if the dc structure is compatible, you can directly recycle the toys (or data) reading it from a toy file produced by combine. (--toysFile --saveToys). Using channel masking you should have a lot of freedom in this regard.</p>\n<p>Unrelated, notice that you are using toysFrequentist, with byPassFrequentistFit and w/o loading a snapshot, and discarding the constraint centering.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "Lucas_Corcodilos",
+      "name": "Lucas Corcodilos",
+      "created_at": "2021-11-03T18:05:05.000Z",
+      "updated_at": "2021-11-17T08:39:59.316Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrea,\nThanks very much. I think other work has put me out of practicek - I totally forgot about --toysFile! Though this has been educational to learn that the toy is relatively complex to export like this. Is there a block of code/function/method in the Combine source that shows how this is done roughly? Just curious for my own knowledge.\n\nUnrelated, notice that you are using toysFrequentist, with byPassFrequentistFit and w/o loading a snapshot, and discarding the constraint centering.\n\nYes - I was just throwing around some options to see if they had an effect on the output. Sorry for any confusion caused.\nLucas",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrea,</p>\n<p>Thanks very much. I think other work has put me out of practicek - I totally forgot about --toysFile! Though this has been educational to learn that the toy is relatively complex to export like this. Is there a block of code/function/method in the Combine source that shows how this is done roughly? Just curious for my own knowledge.</p>\n<blockquote>\n<p>Unrelated, notice that you are using toysFrequentist, with byPassFrequentistFit and w/o loading a snapshot, and discarding the constraint centering.</p>\n</blockquote>\n<p>Yes - I was just throwing around some options to see if they had an effect on the output. Sorry for any confusion caused.</p>\n<p>Lucas</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-11-03T19:17:24.000Z",
+      "updated_at": "2021-11-17T08:39:59.449Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nprobably to understand what is done is simpler to look into the creation of the observed dataset:\nhttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/ShapeTools.py#L437\nwhich calls an helper function in c++.\n-A",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>probably to understand what is done is simpler to look into the creation of the observed dataset:</p>\n<p><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/ShapeTools.py#L437\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/ShapeTools.py#L437</a></p>\n<p>which calls an helper function in c++.</p>\n<p>-A</p>"
+    }
+  ]
+}

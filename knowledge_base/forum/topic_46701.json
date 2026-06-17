@@ -1,0 +1,56 @@
+{
+  "topic_id": 46701,
+  "title": "Expected values for FC upper limits",
+  "url": "https://cms-talk.web.cern.ch/t/46701",
+  "category_id": 279,
+  "created_at": "2024-08-26T09:22:53.310Z",
+  "last_posted_at": "2024-08-27T11:05:11.399Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mrogulji",
+      "name": "Matej Roguljic",
+      "created_at": "2024-08-26T09:22:53.411Z",
+      "updated_at": "2024-08-26T09:22:53.411Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI\u2019m trying to set upper limits on a cross section at 95% CL and would like to compare Asymptotic and FeldmanCousins methods. If I understand correctly from the example, to calculate the observed limit for FC, one would need to run single point scans at several cross section values and see where the test statistic crosses 0.05. How do we get the expected value? Do we throw N toys for each scanned point and see the cross section for which the median test statistic crosses 0.05 (and the same for the uncertainty band, after adjusting the quantile)? Thanks.\nCheers,\nMatej",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I\u2019m trying to set upper limits on a cross section at 95% CL and would like to compare Asymptotic and FeldmanCousins methods. If I understand correctly from the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#feldman-cousins\" rel=\"noopener nofollow ugc\">example</a>, to calculate the observed limit for FC, one would need to run single point scans at several cross section values and see where the test statistic crosses 0.05. How do we get the expected value? Do we throw N toys for each scanned point and see the cross section for which the median test statistic crosses 0.05 (and the same for the uncertainty band, after adjusting the quantile)? Thanks.</p>\n<p>Cheers,<br>\nMatej</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-08-27T09:18:35.198Z",
+      "updated_at": "2024-08-27T09:18:57.003Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Matej,\nYes, it sounds like your intepretation is correct. Since you are comparing to an asymptotic limit, it seems you are fitting a single parameter, in which case combine can do the interpolation for you, as explained here [1]. Though, if your goal is simply to test the asymptotic approximation, you could use the machinery for calculating limits with toys [2] \u2013 theres not really a reason to use FC specifically in that case. Depending on what specifically you\u2019d like to test by comparing to Feldman-Cousins there may be other easier ways of doing things as well.\nBut if you\u2019d really like to check the Feldman-Cousins result with toys, you can get the expected results by generating toy data as you said. I don\u2019t think there is a built-in way to do this automatically like what exists for the typical upper limits. If I\u2019m forgetting it, hopefully someone else will jump in.\nBest,\nKyle\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#extracting-1d-intervals\n[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys",
+      "cooked_html": "<p>Dear Matej,</p>\n<p>Yes, it sounds like your intepretation is correct. Since you are comparing to an asymptotic limit, it seems you are fitting a single parameter, in which case combine can do the interpolation for you, as explained here [1]. Though, if your goal is simply to test the asymptotic approximation, you could use the machinery for calculating limits with toys [2] \u2013 theres not really a reason to use FC specifically in that case. Depending on what specifically you\u2019d like to test by comparing to Feldman-Cousins there may be other easier ways of doing things as well.</p>\n<p>But if you\u2019d really like to check the Feldman-Cousins result with toys, you can get the expected results by generating toy data as you said. I don\u2019t think there is a built-in way to do this automatically like what exists for the typical upper limits. If I\u2019m forgetting it, hopefully someone else will jump in.</p>\n<p>Best,<br>\nKyle</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#extracting-1d-intervals\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#extracting-1d-intervals</a><br>\n[2] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "mrogulji",
+      "name": "Matej Roguljic",
+      "created_at": "2024-08-27T10:21:17.627Z",
+      "updated_at": "2024-08-27T10:21:17.627Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Thank you Kyle.\nThe link for extracting 1d intervals is particularly useful as I\u2019ve just finished producing the grid, but an additional question has now popped up. Let me know if you\u2019d prefer me to open a new thread for it.\nThe grid was generated using combineTool.py to help with submission to condor.\ncombineTool.py scanworkspace.root -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --saveHybridResult -v 1 --setParameterRanges R=1,1:gammaHXS=0,30:ghg2=1,1:ghg4=0,0:g1=1,1 --redefineSignalPOIs gammaHXS --singlePoint 8.5:11.0:0.05 --rAbsAcc 0.01 --job-mode condor --sub-opts='+JobFlavour=\"workday\"' --task-name fc_obs --dry-run\n\nThe output root files do not contain the values of gammaHXS used in the scan. Here are the branches in one file\nroot [3] limit->Show(1)\n======> EVENT:1\nlimit           = 0.048\nlimitErr        = 0.00955992\nmh              = 120\nsyst            = 1\niToy            = 0\niSeed           = 123456\niChannel        = 0\nt_cpu           = 36.3848\nt_real          = 38.2178\nquantileExpected = -1\n\nLuckily, the value is stored in the file name. However, once I merge the file, the information about which test statistic value belongs to which gammaHXS will get lost. Is there an option that should have been turned on when running the single point scans to save the values of POI?\nCheers,\nMatej",
+      "cooked_html": "<p>Thank you Kyle.</p>\n<p>The link for extracting 1d intervals is particularly useful as I\u2019ve just finished producing the grid, but an additional question has now popped up. Let me know if you\u2019d prefer me to open a new thread for it.</p>\n<p>The grid was generated using combineTool.py to help with submission to condor.</p>\n<pre><code class=\"lang-auto\">combineTool.py scanworkspace.root -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --saveHybridResult -v 1 --setParameterRanges R=1,1:gammaHXS=0,30:ghg2=1,1:ghg4=0,0:g1=1,1 --redefineSignalPOIs gammaHXS --singlePoint 8.5:11.0:0.05 --rAbsAcc 0.01 --job-mode condor --sub-opts='+JobFlavour=\"workday\"' --task-name fc_obs --dry-run\n</code></pre>\n<p>The output root files do not contain the values of <code>gammaHXS</code> used in the scan. Here are the branches in one file</p>\n<pre><code class=\"lang-auto\">root [3] limit-&gt;Show(1)\n======&gt; EVENT:1\n limit           = 0.048\n limitErr        = 0.00955992\n mh              = 120\n syst            = 1\n iToy            = 0\n iSeed           = 123456\n iChannel        = 0\n t_cpu           = 36.3848\n t_real          = 38.2178\n quantileExpected = -1\n</code></pre>\n<p>Luckily, the value is stored in the file name. However, once I merge the file, the information about which test statistic value belongs to which <code>gammaHXS</code> will get lost. Is there an option that should have been turned on when running the single point scans to save the values of POI?</p>\n<p>Cheers,<br>\nMatej</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-08-27T11:05:11.399Z",
+      "updated_at": "2024-08-27T11:05:11.399Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Dear Matej,\nThis shouldn\u2019t be a problem. The relevant grid results are stored in a RooStats:HypoTestResult object which is under the toys directory, and should contain all the POI information necessary.\nIf you want to include the POI value in the output tree you can use the --trackParameters <paramName> argument [1] to store any parameter you\u2019d like in the output tree. But this shouldn\u2019t be necessary for the method.\nBest,\nKyle\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/?h=trackpar#common-command-line-options",
+      "cooked_html": "<p>Dear Matej,</p>\n<p>This shouldn\u2019t be a problem. The relevant grid results are stored in a <code>RooStats:HypoTestResult</code> object which is under the <code>toys</code> directory, and should contain all the POI information necessary.</p>\n<p>If you want to include the POI value in the output tree you can use the <code>--trackParameters &lt;paramName&gt;</code> argument [1] to store any parameter you\u2019d like in the output tree. But this shouldn\u2019t be necessary for the method.</p>\n<p>Best,<br>\nKyle</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/?h=trackpar#common-command-line-options\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/?h=trackpar#common-command-line-options</a></p>"
+    }
+  ]
+}

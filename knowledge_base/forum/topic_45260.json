@@ -1,0 +1,100 @@
+{
+  "topic_id": 45260,
+  "title": "Question on parallelizing Goodness of Fit method using condor",
+  "url": "https://cms-talk.web.cern.ch/t/45260",
+  "category_id": 279,
+  "created_at": "2024-08-06T20:33:26.698Z",
+  "last_posted_at": "2024-08-08T14:20:20.303Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jongho",
+      "name": "Jongho Lee",
+      "created_at": "2024-08-06T20:33:26.834Z",
+      "updated_at": "2024-08-06T20:33:26.834Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI would like to discuss a potential approach to speed up the Goodness of Fit (GoF) method, as this step is currently taking too long in our analysis. Our group is running the GoF using the following command: \u201ccombine -M GoodnessOfFit  --algo=saturated -t 500 -s -1\u201d. Unfortunately, after 5 days, only half of the toy generation has been completed.\nThe proposed idea is to run the GoF on Condor by reducing the number of toy generations per job and assigning different seeds to each job. There are following questions if we use this idea. 1) Can the outputs be technically merged, if possible how? 2) Can this lead to incorrect fit result?\nThanks for your helps.",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I would like to discuss a potential approach to speed up the Goodness of Fit (GoF) method, as this step is currently taking too long in our analysis. Our group is running the GoF using the following command: \u201ccombine -M GoodnessOfFit  --algo=saturated -t 500 -s -1\u201d. Unfortunately, after 5 days, only half of the toy generation has been completed.</p>\n<p>The proposed idea is to run the GoF on Condor by reducing the number of toy generations per job and assigning different seeds to each job. There are following questions if we use this idea. 1) Can the outputs be technically merged, if possible how? 2) Can this lead to incorrect fit result?</p>\n<p>Thanks for your helps.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-08-06T20:46:47.237Z",
+      "updated_at": "2024-08-06T20:46:47.237Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jongho,\nCombineTools provides the capabilities to parallelise combine toys on Condor, have you tried using it?\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#combinetool-for-job-submission\nOn a side note, we usually recommend using --toysFreq option when running the saturated model.\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Jongho,</p>\n<p>CombineTools provides the capabilities to parallelise combine toys on Condor, have you tried using it?<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#combinetool-for-job-submission\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#combinetool-for-job-submission</a></p>\n<p>On a side note, we usually recommend using --toysFreq option when running the saturated model.</p>\n<p>Best regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jongho",
+      "name": "Jongho Lee",
+      "created_at": "2024-08-07T09:29:15.523Z",
+      "updated_at": "2024-08-07T09:29:15.523Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nThanks for your answer. When I looked the combineTools.py, I found some supporting methods. (Here, the group is using old higgs combine tool version, v8.1.0 for combine and v2.1.0 for combine harvester).\n\nregister_method(parser, methods, EnhancedCombine)\nregister_method(parser, methods, T2W)\nregister_method(parser, methods, PrintWorkspace)\nregister_method(parser, methods, ModifyDataSet)\nregister_method(parser, methods, Impacts)\nregister_method(parser, methods, ImpactsFromScans)\nregister_method(parser, methods, CollectLimits)\nregister_method(parser, methods, CollectGoodnessOfFit)\nregister_method(parser, methods, CovMatrix)\nregister_method(parser, methods, PrintFit)\nregister_method(parser, methods, AsymptoticGrid)\nregister_method(parser, methods, HybridNewGrid)\nregister_method(parser, methods, FastScan)\nregister_method(parser, methods, TaylorExpand)\n\nFollowing the above list, it looks like -M GoodnessOfFit is not supporting method. Could I available to use condor with GoF? Because in the instruction, it is -M HybridNew.\nKind regards,\nJongho",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>Thanks for your answer. When I looked the combineTools.py, I found some supporting methods. (Here, the group is using old higgs combine tool version, v8.1.0 for combine and v2.1.0 for combine harvester).</p>\n<blockquote>\n<p>register_method(parser, methods, EnhancedCombine)<br>\nregister_method(parser, methods, T2W)<br>\nregister_method(parser, methods, PrintWorkspace)<br>\nregister_method(parser, methods, ModifyDataSet)<br>\nregister_method(parser, methods, Impacts)<br>\nregister_method(parser, methods, ImpactsFromScans)<br>\nregister_method(parser, methods, CollectLimits)<br>\nregister_method(parser, methods, CollectGoodnessOfFit)<br>\nregister_method(parser, methods, CovMatrix)<br>\nregister_method(parser, methods, PrintFit)<br>\nregister_method(parser, methods, AsymptoticGrid)<br>\nregister_method(parser, methods, HybridNewGrid)<br>\nregister_method(parser, methods, FastScan)<br>\nregister_method(parser, methods, TaylorExpand)</p>\n</blockquote>\n<p>Following the above list, it looks like <code>-M GoodnessOfFit</code> is not supporting method. Could I available to use condor with GoF? Because in the instruction, it is <code>-M HybridNew</code>.</p>\n<p>Kind regards,<br>\nJongho</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-08-07T16:16:09.770Z",
+      "updated_at": "2024-08-07T16:16:09.770Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jongho,\nWe don\u2019t need a dedicated module for GoF, we can just use the functionality in EnhancedCombine, e.g. just run with your usual options, but for the seed you can set -s 1:100:1 to generate 100 jobs with different RNG seeds, and then add the appropriate options for condor submission. Can add --dry-run to check without actually submitting.\nThanks,\nAndrew",
+      "cooked_html": "<p>Hi Jongho,</p>\n<p>We don\u2019t need a dedicated module for GoF, we can just use the functionality in <code>EnhancedCombine</code>, e.g. just run with your usual options, but for the seed you can set <code>-s 1:100:1</code> to generate 100 jobs with different RNG seeds, and then add the appropriate options for condor submission. Can add <code>--dry-run</code> to check without actually submitting.</p>\n<p>Thanks,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jongho",
+      "name": "Jongho Lee",
+      "created_at": "2024-08-07T20:43:19.351Z",
+      "updated_at": "2024-08-07T20:43:19.351Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nThanks for your helps. This will be very useful for us.\nKind regards,\nJongho",
+      "cooked_html": "<p>Dear all,</p>\n<p>Thanks for your helps. This will be very useful for us.</p>\n<p>Kind regards,<br>\nJongho</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "eertorer",
+      "name": "Erdem Yigit Ertorer",
+      "created_at": "2024-08-07T23:46:46.284Z",
+      "updated_at": "2024-08-07T23:46:46.284Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nHow can we merge the GoF outputs? For reference, this is the command that we used:\npython CombineHarvester/CombineTools/scripts/combineTool.py -M GoodnessOfFit -d darkhiggs_Mz2000_mhs90_Mdm500.root --algo=saturated -t 5 -s 1:100:1 -n run --toysFreq --job-mode condor --sub-opts='+JobFlavour=\"workday\"' --dry-run\nThanks,\nErdem",
+      "cooked_html": "<p>Dear all,</p>\n<p>How can we merge the GoF outputs? For reference, this is the command that we used:</p>\n<p><code>python CombineHarvester/CombineTools/scripts/combineTool.py -M GoodnessOfFit -d darkhiggs_Mz2000_mhs90_Mdm500.root --algo=saturated -t 5 -s 1:100:1 -n run --toysFreq --job-mode condor --sub-opts='+JobFlavour=\"workday\"' --dry-run</code></p>\n<p>Thanks,<br>\nErdem</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-08-08T06:42:21.074Z",
+      "updated_at": "2024-08-08T06:42:21.074Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "hadd\n-A",
+      "cooked_html": "<p><code>hadd</code></p>\n<p>-A</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "eertorer",
+      "name": "Erdem Yigit Ertorer",
+      "created_at": "2024-08-08T14:20:20.303Z",
+      "updated_at": "2024-08-08T14:20:20.303Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Thanks!",
+      "cooked_html": "<p>Thanks!</p>"
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+TOPIC: Making a likelihood scan with postfit Asimov
+URL: https://cms-talk.web.cern.ch/t/134293
+DATE: 2025-10-13T12:48:46.585Z
+SOLVED: no
+============================================================
+
+QUESTION (by acarvalh @ 2025-10-13T12:48:46.749Z):
+Hi combine experts
+In the context of the LHC HH combination (HIG-25-014), we were asked to perform likelihood scans using the post-fit nuisance values.
+It is our understanding that for scans and intervals, the default for CMS/combine is to use prefit values (that is what “-t -1” is doing)
+We were asked to try to produce the expected intervals in the post-fit Asimov when the central value is the fit value to cross-check the ATLAS procedure of computing expected intervals [1]
+We have a vague idea of how to do it, but since this takes a couple of days to run, we want to run the idea by the experts here to see if you agree with the procedure. We could
+
+1 - Replace data with the MC by hand on the workspace
+
+2 - Run the scan as it would be unblinded, but in this version of the workspace, in which “data” is the MC
+
+Do you think that makes sense?
+If so, would there be an option on combine to achieve the equivalent of (1) without the need to create a second workspace?
+Thank you
+Xanda, for the HIG-25-014 authors
+[1] https://cms-pub-talk.web.cern.ch/t/outcome-of-todays-atlas-cms-meeting/43583
+P.S.: Please note that this question regards only scan intervals. In the context of our analysis, there is another discussion on the computation of upper limits. We are aware that, in that case, the default for computing unblinded upper limits is to use the post-fit Asimov with mu = 0. We have a technical issue computing the postfit nuisances for the expected value in ATLAS workspaces; it has not yet been identified, and we are still working to identify it.
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-10-13T13:33:58.000Z):
+Hi Xanda,
+I wouldn’t try to manipulate the data card by hand, instead you can follow some instructions here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#fitting-only-some-parameters for setting specific parameters.
+Generally for the expected, using -t -1 is correct but make sure you include the toysFrequentist argument for that to get postfit values of the nuisances. Using a combination of this with the above should be enough
+Nick
+
+| Alexandra Carvalho Antunes De Oliveira acarvalhOctober 13 |
+
+| - |
+
+Hi combine experts
+In the context of the LHC HH combination (HIG-25-014), we were asked to perform likelihood scans using the post-fit nuisance values.
+It is our understanding that for scans and intervals, the default for CMS/combine is to use prefit values (that is what “-t -1” is doing)
+We were asked to try to produce the expected intervals in the post-fit Asimov when the central value is the fit value to cross-check the ATLAS procedure of computing expected intervals [1]
+We have a vague idea of how to do it, but since this takes a couple of days to run, we want to run the idea by the experts here to see if you agree with the procedure. We could
+
+1 - Replace data with the MC by hand on the workspace
+
+2 - Run the scan as it would be unblinded, but in this version of the workspace, in which “data” is the MC
+
+Do you think that makes sense?
+If so, would there be an option on combine to achieve the equivalent of (1) without the need to create a second workspace?
+Thank you
+Xanda, for the HIG-25-014 authors
+[1] https://cms-pub-talk.web.cern.ch/t/outcome-of-todays-atlas-cms-meeting/43583
+P.S.: Please note that this question regards only scan intervals. In the context of our analysis, there is another discussion on the computation of upper limits. We are aware that, in that case, the default for computing unblinded upper limits is to use the post-fit Asimov with mu = 0. We have a technical issue computing the postfit nuisances for the expected value in ATLAS workspaces; it has not yet been identified, and we are still working to identify it.
+
+···
+On 13 Oct 2025 13:53, Alexandra Carvalho Antunes De Oliveira via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------

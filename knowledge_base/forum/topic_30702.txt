@@ -1,0 +1,417 @@
+TOPIC: Combinimg two bumps in 2017 and 2018 data in one Search Region
+URL: https://cms-talk.web.cern.ch/t/30702
+DATE: 2023-10-18T10:50:09.685Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2023-10-18T10:50:10.293Z):
+Hi Adinda,
+thanks for a quick response:
+
+Combinimg two bumps in 2017 and 2018 data in one Search Region Statistical Interpretation Tools
+
+Hi Sasha,
+I think this message was supposed to go to the statistical interpretation tools forum (subforum of Common Analysis Tools): https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279 - in future it would be better to follow up there.
+First: presumably you are not still using CMSSW_7_1_5? The latest recommended Combine version runs in CMSSW_11.
+The option --setPhysicsModelParameters was renamed to ‘setParameters’ several years ago. The common command line options are detailed here: http…
+
+it works with ‘setParameters’. Indeed I used combined cards in 2018 last time.  I use now
+CMSSW_11_0_4
+So command
+combine -M MultiDimFit --algo fixed --setParameters r_sig1=0,r_sig2=0 SR1_2017+2018.root -v 3
+works. But for r_sig1=0, r_sig2=0 case it says
+Evaluating fixed point with r_sig2= 0
+Evaluating fixed point with r_sig1= 0
+…
+Info in Minuit2Minimizer::Minimize : Minimization did NOT converge, Hesse is not valid
+Minuit2Minimizer : Invalid Minimum - status = 2
+FVAL  = -0.333701
+Edm   = 4.39465e-05
+Nfcn  = 247
+As a result I have
+deltaNLL = 0
+quantileExpected = -1
+Could you give a hint why it is happen ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-10-18T16:09:49.995Z):
+Dear Sasha,
+It is quite hard to say what is exactly wrong without additional information or the datacards, could you try to increase the verbosity level by adding the -v 3 option?
+I have several questions though. Do the fits for different signal strength values (>0) converge? What is the background prediction in the signal region? If you expect it to be low, the errors might be coming from the total pdf estimation getting too close to 0.
+And just a curiosity, why do you assign separate parameters of interest for the signal components in 2017 and 2018 datacards? Naively, I would expect them to be the same.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2023-10-19T11:36:29.190Z):
+Dear Aliya,
+let me repeate this with 2016 data which we allowed to use with the signal region included. I can’t play much with 2017 and 2018 data since they are blinded.  So, I will do everything with 2016 and in case this
+problem appeared will come to you. The amount of data and bkg compositions are quite similar in 2016 and 2017.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2023-10-19T14:46:25.754Z):
+Dear Aliya,
+I repeated combination of SR1 and SR2 with 2016 data which we allowed to use with the signal region unblinded and got into the same problem.  So, all (datacards and RootWorkspace) is on my public directory and you can repeat it by yourself without violation of unblinding rule
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_0_4/src/HiggsAnalysis/CombinedLimit/test
+I do
+combineCards.py SR1_2016=2016_dimuon_SR1.txt SR2mod13_2016=2016_dimuon_SR2mod13.txt > SR1andSR2mod13.txt
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO ‘map=SR1_2016/sig:r_sig1[1,0,200]’ --PO ‘map=SR2mod13_2016/sig:r_sig2[1,0,200]’ SR1andSR2mod13.txt -o SR1andSR2mod13.root
+and then
+combine -M MultiDimFit --algo fixed --setParameters r_sig1=0,r_sig2=0 SR1andSR2mod13.root -v 3 > & ! SR1andSR2mod13.out
+so, in the output file SR1andSR2mod13.out you can see my problem that with r_sig1=0 r_sig2 = 0 setting
+fit does not converge.
+I have enough background in the signal region and when I did sideband fit with bkg function only all was fine. You can find plots of dimuon mass in SR1 and SR2mod13 on figures 4 (left) and 13 (left) in our paper draft
+https://cms.cern.ch/iCMS/analysisadmin/get?analysis=SUS-23-011-paper-v9.pdf
+Thank you very much for any help and hints !
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2023-10-20T07:48:19.469Z):
+Dear Aliya,
+it seems I have found the reason for my problem.
+In both Search Regions I am combining I use for the background function the polynomial
+function (2nd order) and I use the same names for the coefficients of the function for both
+search regions, a11, a21.  I renamed them differently SR1: a11, a12 and for SR2: a12,a22
+and it seems to work now.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 6 (by anigamov @ 2023-10-20T08:36:37.505Z):
+Dear Sasha,
+Great the you found the issue, indeed the backgrounds shapes are very different in these regions.
+You  mentioned that to avoid unblinding the 2017 and 2018 analyses you are testing the model with the unblinded 2016 datacards. It is fine of course, but you could also test the your model in 2017 and 2018 without unblinding with the Asimov dataset  by adding -t -1 --setParameters r_sig1=0... option, please find the instructions here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation
+Best,
+Aliya
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2023-12-01T16:10:07.935Z):
+Dear Aliya,
+I need your help.  I need to combine 2017 and 2018 years in a given SR using one signal strength.  But of course I need to take into account the different efficiency for the signal selection in 2017 and 2018. Remember we discussed in once.  So, I need to introduce nuisance parameter, R with an error, which is a ratio of the efficiencies 2018/2017 and difference in luminosity.  I my model
+of signal plus background I have “nsig” for the signal normalization and it goes to RootWorkspace.root with a model.  In both 2017 and 2018 RootWorkspace it is “nsig”.  How can I do to relate nsig in 2017 with nsig in 2018 using R ?
+I need to have nsig2018 = R x nsig2017.
+Could you, please provide a magic lines for combining cards SR1_2017.txt and SR2_2018.txt with a such option for the significance calculation and for multidim. fit.
+Thanks so much, Sasha.
+----------------------------------------
+
+REPLY 8 (by anigamov @ 2023-12-04T10:53:39.940Z):
+Dear Sasha,
+I think the easiest would be to add the following lines to the combined 2017+2018 datacard
+ratio_2018_To_2017   param  1.0 <unc_size>
+mu rateParam  <2017_region_name>  sig  1  [0.,5.]
+r_2018 rateParam  <2018_region_name>  sig  @0*@1  ratio_2018_To_2017,mu
+
+where is <unc_size> the uncertainty to assume for the efficiency ratios, <2017_region_name>  and <2018_region_name>  are the bin names for 2017 and 2018 categories.
+Then for the fits (e.g.  -M MultiDimFit) you should add the --redefineSignalPOIs mu --freezeParameters r
+Best,
+Aliya
+----------------------------------------
+
+REPLY 9 (by anikiten @ 2023-12-04T13:37:26.000Z):
+Dear Aliya,
+do I understand it right that in line
+ratio_2018_To_2017 param 1.0 <unc_size>
+1.0 is the ratio of efficencies. And if I have this ratio, say 1.4 I should
+use
+ratio_2018_To_2017 param 1.4 <unc_size>
+Thanks !
+Sasha
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, December 4, 2023 11:54
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Aliya Nigamova anigamovDecember 4
+
+Dear Sasha,
+I think the easiest would be to add the following lines to the combined 2017+2018 datacard
+ratio_2018_To_2017   param  1.0 <unc_size>
+mu rateParam  <2017_region_name>  sig  1  [0.,5.]
+r_2018 rateParam  <2018_region_name>  sig  @0*@1  ratio_2018_To_2017,mu
+
+where is <unc_size> the uncertainty to assume for the efficiency ratios, <2017_region_name> and <2018_region_name> are the bin names for 2017 and 2018 categories.
+Then for the fits (e.g. -M MultiDimFit) you should add the --redefineSignalPOIs mu --freezeParameters r
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 10 (by anigamov @ 2023-12-04T13:48:03.626Z):
+Dear Sasha,
+yes, that’s correct, it sets the initial value of the ratio.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 11 (by anikiten @ 2023-12-04T14:19:06.000Z):
+Thanks Aliya,
+does command for multidim fit should looks like
+combine -M MultiDimFit --redefineSignalPOIs mu_2017 --freezeParameters r SR1_2017+2018.root -v 3
+I use instead of mu → mu_2017
+Cheers, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, December 4, 2023 14:49
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Aliya Nigamova anigamovDecember 4
+
+Dear Sasha,
+yes, that’s correct, it sets the initial value of the ratio.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 12 (by anikiten @ 2023-12-04T14:38:01.000Z):
+Many thanks to Aliya and Nick Wardle for help !
+We got it.
+Cheers, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Monday, December 4, 2023 15:19
+To: CMS talk cmstalk+a25d6a2193be05cdd39ca4979f333aca@dovecotmta.cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+Thanks Aliya,
+does command for multidim fit should looks like
+combine -M MultiDimFit --redefineSignalPOIs mu_2017 --freezeParameters r SR1_2017+2018.root -v 3
+I use instead of mu → mu_2017
+Cheers, Sasha.
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, December 4, 2023 14:49
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Aliya Nigamova anigamovDecember 4
+
+Dear Sasha,
+yes, that’s correct, it sets the initial value of the ratio.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 13 (by anikiten @ 2023-12-08T11:04:03.000Z):
+Hi Alyia,
+can nuisance parameter have an asymmetric errors ?
+In case if I want to relate three SRs using signal ratios in
+2016 SRs, the errors on the ratios could be large and
+in even case asymmetric. For example:
+R2/R1 is about of 0.2 - 0.2+0.5
+To connect 2017 and 2018 we use line:
+R_2018_2017 param 1.4 0.2
+How R2_R1 param …
+will look like if this nuisance parameter = 0.2 -0.2+0.5 ?
+Thanks, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Monday, December 4, 2023 15:38
+To: CMS talk cmstalk+a25d6a2193be05cdd39ca4979f333aca@dovecotmta.cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+Many thanks to Aliya and Nick Wardle for help !
+We got it.
+Cheers, Sasha.
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Monday, December 4, 2023 15:19
+To: CMS talk cmstalk+a25d6a2193be05cdd39ca4979f333aca@dovecotmta.cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+Thanks Aliya,
+does command for multidim fit should looks like
+combine -M MultiDimFit --redefineSignalPOIs mu_2017 --freezeParameters r SR1_2017+2018.root -v 3
+I use instead of mu → mu_2017
+Cheers, Sasha.
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, December 4, 2023 14:49
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Aliya Nigamova anigamovDecember 4
+
+Dear Sasha,
+yes, that’s correct, it sets the initial value of the ratio.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 14 (by anigamov @ 2023-12-08T15:04:07.710Z):
+Dear Sasha,
+I think the uncertainty is asymmetric because the ratio is restricted to be positive.
+You could consider an alternative parametrisation, which would allow the nuisance parameter to vary in a wider range, but also make sure to have a positive definite ratio of signal strengths:  exp(ratio) = mu1/mu2, with ratio defined as param nuisance.
+R2_R1  param  0  <unc_size>
+mu1 rateParam  <region1_name>  sig  1  [0.,5.]
+mu2 rateParam  <region2_name>  sig  exp(@0)*@1  R2_R1,mu1
+
+Best,
+Aliya
+----------------------------------------
+
+REPLY 15 (by anikiten @ 2023-12-11T06:50:51.000Z):
+Dear Aliya,
+now I need to combine there Search Regions with three independent
+signal strengths. For each SR I have datacards for combination
+of 2017 and 2018 data according to your and Nick prescription
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_0_4/src/HiggsAnalysis/CombinedLimit/test
+SR1_2017+2018.txt
+SR2mod13_2017+2018.txt
+SR3_2017+2018.txt
+How should I do to combine and run MultiDimFit and significance ?
+Thanks, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Friday, December 8, 2023 16:05
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Aliya Nigamova anigamovDecember 8
+
+Dear Sasha,
+I think the uncertainty is asymmetric because the ratio is restricted to be positive.
+You could consider an alternative parametrisation, which would allow the nuisance parameter to vary in a wider range, but also make sure to have a positive definite ratio of signal strengths: exp(ratio) = mu1/mu2, with ratio defined as param nuisance.
+R2_R1  param  0  <unc_size>
+mu1 rateParam  <region1_name>  sig  1  [0.,5.]
+mu2 rateParam  <region2_name>  sig  exp(@0)*@1  R2_R1,mu1
+
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 16 (by anigamov @ 2023-12-13T14:21:38.140Z):
+Dear Sasha,
+I think you already have everything setup to run the combination. The floating parameters mu_sr1_2017, mu_sr2mod13_2017, mu_sr3_2017 are the new POIs and I think the significance can be estimated as discussed in the other thread with that Chernoff method for 3 parameters.
+To combine the cards run the following:
+combineCards.py SR3_2017+2018.txt SR2mod13_2017+2018.txt  SR1_2017+2018.txt > combined.txt
+
+Running the fit:
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017
+
+It looks like some of the signal parameters are still the same in 2017 and 2018 workspaces, I think it might be a good idea to decorrelate them.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 17 (by anikiten @ 2023-12-17T07:50:44.000Z):
+Hi Aliya,
+MultiDim is crashed
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017
+<<< Combine >>>
+
+random number generator seed is 123456
+method used is MultiDimFit
+Warning! – You haven’t picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the ‘B-only’ ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 6 channels, 0 generic constraints, 3 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Sunday, December 17, 2023 08:46
+To: CMS talk cmstalk+b48a21b5059a7f8359dc84925f5a2190@dovecotmta.cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+Dear Aliya,
+many thanks.
+Signal parameters mass and width should be the same
+everythere since it does not depend on year and SR,
+Cheers, Sasha.
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Wednesday, December 13, 2023 15:22
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Aliya Nigamova anigamovDecember 13
+
+Dear Sasha,
+I think you already have everything setup to run the combination. The floating parameters mu_sr1_2017, mu_sr2mod13_2017, mu_sr3_2017 are the new POIs and I think the significance can be estimated as discussed in the other thread with that Chernoff method for 3 parameters.
+To combine the cards run the following:
+combineCards.py SR3_2017+2018.txt SR2mod13_2017+2018.txt  SR1_2017+2018.txt > combined.txt
+
+Running the fit:
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017
+
+It looks like some of the signal parameters are still the same in 2017 and 2018 workspaces, I think it might be a good idea to decorrelate them.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 18 (by anikiten @ 2023-12-17T07:46:40.000Z):
+Dear Aliya,
+many thanks.
+Signal parameters mass and width should be the same
+everythere since it does not depend on year and SR,
+Cheers, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Wednesday, December 13, 2023 15:22
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Aliya Nigamova anigamovDecember 13
+
+Dear Sasha,
+I think you already have everything setup to run the combination. The floating parameters mu_sr1_2017, mu_sr2mod13_2017, mu_sr3_2017 are the new POIs and I think the significance can be estimated as discussed in the other thread with that Chernoff method for 3 parameters.
+To combine the cards run the following:
+combineCards.py SR3_2017+2018.txt SR2mod13_2017+2018.txt  SR1_2017+2018.txt > combined.txt
+
+Running the fit:
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017
+
+It looks like some of the signal parameters are still the same in 2017 and 2018 workspaces, I think it might be a good idea to decorrelate them.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 19 (by kodolova @ 2024-01-17T08:36:03.000Z):
+Dear Aliya,
+We started unblinding process and have a problem with some of
+needed actions.
+In particular with
+
+Please provide goodness-of-fit, or fit probability for background-only and signal+background fits
+
+I tried to use combine with -M GoodnessOfFit as it is described in:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests
+I use CMSSW_11_3_4 under lxplus8.
+However,
+
+···
+
+From: Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch
+Sent: 17 December 2023 11:53
+To: Olga Kodolova Olga.Kodolova@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combinimg two bumps in 2017 and 2018 data in one Search Region
+
+Alexandre Nikitenko anikitenDecember 17
+
+Dear Aliya,
+many thanks.
+Signal parameters mass and width should be the same
+everythere since it does not depend on year and SR,
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

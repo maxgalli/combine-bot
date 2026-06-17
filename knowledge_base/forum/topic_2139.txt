@@ -1,0 +1,33 @@
+TOPIC: Simplified likelihood runs forever
+URL: https://cms-talk.web.cern.ch/t/2139
+DATE: 2021-08-06T11:54:32.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by mheindl @ 2021-08-06T11:54:32.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+I am trying to follow the recipe to produce the simplified likelihood
+[1]. While the production of the covariance matrix and the SL inputs
+works reasonably well & fast, the validation of the simplified
+likelihood by running the simplifiedLikelihood.C script takes now >14h,
+while the regular limit calculation with the Asymptotic Method takes
+<10min. Is this expected?
+As I am doing this the first time, it might also be that I have made a
+mistake in the recipe. The files I produced are all uploaded here [2].
+Thank you so much!
+Cheers, Maxi
+[1] https://twiki.cern.ch/twiki/bin/view/CMS/SimplifiedLikelihood [2]
+https://drive.google.com/drive/folders/1zULre5e2Ifid9_Pd5ZBGqe_Zy_mrYAYJ?usp=sharing
+----------------------------------------
+
+REPLY 2 (by mheindl @ 2021-08-10T13:25:58.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+after running for >1d, the simplified likelihood calculation finished,
+but the calculated observed limit is >2 as high as the original limit
+from the Asymptotic CLs method.
+I would really appreciate your help! If you need additional
+information/material, I am happy to provide it.
+Cheers, Maxi
+----------------------------------------

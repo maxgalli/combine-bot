@@ -1,0 +1,85 @@
+TOPIC: Goodness-of-fit with p-value=1
+URL: https://cms-talk.web.cern.ch/t/111981
+DATE: 2025-02-10T17:35:44.661Z
+SOLVED: no
+============================================================
+
+QUESTION (by slomte @ 2025-02-10T17:35:44.895Z):
+Dear Combine experts,
+I have a question about using the Goodness-of-fit test. For one my analysis category with 2017 data, I’m getting a p-value=1 with the observed test statistic outside the toy distribution range. I’m trying to figure out why this is happening. The Combine commands are as follows, and the datacards and root files can be found here 1.
+text2workspace.py d17_boosted_rP_MCStat.txt --channel-masks -o d17_boosted_rP_MCStat_SRmask.root
+
+combine -M GoodnessOfFit -d d17_boosted_rP_MCStat_SRmask.root --algo saturated -n result_BCat2017_SRmask --setParameters mask_d2017_Bcat_SR_METbin1=1,mask_d2017_Bcat_SR_METbin2=1,mask_d2017_Bcat_SR_METbin3=1
+
+combineTool.py -M GoodnessOfFit -d d17_boosted_rP_MCStat_SRmask.root --algo saturated -n _result_BCat2017_SRmask_500Toys -t 500 --toysFrequentist -s 45239816 --setParameters mask_d2017_Bcat_SR_METbin1=1,mask_d2017_Bcat_SR_METbin2=1,mask_d2017_Bcat_SR_METbin3=1 --parallel 20
+
+combineTool.py -M CollectGoodnessOfFit --input higgsCombine_result_BCat2017_SRmask.GoodnessOfFit.mH120.root higgsCombine_result_BCat2017_SRmask_500Toys.GoodnessOfFit.mH120.45239816.root -o gof_result_BCat_2017_SRmask.json
+
+plotGof.py gof_result_BCat_2017_SRmask.json --statistic saturated -o gof_result_BCat_2017_SRmask --title-right="Boosted 2017"
+
+Any ideas on what might be causing this issue? I would appreciate any help on investigating this.
+Best,
+Shivani
+gof_result_SRmask_Boosted_2017_2000Toys596×572 6.94 KB
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-02-10T19:32:07.099Z):
+Hi Shivani,
+maybe others may correct me, but I believe that the goodness of fit test statistics is computed regardless of the channel masking. I don’t know if this is wanted or not.
+If it is not, run w/o channel masking[*].
+-Andrea
+[*] you can remove channels from a combine datacard with combineCards
+combineCards.py -xc d2017_Bcat_SR_METbin1 [-xc ...] [...]
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2025-02-10T20:54:05.138Z):
+Hi Shivani and Andrea,
+I believe that channel masks are defined for the saturated model as well, as you can see here.  The only difference is that one has to use --setParametersForEval and --setParametersFits options instead.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 4 (by slomte @ 2025-02-10T21:51:21.603Z):
+Hi Andrea and Aliya,
+Thank you for your prompt responses. I will give these a try.
+Another question, currently I have the data_obs histogram in the signal regions set as the sum of MC backgrounds to prevent accidental unblinding. Is this okay, or is it recommended to provide the real data and use the -t -1 feature for Asimov?
+Best,
+Shivani
+----------------------------------------
+
+REPLY 5 (by ineuteli @ 2025-02-11T08:33:28.211Z):
+Hi @slomte,
+
+Aliya Nigamova:
+
+I believe that channel masks are defined for the saturated model as well, as you can see here. The only difference is that one has to use --setParametersForEval and --setParametersFits options instead.
+
+Note that the options for masking with the saturated model are documented in the manual here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#masking-analysis-regions-in-the-saturated-model
+
+Shivani Sanjay Lomte:
+
+Another question, currently I have the data_obs histogram in the signal regions set as the sum of MC backgrounds to prevent accidental unblinding. Is this okay, or is it recommended to provide the real data and use the -t -1 feature for Asimov?
+
+Probably the masking failed, and you were still picking up the data in the SR in the GoF test, so you get p-value = 1 because you were fitting your B-only model (= sum MC background) to “real observed data” that is actually the Asimov dataset (= sum of MC backgrounds).
+Are the data_obs in the CRs of your datacard then actual, real observed data? Someone can correct me if I am wrong, but if all your “observed data” were Asimov dataset, the “observed” test statistic value (blue arrow) would be exactly zero, because the model would fit the “observed” data perfectly. In your case it’s a mix of real and Asimov data because the masking of the SR fails, so the observed test statistic value is not exactly zero, but still below (=better fit than) the toys thanks to the Asimov data in the SR.
+
+Shivani Sanjay Lomte:
+
+Is this okay, or is it recommended to provide the real data and use the -t -1 feature for Asimov?
+
+If you carefully read the manual (here and related FAQ sections) to know what options to use with the different Combine methods, then yes.
+For GoF tests, you still need real data. In your case of a GoF test on the CR-only, you simply need to mask the SR channels correctly. If you do not trust yourself or the masking options, I would simply create a version of the “CR-only” datacards, where you have removed the SR channels/bins.
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 6 (by slomte @ 2025-02-11T11:44:55.604Z):
+Dear All,
+Thank you all immensely for your prompt responses and detailed suggestions! The problem is now resolved.
+The observed test statistic is falling within the toy distribution.
+Upon using real data for data_obs histograms in SR, and using the following options in the GOF command worked just fine.
+--algo=saturated --setParameters mask_ch1=1 --setParametersForFit mask_ch1=1 --setParametersForEval mask_ch1=0
+I really appreciate the help, thanks!
+Cheers,
+Shivani
+----------------------------------------

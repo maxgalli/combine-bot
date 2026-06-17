@@ -1,0 +1,23 @@
+{
+  "topic_id": 38228,
+  "title": "Bad numerical expression : \"mu_sr1_2017\"",
+  "url": "https://cms-talk.web.cern.ch/t/38228",
+  "category_id": 279,
+  "created_at": "2024-04-02T11:14:35.835Z",
+  "last_posted_at": "2024-04-02T11:14:35.984Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-02T11:14:35.984Z",
+      "updated_at": "2024-04-02T11:14:35.984Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have three independent signal strengths and scan width of my resonance with\ncombine -M MultiDimFit combined.txt -P width --setParameterRanges mu_sr1_2017=0.0,120.0:mu_sr2_2017=0.0,120.0:mu_sr3_2017=0.0,120.0:width=0.0,15.0 --algo grid --points 150 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4 --freezeParameters mean\nwhen I want  to check correlations between mu_sr1_2017 and width with\nroot [0] TFile *f = new TFile(\u201chiggsCombineTest.MultiDimFit.mH120.root\u201d)\n(TFile *) 0x3a6cfe0\nroot [1] limit->Draw(\u201cmu_sr1_2017:width\u201d)\nit tells me\nroot [1] limit->Draw(\u201cmu_sr1_2017:width\u201d)\nError in TTreeFormula::Compile:  Bad numerical expression : \u201cmu_sr1_2017\u201d\nInfo in TSelectorDraw::AbortProcess: Variable compilation failed: {mu_sr1_2017:width,}\nwhat is a problem ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I have three independent signal strengths and scan width of my resonance with</p>\n<p>combine -M MultiDimFit combined.txt -P width --setParameterRanges mu_sr1_2017=0.0,120.0:mu_sr2_2017=0.0,120.0:mu_sr3_2017=0.0,120.0:width=0.0,15.0 --algo grid --points 150 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4 --freezeParameters mean</p>\n<p>when I want  to check correlations between mu_sr1_2017 and width with</p>\n<p>root [0] TFile *f = new TFile(\u201chiggsCombineTest.MultiDimFit.mH120.root\u201d)<br>\n(TFile *) 0x3a6cfe0<br>\nroot [1] limit-&gt;Draw(\u201cmu_sr1_2017:width\u201d)</p>\n<p>it tells me</p>\n<p>root [1] limit-&gt;Draw(\u201cmu_sr1_2017:width\u201d)<br>\nError in <a>TTreeFormula::Compile</a>:  Bad numerical expression : \u201cmu_sr1_2017\u201d<br>\nInfo in <a>TSelectorDraw::AbortProcess</a>: Variable compilation failed: {mu_sr1_2017:width,}</p>\n<p>what is a problem ?</p>\n<p>Thanks, Sasha.</p>"
+    }
+  ]
+}

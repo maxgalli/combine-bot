@@ -1,0 +1,67 @@
+TOPIC: Condor does not work on SL9 with combine environment
+URL: https://cms-talk.web.cern.ch/t/40999
+DATE: 2024-05-10T12:11:06.204Z
+SOLVED: no
+============================================================
+
+QUESTION (by rasharma @ 2024-05-10T12:11:06.612Z):
+Dear experts,
+I set up the combine based on official instructions [1], and it’s working fine. I can reproduce the results.
+However, after setting up the combine environment using
+source env_standalone.sh
+
+condor does not work:
+$ condor_q
+condor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by condor_q)
+condor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib64/libcondor_utils_23_0_2.so)
+condor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib64/libclassad.so.23.0.2)
+
+before sourcing the combine environment I don’t see any error by running the command condor_q.
+Is there any instruction, on how we can use the condor on the EL9 machine?
+with regards,
+Ram
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#compilation-on-lxplus9
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-05-13T10:32:10.198Z):
+Hi Ram,
+To submit the Combine jobs to HTCondor you need the combineTool.py which works only with CMSSW.
+Once you setup the Combine as described in [1] and compile it with slc7 environment (by running the cmssw-el7 beforehand) the condor submission files should pick up the environment settings correctly.
+We are lucky to have some slc7 machines to run the condor jobs, so it should work fine. You can also to set the OS settings manually, as described here.
+It is true that you probably can’t run the condor commands from the container, so you have to exit it before running condor_submit <submission_file_name>.sub.
+We are working on a combine release compatible with the el9 architecture, so you won’t have to use the slc7 containers in the future.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by rasharma @ 2024-05-15T15:14:11.115Z):
+Dear @anigamov ,
+Thank you for your response.
+If I understand it correctly, the issue is with the environments set by the combine. I can run condor_q before sourcing the env_standalone.sh and it works, but it does not work after sourcing the env_standalone.sh.
+When I run condor_q, I am not inside the sl7 container. I make sure that I am out of it. I also tested this by logging out and logging back into lxplus9. And now, as the combine is already set up, I don’t need the sl7 container. So, I just sourced the environment and it breaks condor_q.
+with regards,
+Ram
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-05-17T11:10:20.875Z):
+Dear Ram,
+Apologies, probably it was not so clear from my post above, but the proposal is to go with the CMSSW setup (see instructions here) while we do not have an el9 compatible Combine version realized and the standalone script is not up to date with the el9 architecture.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by kcormier @ 2024-06-12T12:20:19.137Z):
+Dear Ram,
+In case you didn’t see it the release of combine v10 which should run directly on the el9 machines was just anounced: The latest recommended Combine and CombineHarvester versions - #6 by anigamov
+Best,
+Kyle
+----------------------------------------
+
+REPLY 6 (by rasharma @ 2024-06-19T09:32:38.652Z):
+Dear Kyle,
+Thank you for the information. I noted that email.
+Just for the completeness I would like to add one more information. CAT group release the settings for EL7, using which one can use the EL7 container and condor jobs within it. In case someone have to use EL7  (like me  ) then they can use this:
+https://gitlab.cern.ch/cms-cat/cmssw-lxplus
+with regards,
+Ram
+----------------------------------------

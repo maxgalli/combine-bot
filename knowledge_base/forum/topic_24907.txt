@@ -1,0 +1,40 @@
+TOPIC: Toy generation options
+URL: https://cms-talk.web.cern.ch/t/24907
+DATE: 2023-06-01T11:42:07.087Z
+SOLVED: no
+============================================================
+
+QUESTION (by mrogulji @ 2023-06-01T11:42:07.454Z):
+Dear Combine experts,
+For the purpose of generating toys does the  --toysFrequentist option
+
+randomly evaluate nuisance parameters using the postfit central values and uncertainties?
+
+or
+
+set the nuisance parameters to their postfit central values
+
+I tried reading the section on toy generation options, but it was not clear to me.
+Thanks,
+Matej
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-06-01T12:10:05.529Z):
+Dear Matej,
+With  the --toysFrequentist option combine randomises the NPs around the post-fit values within the post-fit uncertainties, so the case 1. as you described it.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by adewit @ 2023-06-01T13:02:24.954Z):
+Dear Matej, Aliya,
+One specification: it’s true that when running with --toysFrequentist the nuisance parameters are not ignored, but it’s not the nuisance parameters themselves that are randomized. They are set to the post-fit values, and the ‘global observables’ (= the gaussian constraints) are randomized. While we generate starting from the post-fit nuisance parameter values, the width of the gaussian is unchanged (ie the pre-fit constraints are used, not the post-fit)
+Best,
+Adinda
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2023-06-01T13:43:19.102Z):
+Ah, yes, sorry for confusion and thanks for important clarifications.
+Best,
+Aliya
+----------------------------------------

@@ -1,0 +1,39 @@
+TOPIC: How to freeze constrained nuisances and PDF indices simultaneously?
+URL: https://cms-talk.web.cern.ch/t/18642
+DATE: 2022-12-14T11:00:07.659Z
+SOLVED: no
+============================================================
+
+QUESTION (by fiemmi @ 2022-12-14T11:00:08.038Z):
+Dear experts,
+in the context of a H(γγ) analysis, I would like to achieve the following:
+
+Freeze all the constrained nuisance parameters, and
+Freeze the PDF indices to some given values
+
+To do so, I first set my indices to some given values:
+--setParameters pdfindex_UntaggedTag_0_2017_13TeV=3,pdfindex_UntaggedTag_1_2017_13TeV=4,pdfindex_UntaggedTag_2_2017_13TeV=1,pdfindex_UntaggedTag_3_2017_13TeV=1
+
+and then I try to freeze both the constrained nuisances and the indices by doing:
+--freezeParameters allConstrainedNuisances,pdfindex_UntaggedTag_0_2017_13TeV,pdfindex_UntaggedTag_1_2017_13TeV,pdfindex_UntaggedTag_2_2017_13TeV,pdfindex_UntaggedTag_3_2017_13TeV
+
+The point is that by doing this, the constrained nuisances are actually not frozen. Interestingly, the freezing works “alone”, namely if I only do --freezeParameters allConstrainedNuisances.
+Am I doing something wrong? What’s the way to go to have both the constrained nuisances and the PDF indices frozen?
+Thanks a lot for your time, my best regards,
+Fabio.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-12-14T11:17:23.563Z):
+IIRC,
+rgx{.*},pdfindex_...
+should achieve what you are trying to do.
+The regexp matching is checked on the list of nuisance parameters.
+-Andrea
+----------------------------------------
+
+REPLY 3 (by fiemmi @ 2022-12-15T14:17:39.341Z):
+Hi Andrea,
+indeed it works. Thanks a lot,
+best,
+F.
+----------------------------------------

@@ -1,0 +1,45 @@
+{
+  "topic_id": 34649,
+  "title": "Compilation error in CombineHarvester",
+  "url": "https://cms-talk.web.cern.ch/t/34649",
+  "category_id": 279,
+  "created_at": "2024-02-13T16:53:36.565Z",
+  "last_posted_at": "2024-02-23T12:39:37.446Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "kmandal",
+      "name": "Koushik Mandal",
+      "created_at": "2024-02-13T16:53:36.723Z",
+      "updated_at": "2024-02-13T16:53:36.723Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am getting errors in compiling the combine tool.\nI am using  CMSSW_10_2_13 (its for RUN 2 analysis) and slc7.\nI executed the following standard commands:\nexport SCRAM_ARCH=slc7_amd64_gcc700\ncmsrel CMSSW_10_2_13\ncd CMSSW_10_2_13/src\ncmsenv\ngit clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit\ncd HiggsAnalysis/CombinedLimit\ncd $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit\ngit fetch origin\ngit checkout v8.1.0\ncd $CMSSW_BASE/src\nscramv1 b clean\nscramv1 b\nthe compilation was successful.\ngit clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester\ngit checkout v2.0.0\nthis showed me the following message:\nfatal: not a git repository (or any parent up to mount point /)\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).\nscram b\ngave the following error:\n~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc: In member function \u2018void ch::CombineHarvester::WriteDatacard(const string&, TFile&)\u2019:\n~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc:1238:53: error: cannot bind non-const lvalue reference of type \u2018const char*&\u2019 to an rvalue of type \u2018const Text_t* {aka const char*}\u2019\nboost::split(tokens, y->getStringAttribute(\u201cwspSource\u201d), boost::is_any_of(\u201c:\u201d));\n~~~~~^\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/boost/1.63.0-gnimlf/include/boost/algorithm/string.hpp:23:0,\nfrom ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/interface/Utilities.h:9,\nfrom ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/interface/CombineHarvester.h:21,\nfrom ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc:1:\n/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/boost/1.63.0-gnimlf/include/boost/algorithm/string/split.hpp:140:35: note:   initializing argument 2 of \u2018SequenceSequenceT& boost::algorithm::split(SequenceSequenceT&, RangeT&, PredicateT, boost::algorithm::token_compress_mode_type) [with SequenceSequenceT = std::vector<std::__cxx11::basic_string >; RangeT = const char*; PredicateT = boost::algorithm::detail::is_any_ofF]\u2019\ninline SequenceSequenceT& split(\n^\ngmake: *** [config/SCRAM/GMake/Makefile.rules:1673: tmp/slc7_amd64_gcc700/src/CombineHarvester/CombineTools/src/CombineHarvesterCombineTools/CombineHarvester_Datacards.cc.o] Error 1\ngmake: *** [There are compilation/build errors. Please see the detail log above.] Error 2\n~: my working directory\nSo I guess the error is coming from the CombineHarvester.\nCould you please help me to resolve the compilation issue?\nThanks in advance.",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am getting errors in compiling the combine tool.<br>\nI am using  CMSSW_10_2_13 (its for RUN 2 analysis) and slc7.<br>\nI executed the following standard commands:</p>\n<p>export SCRAM_ARCH=slc7_amd64_gcc700<br>\ncmsrel CMSSW_10_2_13<br>\ncd CMSSW_10_2_13/src<br>\ncmsenv<br>\ngit clone <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git</a> HiggsAnalysis/CombinedLimit<br>\ncd HiggsAnalysis/CombinedLimit</p>\n<p>cd $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit<br>\ngit fetch origin<br>\ngit checkout v8.1.0</p>\n<p>cd $CMSSW_BASE/src<br>\nscramv1 b clean<br>\nscramv1 b</p>\n<p>the compilation was successful.</p>\n<p>git clone <a href=\"https://github.com/cms-analysis/CombineHarvester.git\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/CombineHarvester.git</a> CombineHarvester<br>\ngit checkout v2.0.0</p>\n<p>this showed me the following message:<br>\nfatal: not a git repository (or any parent up to mount point /)<br>\nStopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).</p>\n<p>scram b</p>\n<p>gave the following error:</p>\n<p>~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc: In member function \u2018void ch::CombineHarvester::WriteDatacard(const string&amp;, TFile&amp;)\u2019:<br>\n~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc:1238:53: error: cannot bind non-const lvalue reference of type \u2018const char*&amp;\u2019 to an rvalue of type \u2018const Text_t* {aka const char*}\u2019<br>\nboost::split(tokens, y-&gt;getStringAttribute(\u201cwspSource\u201d), boost::is_any_of(\u201c:\u201d));<br>\n~~~~~<s><s><s><s><s><s><s><s>^</s></s></s></s></s></s><br>\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/boost/1.63.0-gnimlf/include/boost/algorithm/string.hpp:23:0,<br>\nfrom ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/interface/Utilities.h:9,<br>\nfrom ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/interface/CombineHarvester.h:21,<br>\nfrom ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc:1:<br>\n/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/boost/1.63.0-gnimlf/include/boost/algorithm/string/split.hpp:140:35: note:   initializing argument 2 of \u2018SequenceSequenceT&amp; boost::algorithm::split(SequenceSequenceT&amp;, RangeT&amp;, PredicateT, boost::algorithm::token_compress_mode_type) [with SequenceSequenceT = std::vector&lt;std::__cxx11::basic_string &gt;; RangeT = const char*; PredicateT = boost::algorithm::detail::is_any_ofF]\u2019<br>\ninline SequenceSequenceT&amp; split(<br>\n^</s></s><br>\ngmake: *** [config/SCRAM/GMake/Makefile.rules:1673: tmp/slc7_amd64_gcc700/src/CombineHarvester/CombineTools/src/CombineHarvesterCombineTools/CombineHarvester_Datacards.cc.o] Error 1<br>\ngmake: *** [There are compilation/build errors. Please see the detail log above.] Error 2</p>\n<p>~: my working directory</p>\n<p>So I guess the error is coming from the CombineHarvester.<br>\nCould you please help me to resolve the compilation issue?<br>\nThanks in advance.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-02-19T10:14:24.410Z",
+      "updated_at": "2024-02-19T10:14:24.410Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Koushik,\nSorry for the slow reply. Just to check, you should be using the (no longer supported) 102x branch for CombineHarvester if you really need to use CMSSW 10_2_X series. It looks like from the above that you are using the v2.0.0 tag, which is not compatible.\nThat said, we strongly recommend to use CMSSW 11_3_X and the up-to-date release.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Koushik,</p>\n<p>Sorry for the slow reply. Just to check, you should be using the (no longer supported) <code>102x</code> branch for CombineHarvester if you really need to use CMSSW 10_2_X series. It looks like from the above that you are using the <code>v2.0.0</code> tag, which is not compatible.</p>\n<p>That said, we strongly recommend to use CMSSW 11_3_X and the up-to-date release.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "kmandal",
+      "name": "Koushik Mandal",
+      "created_at": "2024-02-23T12:39:37.446Z",
+      "updated_at": "2024-02-23T12:39:37.446Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThanks so much for your reply and suggestion.\nYes, I moved to CMSSW 11_3_X and everything is working fine now.\nThanks again,\nKoushik",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Thanks so much for your reply and suggestion.<br>\nYes, I moved to CMSSW 11_3_X and everything is working fine now.</p>\n<p>Thanks again,<br>\nKoushik</p>"
+    }
+  ]
+}

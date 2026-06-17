@@ -1,0 +1,21 @@
+TOPIC: RooFit sideband fit involving FFT evaluated PDF
+URL: https://cms-talk.web.cern.ch/t/41391
+DATE: 2024-05-21T10:51:36.227Z
+SOLVED: no
+============================================================
+
+QUESTION (by fanx @ 2024-05-21T10:51:36.398Z):
+Dear experts,
+We have noticed that RooFit cannot correctly perform a sideband fit with any PDF involving FFT in its evaluation. Although the minimization seems to succeed, the result from the fitting is far off from the shape that the PDF is fitted over.
+We believe this is due to how the sideband fit is conducted in RooFit. The test statistics is defined as the addition of those from the left and right ranges. Over the two ranges, PDF is evaluated assuming different periods for the FFT (not using the full range as the period).
+Is there any fix to this issue? Or any way around it? At least, this is still a problem in ROOT 6.24.
+Cheers
+Xingchen
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-05-21T15:07:08.996Z):
+Dear Xingchen,
+Could you provide a Minimal Working Example of the issue you’re seeing?
+Best,
+Kyle
+----------------------------------------

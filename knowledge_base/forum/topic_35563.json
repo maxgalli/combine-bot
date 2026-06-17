@@ -1,0 +1,56 @@
+{
+  "topic_id": 35563,
+  "title": "Inconsistent signal strength between plot and json with plotImpact",
+  "url": "https://cms-talk.web.cern.ch/t/35563",
+  "category_id": 279,
+  "created_at": "2024-02-23T08:14:22.118Z",
+  "last_posted_at": "2024-02-23T09:53:51.588Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "milee",
+      "name": "Ming-Yan Lee",
+      "created_at": "2024-02-23T08:14:22.262Z",
+      "updated_at": "2024-02-23T09:52:21.770Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI notice the rounded function in the plotImpacts.py [1] script has some weird behavior if the analysis has larger uncertainties for the nominal value. I am checking the impact plots with Asimov dataset with signal strength equal to one.\nI checked the input json file where the fit POI has the fitted POI\n\"POIs\": [\n{\n\"fit\": [\n-136.34979248046875,\n1.0,\n143.6743927001953\n],\n\"name\": \"r\"\n}\n],\n\nHowever when I run the plotImpact.py script, I see the number changes to 0+/- 140.\nimage1292\u00d796 5.54 KB\nWhen I look into the combine script, I notice the nominal value changes due to the rounded option in combine. I am wondering whether this is expected and whether we should quote the rounded number or not in this case.\n[1]https://github.com/cms-analysis/CombineHarvester/blob/main/CombineTools/scripts/plotImpacts.py#L28-L30\nThank you and best regards,\nMing-Yan",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I notice the rounded function in the plotImpacts.py [1] script has some weird behavior if the analysis has larger uncertainties for the nominal value. I am checking the impact plots with Asimov dataset with signal strength equal to one.</p>\n<p>I checked the input json file where the fit POI has the fitted POI</p>\n<pre><code class=\"lang-auto\">\"POIs\": [\n    {\n      \"fit\": [\n        -136.34979248046875,\n        1.0,\n        143.6743927001953\n      ],\n      \"name\": \"r\"\n    }\n  ],\n</code></pre>\n<p>However when I run the plotImpact.py script, I see the number changes to 0+/- 140.<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/719db8332f228942bd7215f2d74291471f51c7b7.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/719db8332f228942bd7215f2d74291471f51c7b7\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/7/719db8332f228942bd7215f2d74291471f51c7b7_2_689x51.png\" alt=\"image\" data-base62-sha1=\"gd5RJAhkZm0vFPqm82ORwrveh3p\" width=\"689\" height=\"51\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/7/719db8332f228942bd7215f2d74291471f51c7b7_2_689x51.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/7/719db8332f228942bd7215f2d74291471f51c7b7_2_1033x76.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/7/719db8332f228942bd7215f2d74291471f51c7b7.png 2x\" data-dominant-color=\"EDEDED\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1292\u00d796 5.54 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>When I look into the combine script, I notice the nominal value changes due to the rounded option in combine. I am wondering whether this is expected and whether we should quote the rounded number or not in this case.</p>\n<p>[1]<a href=\"https://github.com/cms-analysis/CombineHarvester/blob/main/CombineTools/scripts/plotImpacts.py#L28-L30\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/CombineHarvester/blob/main/CombineTools/scripts/plotImpacts.py#L28-L30</a></p>\n<p>Thank you and best regards,<br>\nMing-Yan</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-02-23T09:00:09.637Z",
+      "updated_at": "2024-02-23T09:00:09.637Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Ming-Yan,\nI agree it\u2019s not ideal. In principle these are the PDG rounding rules, but it doesn\u2019t make sense to me in this case. I guess you can just disable it temporarily in the code. Can you make an issue in github to report this? (so we don\u2019t forgot to look at it)\nthanks,\nAndrew",
+      "cooked_html": "<p>Hi Ming-Yan,</p>\n<p>I agree it\u2019s not ideal. In principle these are the PDG rounding rules, but it doesn\u2019t make sense to me in this case. I guess you can just disable it temporarily in the code. Can you make an issue in github to report this? (so we don\u2019t forgot to look at it)</p>\n<p>thanks,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "milee",
+      "name": "Ming-Yan Lee",
+      "created_at": "2024-02-23T09:46:19.058Z",
+      "updated_at": "2024-02-23T09:46:19.058Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThank you for the quick response! I am currently disable the rounding in the nominal value temporary and make a issue.\nBest regards,\nMing-Yan",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Thank you for the quick response! I am currently disable the rounding in the nominal value temporary and make a issue.</p>\n<p>Best regards,<br>\nMing-Yan</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-02-23T09:53:51.588Z",
+      "updated_at": "2024-02-23T09:53:51.588Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "FYI: moved the thread to Common Analysis Tools/Statistical Interpretation Tools channel.",
+      "cooked_html": "<p>FYI: moved the thread to <a href=\"/c/physics/cat/274\">Common Analysis Tools</a>/<a href=\"/c/physics/cat/cat-stats/279\">Statistical Interpretation Tools</a> channel.</p>"
+    }
+  ]
+}

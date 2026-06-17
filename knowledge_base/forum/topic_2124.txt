@@ -1,0 +1,88 @@
+TOPIC: Re: combineTool ImpactsFromScans
+URL: https://cms-talk.web.cern.ch/t/2124
+DATE: 2021-07-20T11:35:49.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by threiten @ 2021-07-20T11:35:49.000Z):
+Hi Andrew,
+I made some small changes that allow running the impacts without
+running the initial fit for the POIs, which can save a lot of time in
+case the crossing points for the POIs are already known from running
+scans for example [1,2]. For adding the crossing points of the POIs to
+the output json file, another script is needed that is not included in
+this commit, since it relies on scipy functionality only available in
+python3.
+In any case, these changes would allow people with complicated
+likelihoods to extract the crossing points of their POIs with a custom
+method and use the impact algorithm from combine harvester only for
+running the fits for the impacts, which can save a lot of time.
+Please let me know, if I should make a PR with this.
+Best,
+Thomas
+[1]
+
+github.com
+
+GitHub - threiten/CombineHarvester at dev_skipInitialFitImpacts
+
+dev_skipInitialFitImpacts
+
+CMSSW package for the creation, editing and analysis of combine datacards and workspaces
+
+[2]
+
+github.com/threiten/CombineHarvester
+
+Added option to skip reading initial fit results
+
+committed 10:49AM - 22 Jun 21 UTC
+
+threiten
+
++29
+-24
+
+Hi Thomas,
+Ah, unfortunately this method is something left in there from some
+testing we did in the last combination. It doesn't do what the name
+implies, instead it will only try to calculate the impacts between a
+set of POIs, not the nuisance parameters (and even then, I think it's
+not working 100% correctly for the POIs).
+Happy to help if you want to try and debug the standard impact
+workflow though.
+cheers,
+Andrew
+>
+>
+> *** Discussion title: Higgs Combination
+>
+> Dear combine experts,
+>
+> I have noticed that combineTool includes the method
+> ImpactsFromScans.
+> This would be useful for us since we get our intervals from scans
+> with
+> MultiDimFit in all POIS anyway and the initial fit in the usual
+> Impacts
+> method does not always find the confidence interval for all POIs
+> and
+> then some nuisance parameter impacts are meaningless.
+>
+> I tried to use the ImpactsFromScans method but the output from our
+> scans is not available in the json format expeced by combineTool.
+> How
+> can I generate this json ? And what else do I need to use
+> ImpactsFromScans instead of Impacts ?
+>
+> Thanks for any help.
+>
+> Best,
+> Thomas
+>
+> -------------------------------------------------------------
+> Visit this CMS message (to reply or unsubscribe) at:
+>
+
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1647.html
+----------------------------------------

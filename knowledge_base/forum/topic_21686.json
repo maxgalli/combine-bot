@@ -1,0 +1,45 @@
+{
+  "topic_id": 21686,
+  "title": "MC stat. unc. and RooParametricHisto",
+  "url": "https://cms-talk.web.cern.ch/t/21686",
+  "category_id": 279,
+  "created_at": "2023-03-21T16:50:51.160Z",
+  "last_posted_at": "2023-03-23T13:55:09.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jlidrych",
+      "name": "Jindrich Lidrych",
+      "created_at": "2023-03-21T16:50:51.338Z",
+      "updated_at": "2023-03-21T16:50:51.338Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI have a question related to MC statistical uncertainties and RooDataHist/RooParametricHisto. Is there any general recommendation on how to include MC stat unc. in the fit setup that uses the RooDataHists and RooParametricHisto (e.g. analysis with the data driven estimation of the background)?\nautoMCStats works only for the input in the TH1 format.\nThank you for your suggestions.\nBest regards,\nJindrich",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I have a question related to MC statistical uncertainties and RooDataHist/RooParametricHisto. Is there any general recommendation on how to include MC stat unc. in the fit setup that uses the RooDataHists and RooParametricHisto (e.g. analysis with the data driven estimation of the background)?<br>\nautoMCStats works only for the input in the TH1 format.</p>\n<p>Thank you for your suggestions.</p>\n<p>Best regards,<br>\nJindrich</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-03-23T13:40:02.334Z",
+      "updated_at": "2023-03-23T13:40:02.334Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jindrich,\nAFAIK, what can be done in this case is to add a shape systematics incorporating statistical uncertainty in each bin for each process. Possibly someone else has a better suggestion.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Jindrich,</p>\n<p>AFAIK, what can be done in this case is to add a shape systematics incorporating statistical uncertainty in each bin for each process. Possibly someone else has a better suggestion.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2023-03-23T13:55:09.000Z",
+      "updated_at": "2023-03-23T13:59:35.817Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Indeed, this is the way to do it since the autoMCStats works only on TH1 style histograms right now. You can create the usual up/down shape for each bin and provide them as systematic shapes (RooDataHists) to account for the MC uncertainties.\nNick\n\nOn 23 Mar 2023, at 13:42, Aliya Nigamova via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nAliya Nigamova anigamovMarch 23\n\nDear Jindrich,\nAFAIK, what can be done in this case is to add a shape systematics incorporating statistical uncertainty in each bin for each process. Possibly someone else has a better suggestion.\nBest,\nAliya\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Indeed, this is the way to do it since the autoMCStats works only on TH1 style histograms right now. You can create the usual up/down shape for each bin and provide them as systematic shapes (RooDataHists) to account for the MC uncertainties.<br>\nNick</p>\n<blockquote>\n<p>On 23 Mar 2023, at 13:42, Aliya Nigamova via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/b77776/45.png\" title=\"anigamov\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anigamov\">Aliya Nigamova</a> anigamov<br>March 23</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Jindrich,</p>\n<p>AFAIK, what can be done in this case is to add a shape systematics incorporating statistical uncertainty in each bin for each process. Possibly someone else has a better suggestion.</p>\n<p>Best,<br>\nAliya</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/mc-stat-unc-and-rooparametrichisto/21686/2\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/f9bde5722fab817c4dd20ccf64dc48e2c112941ba6cbcbdd5e379c1d964ff4a7\">click here</a>.</p>\n</blockquote>"
+    }
+  ]
+}

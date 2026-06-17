@@ -1,0 +1,135 @@
+TOPIC: Combine fitting not working with RooMultiPdf, leading to bad Signal Significance
+URL: https://cms-talk.web.cern.ch/t/44238
+DATE: 2024-07-24T14:28:39.002Z
+SOLVED: no
+============================================================
+
+QUESTION (by hyeonseo @ 2024-07-24T14:28:39.218Z):
+Dear combine experts. I am having trouble getting “Core-PDF” method (same as the method in Higgs → GammaGamma analysis) to work with combine in terms of extracting Signal Significance. I have isolated the issue to combine’s pre/post-fit failing, but I am stuck on that point.
+Allow me to briefly go through what I do. First, I setup my background data, separately fit the three background function candidates (using Roofit), and then I group them into a RooMultiPdf instance before exporting them to a RooWorkSpace. Then I basically let combine to take over with the datacard defined below:
+imax 1
+jmax 1
+kmax *
+---------------
+shapes data_obs   dimuon_mass workspace.root workspace:data
+shapes signal     dimuon_mass workspace.root workspace:signal
+shapes background dimuon_mass workspace.root workspace:roomultipdf
+---------------
+# take event count from dataset (use -1)
+bin           dimuon_mass
+observation  -1
+---------------
+# 10 expected events from H->gg in the signal (just a simple gaussian)
+# background normalisation freely floating, taken from _norm, so leave rate as 1
+
+# process indices have to be negative or zero for signal, positive for background
+bin      dimuon_mass dimuon_mass
+process  signal background
+process  -1      1
+rate     1     1
+
+---------------
+# usual systematics .... note, we advertise the pdf changing parameter as a discrete nuisance
+lumi_13TeV_  lnN       1.011          -
+
+------------
+
+pdf_index discrete
+
+I have attached the workspace.root file for reference. Then I apply this command:
+combine -M Significance -d combine_test_datacard_long.txt -m 125 -n _signif_cat0_ggh --cminDefaultMinimizerStrategy 1 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --setParameters pdf_index=0 --cminRunAllDiscreteCombinations --setParameterRanges r=-10,10 --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH --verbose 3  &> output_fail.log
+This results in my significance returning zero and p-value to be 0.5. Reading through output_fail.log (see attached) carefully indicated that the Minimization finishes with status=-1.
+However when I freeze my discrete nuisance parameter pdf_index=0, the fit works fine and gives some p-value and significance, like this:
+combine -M Significance -d combine_test_datacard_long.txt -m 125 -n _signif_cat0_ggh --cminDefaultMinimizerStrategy 1 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --setParameters pdf_index=0 --setParameterRanges r=-10,10 --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH --verbose 3 &> output_pdfIndexFrozen.log
+This command results in ( please seeoutput_pdfIndexFrozen.log for full log):
+-- Significance --
+Significance: 1.27579
+(p-value = 0.101016)
+Done in 0.00 min (cpu), 0.00 min (real)
+44 log messages saved to combine_logger.out
+
+What am I doing wrong? Thank you in advance!
+Attached files:
+output_pdfIndexFrozen.log (18.4 KB)
+output_fail.log (32.9 KB)
+workspace.root (21.9 KB)
+combine_test_datacard_long.txt (880 Bytes)
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-07-24T15:47:23.762Z):
+Dear Hyeon-Seo Yun,
+The fit with the floating pdf index fails because you set --cminDefaultMinimizerStrategy=1 , which triggers Hessian calls, and it just does not work with discrete parameters. That is why it is recommended to use --cminDefaultMinimizerStrategy=0 for models with discrete profiling as described here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by hyeonseo @ 2024-07-24T19:59:15.737Z):
+Dear @anigamov ,
+Thank you for the quick response. Unfortunately, changing to --cminDefaultMinimizerStrategy=0  doesn’t solve the issue. I have tried instead to not use Asimov datasets and generate 10 toys (-t 10) and the output.log has a more varied values of significance values (full output log here:
+output_fail_v2.log (43.1 KB)
+)
+What I did notice from the log was that pdf_index was always set to 2, and didn’t vary between 0,1, and 2, which I find strange. Also, adding --cminRunAllDiscreteCombinations  flag doesn’t solve the issue sadly.
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-07-25T13:40:38.586Z):
+Hi @hyeonseo,
+I think the fit does not fail anymore once you set  --cminDefaultMinimizerStrategy=0.
+But the significance is not the same as the one obtained the frozen pdf index, and it does not have to be.
+To understand what is going on I think you should compare the likelihood scans obtained with the floating pdf index with those where you set the pdf index to individual values contributing to the total RooMultiPdf, as shown here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by hyeonseo @ 2024-07-27T19:12:03.303Z):
+Dear @anigamov ,
+Thank you for the quick reply. I did take a look again at the RooMultiPdf tutorial again, and after revisions, I realized that my expected events of my Signal Model was taken from an unweighted histogram, leading to absurdly high expected yields from my signal model. Once that was fixed and I reran the pre-fit and then the liklihood scan, I observed more reasonable results (pasted below)
+image691×536 59.6 KB
+This is great to see, but now I have a different issue  . The results above was from a fit from a single sub-category. The full analysis I am on requires that I fit this RooMultiPdf over five different categories simultaneously. This portion I executed with no issues, but now my new likelihood scans look very different (pasted below)
+image690×535 59.5 KB
+What I find strange here is that the Envelope run has overall lower delta NLL than any of the three core-functions used in the Envelope method. Moreover, there’s zero difference among the frozen core function runs. According to the aforementioned RooMultiPdf tutorial, the Envelope method should take the minimum delta NLL value of the three core-function runs, which is not what is happening.  What kind of a debugging method would you recommend that I employ to debug this issue? Thank you in advance!
+----------------------------------------
+
+REPLY 6 (by hyeonseo @ 2024-07-27T20:33:48.474Z):
+UPDATE:
+I found a bug where I wasn’t properly defining pdf_index variable to freeze in the combine command, and now the results look more reasonable, with each different frozen core-function run giving a different likelihood scan. However, the Envelope delta NLL is still lower than any of the core-function only runs :
+----------------------------------------
+
+REPLY 7 (by amarini @ 2024-07-27T21:03:29.506Z):
+Hi,
+that may have something to do with the RooMultiPdf penalization. Can you remind us what you set as penalization scheme, and how many degrees of freedom you are using?
+A note on a side, IIRC, in the run2 core pdf hmm, that was also set to 0.
+-Andrea
+----------------------------------------
+
+REPLY 8 (by hyeonseo @ 2024-07-27T23:40:15.966Z):
+Dear @amarini ,
+Thanks for the quick reply. I have taken your recommendation with this code:
+corePdf_subCat0 = rt.RooMultiPdf("CorePdf_subCat0","CorePdf_subCat0",cat_subCat0,pdf_list_subCat0)
+corePdf_subCat0.setCorrectionFactor(0)
+
+and unfortunately, I obtain the same delta NLL curve (y axis is defined as 2*(deltaNLL+nll+nll0), as shown in the tutorial) as before:
+image806×622 87.4 KB
+For your reference, here’s my combine command I use to do the likliehood scan:
+combine -M MultiDimFit -d test_datacardV2.txt --points 50 --algo grid --setParameterRanges r=-10,10 --cminDefaultMinimizerStrategy 0 --saveNLL -n Envelope_V2 -m 125 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --setParameters pdf_index_subCat0=0 --cminRunAllDiscreteCombinations --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance=0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH
+and the three commands I use to do the same with three core functions frozen:
+combine -M MultiDimFit -d test_datacardV2.txt --points 50 --algo grid --setParameterRanges r=-10,10 --cminDefaultMinimizerStrategy 0 --saveNLL --freezeParameters pdf_index_subCat0 --setParameters pdf_index_subCat0=0 -n fixed_pdf_0_V2 -m 125 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --cminRunAllDiscreteCombinations --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance=0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH
+combine -M MultiDimFit -d test_datacardV2.txt --points 50 --algo grid --setParameterRanges r=-10,10 --cminDefaultMinimizerStrategy 0 --saveNLL --freezeParameters pdf_index_subCat0 --setParameters pdf_index_subCat0=1 -n fixed_pdf_1_V2 -m 125 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --cminRunAllDiscreteCombinations --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance=0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH
+combine -M MultiDimFit -d test_datacardV2.txt --points 50 --algo grid --setParameterRanges r=-10,10 --cminDefaultMinimizerStrategy 0 --saveNLL --freezeParameters pdf_index_subCat0 --setParameters pdf_index_subCat0=2 -n fixed_pdf_2_V2 -m 125 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --cminRunAllDiscreteCombinations --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance=0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH
+
+Thank you in advance for any hints!
+----------------------------------------
+
+REPLY 9 (by amarini @ 2024-07-28T11:09:58.298Z):
+Hi,
+I have the feeling that the problem is related to the Asimov (postfit) generations (plr.), which are different (except perhaps in one case?).
+Can you generate a toy  (-t 1) (or a fixed asimov -t -1) dataset in a separate command?
+combine -M GenerateOnly -t [1/-1] [--toysFrequentist] --saveToys [...]
+
+…
+combine -M MultiDimFit -d ... -t [1/-1] [--toysFrequentist] --toysFile higgs...root  [...]
+
+?
+Remove the postfit option toysFrequentist (everywhere) if the data observations have no meaning (and fallback to the prefit).
+I may be able to look into some commands on Monday.
+-Andrea
+----------------------------------------

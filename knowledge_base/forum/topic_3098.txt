@@ -1,0 +1,37 @@
+TOPIC: Question about trying random starting points for profiled POIs
+URL: https://cms-talk.web.cern.ch/t/3098
+DATE: 2021-12-08T02:34:19.121Z
+SOLVED: no
+============================================================
+
+QUESTION (by kmohrman @ 2021-12-08T02:34:19.333Z):
+Hello combine experts,
+I’m working on an EFT analysis (full Run 2 follow-up to TOP-19-001), and have a question about an issue we’ve been running into while attempting to fit the Wilson coefficients. When we scan over one Wilson coefficient and profile the others, we have noticed that the negative log likelihood is discontinuous. We’ve isolated an example of this issue for a fit involving just two Wilson coefficients. Running a 2d scan for both coefficients, we’ve realized that the reason why the 1d profiled scan is discontinuous is because the fit is getting stuck on the wrong side of a “hill” in the NLL. The NLL is is actually lower on the other side of the hill, but the fit does not jump to that side of the hill soon enough, causing a discontinuity in the NLL.
+In order to mitigate this issue, we’ve attempted to modify combine (in the n==1 block in the doGrid() function of MultiDimFit) to try multiple random points for the starting value for the profiled POIs. We loop though a set of random starting points, and choose the one that gives the lowest NLL. Our tests of this approach seem to indicate that this approach is potentially working, as it results in continuous NLL curves.
+The code can be found on this branch [1] of my fork, where nearly all of the changes are in MultiDimFit here [2].
+We are wondering if anyone would have any feedback on this approach (both the general approach, and the implementation). If it is a valid approach/implementation, we would also be very interested in any ideas of ways to optimize it. If it would be easier to review this in the form of a PR, I’d be happy to create a PR as well.
+Thank you! - Kelci
+[1] https://github.com/kmohrman/HiggsAnalysis-CombinedLimit/tree/rand-start-pts
+[2] https://github.com/kmohrman/HiggsAnalysis-CombinedLimit/blob/rand-start-pts/src/MultiDimFit.cc#L689-L807
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-12-09T13:31:10.866Z):
+Dear Kelci,
+This is indeed an issue that affects analyses using a quadratic parameterisation. The way we would normally deal with this is to perform the likelihood scan in different regions, restricting different POIs to be either positive or negative and repeating the scan each time. To cover the full parameter space this means you would need 2^Npoi different scans, so depending on the number of coefficients you are considering this could become cumbersome very quickly.
+That being said, with the approach you’re using here, would you not also need to check 2^(Npoi-1) points for each fit to ensure that you end up near the correct minimum? I don’t know how long each fit takes, but I could imagine this also becoming prohibitive at some point.
+In my opinion it would be interesting to discuss this a little more in a future HComb meeting - but for this you should check with the HComb conveners.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by ncsmith @ 2021-12-10T20:42:29.114Z):
+Hi,
+We discussed off-forum and will call a meeting this coming Tuesday.
+One comment from my side: feeding MINUIT a clearly non-convex function is definitely not going to end well, so we have to think carefully about alternatives. Not all directions are concave, so perhaps we don’t actually have to do all 2^N_poi regions around the expansion point.
+----------------------------------------
+
+REPLY 4 (by kmohrman @ 2021-12-14T15:34:16.201Z):
+Hello Nick, All,
+Thanks for the feedback and discussion at the meeting this morning. I just wanted to mention that I’ve created a PR [1] as you suggested, and will be happy to work on updating it based on any corrections and suggestions you’d have. Thanks! - Kelci
+[1] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/713
+----------------------------------------

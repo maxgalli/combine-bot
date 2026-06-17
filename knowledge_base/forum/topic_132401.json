@@ -1,0 +1,23 @@
+{
+  "topic_id": 132401,
+  "title": "Regarding ABCD method for QCD estimation",
+  "url": "https://cms-talk.web.cern.ch/t/132401",
+  "category_id": 279,
+  "created_at": "2025-09-22T04:43:08.600Z",
+  "last_posted_at": "2025-09-22T04:43:08.729Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "sanskar",
+      "name": "Sanskar Nanda",
+      "created_at": "2025-09-22T04:43:08.729Z",
+      "updated_at": "2025-09-22T04:43:08.729Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello everyone,\nI am currently working on the tt\u0304 semi-leptonic electron+jets channel and I am applying the ABCD method for QCD estimation.\nFor defining the regions, I have used the cut-based electron ID and mT as my two variables.My region definitions are as follows:\nA: cutBased = Veto, mT < 40\nB: cutBased = Tight, mT < 40\nC: cutBased = Veto, mT > 50\nD: cutBased = Tight, mT > 50 (signal region)\nAs a first check, I estimated the QCD yield in each region using:\nN_i=N_data\u2212N_nonQCDMC, i\u2208{A,B,C,D}\nWhen I computed the ratios, I found:\nNA/NC=0.909\nNB/ND=0.48\nSo as you can see the ratios are not even close. So, this had led me to rethink my variable choices. Has anyone encountered a similar issue? Could you kindly advise me on which variables are generally considered good choices for defining the ABCD regions for analysis involving electrons?\nI would be very grateful for any advice or insights on this.\nBest Regards,\nSanskar Nanda",
+      "cooked_html": "<p>Hello everyone,<br>\nI am currently working on the tt\u0304 semi-leptonic electron+jets channel and I am applying the ABCD method for QCD estimation.</p>\n<p>For defining the regions, I have used the <strong>cut-based electron ID</strong> and <strong>mT</strong> as my two variables.My region definitions are as follows:<br>\nA: cutBased = Veto, mT &lt; 40</p>\n<p>B: cutBased = Tight, mT &lt; 40</p>\n<p>C: cutBased = Veto, mT &gt; 50</p>\n<p>D: cutBased = Tight, mT &gt; 50 (signal region)</p>\n<p>As a first check, I estimated the QCD yield in each region using:</p>\n<p>N_i=N_data\u2212N_nonQCDMC, i\u2208{A,B,C,D}</p>\n<p>When I computed the ratios, I found:</p>\n<p>NA/NC=0.909<br>\nNB/ND=0.48</p>\n<p>So as you can see the ratios are not even close. So, this had led me to rethink my variable choices. Has anyone encountered a similar issue? Could you kindly advise me on which variables are generally considered good choices for defining the ABCD regions for analysis involving electrons?</p>\n<p>I would be very grateful for any advice or insights on this.</p>\n<p>Best Regards,<br>\nSanskar Nanda</p>"
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+TOPIC: How to include statistical uncertainty in the combine fit
+URL: https://cms-talk.web.cern.ch/t/8461
+DATE: 2022-03-21T19:06:25.267Z
+SOLVED: no
+============================================================
+
+QUESTION (by kpal @ 2022-03-21T19:06:25.495Z):
+Hello Experts,
+I am working on the FTR analysis of Vector Like Quark T’, where T’ decays to tH,tZ,bW which further decays; leading to single lepton + MET + jets final state.
+I am doing the DELPHES based analysis.
+The goal of the analysis is to obtain the asymptotic upper limit at different mass points.
+Attached is the datacard[1] for the analysis.
+The workspace can be accessed at [2].
+In the datacard, T-prime process is being used for the signal and for background, I am using top, qcd and ewk processes.
+All the signal and background processes are Monte-Carlo generated and further processed through DELPHES framework.
+During the analysis review process, the ARC has asked question regarding treatment of statistical uncertainty in the fit.
+Do combine take into account the statistical uncertainty by default, if not, it would be great if you suggest the prescription to include them in the datacard and also to show it’s impact in the impact plot.
+[1] https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.txt
+[2] https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.root
+Thanks in Advance.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-03-21T20:07:02.764Z):
+Dear Kuldeep,
+From a quick look at your analysis review hypernews I assume that the question is about treating the statistical uncertainties in the MC templates correctly in the fit, is that right?
+You can include these by adding
+* autoMCStats 0 at the end of your datacard (so below the es line). When the workspace is created, nuisance parameters for each bin will be added, based on the TH1 bin errors in your input histograms. The names of the parameters the form prop_[channelname]_bin[binnumber] and, once they are in the workspace, if you calculate the impacts on that workspace these parameters will also appear in the impact plot
+You can find more detail about the addition of MC statistical uncertainties in the Combine documentation [*].
+Hope this helps,
+Adinda
+[*] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/
+----------------------------------------

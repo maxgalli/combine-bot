@@ -1,0 +1,36 @@
+TOPIC: Plots from combine harvester
+URL: https://cms-talk.web.cern.ch/t/56684
+DATE: 2024-10-27T02:18:15.661Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by jiyoo @ 2024-10-27T02:18:16.032Z):
+Hello,
+I have a question about making a plot from the output of combine harvester.
+I made a datacard and a workspace. Then, I ran fit fit diagnostics and it made a root file called fitDiagnostics.plots.root
+Then I used combine harvester to create an output file called harvest.root.
+Could you please help if these commands are correct to get a toy asimov dataset plotted? I am not sure if I am saving the fit result correctly. Thank you.
+combine -M FitDiagnostics workspace.root -m 125 --rMin -1 --rMax 2 --saveShapes --saveWithUncertainties -n .plots -t 1 --cminDefaultMinimizerStrategy 0
+PostFitShapesFromWorkspace -d model_combined.txt -w workspace.root -m 125 -f fitDiagnostics.plots.root:fit_s --postfit --print --sampling --output harvest.root
+Also, if I have separate plots per year as root files, when plotting them, can I just add the errors as sum of square of weights across years/histograms/bins? The combine harvester page says: " The option --sampling is not used by default, but you should probably use it if you are producing post-fit distributions. Without this the uncertainty will be calculated assuming no correlations between nuisance parameters - this would be extremely rare in an typical fit."
+I used the sampling option; does that mean that then individual year histograms have the right uncertainties, so errors ca be added in quadrature?
+Sincerely,
+Jieun
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by pkeicher @ 2024-10-28T10:24:36.670Z):
+Hi Jieun,
+First let me comment on your commands: If you want to perform a fit to the Asimov dataset, you need to use the option -t -1 in the FitDiagnostics command (the minus is missing in your message). If you use --saveShapes --saveWithUncertainties you should already have the histograms in your fitDiagnostics.plots.root file, see for example this tutorial. Since you also use --saveWithUncertainties, the correlations between the nuisance parameters should be taken into account properly. Also, you shouldn’t have to run the PostFitShapesFromWorkspace command necessarily (though it of course also doesn’t hurt).
+Regarding the PostFitShapesFromWorkspace command itself: the --sampling method is actually true by default - thank you for pointing out the error in the documentation, which we will fix asap. In any case, with sampling activated, you will also properly account for the correlations of the nuisance parameters.
+Finally, regarding the sum of processes: Simply adding the process uncertainties in quadrature is generally-speaking not correct since it doesn’t account for correlations between processes (mainly because you use the per-event information of the sampling because we only save histograms at the moment). By default, the sum of different sets of processes are generated: the sum of all backgrounds, the sum of all signals, and the sum of all processes together. The uncertainties for these three histograms (per category) should also be taking account all relevant uncertainties. Calculating a different sum of processes is not supported at the moment. That being said, there is currently a PR open that implements a flexible sum of processes. You could try to integrate that into your local installation if need be (though this might be some work).
+Please let us know if you need any additional help!
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 3 (by jiyoo @ 2024-10-28T11:49:18.265Z):
+Dear Philip,
+Hi. Thanks for the detailed answer and links. It helps a lot!
+Sincerely,
+Jieun
+----------------------------------------

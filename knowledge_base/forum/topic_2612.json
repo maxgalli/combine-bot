@@ -1,0 +1,23 @@
+{
+  "topic_id": 2612,
+  "title": "Re: Toy distributions in goodnesses-of-fit changing between Combine tags version 8.1 and 8.2",
+  "url": "https://cms-talk.web.cern.ch/t/2612",
+  "category_id": 279,
+  "created_at": "2021-11-23T11:55:52.000Z",
+  "last_posted_at": "2021-11-23T11:55:52.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-11-23T11:55:52.000Z",
+      "updated_at": "2023-02-07T10:55:47.003Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Robert,\nDid you try the toy generation with --X-rtd MINIMIZER_no_analytic as\nwell? Perhaps this is causing the difference. If you've tried that and\nit isn't the source of the difference, please provide a minimum working\nexample datacard that reproduces the issue, so that we can have a look.\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Robert,</p>\n<p>Did you try the toy generation with --X-rtd MINIMIZER_no_analytic as<br>\nwell? Perhaps this is causing the difference. If you've tried that and<br>\nit isn't the source of the difference, please provide a minimum working<br>\nexample datacard that reproduces the issue, so that we can have a look.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

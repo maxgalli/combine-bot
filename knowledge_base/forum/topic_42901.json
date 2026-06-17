@@ -1,0 +1,100 @@
+{
+  "topic_id": 42901,
+  "title": "Test statistic in combine tool for spin-parity separation",
+  "url": "https://cms-talk.web.cern.ch/t/42901",
+  "category_id": 279,
+  "created_at": "2024-07-01T01:27:45.243Z",
+  "last_posted_at": "2024-07-19T14:21:28.188Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jingqing",
+      "name": "Jingqing Zhang",
+      "created_at": "2024-07-01T01:27:45.588Z",
+      "updated_at": "2024-07-02T09:04:03.345Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nWe are currently doing spin-parity separation for a resonance decay to to Jpsi, which is similar to Higgs to ZZ*, and we therefore using the same approach to do this, which will finally use the combine tool to do a 2D fit.\nThe paper arXiv:2404.06614 in page 25, last paragraph, said one can modified the test statistics so that to do the Higgs spin-parity separation (arXiv:1411.3441). After reading the related papers, I understand how to to it without technical. And now I am trying to implement it for our analysis. I was wondering if there are some examples/instructions about how to do the modification in the Higgs spin-parity analysis which I can read for a reference/example.\nBest Regards,\nJingqing",
+      "cooked_html": "<p>Hi,<br>\nWe are currently doing spin-parity separation for a resonance decay to to Jpsi, which is similar to Higgs to ZZ*, and we therefore using the same approach to do this, which will finally use the combine tool to do a 2D fit.<br>\nThe paper <a href=\"https://arxiv.org/abs/2404.06614\" rel=\"noopener nofollow ugc\">arXiv:2404.06614</a> in page 25, last paragraph, said one can modified the test statistics so that to do the Higgs spin-parity separation (<a href=\"https://www.arxiv.org/abs/1411.3441\" rel=\"noopener nofollow ugc\">arXiv:1411.3441</a>). After reading the related papers, I understand how to to it without technical. And now I am trying to implement it for our analysis. I was wondering if there are some examples/instructions about how to do the modification in the Higgs spin-parity analysis which I can read for a reference/example.<br>\nBest Regards,<br>\nJingqing</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "mpierini",
+      "name": "Maurizio Pierini",
+      "created_at": "2024-07-01T05:44:16.600Z",
+      "updated_at": "2024-07-01T05:44:16.600Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello\nAre you in contact with the HZZ team? They could share their card.  @acappati for instance might be able to help\nMaurizio",
+      "cooked_html": "<p>Hello</p>\n<p>Are you in contact with the HZZ team? They could share their card.  <a class=\"mention\" href=\"/u/acappati\">@acappati</a> for instance might be able to help</p>\n<p>Maurizio</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "acappati",
+      "name": "Alessandra Cappati",
+      "created_at": "2024-07-01T07:40:51.657Z",
+      "updated_at": "2024-07-01T07:40:51.657Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi @jingqing ,\nin HZZ the measurement of spin-parity was done defining MELA discriminants for the different hypotheses and then implementing templates in the combine model.\nI would suggest to contact @gritsan for more details on how to build the MELA probabilities and discriminants in your specific case.\nBest,\nAlessandra",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/jingqing\">@jingqing</a> ,</p>\n<p>in HZZ the measurement of spin-parity was done defining MELA discriminants for the different hypotheses and then implementing templates in the combine model.<br>\nI would suggest to contact <a class=\"mention\" href=\"/u/gritsan\">@gritsan</a> for more details on how to build the MELA probabilities and discriminants in your specific case.</p>\n<p>Best,<br>\nAlessandra</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-07-01T07:52:26.148Z",
+      "updated_at": "2024-07-01T07:52:26.148Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Jingqing,\nIf I remember correctly, at the time we were using the 2 hypotheses testing model from combine:\n\ngithub.com\n\ncms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/HiggsJPC.py\n\nfrom HiggsAnalysis.CombinedLimit.PhysicsModel import *\n\n### This base class implements signal yields by production and decay mode\n### Specific models can be obtained redefining getHiggsSignalYieldScale\nclass TwoHypotesisHiggs(PhysicsModel):\ndef __init__(self):\nself.mHRange = []\nself.muAsPOI    = False\nself.muFloating = False\nself.fqqIncluded = False\nself.fqqFloating = False\nself.poiMap  = []\nself.pois    = {}\nself.verbose = False\nself.altSignal  = \"ALT\"\ndef setModelBuilder(self, modelBuilder):\nPhysicsModel.setModelBuilder(self, modelBuilder)\nself.modelBuilder.doModelBOnly = False\ndef getYieldScale(self,bin,process):\n\"Split in production and decay, and call getHiggsSignalYieldScale; return 1 for backgrounds \"\n\nThis file has been truncated. show original\n\nYou can find some instructions on how to use it here:\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/physicsmodels/?h=hypo#two-hypothesis-testing\nbut basically you just need to provide in the datacard the baseline model (the SM in your case) and the alternative hypothesis with the \u201c_ALT\u201d suffix. You will need one datacard for each alternative hypothesis you will be testing.\nCheers,\nGiacomo",
+      "cooked_html": "<p>Dear Jingqing,</p>\n<p>If I remember correctly, at the time we were using the 2 hypotheses testing model from combine:</p><aside class=\"onebox githubblob\" data-onebox-src=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/HiggsJPC.py\">\n  <header class=\"source\">\n\n      <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/HiggsJPC.py\" target=\"_blank\" rel=\"noopener nofollow ugc\">github.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <h4><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/HiggsJPC.py\" target=\"_blank\" rel=\"noopener nofollow ugc\">cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/HiggsJPC.py</a></h4>\n\n\n      <pre><code class=\"lang-py\">from HiggsAnalysis.CombinedLimit.PhysicsModel import *\n\n### This base class implements signal yields by production and decay mode\n### Specific models can be obtained redefining getHiggsSignalYieldScale\nclass TwoHypotesisHiggs(PhysicsModel):\n    def __init__(self): \n        self.mHRange = []\n        self.muAsPOI    = False\n        self.muFloating = False\n        self.fqqIncluded = False\n        self.fqqFloating = False\n        self.poiMap  = []\n        self.pois    = {}\n        self.verbose = False\n        self.altSignal  = \"ALT\"\n    def setModelBuilder(self, modelBuilder):\n        PhysicsModel.setModelBuilder(self, modelBuilder)\n        self.modelBuilder.doModelBOnly = False\n    def getYieldScale(self,bin,process):\n        \"Split in production and decay, and call getHiggsSignalYieldScale; return 1 for backgrounds \"\n</code></pre>\n\n\n\n  This file has been truncated. <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/HiggsJPC.py\" target=\"_blank\" rel=\"noopener nofollow ugc\">show original</a>\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n\n<p>You can find some instructions on how to use it here:<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/physicsmodels/?h=hypo#two-hypothesis-testing\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/physicsmodels/?h=hypo#two-hypothesis-testing</a><br>\nbut basically you just need to provide in the datacard the baseline model (the SM in your case) and the alternative hypothesis with the \u201c_ALT\u201d suffix. You will need one datacard for each alternative hypothesis you will be testing.</p>\n<p>Cheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jingqing",
+      "name": "Jingqing Zhang",
+      "created_at": "2024-07-02T02:33:09.831Z",
+      "updated_at": "2024-07-02T02:33:09.831Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nThanks for all your helps. The link @gortona shown is exactly what I wanted, thank you\nBest Regards,\nJingqing",
+      "cooked_html": "<p>Dear all,<br>\nThanks for all your helps. The link <a class=\"mention\" href=\"/u/gortona\">@gortona</a> shown is exactly what I wanted, thank you <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/smiley.png?v=12\" title=\":smiley:\" class=\"emoji\" alt=\":smiley:\" loading=\"lazy\" width=\"20\" height=\"20\"><br>\nBest Regards,<br>\nJingqing</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "jingqing",
+      "name": "Jingqing Zhang",
+      "created_at": "2024-07-19T10:53:22.146Z",
+      "updated_at": "2024-07-19T10:53:22.146Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nThank your for providing the above materials, which really helps me a lot.\nI had a trial run for the two hypotheses testing example.\nIt seems everything is good, but I was wondering if you can check my combine command and output so that I was not doing something wrong.\nIn addition, I also have a few questions which I am not clean how to do it/how it works in combine, which are listed in the last.\nI used this command to do the evaluation/test:\ncombine jcp_hww.root -M HybridNew --testStat=LEP --generateNuisances=1 --fitNuisances=0  -T 1000 --significance \u2013saveHybridResult\n\nand the output looks like this:\noutput:\n<<< Combine >>>\n<<< v10.0.1 >>>\n>>> Random number generator seed is 123456\n>>> using the Simple Likelihood Ratio test statistic (Q_LEP)\n>>> Method used is HybridNew\n\n-- Hybrid New --\nSignificance: 0.355787  -0.0402795/+0.0408653\nNull p-value: 0.361 +/- 0.0151881\nDone in 0.01 min (cpu), 0.01 min (real)\n\nFrom the output, I guess the combine command (with options) is correctly used for this evaluation. Is this right?\nAnd I also have a question for presenting the result. I want to draw a similar figure like the fig. 3 in arxiv:1208.4018 (also shown in below)\nfig32093\u00d7939 199 KB.\nTo draw a similar plot, I have stored the HybridNew result to the output root file.\nBut I found the sampling distribution for null hypothesis has 1000 entries (expected as we used the option -T 1000), while the sampling distribution for alternative hypothesis has only 11 entries. Does this mean the alternative hypothesis only stored the tail of generated toy distribution/samples? How to store or get the whole sampling distribution for this alternative hypothesis?\nI have one more question, when the combine uses the LEP-style test statistics to evaluate significance like the above, how does it treat the POIs? Does it treat the POIs like it treats other nuisance parameters?\nBest Regards,\nJingqing",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>Thank your for providing the above materials, which really helps me a lot.<br>\nI had a trial run for the two hypotheses testing example.<br>\nIt seems everything is good, but I was wondering if you can check my combine command and output so that I was not doing something wrong.<br>\nIn addition, I also have a few questions which I am not clean how to do it/how it works in combine, which are listed in the last.</p>\n<p>I used this command to do the evaluation/test:</p>\n<pre><code class=\"lang-auto\">combine jcp_hww.root -M HybridNew --testStat=LEP --generateNuisances=1 --fitNuisances=0  -T 1000 --significance \u2013saveHybridResult\n</code></pre>\n<p>and the output looks like this:</p>\n<pre><code class=\"lang-auto\">output:\n &lt;&lt;&lt; Combine &gt;&gt;&gt;\n &lt;&lt;&lt; v10.0.1 &gt;&gt;&gt;\n&gt;&gt;&gt; Random number generator seed is 123456\n&gt;&gt;&gt; using the Simple Likelihood Ratio test statistic (Q_LEP)\n&gt;&gt;&gt; Method used is HybridNew\n\n -- Hybrid New --\nSignificance: 0.355787  -0.0402795/+0.0408653\nNull p-value: 0.361 +/- 0.0151881\nDone in 0.01 min (cpu), 0.01 min (real)\n</code></pre>\n<p>From the output, I guess the combine command (with options) is correctly used for this evaluation. Is this right?</p>\n<p>And I also have a question for presenting the result. I want to draw a similar figure like the fig. 3 in <a href=\"https://arxiv.org/abs/1208.4018v3\" rel=\"noopener nofollow ugc\">arxiv:1208.4018</a> (also shown in below)<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/e/ee1371ca51a9ac3afc7665d06e0f7b43c6087388.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/ee1371ca51a9ac3afc7665d06e0f7b43c6087388\" title=\"fig3\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/ee1371ca51a9ac3afc7665d06e0f7b43c6087388_2_690x309.png\" alt=\"fig3\" data-base62-sha1=\"xY7irYQJp3bmYRGIYcKMRDB53Je\" width=\"690\" height=\"309\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/ee1371ca51a9ac3afc7665d06e0f7b43c6087388_2_690x309.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/ee1371ca51a9ac3afc7665d06e0f7b43c6087388_2_1035x463.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/ee1371ca51a9ac3afc7665d06e0f7b43c6087388_2_1380x618.png 2x\" data-dominant-color=\"F5F3F5\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">fig3</span><span class=\"informations\">2093\u00d7939 199 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div>.<br>\nTo draw a similar plot, I have stored the HybridNew result to the output root file.<br>\nBut I found the sampling distribution for null hypothesis has 1000 entries (expected as we used the option -T 1000), while the sampling distribution for alternative hypothesis has only 11 entries. Does this mean the alternative hypothesis only stored the tail of generated toy distribution/samples? How to store or get the whole sampling distribution for this alternative hypothesis?</p>\n<p>I have one more question, when the combine uses the LEP-style test statistics to evaluate significance like the above, how does it treat the POIs? Does it treat the POIs like it treats other nuisance parameters?</p>\n<p>Best Regards,<br>\nJingqing</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-07-19T12:33:33.986Z",
+      "updated_at": "2024-07-19T12:33:33.986Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jingqing,\nI will need to refresh my memory a bit, but at first sight your command seems correct to me. You probably need to add the --fullBToys option to get a significant amount of alternative hypothesis entries.\nFor plotting, can you try this script:\nhttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/plotting/hypoTestResultTree.cxx and check if it suits your needs? Otherwise I will try to dig around and see if I can find the plotting code we used in Run1, but it might take me a while to find it.\nAbout your last question, no POIs and NP are treated differently. When you run LEP-style in each toy it first generates the value of each NP from the prior PDF, and afterward the POI is fitted to get the best fit position of the given toy.\nI hope it helps,\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Jingqing,</p>\n<p>I will need to refresh my memory a bit, but at first sight your command seems correct to me. You probably need to add the --fullBToys option to get a significant amount of alternative hypothesis entries.</p>\n<p>For plotting, can you try this script:<br>\n<a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/plotting/hypoTestResultTree.cxx\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/plotting/hypoTestResultTree.cxx</a> and check if it suits your needs? Otherwise I will try to dig around and see if I can find the plotting code we used in Run1, but it might take me a while to find it.</p>\n<p>About your last question, no POIs and NP are treated differently. When you run LEP-style in each toy it first generates the value of each NP from the prior PDF, and afterward the POI is fitted to get the best fit position of the given toy.</p>\n<p>I hope it helps,<br>\nBest regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "jingqing",
+      "name": "Jingqing Zhang",
+      "created_at": "2024-07-19T14:21:28.188Z",
+      "updated_at": "2024-07-19T14:21:28.188Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nThank you very much for the quick response. I will try the plotting script and if I still need some help I will ask here again.\nBest Regards,\nJingqing",
+      "cooked_html": "<p>Dear Giacomo,<br>\nThank you very much for the quick response. I will try the plotting script and if I still need some help I will ask here again.<br>\nBest Regards,<br>\nJingqing</p>"
+    }
+  ]
+}

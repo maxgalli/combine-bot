@@ -1,0 +1,37 @@
+TOPIC: flatParam for rateParam example
+URL: https://cms-talk.web.cern.ch/t/20504
+DATE: 2023-02-19T16:03:00.455Z
+SOLVED: no
+============================================================
+
+QUESTION (by astepenn @ 2023-02-19T16:03:01.001Z):
+Dear experts,
+I’m trying to make a datacard, where rateParam (n5) in one bin is dependent on value in another bin (n4), with some uncertainty (sigmar5)
+n4 rateParam bin1 bkg 10000
+n5 rateParam bin2 bkg (@0*0.25*@1) n4,sigmar5
+#sigmar5 param 1 0.02
+sigmar5 flatParam 1 0.02
+
+If I set sigmar5 uncertainty as param (normally distributed value), the fit works fine, but if I try to make it flat declaring as flatParam, combine throws an error.
+[['n5', '(@0*0.25*@1)', 'n4,sigmar5']]  ->  [['n5', '(@0*0.25*@1)', 'n4,sigmar5']]
+...
+RuntimeError: Cannot produce following rateParams (dependent parameters not found!) n5
+
+Unfortunately the tutorial doesn’t specify the input format for flatParam.
+Could you please suggest if there is any example of Datacard where such floating parameter is used?
+kind regards,
+Anton
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-02-20T10:46:44.330Z):
+Dear Anton,
+If you want to use a parameter inside rateParam function and this parameter is not itself a  rateParam or param, you should add an additional line:
+sigmar5 extArg  1. [min, max]
+
+before your line:
+n5 rateParam bin2 bkg (@0*0.25*@1) n4,sigmar5
+
+It is briefly described here under the Extra arguments section.
+Best,
+Aliya
+----------------------------------------

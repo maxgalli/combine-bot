@@ -1,0 +1,62 @@
+TOPIC: What does the "(limited)" tag of parameters mean?
+URL: https://cms-talk.web.cern.ch/t/5057
+DATE: 2022-01-24T10:35:11.322Z
+SOLVED: no
+============================================================
+
+QUESTION (by mfackeld @ 2022-01-24T10:35:11.493Z):
+Dear all,
+in the scope of the HH->bbWW analysis we have noticed that some parameters are annotated with “(limited)” in the combine output log. It seems that these are almost exclusively nuisances, which arise from MC statistics (splitted into processes) in our most sensitive signal bins.
+A list can be found here:
+THU_HH (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_DY (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_ST (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_TT (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_ggHH_kl_5_kt_1_hbbhtt (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_ggH_hbb (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_qqH_hbb (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_ttH_hbb (limited)
+prop_binbbww_dl__2018_all_boosted_1b_sr_dnn_node_class_HHVBF_NLO_bin4_ttZ (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_ST (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_qqHH_CV_1_C2V_0_kl_1_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_qqHH_CV_1_C2V_1_kl_0_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_qqHH_CV_1_C2V_1_kl_1_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_qqHH_CV_1_C2V_1_kl_2_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_qqHH_CV_1_C2V_2_kl_1_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_qqHH_CV_1p5_C2V_1_kl_1_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_tHW_hbb (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_tHq_hbb (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_ttW (limited)
+prop_binbbww_dl__2018_all_resolved_1b_sr_dnn_node_class_HHGluGlu_NLO_bin14_ttZ (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_ST (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_VV (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_ZH_hbb (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_ggHH_kl_1_kt_1_hbbhtt (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_ggHH_kl_5_kt_1_hbbhtt (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_qqHH_CV_1_C2V_1_kl_1_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_qqHH_CV_1_C2V_1_kl_2_hbbhww (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_tHW_hbb (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_ttH_hbb (limited)
+prop_binbbww_dl__2018_all_resolved_2b_sr_dnn_node_class_HHGluGlu_NLO_bin13_ttW (limited)
+
+Unfortunately we could not find any information about this “(limited)” tag.
+Could you explain what it means in detail and if it is something to be concerned about?
+Best,
+Peter for the HH->bbWW team
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-01-24T17:49:39.149Z):
+Hi Peter,
+This is usually nothing to worry about - this is a log from the minimizer, Minuit. It just means that the parameters have an associated range that the values cannot go beyond during the fit. Usually we set these to be fairly wide by default, so its unlikely to cause a problem. In fact, combine will print an extra warning if it detects a parameter near a boundary.
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by mfackeld @ 2022-01-25T10:23:40.406Z):
+Dear Andrew,
+thank you very much for your reply!
+In fact there is an extra warning for one of those MC stat nuisances, where we also see rather large impacts and a large nominal pull. I assume this one needs some further investigations then. The other ones are not near a boundary.
+Then we will concentrate our further investigations on the one nuisance, which is close to a boundary.
+Best,
+Peter
+----------------------------------------

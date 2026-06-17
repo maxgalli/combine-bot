@@ -1,0 +1,34 @@
+{
+  "topic_id": 77547,
+  "title": "Standard nuisance parameter names for muons",
+  "url": "https://cms-talk.web.cern.ch/t/77547",
+  "category_id": 279,
+  "created_at": "2024-12-12T16:16:20.720Z",
+  "last_posted_at": "2024-12-13T09:58:18.594Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "lmoureau",
+      "name": "Louis Moureaux",
+      "created_at": "2024-12-12T16:16:20.829Z",
+      "updated_at": "2024-12-12T16:16:20.829Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear CAT friends,\nI\u2019m posting here with my MUO-B2G contact hat. While reviewing an analysis I checked the naming conventions for muon SF nuisances. The table of common names we provide contains the following (among others - this is only to illustrate my point):\nmuon_efficiency:\nCMS_eff_m_(2016|2017|2018|2022|2022EE|2023|2023BPix):\ndescription: 'overall muon efficiency uncertainty separated by year'\n\nIs this really a common pattern found in analyses? The recommendation is to split the systematic and statistical parts, and keep the former uncorrelated while the latter should be correlated. Since systematic uncertainties usually dominate by far, decorrelating by era as the names above suggest is not correct. If decorrelating, one should first consider stat/syst then individual syst components.\nIf some PAGs have different recommendations, there\u2019s something that needs to be solved at the POG level, so I was wondering where these examples came from?\nThanks,\nLouis",
+      "cooked_html": "<p>Dear CAT friends,</p>\n<p>I\u2019m posting here with my MUO-B2G contact hat. While reviewing an analysis I checked the naming conventions for muon SF nuisances. The <a href=\"https://cms-analysis.docs.cern.ch/guidelines/systematics/systematics/systematics_master.yml\" rel=\"noopener nofollow ugc\">table of common names</a> we provide contains the following (among others - this is only to illustrate my point):</p>\n<pre data-code-wrap=\"yaml\"><code class=\"lang-yaml\">muon_efficiency:\n    CMS_eff_m_(2016|2017|2018|2022|2022EE|2023|2023BPix):\n        description: 'overall muon efficiency uncertainty separated by year'\n</code></pre>\n<p>Is this really a common pattern found in analyses? The <a href=\"https://twiki.cern.ch/twiki/bin/view/CMS/MuonUL2016#Note_on_correlations\" rel=\"noopener nofollow ugc\">recommendation</a> is to split the systematic and statistical parts, and keep the former uncorrelated while the latter should be correlated. Since systematic uncertainties usually dominate by far, decorrelating by era as the names above suggest is not correct. If decorrelating, one should first consider stat/syst then individual syst components.</p>\n<p>If some PAGs have different recommendations, there\u2019s something that needs to be solved at the POG level, so I was wondering where these examples came from?</p>\n<p>Thanks,<br>\nLouis</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "lenzip",
+      "name": "Piergiulio Lenzi",
+      "created_at": "2024-12-13T09:58:18.594Z",
+      "updated_at": "2024-12-13T09:58:18.594Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Louis,\nMaybe others can comment with more details (@kcormier and @anigamov feel free to chime in).\nI think the inconsistency you are referring to will be resolved once the branches featuring integration with jsonPogintegration will be merged, since that has the correlation schemes recommended by the pogs builtin. However Kyle was mentioning to me he had some doubts bout how to implement the correlation scheme proposed by the muon POG specifically, so maybe you could help in that respect.\nCheers\nGiulio",
+      "cooked_html": "<p>Dear Louis,<br>\nMaybe others can comment with more details (<a class=\"mention\" href=\"/u/kcormier\">@kcormier</a> and <a class=\"mention\" href=\"/u/anigamov\">@anigamov</a> feel free to chime in).<br>\nI think the inconsistency you are referring to will be resolved once the branches featuring integration with jsonPogintegration will be merged, since that has the correlation schemes recommended by the pogs builtin. However Kyle was mentioning to me he had some doubts bout how to implement the correlation scheme proposed by the muon POG specifically, so maybe you could help in that respect.<br>\nCheers<br>\nGiulio</p>"
+    }
+  ]
+}

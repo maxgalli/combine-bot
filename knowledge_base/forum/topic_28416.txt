@@ -1,0 +1,43 @@
+TOPIC: Understanding `--signalPdfNames` in FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/28416
+DATE: 2023-08-15T14:17:57.035Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2023-08-15T14:17:57.362Z):
+Hi experts,
+I am referring to the following remark in [1]:
+[...] and then optionally specify what are the names of the signal and background pdfs, e.g. --signalPdfNames='ggH*,vbfH*' and --backgroundPdfNames='*DY*,*WW*,*Top*' (by default, the definitions of signal and background are taken from the datacard).
+
+In my case, I have signal processes A, B, C, where C is a signal for strictly technical reasons, in that it is scaled by a parameter that needs to be treated as a POI. From physics point of view, C is considered part of the background. For this reason, it is desirable to be able to reassign C to the total_background histogram produced by FitDiagnostics. Based on [1] I expected that using the options above as --signalPdfNames='A,B' --backgroundPdfNames='C,other_bkg_procs' would achieve exactly what I want, but the resulting total_signal/background histograms generated with and without the option are identical, and conceptually this is incorrect.
+Is there a way to do what I want, correctly accounting for all relevant correlations?
+Cheers,
+Afiq
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#plotting
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-08-15T17:42:00.034Z):
+Hi Afiq,
+I believe that --signalPdfNames and --backgroundPdfNames are only affecting the plots themselves, i.e. the png outputs; not actually affecting the individual histograms stored in the root file. So it’s not surprising that the histograms are unchanged.
+I don’t think that there is a way only change which processes contribute to the total_signal/total_background histograms. But I think there are a few ways to do what you want, depending on exactly what the goal is.
+Maybe I haven’t understood the technical difficulty with calling C a background process, but is there a reason that you can’t keep it as a background process but apply a floating nuisance parameter for its normalization?
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by afiqaize @ 2023-08-15T18:52:13.956Z):
+Hi Kyle,
+The reason is that C scales quadratically, and I thought of implementing this through a PhysicsModel, which afaik allows doing so only for POIs. However, looking at [2], this may also be achievable with rateParam, allowing C to be kept as background.
+I should try this out.
+Cheers,
+Afiq
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 4 (by afiqaize @ 2023-08-15T20:03:09.010Z):
+Seems to have worked beautifully. One minor issue remains:
+Using combine -M MultidimFit wsp.root --saveSpecifiedNuis=all doesn’t save the rateParam in the limit tree. Adding --saveSpecifiedFunc paramname solves this, but this counts on knowing paramname, making abstraction difficult. Is there a way to tell combine to save all parameters of the fit?
+Afiq
+----------------------------------------

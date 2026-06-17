@@ -1,0 +1,202 @@
+TOPIC: Number of Iterations in MCMC for Bayesian Limit Estimation
+URL: https://cms-talk.web.cern.ch/t/46739
+DATE: 2024-08-26T16:11:51.250Z
+SOLVED: no
+============================================================
+
+QUESTION (by amkaur @ 2024-08-26T16:11:51.472Z):
+Dear Experts,
+I have a question about the " number of iterations" parameter in MCMC method. I am estimating the Bayesian limits with MCMC method. The physics model I used is attached below [1].  I have a pure signal term, an interference term and DY term in the signals as I am calculating limits for EFT based interference signal scenario. A few more details are listed below:
+Number of channels: 8 for Full Run 2 per b jet multiplicity, and I have 0b, 1b and >1b categories.
+Sample datacard is attached below [2].
+combine command:
+combine -M MarkovChainMC dataCards_mumu_2LB_negLL_obs_ZeroB/mumu_2LB_combined_6_negLL.root -n mumu_2LB_negLL_obs_ZeroB -m 6 -i 50000000 --tries 6 --prior flat --rMax 10
+As you can see I have increased “number of iterations” to 50M, but I am not getting any output or limit value in the end.
+
+Random number generator seed is 123456
+Method used is MarkovChainMC
+Done in 1078.32 min (cpu), 1081.91 min (real)
+Finished – ls dir:
+
+I tried running the same with 2 channels only, I got the output with “number of iterations” = 5M. The output looked reasonable too.
+For other signal scenario, I have observed that yes, one has to increase the "“number of iterations” value to get stable limits but for other signal scenario, I reached plateau at 3M.
+My question is: Is this >50M “number of iterations” common in practice and is safe or we have to fix some other parameter to get the results. I tried changing the number of tries from 6 to 100, but no luck.
+Please let me know if there is any solution to this problem.
+Thanks and regards,
+Amandeep Kaur
+[1] https://gitlab.cern.ch/cms-zprime-dileptons/ZPrimeCombine/-/blob/master/CIInterference.py?ref_type=heads
+[2] Datacard:
+mumu_2LB_combined_6_negLL.txt (101.7 KB)
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-08-27T10:45:06.504Z):
+Dear Amandeep,
+I think you forgot to provide the root input files that are inputs to the datacard, so I can’t check in your particular case. But here are a few general points for you to check and consider in the meantime.
+I think if no limit is being provided, it probably means that the number of points accepted in your chains is less than the number of burn in points (that should be thrown away) for all of the tries. We should probably provide more clear terminal output of this. You should be able to check this by running with -v 1, and you may see messages like:
+[#0] ERROR:InputArguments -- MCMCInterval::CreateVector: creation of vector failed: Number of burn-in steps (num steps to ignore) >= number of steps in Markov chain.
+
+You should also see the number of accepted points in each try and the acceptance rate. I suspect that what is happening is that you have a very very small acceptance rate (default number of burn in steps is 200, so if you are using 50M iterations, something significantly less than 1/25k ).
+If this is the case, increasing the number of iterations is probably a very bad strategy for getting it to converge – it suggests that there is a problem with the proposal, i.e. your proposal algorithm is proposing almost exclusively points which have almost no probability of being accepted.
+In combine, you have a few handles on proposal (see the docs [1]). But the default proposal algorithm (ortho) which varies one parameter at a time is typically higher acceptance than the gaussian or uniform ones. So it seems likely that the step size is too large, by default this is set to 1/5 the parameter range, so if your likelihood function varies quite rapidly in the parameters with respect to 20% of their range, you can end up in such a situation. You can adjust the value of the range/step size ratio using --propHelperWidthRangeDivisor <ratio>.
+I’m not really an expert on this, but I suspect that perhaps the issue in your case is related to your POI specifically, since by default the proposal function will always step the POI. If the range of the POI is much larger than the width of likelihood that could explain the issue. You could test this very easily by running with the option --alwaysStepPOI 0 and checking the behaviour of the acceptance. This will generally have worse convergence, but if that helps, you could then pick a more plausible range for your POI (by checking with e.g. MultiDimFit).
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/?h=markovchain#proposals
+----------------------------------------
+
+REPLY 3 (by amkaur @ 2024-08-27T15:12:43.244Z):
+Hi Kyle,
+Thanks for the tips to check what is happening.  I am testing these settings with one channel and indeed there is a problem with the acceptance rate and the error message you mentioned. The test datacard and the corresponsing root file is attached with this message.
+Now running this with -v 1 option, I see the same message that you mentioned.
+combine command:
+combine -M MarkovChainMC dataCards_mumu_2LB_testing_lambda10GeV_obs/dimuon_2018_BB_ZeroB_10_negLL_workspace.root -n mumu_2LB_testing_lambda10GeV_obs -m 10 -i 100 --tries 6  --prior flat --rMax 50 -v 1
+[#1] INFO:Eval – Proposal acceptance rate: 1%
+[#1] INFO:Eval – Number of steps in chain: 1
+[#0] ERROR:InputArguments – MCMCInterval::CreateVector: creation of vector failed: Number of burn-in steps (num steps to ignore) >= number of steps in Markov chain.
+I see no option to change the Number of steps in chain though. Is there a way to change this?
+–
+Amandeep Kaur
+Datacard:
+dimuon_2018_BB_ZeroB_10_negLL.txt (3.2 KB)
+Workspace:
+dimuon_2018_BB_ZeroB_10_negLL_workspace.root (38.6 KB)
+Input root file:
+dimuon_2018_BB_ZeroB_10_negLL.root (109.5 KB)
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2024-08-27T15:18:47.473Z):
+Hi Amandeep,
+The number of steps in the chain is just the number of accepted proposals. The number of iterations is the total number of proposals. i.e. your markov chain made 100 proposals, of which 1 was accepted.  To increase the number of accepted points, you can just increased the number of iterations, but to change the acceptance rate you need to change something about the proposal mechanism.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 5 (by amkaur @ 2024-09-14T18:17:19.553Z):
+Hi Kyle.
+Thanks for all the tips. Turns out that the method or any method won’t work if there is any negative yields and the shape systematics will fail. However, I am running into another issue now. I have per year datacards and they are working working and I am able to evaluate the limits. But once I combine those, the method fails with the following error message:
+"[#0] ERROR:Eval – Problem finding a good starting point in MetropolisHastings::ConstructChain() "
+I am sharing the combine datacard and one single datacard with this message.
+Please let me know if there is anything I can check to debug this issue.
+Thanks and regards,
+Amandeep Kaur
+dimuon_2018_BB_ZeroB_6_negLL.txt (2.3 KB)
+mumu_2LB_combined_6_negLL.txt (501.6 KB)
+----------------------------------------
+
+REPLY 6 (by amkaur @ 2024-09-20T15:58:22.394Z):
+Dear Experts,
+I have found the reason why the limits fail or are incorrect with this method. I plotted the impact plots and the systematics look fine. However, the signal pdfs in some of the bins get negative though the signal yield is always positive. One such example is attached below for which the MCMC calculations seem to fail. There are several such bins across different channels.
+If there is any solution to this problem, I’d be happy to implement it.
+sig_pdf_dimuon101083×530 30.7 KB
+Thank you in advance,
+Amandeep Kaur
+----------------------------------------
+
+REPLY 7 (by gortona @ 2024-09-24T08:35:07.000Z):
+Dear Amandeep,
+In principle, a negative signal PDF is not a problem as long as the sum of signal + background is positive in all bins.
+There is no built in strategy in Combine to enforce this requirement. It is up to the users to ensure that their model is well-behaved as there are simply too many cases to take them all.
+The first things to check are usually to restrict the ranges of the POIs and of the nuisance parameters in order to force the fit to operate in well-behaved regions.
+Although the distribution you sent is a bit puzzling: it seems to me all the bins except the negative one are set at exactly 0. This configuration seems a bit unrealistic. I’m not sure what is going on, but I think it would be better to have a careful look at the inputs to the workspace.
+I hope it helps,
+Best regards,
+Giacomo
+
+On 20 Sep 2024, at 17:59, Amandeep Kaur via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Amandeep Kaur amkaurSeptember 20
+
+Dear Experts,
+I have found the reason why the limits fail or are incorrect with this method. I plotted the impact plots and the systematics look fine. However, the signal pdfs in some of the bins get negative though the signal yield is always positive. One such example is attached below for which the MCMC calculations seem to fail. There are several such bins across different channels.
+If there is any solution to this problem, I’d be happy to implement it.
+
+Thank you in advance,
+Amandeep Kaur
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Amandeep Kaur amkaurSeptember 14
+
+Hi Kyle.
+Thanks for all the tips. Turns out that the method or any method won’t work if there is any negative yields and the shape systematics will fail. However, I am running into another issue now. I have per year datacards and they are working working and I am able to evaluate the limits. But once I combine those, the method fails with the following error message:
+"[#0] ERROR:Eval – Problem finding a good starting point in MetropolisHastings::ConstructChain() "
+I am sharing the combine datacard and one single datacard with this message.
+Please let me know if there is anything I can check to debug this issue.
+Thanks and regards,
+Amandeep Kaur
+dimuon_2018_BB_ZeroB_6_negLL.txt (2.3 KB)
+mumu_2LB_combined_6_negLL.txt (501.6 KB)
+
+Kyle Cormier kcormierAugust 27
+
+Hi Amandeep,
+The number of steps in the chain is just the number of accepted proposals. The number of iterations is the total number of proposals. i.e. your markov chain made 100 proposals, of which 1 was accepted. To increase the number of accepted points, you can just increased the number of iterations, but to change the acceptance rate you need to change something about the proposal mechanism.
+Best,
+Kyle
+
+Amandeep Kaur amkaurAugust 27
+
+Hi Kyle,
+Thanks for the tips to check what is happening. I am testing these settings with one channel and indeed there is a problem with the acceptance rate and the error message you mentioned. The test datacard and the corresponsing root file is attached with this message.
+Now running this with -v 1 option, I see the same message that you mentioned.
+combine command:
+combine -M MarkovChainMC dataCards_mumu_2LB_testing_lambda10GeV_obs/dimuon_2018_BB_ZeroB_10_negLL_workspace.root -n mumu_2LB_testing_lambda10GeV_obs -m 10 -i 100 --tries 6 --prior flat --rMax 50 -v 1
+[#1] INFO:Eval – Proposal acceptance rate: 1%
+[#1] INFO:Eval – Number of steps in chain: 1
+[#0] ERROR:InputArguments – MCMCInterval::CreateVector: creation of vector failed: Number of burn-in steps (num steps to ignore) >= number of steps in Markov chain.
+I see no option to change the Number of steps in chain though. Is there a way to change this?
+–
+Amandeep Kaur
+Datacard:
+dimuon_2018_BB_ZeroB_10_negLL.txt (3.2 KB)
+Workspace:
+dimuon_2018_BB_ZeroB_10_negLL_workspace.root (38.6 KB)
+Input root file:
+dimuon_2018_BB_ZeroB_10_negLL.root (109.5 KB)
+
+Kyle Cormier kcormierAugust 27
+
+Dear Amandeep,
+I think you forgot to provide the root input files that are inputs to the datacard, so I can’t check in your particular case. But here are a few general points for you to check and consider in the meantime.
+I think if no limit is being provided, it probably means that the number of points accepted in your chains is less than the number of burn in points (that should be thrown away) for all of the tries. We should probably provide more clear terminal output of this. You should be able to check this by running with -v 1, and you may see messages like:
+[#0] ERROR:InputArguments -- MCMCInterval::CreateVector: creation of vector failed: Number of burn-in steps (num steps to ignore) >= number of steps in Markov chain.
+
+You should also see the number of accepted points in each try and the acceptance rate. I suspect that what is happening is that you have a very very small acceptance rate (default number of burn in steps is 200, so if you are using 50M iterations, something significantly less than 1/25k ).
+If this is the case, increasing the number of iterations is probably a very bad strategy for getting it to converge – it suggests that there is a problem with the proposal, i.e. your proposal algorithm is proposing almost exclusively points which have almost no probability of being accepted.
+In combine, you have a few handles on proposal (see the docs [1]). But the default proposal algorithm (ortho) which varies one parameter at a time is typically higher acceptance than the gaussian or uniform ones. So it seems likely that the step size is too large, by default this is set to 1/5 the parameter range, so if your likelihood function varies quite rapidly in the parameters with respect to 20% of their range, you can end up in such a situation. You can adjust the value of the range/step size ratio using --propHelperWidthRangeDivisor <ratio>.
+I’m not really an expert on this, but I suspect that perhaps the issue in your case is related to your POI specifically, since by default the proposal function will always step the POI. If the range of the POI is much larger than the width of likelihood that could explain the issue. You could test this very easily by running with the option --alwaysStepPOI 0 and checking the behaviour of the acceptance. This will generally have worse convergence, but if that helps, you could then pick a more plausible range for your POI (by checking with e.g. MultiDimFit).
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/?h=markovchain#proposals
+
+Amandeep Kaur amkaurAugust 26
+
+Dear Experts,
+I have a question about the " number of iterations" parameter in MCMC method. I am estimating the Bayesian limits with MCMC method. The physics model I used is attached below [1]. I have a pure signal term, an interference term and DY term in the signals as I am calculating limits for EFT based interference signal scenario. A few more details are listed below:
+Number of channels: 8 for Full Run 2 per b jet multiplicity, and I have 0b, 1b and >1b categories.
+Sample datacard is attached below [2].
+combine command:
+combine -M MarkovChainMC dataCards_mumu_2LB_negLL_obs_ZeroB/mumu_2LB_combined_6_negLL.root -n mumu_2LB_negLL_obs_ZeroB -m 6 -i 50000000 --tries 6 --prior flat --rMax 10
+As you can see I have increased “number of iterations” to 50M, but I am not getting any output or limit value in the end.
+
+Random number generator seed is 123456
+Method used is MarkovChainMC
+Done in 1078.32 min (cpu), 1081.91 min (real)
+Finished – ls dir:
+
+I tried running the same with 2 channels only, I got the output with “number of iterations” = 5M. The output looked reasonable too.
+For other signal scenario, I have observed that yes, one has to increase the "“number of iterations” value to get stable limits but for other signal scenario, I reached plateau at 3M.
+My question is: Is this >50M “number of iterations” common in practice and is safe or we have to fix some other parameter to get the results. I tried changing the number of tries from 6 to 100, but no luck.
+Please let me know if there is any solution to this problem.
+Thanks and regards,
+Amandeep Kaur
+[1] https://gitlab.cern.ch/cms-zprime-dileptons/ZPrimeCombine/-/blob/master/CIInterference.py?ref_type=heads
+[2] Datacard:
+mumu_2LB_combined_6_negLL.txt (101.7 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

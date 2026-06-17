@@ -1,0 +1,45 @@
+{
+  "topic_id": 9401,
+  "title": "Excluding a background process from autoMCstats",
+  "url": "https://cms-talk.web.cern.ch/t/9401",
+  "category_id": 279,
+  "created_at": "2022-04-18T14:07:35.454Z",
+  "last_posted_at": "2022-05-06T11:21:50.844Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "gcumming",
+      "name": "Grace Cummings",
+      "created_at": "2022-04-18T14:07:35.636Z",
+      "updated_at": "2023-02-07T10:57:31.530Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts:\nI would like to add statistical uncertainties to my datacard, and for two out of three of my background processes, I would like to use the autoMCstats functionality. Is there a way to exclude the third process, \u201cDY\u201d, from autoMCstats?\nMy datacard and root file are attached. An example of the command I am running is:\ncombine -M FitDiagnostics Run2_2017_2018_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_newhists_nosysts_autoMCstats0limi.txt  --saveShapes\nIn the example output shown here [1], it looks like several processes are excluded, though it is unclear to me if they were flagged as signal, since the datacard used to produce the output was not included.\n\u200bPlease let me know if there is a way to exclude a background process within the same channel from autoMCStats, and if not, if it is appropriate to include the statistical uncertainties as additional shape uncertainties, provided explicitly with additional up/down histograms.\nThanks and regards,\nGrace Cummings\n[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/",
+      "cooked_html": "<p>Dear Experts:</p>\n<p>I would like to add statistical uncertainties to my datacard, and for two out of three of my background processes, I would like to use the autoMCstats functionality. Is there a way to exclude the third process, \u201cDY\u201d, from autoMCstats?</p>\n<p>My datacard and root file are attached. An example of the command I am running is:</p>\n<p>combine -M FitDiagnostics Run2_2017_2018_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_newhists_nosysts_autoMCstats0limi.txt  --saveShapes</p>\n<p>In the example output shown here [1], it looks like several processes are excluded, though it is unclear to me if they were flagged as signal, since the datacard used to produce the output was not included.</p>\n<p>\u200bPlease let me know if there is a way to exclude a background process within the same channel from autoMCStats, and if not, if it is appropriate to include the statistical uncertainties as additional shape uncertainties, provided explicitly with additional up/down histograms.</p>\n<p>Thanks and regards,</p>\n<p>Grace Cummings</p>\n<p>[1] <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-04-20T10:35:09.022Z",
+      "updated_at": "2022-04-20T10:35:09.022Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Grace,\nTo add bin-by-bin uncertainties via autoMCStats, not taking into account the third process, you should manually set the bin errors of the histograms that you provide for \u201cDY\u201d to 0. We do not have options for this in the autoMCStats syntax to avoid accidentally turning this off for some processes, in this case you have to very consciously disable the uncertainties.\nBest,\nAdinda\nPS: Let me point out that in the example output, where you see \u201cprocess excluded\u201d, this refers to the exclusion of that process for deciding whether to use per-process uncertainties for that bin or to use a single Gaussian - the uncertainty is always applied to all processes, even if they are excluded for this determination.",
+      "cooked_html": "<p>Dear Grace,</p>\n<p>To add bin-by-bin uncertainties via autoMCStats, not taking into account the third process, you should manually set the bin errors of the histograms that you provide for \u201cDY\u201d to 0. We do not have options for this in the autoMCStats syntax to avoid accidentally turning this off for some processes, in this case you have to very consciously disable the uncertainties.</p>\n<p>Best,<br>\nAdinda</p>\n<p>PS: Let me point out that in the example output, where you see \u201cprocess excluded\u201d, this refers to the exclusion of that process for deciding whether to use per-process uncertainties for that bin or to use a single Gaussian - the uncertainty is always applied to all processes, even if they are excluded for this determination.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gcumming",
+      "name": "Grace Cummings",
+      "created_at": "2022-05-06T11:21:50.844Z",
+      "updated_at": "2022-05-06T11:21:50.844Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nI never thanked you for this! It implemented the \u201c0\u201d uncertainties, and that seems to have worked.\nBest,\nGrace",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>I never thanked you for this! It implemented the \u201c0\u201d uncertainties, and that seems to have worked.</p>\n<p>Best,</p>\n<p>Grace</p>"
+    }
+  ]
+}

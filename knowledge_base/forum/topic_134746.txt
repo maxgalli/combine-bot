@@ -1,0 +1,64 @@
+TOPIC: Systematically asymmetric impacts of nuisance parameters due to offest
+URL: https://cms-talk.web.cern.ch/t/134746
+DATE: 2025-10-17T18:26:01.561Z
+SOLVED: yes (reply 3)
+============================================================
+
+QUESTION (by fanx @ 2025-10-17T18:26:01.854Z):
+Dear combine experts,
+We have observed systematically asymmetric impacts of some of our nuisance parameters in our impact plot for expected significance.
+image2207×1814 398 KB
+As you can see from above, there is clearly an offset in the delta r.
+Since we mask out some channels to do this test, there are some nuisance parameters that should have no contribution in the impact, we still see a delta r for + and - 1sigma as shown below.
+image2207×1814 406 KB
+This makes us wonder there might be an offset in delta r when combine is calculating the impact of nuisance parameters.
+To verify this hypothesis, we make up a nuisance parameter in the datacard, called nummy.
+
+imax *  number of channels
+jmax *  number of backgrounds
+kmax *
+
+shapes bkg    ggf2   workspaces/workspace_bkg_profile_bias_ggf2.root   workspace_bkg:multipdf_ggf2
+shapes sig_el    ggf2   workspaces/workspace_duo_sig_ggf2.root   workspace_sig:model_DS_ggf2_el
+shapes sig_mu    ggf2   workspaces/workspace_duo_sig_ggf2.root   workspace_sig:model_DS_ggf2_mu
+shapes data_obs   ggf2   workspaces/workspace_bkg_profile_bias_ggf2.root     workspace_bkg:hist_ggf2_data
+
+bin             ggf2
+observation     -1
+bin     ggf2    ggf2    ggf2
+process bkg     sig_el  sig_mu
+process 1       0       -1
+rate    1.0     5.3893  6.0995
+dummy   lnN     0.999999        -       -
+pdfindex_ggf2         discrete
+
+It should have little to none impact. And we ran `combine -M MultiDimFit  -d datacard.root –algo impact –freezeParameters MH,pdfindex_ggf2 -t -1 --expectSignal=1 -P dummy`
+The result from the output root file limit tree is similar to what we have seen from our impact plot:
+
+0 * 1.0018545 *
+1 * 1.0019162 *
+2 * 1.0019372 *
+
+0th entry is the best-fit r, possibly from the initial fit, 1st entry is the +1sigma and 2nd entry is the -1sigma. As you can see, both + and -sigma r are larger than the best-fit r.
+This doesn’t look right to us. Can anyone explain it to us? Or it is a known issue in combine?
+Thanks in advance
+Xingchen
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-10-20T09:39:23.196Z):
+Dear Xingchen,
+What is your background rate? My guess is that you are probably very close to some boundary. Do you allow r to go to negative values, or is it bounded to r>0? If you only allow for positive values, you nuisances would be expected to have more freedom to pull to higher values of r than to smaller ones.
+I suspect from the second test you quote that there might also be some small bias in the PDF model, as for example your best fit does not converge exactly at 1.
+Can you please share with us the workspaces you are using? It is difficult to provide more insights without seeing the workspaces.
+Best,
+Giacomo
+----------------------------------------
+
+REPLY 3 [ACCEPTED ANSWER] (by fanx @ 2025-10-20T17:24:29.826Z):
+Hi Giacomo,
+Thank you for your reply! I seemed to find the answer to my question here.
+It is a known issue that posted here. When the systematics has too small impact, there would be an offset due to the numerical precision in the minimization. Maybe developers of combine can improve this in some future version. But this is really a small thing.
+To reply to your questions, yes, r is allowed to be negative. And I don’t think the second test is subject to bias due to the profile choosing a different model. I also tried to fix the index, and I got the same result.
+Best
+Xingchen
+----------------------------------------

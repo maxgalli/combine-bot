@@ -1,0 +1,56 @@
+{
+  "topic_id": 22869,
+  "title": "Two different PhysicsModels",
+  "url": "https://cms-talk.web.cern.ch/t/22869",
+  "category_id": 279,
+  "created_at": "2023-04-18T15:26:04.775Z",
+  "last_posted_at": "2023-04-19T14:52:02.892Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jsw",
+      "name": "Jon Wilson",
+      "created_at": "2023-04-18T15:26:05.062Z",
+      "updated_at": "2023-04-19T12:07:05.335Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI am working on a combination of two EFT analyses.  Each analysis uses a different PhysicsModel.  Is it necessary to adapt one analysis to use the same PhysicsModel as the other, or is it possible to create a combined data card and/or workspace using two different PhysicsModels?\nRegards,\nJon",
+      "cooked_html": "<p>Hi,<br>\nI am working on a combination of two EFT analyses.  Each analysis uses a different PhysicsModel.  Is it necessary to adapt one analysis to use the same PhysicsModel as the other, or is it possible to create a combined data card and/or workspace using two different PhysicsModels?<br>\nRegards,<br>\nJon</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-04-18T15:55:21.785Z",
+      "updated_at": "2023-04-18T15:55:21.785Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jon,\nOff the top of my head, I think the first way is essentially the best. Could write a new overall physics model that initialises the two individual ones internally, applying the appropriate one depending on the channel. Some care might then be needed with the parts defining the set of POIs, but imagine this could be worked around.\nMaybe others have better suggestions though.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Jon,</p>\n<p>Off the top of my head, I think the first way is essentially the best. Could write a new overall physics model that initialises the two individual ones internally, applying the appropriate one depending on the channel. Some care might then be needed with the parts defining the set of POIs, but imagine this could be worked around.</p>\n<p>Maybe others have better suggestions though.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "clange",
+      "name": "Clemens Lange",
+      "created_at": "2023-04-19T12:08:21.934Z",
+      "updated_at": "2023-04-19T12:08:21.934Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I moved this thread to the Statistical Interpretation Tools subcategory.\nClemens",
+      "cooked_html": "<p>I moved this thread to the <a href=\"https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279\">Statistical Interpretation Tools subcategory</a>.</p>\n<p>Clemens</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "jsw",
+      "name": "Jon Wilson",
+      "created_at": "2023-04-19T14:52:02.892Z",
+      "updated_at": "2023-04-19T14:52:02.892Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThanks.  I was hoping there was some way to combine the workspaces after creating them with text2workspace, but if there is not, then there is not.\nBest regards,\nJon",
+      "cooked_html": "<p>Hi Andrew,<br>\nThanks.  I was hoping there was some way to combine the workspaces after creating them with text2workspace, but if there is not, then there is not.<br>\nBest regards,<br>\nJon</p>"
+    }
+  ]
+}

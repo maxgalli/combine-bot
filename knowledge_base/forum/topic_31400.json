@@ -1,0 +1,100 @@
+{
+  "topic_id": 31400,
+  "title": "Proper way to do background-only postfit plot with FitDiagnostics in multi POI model",
+  "url": "https://cms-talk.web.cern.ch/t/31400",
+  "category_id": 279,
+  "created_at": "2023-11-07T15:26:02.387Z",
+  "last_posted_at": "2023-11-10T21:24:58.074Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-11-07T15:26:02.566Z",
+      "updated_at": "2023-11-07T15:26:02.566Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am struggling with the correct command to do background only postfit plots. The first case, with no option, sets only the first POI as 0, with the second freely floating. Then I tried with --setParameters 'g1=0.,g2=0.' --freezeParameters 'g1,g2'   --customStartingPoint, and the result came back with g1 = 1 in the output root file, in tree_fit_b.\nWhat is the correct way to get both g1 and g2 to be 0 in the background-only fit?\nCheers,\nAfiq",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am struggling with the correct command to do background only postfit plots. The first case, with no option, sets only the first POI as 0, with the second freely floating. Then I tried with <code>--setParameters 'g1=0.,g2=0.' --freezeParameters 'g1,g2'   --customStartingPoint</code>, and the result came back with g1 = 1 in the output root file, in <code>tree_fit_b</code>.</p>\n<p>What is the correct way to get both g1 and g2 to be 0 in the background-only fit?</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-11-09T10:41:13.006Z",
+      "updated_at": "2023-11-09T10:41:13.006Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Afiq,\nI don\u2019t see anything wrong with what you\u2019ve written, I think it should work. Could you perhaps provide a minimal working example with a datacard and exact command that you run where it\u2019s not working?\nBest,\nKyle",
+      "cooked_html": "<p>Dear Afiq,</p>\n<p>I don\u2019t see anything wrong with what you\u2019ve written, I think it should work. Could you perhaps provide a minimal working example with a datacard and exact command that you run where it\u2019s not working?</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-11-09T20:18:35.282Z",
+      "updated_at": "2023-11-09T20:18:35.282Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Kyle,\nTurns out it does work. In the previous version where it did not, I had --X-rtd NO_INITIAL_SNAP in the command, which was part of the speed improvement options that I received months ago. Without it, the second approach with --customStartingPoint works as expected. By chance while I was preparing the MWE for you, this option was not included.\nPerhaps it is worth documenting all the available --X-rtd options, and what they do and more importantly might break\u2026\nCheers,\nAfiq",
+      "cooked_html": "<p>Dear Kyle,</p>\n<p>Turns out it does work. In the previous version where it did not, I had <code>--X-rtd NO_INITIAL_SNAP</code> in the command, which was part of the speed improvement options that I received months ago. Without it, the second approach with <code>--customStartingPoint</code> works as expected. By chance while I was preparing the MWE for you, this option was not included.</p>\n<p>Perhaps it is worth documenting all the available <code>--X-rtd</code> options, and what they do and more importantly might break\u2026</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-11-10T08:23:34.632Z",
+      "updated_at": "2023-11-10T08:23:34.632Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Afiq,\nGlad it worked.\nI agree, we need to keep improving the documentation, and these options are one of the things that need to be better documented.\nThis could be a nice self-contained project. Since one of our main limitations is person power, we are always happy if anyone is interested in contributing to such efforts.  If you\u2019re interested, contact me and @anigamov so maybe we can coordinate. Or for smaller things you are always welcome to make a pull request directly!\nCheers,\nKyle",
+      "cooked_html": "<p>Dear Afiq,</p>\n<p>Glad it worked.</p>\n<p>I agree, we need to keep improving the documentation, and these options are one of the things that need to be better documented.</p>\n<p>This could be a nice self-contained project. Since one of our main limitations is person power, we are always happy if anyone is interested in contributing to such efforts. <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/wink.png?v=12\" title=\":wink:\" class=\"emoji\" alt=\":wink:\" loading=\"lazy\" width=\"20\" height=\"20\"> If you\u2019re interested, contact me and <a class=\"mention\" href=\"/u/anigamov\">@anigamov</a> so maybe we can coordinate. Or for smaller things you are always welcome to make a pull request directly!</p>\n<p>Cheers,</p>\n<p>Kyle</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-11-10T13:21:44.329Z",
+      "updated_at": "2023-11-10T13:21:44.329Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Kyle,\nI spoke too soon. It\u2019s still incomplete, in that the plots appear with the correct POIs, but they come without uncertainties in the shapes_fit_b/bin_name/total_covar matrix. Same with the histograms.\nThe command I ran was:\ncombine -v -1 -M FitDiagnostics /afs/cern.ch/work/a/afiqaize/public/ahtt/combinestuff/A_m400_w5p0__H_m400_w5p0_78/workspace_fitdiag.root --saveWithUncertainties --saveNormalizations --saveShapes --saveOverallShapes --plots -m 400 -n _forceb --X-rtd OPTIMIZE_BOUNDS=0 --X-rtd FAST_VERTICAL_MORPH --X-rtd CACHINGPDF_NOCLONE --X-rtd MINIMIZER_MaxCalls=9999999 --cminPreScan --cminDefaultMinimizerStrategy 2 --robustFit 1 --setRobustFitAlgo Minuit2 --maxFailedSteps 9999999 --setRobustFitStrategy 2  --skipSBFit --setParameters 'g1=0.,g2=0.' --freezeParameters 'g1,g2' --customStartingPoint\n\nThe workspace was made with:\ntext2workspace.py -o workspace_fitdiag.root -P CombineHarvester.CombineTools.MultiInterferencePlusFixed:multiInterferencePlusFixed --PO signal=A_m400_w5p0,H_m400_w5p0 --PO verbose --PO no-r --channel-masks --X-pack-asympows --optimize-simpdf-constraints=cms -m 400 ahtt_combined.txt\n\nThe errors are there if I don\u2019t use  --X-pack-asympows --optimize-simpdf-constraints=cms in the ws creation and run without --X-rtd FAST_VERTICAL_MORPH --X-rtd CACHINGPDF_NOCLONE, but this is tremendously slow, and I\u2019ve never got this to not crash when running the full analysis even with fit strategy 0. Tolerable for small test cases, but not usable without splitting it up somehow.\nAny ideas?\nCheers,\nAfiq",
+      "cooked_html": "<p>Dear Kyle,</p>\n<p>I spoke too soon. It\u2019s still incomplete, in that the plots appear with the correct POIs, but they come without uncertainties in the <code>shapes_fit_b/bin_name/total_covar</code> matrix. Same with the histograms.</p>\n<p>The command I ran was:</p>\n<pre><code class=\"lang-auto\">combine -v -1 -M FitDiagnostics /afs/cern.ch/work/a/afiqaize/public/ahtt/combinestuff/A_m400_w5p0__H_m400_w5p0_78/workspace_fitdiag.root --saveWithUncertainties --saveNormalizations --saveShapes --saveOverallShapes --plots -m 400 -n _forceb --X-rtd OPTIMIZE_BOUNDS=0 --X-rtd FAST_VERTICAL_MORPH --X-rtd CACHINGPDF_NOCLONE --X-rtd MINIMIZER_MaxCalls=9999999 --cminPreScan --cminDefaultMinimizerStrategy 2 --robustFit 1 --setRobustFitAlgo Minuit2 --maxFailedSteps 9999999 --setRobustFitStrategy 2  --skipSBFit --setParameters 'g1=0.,g2=0.' --freezeParameters 'g1,g2' --customStartingPoint\n</code></pre>\n<p>The workspace was made with:</p>\n<pre><code class=\"lang-auto\">text2workspace.py -o workspace_fitdiag.root -P CombineHarvester.CombineTools.MultiInterferencePlusFixed:multiInterferencePlusFixed --PO signal=A_m400_w5p0,H_m400_w5p0 --PO verbose --PO no-r --channel-masks --X-pack-asympows --optimize-simpdf-constraints=cms -m 400 ahtt_combined.txt\n</code></pre>\n<p>The errors are there if I don\u2019t use <code> --X-pack-asympows --optimize-simpdf-constraints=cms</code> in the ws creation and run without <code>--X-rtd FAST_VERTICAL_MORPH --X-rtd CACHINGPDF_NOCLONE</code>, but this is tremendously slow, and I\u2019ve never got this to not crash when running the full analysis even with fit strategy 0. Tolerable for small test cases, but not usable without splitting it up somehow.</p>\n<p>Any ideas?</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-11-10T13:59:30.699Z",
+      "updated_at": "2023-11-10T13:59:30.699Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nAs you\u2019ve already noticed you can\u2019t make the post-fit plots with the additional --X-rtd options you are using. You can still use these fit results and make the plots with the PostFitShapesFromWorkspace script, and make sure to use the workspace created without these extra options you mentioned in the previous message.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>As you\u2019ve already noticed you can\u2019t make the post-fit plots with the additional <code>--X-rtd</code> options you are using. You can still use these fit results and make the plots with the <a href=\"https://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html\" rel=\"noopener nofollow ugc\">PostFitShapesFromWorkspace</a> script, and make sure to use the workspace created without these extra options you mentioned in the previous message.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-11-10T15:42:35.071Z",
+      "updated_at": "2023-11-10T15:43:11.667Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Afiq,\nIf you are not seeing any entries in the covariance matrix under shapes_fit_b/<bin_name>/total_covar it is possible that this is due to issues with the covariance matrix estimation.  See the online documentation on this [1]. If the covariance matrix is forced to be positive definite it will not fill the covariance matrix, as these values are really not to be trusted. You can check the status of the covariance matrix by printing the corresponding RooFitResult in FitDiagnostics output file.\nCheers,\nKyle\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties",
+      "cooked_html": "<p>Dear Afiq,</p>\n<p>If you are not seeing any entries in the covariance matrix under <code>shapes_fit_b/&lt;bin_name&gt;/total_covar</code> it is possible that this is due to issues with the covariance matrix estimation.  See the online documentation on this [1]. If the covariance matrix is forced to be positive definite it will not fill the covariance matrix, as these values are really not to be trusted. You can check the status of the covariance matrix by printing the corresponding <code>RooFitResult</code> in FitDiagnostics output file.</p>\n<p>Cheers,<br>\nKyle</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties</a></p>"
+    },
+    {
+      "post_number": 8,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-11-10T21:24:58.074Z",
+      "updated_at": "2023-11-10T21:25:16.154Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle, Aliya,\nThanks for the pointer that the uncertainties are not written out when the covariance matrix is forced posdef. This is is a good hint. So after playing around a bit more, I\u2019ve come to the conclusion that in fact the extra options in the ws and fitdiagnostics step do not cause the missing errors by themselves. Restricting myself to just one bin, I can get accurate covariance matrix with them.\nHowever it is true that having these options make forced posdef matrices appear significantly more often. So in some sense they reduce the fit stability somehow\u2026 maybe you can explain what exactly they do here, so that I have a better idea on what to investigate to get my fits to converge?\nAs mentioned before, the extra options provide substantial speed gains, and this is important for the full fit.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi Kyle, Aliya,</p>\n<p>Thanks for the pointer that the uncertainties are not written out when the covariance matrix is forced posdef. This is is a good hint. So after playing around a bit more, I\u2019ve come to the conclusion that in fact the extra options in the ws and fitdiagnostics step do not cause the missing errors by themselves. Restricting myself to just one bin, I can get accurate covariance matrix with them.</p>\n<p>However it is true that having these options make forced posdef matrices appear significantly more often. So in some sense they reduce the fit stability somehow\u2026 maybe you can explain what exactly they do here, so that I have a better idea on what to investigate to get my fits to converge?</p>\n<p>As mentioned before, the extra options provide substantial speed gains, and this is important for the full fit.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    }
+  ]
+}

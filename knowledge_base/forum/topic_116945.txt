@@ -1,0 +1,34 @@
+TOPIC: Get NLL(B) and NLL(S+B) from MultiDimFit
+URL: https://cms-talk.web.cern.ch/t/116945
+DATE: 2025-03-01T14:03:06.629Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-03-01T14:03:06.770Z):
+Dear experts,
+I run
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.4,width=2.6 --freezeParameters mean,width,r -v3
+and I can access from output file
+higgsCombineTest.MultiDimFit.mH120.root
+deltaNLL  value.
+Is there was that I can get separately NLL for B and NLL for S+B fit ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-03-02T18:15:37.341Z):
+Hi Sasha,
+I believe you already asked this question here.
+The information provided there is still true.
+We may remove some of the offsets from combine, but making sure that all the offsets are removed will need a careful evaluation, and likely it is going to be useless as the statistical inference is usually based on likelihood ratios.
+Do you have a specific use-case?
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2025-03-03T13:30:33.610Z):
+Hi Andrea,
+sometime we may have a local minimum in B or (and) S+B fits
+and it might depend on the initial values of fitted parameters.
+So having NLL separately one can recognize this situation and play around.
+Cheers, Sasha.
+----------------------------------------

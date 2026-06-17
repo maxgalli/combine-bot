@@ -1,0 +1,68 @@
+TOPIC: Asymptotic Limit sensitive to arbitrary signal BR
+URL: https://cms-talk.web.cern.ch/t/7829
+DATE: 2022-03-07T10:20:00.505Z
+SOLVED: no
+============================================================
+
+QUESTION (by kaho @ 2022-03-07T10:20:00.917Z):
+Hi combine experts,
+I am looking into the blinded asymptotic limit of an exotic signal with an unknown BR. By default, I have scaled the MC signal weight to correspond to a BR of 1% and computed the expected limit. However, I found that this arbitrary choice has a non-negligible effect on the limits returned:
+At BR = 1%, it gives
+– AsymptoticLimits ( CLs ) –
+Expected 2.5%: r < 0.0023
+Expected 16.0%: r < 0.0035
+Expected 50.0%: r < 0.0054
+Expected 84.0%: r < 0.0071
+Expected 97.5%: r < 0.0097
+And at BR = 1e-4, it gives
+– AsymptoticLimits ( CLs ) –
+Expected 2.5%: r < 0.2625
+Expected 16.0%: r < 0.3512
+Expected 50.0%: r < 0.4941
+Expected 84.0%: r < 0.7069
+Expected 97.5%: r < 0.9711
+, which is different from 0.54 expected from the previous output. And at BR = 1e-5, it gives a different but a closer value to BR = 1e-4
+– AsymptoticLimits ( CLs ) –
+Expected 2.5%: r < 2.6120
+Expected 16.0%: r < 3.5082
+Expected 50.0%: r < 4.9531
+Expected 84.0%: r < 7.0657
+Expected 97.5%: r < 9.7206
+My question is how do I scale my signal properly to make sure my results are accurate?
+Thanks,
+Ka Wa
+----------------------------------------
+
+REPLY 2 (by kaho @ 2022-03-10T16:56:32.699Z):
+Hi all,
+I am posting again as a follow-up to this post. After some investigations, the inconsistency of limits seems to be coming from the “rAbsAcc” or “rRelAcc” parameter. By default, “rAbsACC” is set to be 5e-4. I have changed “rAbsACC” to 1e-5 and rerun the AsymptoticLimits at BR=1%. This time the Expected 50% gives r < 0.004959 which agrees with what we saw for BR=1e-4.
+If any Combine expert sees this, please verify this is the correct approach to get an accurate limit.
+Thanks,
+Ka Wa
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2022-03-10T17:06:12.184Z):
+Hi Ka Wa,
+Indeed, for very small values of the limit the default rAbsAcc can lead to the limit search ending too early, and giving an imprecise value. So adjusting this makes sense. The other option is to rescale the initial signal down by some orders of magnitude such that limit value goes correspondingly up. Either approach should be fine.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-03-10T17:08:24.000Z):
+Hi, parameters are usually tuned for ranges around ~1.
+It is probably correct that for very small BR improving the accuracy will allow it to converge to the right value.
+Notice that limit setting is multiplicative, so you can multiply in the datacard or in the results at your wish.
+-Andrea
+On Thu, Mar 10, 2022 at 5:59 PM Ka Wa Ho via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Ka Wa Ho kahoMarch 10
+
+Hi all,
+I am posting again as a follow-up to this post. After some investigations, the inconsistency of limits seems to be coming from the “rAbsAcc” or “rRelAcc” parameter. By default, “rAbsACC” is set to be 5e-4. I have changed “rAbsACC” to 1e-5 and rerun the AsymptoticLimits at BR=1%. This time the Expected 50% gives r < 0.004959 which agrees with what we saw for BR=1e-4.
+If any Combine expert sees this, please verify this is the correct approach to get an accurate limit.
+Thanks,
+Ka Wa
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

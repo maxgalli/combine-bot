@@ -1,0 +1,56 @@
+{
+  "topic_id": 10820,
+  "title": "S+B fit from workspace",
+  "url": "https://cms-talk.web.cern.ch/t/10820",
+  "category_id": 279,
+  "created_at": "2022-05-24T09:41:33.432Z",
+  "last_posted_at": "2022-05-24T10:41:37.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jbabbar",
+      "name": "Jyoti Babbar",
+      "created_at": "2022-05-24T09:41:33.833Z",
+      "updated_at": "2023-02-07T11:02:49.664Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am performing S+B fit with a function defined as a pdf. The limits are calculated by Asymptotic method with an additional option --saveworkspace also given. I can see the background distribution from the Roodatasets saved in the workspace. But I want to see how the S+B fit look like for the different bins of the input mass histogram.\nCan you please tell how I can see the S+B fit from the saved workspace or any other method? Please let me know if more details are needed from my side.\nThanks a lot !!\nBest Regards\nJyoti Babbar",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am performing S+B fit with a function defined as a pdf. The limits are calculated by Asymptotic method with an additional option --saveworkspace also given. I can see the background distribution from the Roodatasets saved in the workspace. But I want to see how the S+B fit look like for the different bins of the input mass histogram.</p>\n<p>Can you please tell how I can see the S+B fit from the saved workspace or any other method? Please let me know if more details are needed from my side.</p>\n<p>Thanks a lot !!<br>\nBest Regards<br>\nJyoti Babbar</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-05-24T09:50:09.446Z",
+      "updated_at": "2022-05-24T09:50:09.446Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jyoti,\ncombine -M MultiDimFit --saveWorkspace saves the workspace used by combine and a snapshot of the S+B background with name MultiDimFit\nIf you want to visualize the distributions,\ncombine -M FitDiagnostics --saveShapes save as TH1 the prefit, b-only, and s+b shapes.  If you want also unceratinties on the fits, you can use additionally the option --saveWithUncertainties, which is slow, but resamples the covariance matrix.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi Jyoti,</p>\n<p><code>combine -M MultiDimFit --saveWorkspace</code> saves the workspace used by combine and a snapshot of the S+B background with name <code>MultiDimFit</code></p>\n<p>If you want to visualize the distributions,<br>\n<code>combine -M FitDiagnostics --saveShapes</code> save as TH1 the prefit, b-only, and s+b shapes.  If you want also unceratinties on the fits, you can use additionally the option <code>--saveWithUncertainties</code>, which is slow, but resamples the covariance matrix.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jbabbar",
+      "name": "Jyoti Babbar",
+      "created_at": "2022-05-24T10:30:56.821Z",
+      "updated_at": "2022-05-24T10:30:56.821Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi  Andrea,\nThanks for the prompt response.\nJust to clarify I checked  using combine -M  FitDiagnostics :\nI see the TDirectoryFile\tshapes_prefit  , and in this directory there are histograms for signal and bkg. There is  also a  histogram named \u201ctotal\u201d, is this S+B distribution?\nThanks again!!\nBest Regards\nJyoti Babbar",
+      "cooked_html": "<p>Hi  Andrea,</p>\n<p>Thanks for the prompt response.</p>\n<p>Just to clarify I checked  using combine -M  FitDiagnostics :</p>\n<p>I see the TDirectoryFile\tshapes_prefit  , and in this directory there are histograms for signal and bkg. There is  also a  histogram named \u201ctotal\u201d, is this S+B distribution?</p>\n<p>Thanks again!!<br>\nBest Regards<br>\nJyoti Babbar</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-05-24T10:41:37.000Z",
+      "updated_at": "2022-05-24T10:43:20.739Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi,\nYes, shapes_prefit has the histogram as you put them in your datacards. total corresponds to the S+B, total_background to the sum of all backgrounds and total_signal to the sum of all signals.\n-A\nOn Tue, May 24, 2022 at 12:32 PM Jyoti Babbar via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nJyoti Babbar jbabbarMay 24\n\nHi Andrea,\nThanks for the prompt response.\nJust to clarify I checked using combine -M FitDiagnostics :\nI see the TDirectoryFile shapes_prefit , and in this directory there are histograms for signal and bkg. There is also a histogram named \u201ctotal\u201d, is this S+B distribution?\nThanks again!!\nBest Regards\nJyoti Babbar\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Hi,<br>\nYes, shapes_prefit has the histogram as you put them in your datacards. total corresponds to the S+B, total_background to the sum of all backgrounds and total_signal to the sum of all signals.</p>\n<p>-A</p>\n<p>On Tue, May 24, 2022 at 12:32 PM Jyoti Babbar via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/j/258eb7/45.png\" title=\"jbabbar\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/jbabbar\">Jyoti Babbar</a> jbabbar<br>May 24</th>\n</tr>\n</thead>\n</table>\n</div><p>Hi Andrea,</p>\n<p>Thanks for the prompt response.</p>\n<p>Just to clarify I checked using combine -M FitDiagnostics :</p>\n<p>I see the TDirectoryFile shapes_prefit , and in this directory there are histograms for signal and bkg. There is also a histogram named \u201ctotal\u201d, is this S+B distribution?</p>\n<p>Thanks again!!<br>\nBest Regards<br>\nJyoti Babbar</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/s-b-fit-from-workspace/10820/3\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/5d4e3eb19b126c8e2f9554a3ea447bb1a532f436e3b706777dcca58c238cd952\">click here</a>.</p>\n</blockquote>"
+    }
+  ]
+}

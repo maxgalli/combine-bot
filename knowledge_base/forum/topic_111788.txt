@@ -1,0 +1,92 @@
+TOPIC: Error using X-assign-flatParam-prior with freely floating pdf parameters
+URL: https://cms-talk.web.cern.ch/t/111788
+DATE: 2025-02-10T10:43:32.103Z
+SOLVED: no
+============================================================
+
+QUESTION (by fsimone @ 2025-02-10T10:43:32.225Z):
+Dear experts,
+we use the  “Hybrid-Bayesian” method for setting upper limits using Combine v10.0.2. We do a shape analysis on the invariant mass, where the background is modeled by an exponential function whose slope is left freely floating in the fit.
+Therefore, the slope of the exponential is set as a flatParam in the datacard.
+When running
+text2workspace.py datacard.txt -o workspace.root --X-assign-flatParam-prior
+we get the error below [*].
+Could you please point us to the correct procedure in this case, i.e. using “Hybrid-Bayesian” while keeping some pdf parameters freely floating?
+Best,
+Federica for the BPH-24-010 team
+@cbasile
+[*]
+Traceback (most recent call last):
+File "/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/bin/slc7_amd64_gcc12/text2workspace.py", line 104, in <module>
+MB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel)
+File "/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py", line 183, in doModel
+self.doAutoFlatNuisancePriors()
+File "/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py", line 835, in doAutoFlatNuisancePriors
+v, x1, x2 = self.out.var(c_param_name).getVal(), self.out.var(c_param_name).getMin(), self.out.var(c_param_name).getMax()
+File "/cvmfs/cms.cern.ch/slc7_amd64_gcc12/lcg/root/6.30.07-f3322c77db1c59847b28fde88ff7218c/lib/ROOT/_pythonization/_roofit/_rooabsreal.py", line 131, in getVal
+return self._getVal(normalizationSet) if normalizationSet else self._getVal()
+TypeError: none of the 2 overloaded methods succeeded. Full details:
+double RooAbsReal::getVal(const RooArgSet& normalisationSet) =>
+TypeError: takes at least 1 arguments (0 given)
+attempt to access a null-pointer
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-02-10T12:00:11.903Z):
+Hi Federica,
+This seems to be an issue in that the parameter you are attaching a flat prior too is one that text2workspace doesn’t know about (yet). basically, we have a null pointer in this block of code : https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ModelTools.py#L834-L843
+Note that this doesn’t happen for parameters like normalisations as they can be explicitly present before this code is executed.
+I would need to think a bit about how to fix it, unless another expert spots an obvious solution.
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by nckw @ 2025-02-10T13:50:12.192Z):
+Hi again,
+I thought a bit more and found a workaround. Can you try this PR  https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1040  ?
+All you need to do in your datacard is to extend the declaration of the flatParam to include a default value (its not very important of course for this) and the range for the prior).  eg,
+name flatPrior x [xmin,xmax]
+Can you try that and let me know if it works?
+Best,
+Nick
+----------------------------------------
+
+REPLY 4 (by fsimone @ 2025-02-10T15:36:01.788Z):
+Hi Nick,
+thank you very much for the prompt feedback. I did the following:
+
+take the PR and compile
+
+-bash-4.2$ git remote -v
+origin	https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git (fetch)
+origin	https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git (push)
+-bash-4.2$ git pull origin pull/1040/head
+
+Test with the old datacard. I now getting the new warning:
+
+ERROR in flatParam - you need to include nominal value (v) and range  - name flatParam v [x1,x2] when including flat prior for parameter bkg_exp_slope_threeGlobal_2023_A1
+
+Modify my datacard accordingly:
+
+bkg_exp_slope_threeGlobal_2023_A1 flatParam -1. [-1000.,100.]
+
+but the same error is raised:
+ERROR in flatParam - you need to include nominal value (v) and range  - name flatParam v [x1,x2] when including flat prior for parameter bkg_exp_slope_threeGlobal_2023_A1
+
+is the syntax wrong?
+Thank you and best,
+Federica
+----------------------------------------
+
+REPLY 5 (by nckw @ 2025-02-10T15:53:42.343Z):
+Hi Federica,
+Nope, my mistake - I forgot to also push a necessary edit for DatacardParser.py. I have pushed it now so hopefully if you pull again and try it will be ok
+Best,
+Nick
+----------------------------------------
+
+REPLY 6 (by fsimone @ 2025-02-11T13:54:51.315Z):
+Hi Nick,
+sorry for the late answer. It works now, thank you!
+Best,
+Federica
+----------------------------------------

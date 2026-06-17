@@ -1,0 +1,56 @@
+{
+  "topic_id": 28416,
+  "title": "Understanding `--signalPdfNames` in FitDiagnostics",
+  "url": "https://cms-talk.web.cern.ch/t/28416",
+  "category_id": 279,
+  "created_at": "2023-08-15T14:17:57.035Z",
+  "last_posted_at": "2023-08-15T20:03:09.010Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-08-15T14:17:57.362Z",
+      "updated_at": "2023-08-15T14:17:57.362Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi experts,\nI am referring to the following remark in [1]:\n[...] and then optionally specify what are the names of the signal and background pdfs, e.g. --signalPdfNames='ggH*,vbfH*' and --backgroundPdfNames='*DY*,*WW*,*Top*' (by default, the definitions of signal and background are taken from the datacard).\n\nIn my case, I have signal processes A, B, C, where C is a signal for strictly technical reasons, in that it is scaled by a parameter that needs to be treated as a POI. From physics point of view, C is considered part of the background. For this reason, it is desirable to be able to reassign C to the total_background histogram produced by FitDiagnostics. Based on [1] I expected that using the options above as --signalPdfNames='A,B' --backgroundPdfNames='C,other_bkg_procs' would achieve exactly what I want, but the resulting total_signal/background histograms generated with and without the option are identical, and conceptually this is incorrect.\nIs there a way to do what I want, correctly accounting for all relevant correlations?\nCheers,\nAfiq\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#plotting",
+      "cooked_html": "<p>Hi experts,</p>\n<p>I am referring to the following remark in [1]:</p>\n<pre><code class=\"lang-auto\">[...] and then optionally specify what are the names of the signal and background pdfs, e.g. --signalPdfNames='ggH*,vbfH*' and --backgroundPdfNames='*DY*,*WW*,*Top*' (by default, the definitions of signal and background are taken from the datacard).\n</code></pre>\n<p>In my case, I have signal processes A, B, C, where C is a signal for strictly technical reasons, in that it is scaled by a parameter that needs to be treated as a POI. From physics point of view, C is considered part of the background. For this reason, it is desirable to be able to reassign C to the <code>total_background</code> histogram produced by FitDiagnostics. Based on [1] I expected that using the options above as <code>--signalPdfNames='A,B' --backgroundPdfNames='C,other_bkg_procs'</code> would achieve exactly what I want, but the resulting <code>total_signal/background</code> histograms generated with and without the option are identical, and conceptually this is incorrect.</p>\n<p>Is there a way to do what I want, correctly accounting for all relevant correlations?</p>\n<p>Cheers,<br>\nAfiq</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#plotting\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#plotting</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-08-15T17:42:00.034Z",
+      "updated_at": "2023-08-15T17:42:00.034Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nI believe that --signalPdfNames and --backgroundPdfNames are only affecting the plots themselves, i.e. the png outputs; not actually affecting the individual histograms stored in the root file. So it\u2019s not surprising that the histograms are unchanged.\nI don\u2019t think that there is a way only change which processes contribute to the total_signal/total_background histograms. But I think there are a few ways to do what you want, depending on exactly what the goal is.\nMaybe I haven\u2019t understood the technical difficulty with calling C a background process, but is there a reason that you can\u2019t keep it as a background process but apply a floating nuisance parameter for its normalization?\nBest,\nKyle",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>I believe that <code>--signalPdfNames</code> and <code>--backgroundPdfNames</code> are only affecting the plots themselves, i.e. the png outputs; not actually affecting the individual histograms stored in the root file. So it\u2019s not surprising that the histograms are unchanged.</p>\n<p>I don\u2019t think that there is a way only change which processes contribute to the <code>total_signal/total_background</code> histograms. But I think there are a few ways to do what you want, depending on exactly what the goal is.</p>\n<p>Maybe I haven\u2019t understood the technical difficulty with calling C a background process, but is there a reason that you can\u2019t keep it as a background process but apply a floating nuisance parameter for its normalization?</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-08-15T18:52:13.956Z",
+      "updated_at": "2023-08-15T18:52:13.956Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThe reason is that C scales quadratically, and I thought of implementing this through a PhysicsModel, which afaik allows doing so only for POIs. However, looking at [2], this may also be achievable with rateParam, allowing C to be kept as background.\nI should try this out.\nCheers,\nAfiq\n[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>The reason is that C scales quadratically, and I thought of implementing this through a PhysicsModel, which afaik allows doing so only for POIs. However, looking at [2], this may also be achievable with rateParam, allowing C to be kept as background.</p>\n<p>I should try this out.</p>\n<p>Cheers,<br>\nAfiq</p>\n<p>[2] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters</a></p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-08-15T20:03:09.010Z",
+      "updated_at": "2023-08-15T20:03:09.010Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Seems to have worked beautifully. One minor issue remains:\nUsing combine -M MultidimFit wsp.root --saveSpecifiedNuis=all doesn\u2019t save the rateParam in the limit tree. Adding --saveSpecifiedFunc paramname solves this, but this counts on knowing paramname, making abstraction difficult. Is there a way to tell combine to save all parameters of the fit?\nAfiq",
+      "cooked_html": "<p>Seems to have worked beautifully. One minor issue remains:</p>\n<p>Using <code>combine -M MultidimFit wsp.root --saveSpecifiedNuis=all</code> doesn\u2019t save the rateParam in the limit tree. Adding <code>--saveSpecifiedFunc paramname</code> solves this, but this counts on knowing paramname, making abstraction difficult. Is there a way to tell combine to save all parameters of the fit?</p>\n<p>Afiq</p>"
+    }
+  ]
+}

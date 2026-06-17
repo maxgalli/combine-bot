@@ -1,0 +1,67 @@
+{
+  "topic_id": 51642,
+  "title": "Covariance matrix for CR included and not included",
+  "url": "https://cms-talk.web.cern.ch/t/51642",
+  "category_id": 279,
+  "created_at": "2024-10-04T10:44:11.521Z",
+  "last_posted_at": "2024-10-08T11:11:30.163Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "vhegde",
+      "name": "Vinay Hegde",
+      "created_at": "2024-10-04T10:44:11.723Z",
+      "updated_at": "2024-10-04T10:44:11.723Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am trying to get covariance matrix for combination of different analyses (SUS-21-008). The goal is to obtain this matrix by using datacards from several analyses and make this info available for theorists outside CMS for reinterpretation.\nI have two analyses, A and B, and A has CRs included in the fit and B has no CR included in the fit. What is the correct procedure to evaluate the matrix for combination of A and B? This document has commands for A and B separately. Should I mask all SRs from analysis A and B both and run the fit?\nAlso, is there a way to check the validity of covariance matrix other than running the simplified likelihood? I believe one check is sqrt(diagonal entry) = uncertainty on the background. Is there some other way to validate it?\nThanks,\nVinay",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am trying to get covariance matrix for combination of different analyses (SUS-21-008). The goal is to obtain this matrix by using datacards from several analyses and make this info available for theorists outside CMS for reinterpretation.</p>\n<p>I have two analyses, A and B, and A has CRs included in the fit and B has no CR included in the fit. What is the correct procedure to evaluate the matrix for combination of A and B? This <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/simplifiedlikelihood/?h=moment\" rel=\"noopener nofollow ugc\">document</a> has commands for A and B separately. Should I mask all SRs from analysis A and B both and run the fit?</p>\n<p>Also, is there a way to check the validity of covariance matrix other than running the simplified likelihood? I believe one check is sqrt(diagonal entry) = uncertainty on the background. Is there some other way to validate it?</p>\n<p>Thanks,<br>\nVinay</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "vhegde",
+      "name": "Vinay Hegde",
+      "created_at": "2024-10-07T16:55:27.881Z",
+      "updated_at": "2024-10-07T16:55:27.881Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nA gentle reminder about the question.\nRegards,\nVinay",
+      "cooked_html": "<p>Dear experts,</p>\n<p>A gentle reminder about the question.</p>\n<p>Regards,<br>\nVinay</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-10-08T09:54:02.239Z",
+      "updated_at": "2024-10-08T09:54:02.239Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Vinay,\nIf the categories included in analyses A and B are independent you can combine them using combineCards.py script as described in the docs here. You might want to correlate some systematic uncertainties, and the script will do this automatically if they have the same name, you can also rename systematic uncertainties as described here.\nTo make sure that covariance matrix is accurate check the fit status stored in RooFitResult within the FitDiagnostics output file as described here. Let me know of something is not clear.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Vinay,</p>\n<p>If the categories included in analyses A and B are independent you can combine them using <code>combineCards.py</code> script as described in the docs <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/?h=combinec#combination-of-multiple-datacards\" rel=\"noopener nofollow ugc\">here</a>. You might want to correlate some systematic uncertainties, and the script will do this automatically if they have the same name, you can also rename systematic uncertainties as described <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/?h=combinec#nuisance-modifiers\" rel=\"noopener nofollow ugc\">here</a>.<br>\nTo make sure that covariance matrix is accurate check the fit status stored in <code>RooFitResult</code> within the <code>FitDiagnostics</code> output file as described <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/tutorial_stat_routines/stat_routines/?h=posit#uncertainty-intervals\" rel=\"noopener nofollow ugc\">here</a>. Let me know of something is not clear.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "vhegde",
+      "name": "Vinay Hegde",
+      "created_at": "2024-10-08T10:30:50.482Z",
+      "updated_at": "2024-10-08T10:30:50.482Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThe two analyses A and B are combined with all the correlations taken into account by naming the uncertainties accordingly. The main question I have is about running FitDiagnostics for the combined cards. Should I use CR included strategy or CR not included strategy? My understanding is that I could mask all the SRs from analysis A and B and do the fits to CRs only (which is relevant for analysis A only since analysis B has no CRs in the cards). Is this the correct approach?\nI will check fit status for covariance matrix. In some cases at least, covariance matrix quality: Full, accurate covariance matrix Status : MINIMIZE=0 HESSE=0 . So the fit results are good from this perspective.\nThanks,\nVinay",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>The two analyses A and B are combined with all the correlations taken into account by naming the uncertainties accordingly. The main question I have is about running FitDiagnostics for the combined cards. Should I use CR included strategy or CR not included strategy? My understanding is that I could mask all the SRs from analysis A and B and do the fits to CRs only (which is relevant for analysis A only since analysis B has no CRs in the cards). Is this the correct approach?</p>\n<p>I will check fit status for covariance matrix. In some cases at least, <code>covariance matrix quality: Full, accurate covariance matrix Status : MINIMIZE=0 HESSE=0</code> . So the fit results are good from this perspective.</p>\n<p>Thanks,<br>\nVinay</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-10-08T11:11:30.163Z",
+      "updated_at": "2024-10-08T11:11:30.163Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Vinay,\nthanks for following up, I misunderstood what you were asking originally.\nNow I see that you want to extract the covariance matrix for expected background for the combination of A and B, and in A you have a CR, while the analysis B is SR-only analysis.\nI think it makes more sense to treat A as Type-A and B as Type-B (as defined in the docs) in the combination too, so mask type-A SR only and run the fit with --preFitValue 0 to extract bkg-only covariance matrix. I will let others to comment too.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Vinay,</p>\n<p>thanks for following up, I misunderstood what you were asking originally.<br>\nNow I see that you want to extract the covariance matrix for expected background for the combination of A and B, and in A you have a CR, while the analysis B is SR-only analysis.<br>\nI think it makes more sense to treat A as Type-A and B as Type-B (as defined in the docs) in the combination too, so mask type-A SR only and run the fit with <code>--preFitValue 0</code> to extract bkg-only covariance matrix. I will let others to comment too.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

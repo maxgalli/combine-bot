@@ -1,0 +1,30 @@
+TOPIC: Question about MultiDimFIt
+URL: https://cms-talk.web.cern.ch/t/38064
+DATE: 2024-03-31T15:12:11.514Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-31T15:12:11.737Z):
+Dear experts,
+I run MultiDimFit and my signal has parameters r, mean, width :
+combine -M MultiDimFit 2018UL_dimuon_SR3.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r  --robustFit=1 --rMin 0 --rMax 120 -v3$
+when it does the second fit with r=0  it fails to find minimum and got at error related to mean (which does not make a sence in case of r=0):
+Info in MnHesse: 2nd derivative zero for Parameter  : name = mean
+Info: MnHesse fails and will return diagonal matrix
+VariableMetric: After Hessian   - FCN = -0.6067392287214 Edm =  6.29623e-05 NCalls =     80
+VariableMetric: Iteration #   4 - FCN = -0.6067392287214 Edm =  6.29623e-05 NCalls =     80
+Info in Minuit2Minimizer::Minimize : Minimization did NOT converge, Hesse is not valid
+Minuit2Minimizer : Invalid Minimum - status = 2
+Alyia advised me to fit it using command:
+combine -M MultiDimFit 2018UL_dimuon_SR3.txt --algo fixed --fixedPointPOIs r=0,mean=25,width=0 --redefineSignalPOIs r,mean,width --robustFit=1 --rMin 0 --rMax 120 -v3
+It works nice.
+When I run on different Search Region
+
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+I do not have an error in the second fit with r=0.  When I run using mean and width:
+
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0,mean=25,width=0 --redefineSignalPOIs r,mean,width --robustFit=1 -v 3 --rMin 0 --rMax 120
+it also run.  But what is a problem I see that in case 1 and 2 I got different NLL !
+How can you explain it ?
+Thanks, Sasha.
+----------------------------------------

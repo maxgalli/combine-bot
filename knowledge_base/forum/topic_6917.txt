@@ -1,0 +1,30 @@
+TOPIC: Combine Harvester: different processes in each signal region
+URL: https://cms-talk.web.cern.ch/t/6917
+DATE: 2022-02-21T12:50:29.833Z
+SOLVED: no
+============================================================
+
+QUESTION (by bregnery @ 2022-02-21T12:50:29.981Z):
+Hi Combine Experts,
+I am trying to update our code to do more things with Combine Harvester and less things by hand. Right now, I am trying to get it to make data cards from our systematics histograms
+We have 126 signal regions, but not every background process is present in each signal region. When I try to use the harvester, if I try to make the data cards it complains that some processes are missing because they aren’t present in every signal region. I was wondering if there is an option in the Combine Harvester to allow me to do this. In the source code, it seems like there might be, but the string streaming in C++ is difficult for me to follow. Is this possible? Does anyone have an example or suggestions?
+Thank you,
+Brendan
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-02-22T11:07:34.621Z):
+Dear Brendan,
+I think the easiest thing to do would be to treat groups of signal regions as different “channels”, then it’s easy to have a map with different background processes for these different channels. You can see examples for the C++ interface here [*] and for the python interface here [**].
+Does that help?
+Best,
+Adinda
+[*] https://gitlab.cern.ch/cms-hcg/ch-areas/HIG16006/-/blob/master/bin/MorphingMSSMRun2.cpp#L207, with the map defined here: https://gitlab.cern.ch/cms-hcg/ch-areas/HIG16006/-/blob/master/bin/MorphingMSSMRun2.cpp#L119-L123
+[**] https://gitlab.cern.ch/cms-hcg/ch-areas/VH2017/-/blob/master/scripts/VHbb2017.py#L275, with the map defined here: https://gitlab.cern.ch/cms-hcg/ch-areas/VH2017/-/blob/master/scripts/VHbb2017.py#L174-L180
+----------------------------------------
+
+REPLY 3 (by bregnery @ 2022-02-24T14:08:23.592Z):
+Hi Adinda,
+This helps me a lot and I was able to solve my issue. Thank you!
+Regards,
+Brendan
+----------------------------------------

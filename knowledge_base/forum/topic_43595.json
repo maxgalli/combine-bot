@@ -1,0 +1,78 @@
+{
+  "topic_id": 43595,
+  "title": "Masking channels for expected exclusion",
+  "url": "https://cms-talk.web.cern.ch/t/43595",
+  "category_id": 279,
+  "created_at": "2024-07-15T13:27:13.515Z",
+  "last_posted_at": "2024-07-16T10:54:04.402Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2024-07-15T13:27:13.771Z",
+      "updated_at": "2024-07-15T13:27:13.771Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am trying to figure out channel masking. We have a simple counting datacard with sidebands, but now I am using a simplified version where all backgrounds are added explicitly. We have 5 bins, sb_0 to 4. I was comparing the output of the following commands:\ncombine -M AsymptoticLimits card.root --run blind\ncombine -M AsymptoticLimits card.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1 --run blind\ncombine -M AsymptoticLimits card.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1 --run expected\n\nwhich I expected to be the same, but I got no results for the last 2 lines:\ncombine -M AsymptoticLimits card.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1 --run blind\n<<< Combine >>>\n<<< v10.0.1 >>>\n>>> Random number generator seed is 123456\nWill use a-priori instead of a-posteriori expected background.\n>>> Method used is AsymptoticLimits\nSet Default Value of Parameter mask_sb_0 To : 1\nSet Default Value of Parameter mask_sb_1 To : 1\nSet Default Value of Parameter mask_sb_2 To : 1\nSet Default Value of Parameter mask_sb_3 To : 1\nSet Default Value of Parameter mask_sb_4 To : 1\n>>> 5 out of 5 channels masked\n\n-- AsymptoticLimits ( CLs ) --\n\nDone in 0.17 min (cpu), 0.17 min (real)\n\nWhy is that? I thought \u201c\u2013run blind\u201d does exactly this masking internally.\nNB, my aim is to use HybridNew in the end, I am just trying to change one thing at a time.",
+      "cooked_html": "<p>Dear Experts,<br>\nI am trying to figure out channel masking. We have a simple counting datacard with sidebands, but now I am using a simplified version where all backgrounds are added explicitly. We have 5 bins, sb_0 to 4. I was comparing the output of the following commands:</p>\n<pre><code class=\"lang-auto\">combine -M AsymptoticLimits card.root --run blind\ncombine -M AsymptoticLimits card.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1 --run blind\ncombine -M AsymptoticLimits card.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1 --run expected\n</code></pre>\n<p>which I expected to be the same, but I got no results for the last 2 lines:</p>\n<pre><code class=\"lang-auto\">combine -M AsymptoticLimits card.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1 --run blind\n &lt;&lt;&lt; Combine &gt;&gt;&gt; \n &lt;&lt;&lt; v10.0.1 &gt;&gt;&gt;\n&gt;&gt;&gt; Random number generator seed is 123456\nWill use a-priori instead of a-posteriori expected background.\n&gt;&gt;&gt; Method used is AsymptoticLimits\nSet Default Value of Parameter mask_sb_0 To : 1\nSet Default Value of Parameter mask_sb_1 To : 1\nSet Default Value of Parameter mask_sb_2 To : 1\nSet Default Value of Parameter mask_sb_3 To : 1\nSet Default Value of Parameter mask_sb_4 To : 1\n&gt;&gt;&gt; 5 out of 5 channels masked\n\n -- AsymptoticLimits ( CLs ) --\n\nDone in 0.17 min (cpu), 0.17 min (real)\n</code></pre>\n<p>Why is that? I thought \u201c\u2013run blind\u201d does exactly this masking internally.<br>\nNB, my aim is to use HybridNew in the end, I am just trying to change one thing at a time.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-07-15T13:40:10.106Z",
+      "updated_at": "2024-07-15T13:40:10.106Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Peter,\nyou may have removed (masked=1) all (?) the signal contributions from the likelihood.  Thus, the limit is going to be much much weaker.\nChannel masking is used to NOT account for particular channels in the fitting procedure by removing their contribution to the (neg-log) likelihood function.\nFor many procedure, this is equivalent to removing those channels from the datacards directly.\n(in your case, ~ combineCards.py --xc \u2018sb_[0-4]\u2019, tbc regex/escape )\nThe usefulness is e.g. to have postfit plots w/o a region contributing to it.\nPlease, check the documentation page on channel masking HERE\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi Peter,</p>\n<p>you may have removed (masked=1) all (?) the signal contributions from the likelihood.  Thus, the limit is going to be much much weaker.</p>\n<p>Channel masking is used to NOT account for particular channels in the fitting procedure by removing their contribution to the (neg-log) likelihood function.</p>\n<p>For many procedure, this is equivalent to removing those channels from the datacards directly.<br>\n(in your case, ~ combineCards.py --xc \u2018sb_[0-4]\u2019, tbc regex/escape )</p>\n<p>The usefulness is e.g. to have postfit plots w/o a region contributing to it.</p>\n<p>Please, check the documentation page on channel masking <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#channel-masking\" rel=\"noopener nofollow ugc\">HERE</a></p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2024-07-15T17:30:26.121Z",
+      "updated_at": "2024-07-15T17:30:26.121Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nthank you for the answer. I misunderstood this at first. Now I think this\ncombine -M AsymptoticLimits cardWithoutSidebands.csv --run blind\n\n(cardWithoutSidebands.csv has the background explicitly specified by calculating the scaling from the sidebands beforehand, while cardWithSidebands.csv uses sidebands for scaling in the datacard. The five search bins are called sb_[0-4].)\nshould be equivalent to this\ntext2workspace.py cardWithSidebands.csv -o cardWithSidebands.root --channel-masks\ncombine -M MultiDimFit -d cardWithSidebands.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1,r=0 --freezeParameters r --redefineSignalPOIs delta_0 --saveWorkspace\ncombine -M AsymptoticLimits -d higgsCombineTest.MultiDimFit.mH120.root --snapshotName MultiDimFit --redefineSignalPOIs r --setParameters mask_sb_0=0,mask_sb_1=0,mask_sb_2=0,mask_sb_3=0,mask_sb_4=0 --run blind\n\nCan you verify that? The results are not exactly the same. The limit in the second case is a bit better, but I am not sure if that is because there are now just more bins in the card, or because the background-only minimization is disregarded from the MultiDimFit result and I am just missing some settings, like --bypassFrequentistFit possibly.",
+      "cooked_html": "<p>Hi Andrea,<br>\nthank you for the answer. I misunderstood this at first. Now I think this</p>\n<pre><code class=\"lang-auto\">combine -M AsymptoticLimits cardWithoutSidebands.csv --run blind\n</code></pre>\n<p>(cardWithoutSidebands.csv has the background explicitly specified by calculating the scaling from the sidebands beforehand, while cardWithSidebands.csv uses sidebands for scaling in the datacard. The five search bins are called sb_[0-4].)<br>\nshould be equivalent to this</p>\n<pre><code class=\"lang-auto\">text2workspace.py cardWithSidebands.csv -o cardWithSidebands.root --channel-masks\ncombine -M MultiDimFit -d cardWithSidebands.root --setParameters mask_sb_0=1,mask_sb_1=1,mask_sb_2=1,mask_sb_3=1,mask_sb_4=1,r=0 --freezeParameters r --redefineSignalPOIs delta_0 --saveWorkspace\ncombine -M AsymptoticLimits -d higgsCombineTest.MultiDimFit.mH120.root --snapshotName MultiDimFit --redefineSignalPOIs r --setParameters mask_sb_0=0,mask_sb_1=0,mask_sb_2=0,mask_sb_3=0,mask_sb_4=0 --run blind\n</code></pre>\n<p>Can you verify that? The results are not exactly the same. The limit in the second case is a bit better, but I am not sure if that is because there are now just more bins in the card, or because the background-only minimization is disregarded from the MultiDimFit result and I am just missing some settings, like --bypassFrequentistFit possibly.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-07-15T21:31:33.659Z",
+      "updated_at": "2024-07-15T21:31:33.659Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nIt\u2019s obscure to me what you want me to verify or what you would like to achieve.\nThe two commands will likely yield different results.  I would recommend you to stick with --run blind or --run expect or run the std observed on the full dc, depending on the status of your analysis.\nThe first command will run the prefit (blind) Asymptotic upper limits on the cards without the sidebands (guessing by the name of your dc).\nYour second command will fit something in some sideband (provided that sb are all and only the signal regions), but r.  The third one will run asymptotic limits on the result of the previous one (constructing an asimov dataset from there). Since you have some information from data, the two results will unlikely be identical.\nIf you want the postfit expected, just use --run expected.\n-A",
+      "cooked_html": "<p>Hi,</p>\n<p>It\u2019s obscure to me what you want me to verify or what you would like to achieve.</p>\n<p>The two commands will likely yield different results.  I would recommend you to stick with --run blind or --run expect or run the std observed on the full dc, depending on the status of your analysis.</p>\n<p>The first command will run the prefit (blind) Asymptotic upper limits on the cards without the sidebands (guessing by the name of your dc).</p>\n<p>Your second command will fit something in some sideband (provided that sb are all and only the signal regions), but r.  The third one will run asymptotic limits on the result of the previous one (constructing an asimov dataset from there). Since you have some information from data, the two results will unlikely be identical.<br>\nIf you want the postfit expected, just use --run expected.</p>\n<p>-A</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2024-07-16T10:49:51.202Z",
+      "updated_at": "2024-07-16T10:49:51.202Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Right, sorry, I realize that I might be giving too little detail, but I did not want to spam unnecessarily. I am just trying to set up an exclusion, where my search bins are blinded, but my control regions are not.",
+      "cooked_html": "<p>Right, sorry, I realize that I might be giving too little detail, but I did not want to spam unnecessarily. I am just trying to set up an exclusion, where my search bins are blinded, but my control regions are not.</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2024-07-16T10:54:04.402Z",
+      "updated_at": "2024-07-16T10:54:04.402Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "And I am comparing the result where the BG is estimated outside of the datacard to the case where it is estimated in the datacard in a combined fit, to make sure that I am doing reasonable things.",
+      "cooked_html": "<p>And I am comparing the result where the BG is estimated outside of the datacard to the case where it is estimated in the datacard in a combined fit, to make sure that I am doing reasonable things.</p>"
+    }
+  ]
+}

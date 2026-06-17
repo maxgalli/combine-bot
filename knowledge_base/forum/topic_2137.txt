@@ -1,0 +1,58 @@
+TOPIC: Potential bug in Combine `calculate_pulls.py` for pull definition `unconstPullAsym`
+URL: https://cms-talk.web.cern.ch/t/2137
+DATE: 2021-08-06T07:39:30.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Robert_Stephen_White @ 2021-08-06T07:39:30.000Z):
+*** Discussion title: Higgs Combination
+Hey,
+I've recently been calculating pulls with the `diffNuisances.py` module,
+and trying different `--pullDef` options. One of these,
+`unconstPullAsym`, returns an error `NameError: global name 'relDiff' is
+not defined`. Based on the code, the `relDiff` function is missing but
+there is a `relDiffAsymErrors`, see here:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/python/calculate_pulls.py#L45
+
+return ret
+
+def diffPullAsym(x,x0,sxu,sxu0,sxd,sxd0):
+# as defined in http://physics.rockefeller.edu/luc/technical_reports/cdf5776_pulls.pdf
+if x > x0 : ret = diffPull(x,x0,sxd,sxd0)
+else : ret =  diffPull(x,x0,sxu,sxu0)
+ret.append(ret[-1])
+return ret
+
+def unconstPullAsym(x,x0,sxu,sxu0,sxd,sxd0):
+if x<x0: ret = relDiff(x,x0,sxu)
+else :  ret =  relDiff(x,x0,sxd)
+return ret
+
+def relDiffAsymErrs(x,x0,sxu,sxu0,sxd,sxd0):
+pull = x - x0
+pull = (pull/sxu0) if pull >= 0 else (pull/sxd0)
+pull_hi = x+sxu - x0
+pull_hi = (pull_hi/sxu0) if pull_hi >= 0 else (pull_hi/sxd0)
+pull_hi = pull_hi - pull
+pull_lo = x-sxd -x0
+
+I'm pretty confident this is a bug and not an issue with our pulls, I
+wondered if anyone had any knowledge/advice for this?
+Rob
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-08-09T09:49:38.000Z):
+*** Discussion title: Higgs Combination
+Hi Rob,
+You're right, this looks like a bug in the script. I think to get
+results for that method you'll need to replace the two instances of
+relDiff in L45-46 with unconstPull [*]. Thanks for flagging it up, we'll
+fix this in a future combine release.
+Best,
+Adinda
+[*]
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/calculate_pulls.py#L9
+----------------------------------------

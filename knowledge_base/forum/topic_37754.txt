@@ -1,0 +1,60 @@
+TOPIC: Unreasonable GoF performance
+URL: https://cms-talk.web.cern.ch/t/37754
+DATE: 2024-03-27T10:43:16.267Z
+SOLVED: no
+============================================================
+
+QUESTION (by agapitos @ 2024-03-27T10:43:16.457Z):
+Dear experts;
+I would appreciate your help with the following:
+I get GoF fitting a binned distribution along with some uncertainties according to this datacard.
+There is a rate unc. named “Top_Rate_SR4a” which has a strange behavior:
+If the prefit rate (lnN) is set in the range ~[1.485,1.535] the observed GoF is unreasonably large.
+For values outside this range (like for 1.48 as in the cards pointed) results are stable and reasonable as summarized here.
+Do you understand why this happens?
+In case one wants to reproduce the results, the commands here [*] can be followed (all materials are in a public dir).
+Thank you in advance, best regards,  Antonis
+[*] cd /afs/cern.ch/work/a/agapitos/public/WWW/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/investigation
+text2workspace.py datacard_SR4a_2000_1300.txt -o workspace_SR4a_2000_1300.root;
+combine -M FitDiagnostics workspace_SR4a_2000_1300.root;
+combine -M GoodnessOfFit datacard_SR4a_2000_1300.txt --algo=saturated  -D data_obs --fixedSignalStrength 0 --bypassFrequentistFit -n _SR4a_2000_1300;
+combine -M GoodnessOfFit datacard_SR4a_2000_1300.txt --algo=saturated --toysFreq   --fixedSignalStrength 0 --bypassFrequentistFit -n _SR4a_2000_1300Toy -t 500;
+python plot_GoF.py --ObsFile higgsCombine_SR4a_2000_1300.GoodnessOfFit.mH120.root --ToyFile higgsCombine_SR4a_2000_1300Toy.GoodnessOfFit.mH120.123456.root --figName GoF_SR4a_2000_1300;
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-03-27T16:16:15.972Z):
+Hi Antonis,
+I don’t have a clear explanation, but it suggests that for some range of initial values, the fit is falling into a different minimum (with worse data-model agreement).
+Do you get the same effect if you remove the shape systematics from your model?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by agapitos @ 2024-03-27T16:48:47.741Z):
+Dear Andrew;
+Thanks for following.
+The “verbosity 3” output can be found here, where we can read:
+[WARNING] Found [Top_Rate_SR4a] at boundary.
+RooRealVar::Top_Rate_SR4a = 0 +/- 9.37646 L(-7 - 7)
+[WARNING] After the fit some parameters are at their boundary.
+[WARNING] Are you sure your model is correct?
+Does this indicate more to you?
+I have tried so far running with options --cminApproxPreFitTolerance=xx and --X-rtd MINIMIZER_MaxCalls=xx (several values), as well as adding “op_Rate_SR4a  extArg  1.0  0.00  3.00” to the card without luck.
+The issue is related to Top_Rate, not Shapes unc. Commenting out shape unc. I get another (worse and also) unreasonable GoF, while commenting out the Top_Rate GoF becomes fine.
+Thanks, best regards, Antonis
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2024-03-28T20:28:03.655Z):
+Hi Antonis,
+The options --cminApproxPreFitTolerance=xx and --X-rtd MINIMIZER_MaxCalls=xx are not really relevant to the problem. There is some issue with the shape of the NLL function at the starting point of the fit. I suspect it’s not only due to the lnN value for Top_Rate_SR4a, rather that the starting point is always on the edge of not having a pos-def Hessian, and small seemingly random changes in initial conditions are enough to make a difference.
+I still suspect there is some interplay with the shape parameters, because the unprofiled likelihood scans show some slightly odd shapes (see attached), but you may be able to fix this by moving the start point further from the true minimum (e.g. --setParameters Top_Rate_SR4a=4 seemed to help in a few points I tested).
+cheers,
+Andrew
+nll.pdf (544.1 KB)
+----------------------------------------
+
+REPLY 5 (by agapitos @ 2024-04-02T07:24:42.356Z):
+Dear Andrew;
+Thank you very much for the response and the study, I appreciated it a lot. I might come back with more questions if needed.
+Best regards, Antonis
+----------------------------------------

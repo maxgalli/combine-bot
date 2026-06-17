@@ -1,0 +1,45 @@
+{
+  "topic_id": 141934,
+  "title": "Problem running Combine on CRAB",
+  "url": "https://cms-talk.web.cern.ch/t/141934",
+  "category_id": 279,
+  "created_at": "2026-02-11T21:35:07.275Z",
+  "last_posted_at": "2026-02-13T16:51:35.947Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "blhennin",
+      "name": "Blake Gregory Hennings",
+      "created_at": "2026-02-11T21:35:07.852Z",
+      "updated_at": "2026-02-11T21:35:07.852Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "While running combine using CRAB, we run the following line on CRAB using a Python script:\ncombine file_name.root -M MarkovChainMC \u2013freezeParameters realHiggsMass,b_ee,b_eu \u2013setParameters realHiggsMass={mass},b_ee=1,b_eu=1 -m 1000 -L RooPDF_BKG_cxx.so -L RooPDF_DSCB_cxx.so -i 20000 -b 20 -t 1 -s str(random.randint(1,999999)) \u2013toysNoSystematics -v 3\nHowever, whenever I run the combine script on CRAB, I receive the following error:\n== CMSSW: cling::DynamicLibraryManager::loadLibrary(): libnss_altfiles.so.2: cannot open shared object file: No such file or directory\n== CMSSW: Warning in TClass::Init: no dictionary for class RooPDF_DSCB is available\n== CMSSW: Warning in TClass::Init: no dictionary for class RooPDF_BKG is available\n== CMSSW: Error in TBufferFile::ReadObject: trying to read an emulated class (RooPDF_DSCB) to store in a compiled pointer (RooAbsArg)\nfollowed by a segmentation fault.\nI made sure to include the files RooPDF_DSCB_cxx.so and  RooPDF_BKG_cxx.so and ensured that the files are passed on to CRAB by an ls command which shows the files are present in the directory.  Can you suggest what might be causing this?",
+      "cooked_html": "<p>While running combine using CRAB, we run the following line on CRAB using a Python script:</p>\n<p>combine file_name.root -M MarkovChainMC \u2013freezeParameters realHiggsMass,b_ee,b_eu \u2013setParameters realHiggsMass={mass},b_ee=1,b_eu=1 -m 1000 -L RooPDF_BKG_cxx.so -L RooPDF_DSCB_cxx.so -i 20000 -b 20 -t 1 -s str(random.randint(1,999999)) \u2013toysNoSystematics -v 3</p>\n<p>However, whenever I run the combine script on CRAB, I receive the following error:</p>\n<p>== CMSSW: cling::DynamicLibraryManager::loadLibrary(): libnss_altfiles.so.2: cannot open shared object file: No such file or directory<br>\n== CMSSW: Warning in <a>TClass::Init</a>: no dictionary for class RooPDF_DSCB is available<br>\n== CMSSW: Warning in <a>TClass::Init</a>: no dictionary for class RooPDF_BKG is available<br>\n== CMSSW: Error in <a>TBufferFile::ReadObject</a>: trying to read an emulated class (RooPDF_DSCB) to store in a compiled pointer (RooAbsArg)</p>\n<p>followed by a segmentation fault.</p>\n<p>I made sure to include the files RooPDF_DSCB_cxx.so and  RooPDF_BKG_cxx.so and ensured that the files are passed on to CRAB by an ls command which shows the files are present in the directory.  Can you suggest what might be causing this?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2026-02-12T11:15:37.567Z",
+      "updated_at": "2026-02-12T11:15:37.567Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Blake,\nI don\u2019t know exactly what causes this, it\u2019s not a very common workflow.\nWhat might work better is compiling your custom classes with CMSSW (adding them to the combine interface/ and src/ directories as our other custom classes are, and modifying classes.h and classes_def.xml).\nThen, you can let crab take care of shipping the CMSSW libraries, and running combine in your user script should then work without the need for the -L option.\nCheers,\nAndrew",
+      "cooked_html": "<p>Hi Blake,</p>\n<p>I don\u2019t know exactly what causes this, it\u2019s not a very common workflow.<br>\nWhat might work better is compiling your custom classes with CMSSW (adding them to the combine interface/ and src/ directories as our other custom classes are, and modifying classes.h and classes_def.xml).<br>\nThen, you can let crab take care of shipping the CMSSW libraries, and running combine in your user script should then work without the need for the <code>-L</code> option.</p>\n<p>Cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "clange",
+      "name": "Clemens Lange",
+      "created_at": "2026-02-13T16:51:35.947Z",
+      "updated_at": "2026-02-13T16:51:35.947Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Blake,\nWhich version of Combine are you running? And did you set up through CMSSW or how?\nMy guess is that the default crab CMS container might have some missing dependencies.\nCheers,\nClemens",
+      "cooked_html": "<p>Hi Blake,</p>\n<p>Which version of Combine are you running? And did you set up through CMSSW or how?<br>\nMy guess is that the default crab CMS container might have some missing dependencies.</p>\n<p>Cheers,<br>\nClemens</p>"
+    }
+  ]
+}

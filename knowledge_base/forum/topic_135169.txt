@@ -1,0 +1,145 @@
+TOPIC: COMBINE Physics model for simultaneous measurements
+URL: https://cms-talk.web.cern.ch/t/135169
+DATE: 2025-10-22T19:19:14.858Z
+SOLVED: no
+============================================================
+
+QUESTION (by gmelachr @ 2025-10-22T19:19:15.100Z):
+Dear Combine Experts,
+for the BPH-24-005 analysis we are trying to use the COMBINE package in order to do some simultaneous measurements. In order to save some space, we summarized what we are trying to do in this
+combine_setup_BPH_24_005.pdf (117.1 KB)
+pdf, which includes texts from the latest version of the AN, which is not published yet.
+BPAG has done similar analyses, however, none (or at least I am not aware of any) used COMBINE. For example, in the BPH-22-005 analysis, where we measured the dB/dq^2 for the B+ ->μμΚ+ decay mode, we fitted independently the mass distribution for the J/ψ bin and for the rare mode using simple roofit, we calculated a*e from the MC and inserted everything in the formula. For the systematic uncertainties, we assigned corrections on the MC and we recalculated the ae factors, we varied the corrections up and down by 1σ and we used the maximum difference as the systematic uncertainty.
+But for the BPH-24-005, the idea is to use COMBINE in order to calculate directly the dB/dq^2 observables and assign systematics to these observables. So, we ended up with the procedure that is described in the pdf. Please find attached a datacard
+mumuLambda_11_rare_Jpsi.txt (6.8 KB)
+and the workspaces that are created by the roofit code
+roofit_workspace.txt (21.5 KB)
+and the text2workspace command
+text2workspace.txt (33.8 KB)
+This procedure has been proven though very difficult and challenging and till some point it is working, however there are still many issues. For example, if we just define the normalization for the J/ψ bin as model_LambdaSignal_LambdaJpsi_norm, then the text2workspace command creates the shapeSig_signal_LambdaJpsi__norm variable and assigns it for the normalization of the signal process, but it is not assigning the same variable for the RooFormulaVar which is needed for the q^2 bins. Therefore, instead of creating the model_LambdaSignal_LambdaJpsi_norm variable, we created the shapeSig_signal_LambdaJpsi__norm by ourselves in order to make it work and use the same quantity for both the J/ψ bin and the q^2 bins. But this trick still creates some issues, since it changes the roofit result
+simultaneous_Lambda_Jpsi696×750 18 KB
+to this prefit distribution.
+part2_sb_model698×476 6.28 KB
+Since we do not want yet to sacrifice our efforts with COMBINE and follow a more BPAG-“traditional” strategy, we are seeking for a way to avoid the RooFormulaVar’s (which we think that is resposible for all this chaos) for the normalizations of the q^2 bins and we are asking for your feedback and your guidance in order to build a new physics model. Do you think that it would be possible to make COMBINE calculate by itself the dB/dq^2 observables by using the RooRealVars normalizations from all the bins, omit the signal strengths “r”, read somehow the a*e factors (from the datacard maybe?) and calculate the dB/dq^2 observables with their statistical and systematic uncertainties? Do you know if there is a physics model that could be used for such a purpose and if not, where should we start from?
+Please let us know if you need more explanations.
+Best regards,
+Giorgos for BPH-24-005
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-10-22T19:42:01.358Z):
+Hi,
+if you are trying to measure “unfolded” distributions (eventually fitting the mass like in Higgs analysis), I also suggest reading
+
+cms-analysis.github.io
+
+Unfolding & regularization - Combine
+
+did I understand correctly?
+-Andrea
+P.S.: many tutorials have been done as well, for example:
+
+https://indico.cern.ch/event/976099/contributions/4138418/
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023_unfolding/unfolding_exercise/
+
+the documentation page hopefully is a summary
+----------------------------------------
+
+REPLY 3 (by nckw @ 2025-10-22T20:33:02.000Z):
+Dear Georgios,
+This certainly sounds like a good candidate for a Physics Model to be the solution. Also this will help preserve setups for possible future analyses.
+In principle from your pdf, you should be able to create parameters that are dB/dq^2 and express the yields in different channels in terms of those - it’s a rearrangement of your first equation.
+Here is an example from the Higgs world : https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/45b037b2a3a5e8e85da7ca3ebcede9dbc5480db7/python/LHCHCGModels.py#L605 which we use when we want to measure ratios of Higgs couplings.
+When you do this, the systematics on efficiencies etc should also be expressed as uncertainties on those yields. It means you don’t need to calculate the uncertainty efficiencies directly, but rather calculate them for each channel and the fit will handle cancellation provided correlations are properly encoded.
+I may have oversimplified things and missed some subtleties so I’d be happy to discuss with you and others in case the example above doesn’t clarify what’s needed / if I’ve missed some reason why it won’t work.
+Best,
+Nick
+
+···
+On 22 Oct 2025 20:28, Georgios Melachroinos via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Georgios Melachroinos gmelachrOctober 22
+
+Dear Combine Experts,
+for the BPH-24-005 analysis we are trying to use the COMBINE package in order to do some simultaneous measurements. In order to save some space, we summarized what we are trying to do in this
+combine_setup_BPH_24_005.pdf (117.1 KB)
+pdf, which includes texts from the latest version of the AN, which is not published yet.
+BPAG has done similar analyses, however, none (or at least I am not aware of any) used COMBINE. For example, in the BPH-22-005 analysis, where we measured the dB/dq^2 for the B+ ->μμΚ+ decay mode, we fitted independently the mass distribution for the J/ψ bin and for the rare mode using simple roofit, we calculated a*e from the MC and inserted everything in the formula. For the systematic uncertainties, we assigned corrections on the MC and we recalculated the ae factors, we varied the corrections up and down by 1σ and we used the maximum difference as the systematic uncertainty.
+But for the BPH-24-005, the idea is to use COMBINE in order to calculate directly the dB/dq^2 observables and assign systematics to these observables. So, we ended up with the procedure that is described in the pdf. Please find attached a datacard
+mumuLambda_11_rare_Jpsi.txt (6.8 KB)
+and the workspaces that are created by the roofit code
+roofit_workspace.txt (21.5 KB)
+and the text2workspace command
+text2workspace.txt (33.8 KB)
+This procedure has been proven though very difficult and challenging and till some point it is working, however there are still many issues. For example, if we just define the normalization for the J/ψ bin as model_LambdaSignal_LambdaJpsi_norm, then the text2workspace command creates the shapeSig_signal_LambdaJpsi__norm variable and assigns it for the normalization of the signal process, but it is not assigning the same variable for the RooFormulaVar which is needed for the q^2 bins. Therefore, instead of creating the model_LambdaSignal_LambdaJpsi_norm variable, we created the shapeSig_signal_LambdaJpsi__norm by ourselves in order to make it work and use the same quantity for both the J/ψ bin and the q^2 bins. But this trick still creates some issues, since it changes the roofit result
+
+to this prefit distribution.
+
+Since we do not want yet to sacrifice our efforts with COMBINE and follow a more BPAG-“traditional” strategy, we are seeking for a way to avoid the RooFormulaVar’s (which we think that is resposible for all this chaos) for the normalizations of the q^2 bins and we are asking for your feedback and your guidance in order to build a new physics model. Do you think that it would be possible to make COMBINE calculate by itself the dB/dq^2 observables by using the RooRealVars normalizations from all the bins, omit the signal strengths “r”, read somehow the a*e factors (from the datacard maybe?) and calculate the dB/dq^2 observables with their statistical and systematic uncertainties? Do you know if there is a physics model that could be used for such a purpose and if not, where should we start from?
+Please let us know if you need more explanations.
+Best regards,
+Giorgos for BPH-24-005
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by gmelachr @ 2025-10-23T10:28:13.711Z):
+Hi Andrea,
+Thank you for your answer, but I do not think that unfolding is what we need (at least not now) since if I understood correctly, unfolding is used to correct measured distributions for various effects like  detector resolution. In our case, we want to fit many mass distributions and use the yields and some other numbers, in order to calculate a different parameters using a specific formula.
+Best regards,
+Giorgos
+----------------------------------------
+
+REPLY 5 (by gmelachr @ 2025-10-23T10:41:22.509Z):
+Dear Nicholas,
+I had a look on the Physics Model that you sent, but to be honest, I have no experience at all with Higgs analyses and what are all these lambda parameters. Do you know if there is a documentation, maybe an AN, or a tutorial that explains all these things and what is the purpose of this physics model?
+As I explained to Andrea, we want to fit many mass distributions and use the yields and some other numbers, in order to calculate a different parameters using a specific formula, therefore we are looking for a physics model, that is not using signal strengths “r” since our yields are calculated directly from the data, and we would also like to avoid using the trick with the RooFormulaVar for the normalization objects since this causes issues with the workspaces.
+Best regards,
+Giorgos
+----------------------------------------
+
+REPLY 6 (by nckw @ 2025-10-23T10:50:15.000Z):
+Hi Giorgios,
+It might be best do discuss as I’m not understanding what you mean by "trick with the RooFormulaVar for the normalization”. A fit doesn’t work by calculating yields and doing things with them, the yields should be expressed in terms of parameters of the models and the likelihood fit will move them to the best place based on the yields observed in the data (anything else is not a likelihood fit)
+Best,
+Nick
+Sent from Outlook for Mac
+From: Georgios Melachroinos via CMS talk noreply-cms-talk@cern.ch
+Date: Thursday, 23 October 2025 at 11:42
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] COMBINE Physics model for simultaneous measurements
+
+Georgios Melachroinos gmelachrOctober 23
+
+Dear Nicholas,
+I had a look on the Physics Model that you sent, but to be honest, I have no experience at all with Higgs analyses and what are all these lambda parameters. Do you know if there is a documentation, maybe an AN, or a tutorial that explains all these things and what is the purpose of this physics model?
+As I explained to Andrea, we want to fit many mass distributions and use the yields and some other numbers, in order to calculate a different parameters using a specific formula, therefore we are looking for a physics model, that is not using signal strengths “r” since our yields are calculated directly from the data, and we would also like to avoid using the trick with the RooFormulaVar for the normalization objects since this causes issues with the workspaces.
+Best regards,
+Giorgos
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by gmelachr @ 2025-10-24T08:29:29.025Z):
+Dear all,
+I had a zoom call with Nicholas wardle to explain some things.
+I changed some things from my side and I managed to make the COMBINE prefit to be in agreement with the roofit fit.
+part2_sb_model698×476 6.13 KB
+simultaneous_Lambda_Jpsi696×750 19.7 KB
+but now, I still have the issue with the RooFormulaVar’s and the normalization objects. The most weird thing is that the normalization RooRealVar that is used by a RooFormula is transformed properly by the text2workspace for the psi2S bin but it is not transformed for other q^2 bins.
+This is the workspace that I create and is used by the datacards
+roofit_workspace.txt (20.4 KB)
+The RooFormulaVars are defined in lines 108-119. This is the workspace that is created by the text2workspace command
+text2workspace_workspace.txt (30.1 KB)
+the RooFormulaVars are in lines 175-186. As you can see, the RooFormulaVar in line 175 uses the shapeSig_signal_LambdaJpsi__norm which is created by the text2workspace command, but all the other RooFormulaVar’s still uses the model_LambdaSignal_LambdaJpsi_norm… Could you please help me understand why the text2workspace command understands what it needs to do in the first RooFormulaVar while it doesn’t in the other cases?
+Best,
+Giorgos
+----------------------------------------
+
+REPLY 8 (by gmelachr @ 2025-10-28T16:31:52.522Z):
+Hello,
+During the previous days, I had some zoom calls with Nicholas and he helped me a lot in order to solve the problems. As far as I see, there are not issues now. I really want to thank in public Nicholas for his patience and his help!
+Best,
+Giorgos
+----------------------------------------

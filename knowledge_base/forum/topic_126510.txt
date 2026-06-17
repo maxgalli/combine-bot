@@ -1,0 +1,41 @@
+TOPIC: Impact Fit Fail for Majority of Parameters and One-Sided Fit
+URL: https://cms-talk.web.cern.ch/t/126510
+DATE: 2025-06-30T06:18:59.678Z
+SOLVED: no
+============================================================
+
+QUESTION (by shin @ 2025-06-30T06:18:59.844Z):
+I am currently doing unblinded Impact plot and Goodness-of-Fit Test.
+While doing the nuisance impact, I found two categories of problems.
+1. of ~600 nuisance parameters, ~500 of them fail the fitting and not shown in impact plots.
+2. One-sided nuisance fit
+
+impacts_El_MN95_SOff.pdf (23.7 KB)
+impacts_El_MN40_SOff.pdf (185.4 KB)
+
+This is the command I use at the moment:
+combineTool.py -M Impacts -d Input_LEPTON_MASS_FullRun2.root -m 125 --doInitialFit --robustFit 1 --rMin -5 --rMax 5 --setParameters r=1 --verbose 3
+combineTool.py -M Impacts -d Input_LEPTON_MASS_FullRun2.root -m 125 --doFits --robustFit 1 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd MINIMIZER_multiMin_hideConstants=1  --cminDefaultMinimizerStrategy=1 --setRobustFitTolerance 0.01 --cminFallbackAlgo Minuit2,Migrad,0:0.01 --rMin -10 --rMax 10 --job-mode condor --dry-run --stepSize 0.01 --setParameters r=1 --cminPreScan
+
+I am trying different options to fix these issues. Three things I can think of and am trying are
+1. Increase autoMCStats threshold: * autoMCStats 10 0 —> *autoMCStats 20 0
+2. try different initial point of r
+4. try different r range
+I think autoMCStats threshold 10 is the common value used in CMS, but is it okay to use higher threshold, where I have bins with small number of events?
+Additionally, if these issues are already well-known, do you have any advice on things I can try, so I do not waste time trying meaningless adjustments?
+Thank you.
+——————————————————————————
+Sincerely,
+Jihoon Shin
+Seoul National University
+jihoon.shin@cern.ch
+sjhsjs987@snu.ac.kr
+——————————————————————————
+----------------------------------------
+
+REPLY 2 (by gallim @ 2025-09-05T09:34:56.834Z):
+Hi Jihoon,
+did you manage to find a solution for this? If not, could you please attach the datacard and input file, such that it can be reproduced?
+Thank you,
+Massimiliano
+----------------------------------------

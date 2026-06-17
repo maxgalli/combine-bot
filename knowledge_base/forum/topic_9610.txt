@@ -1,0 +1,89 @@
+TOPIC: Template morphing and shape uncertainty for RooHistPdf
+URL: https://cms-talk.web.cern.ch/t/9610
+DATE: 2022-04-22T20:14:49.783Z
+SOLVED: no
+============================================================
+
+QUESTION (by minxi @ 2022-04-22T20:14:50.013Z):
+Dear experts,
+We are going to perform a unbinned shape analysis, and the templates are built by RooHistPdf with the histograms produced by MC. There are several mass dependent uncertainties like the mass scale uncertainty need to be included. So we want to have vertical morphing with the RooHistPdf. The question is that how to properly implement it inside combine. Is there build-in class that we can rely on?
+In addition to it, we also want to include the statistics fluctuation of the MC as part of the shape uncertainty, but we are not sure what is the proper way to do it.
+Thanks in advance for your help!
+Regards,
+Minxi Yang
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-04-25T05:31:35.167Z):
+Hi Minxi,
+Are the pdfs for all processes modelled using RooHistPdf? If so then I don’t think it makes sense to perform an unbinned fit - a binned fit should be equivalent. And in that case, is there a strong reason to use RooHistPdf over combine’s default implementation (which takes TH1s as input)?
+It is possible to use vertical morphing with arbitrary RooFit pdfs - you will need to supply the “Up” and “Down” pdfs in the same way as for TH1-based shape uncertainties (*). For MC stat uncertainties you will also have to construct these by hand as individual shape uncertainties.
+cheers,
+Andrew
+(*) https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#shape-analysis
+----------------------------------------
+
+REPLY 3 (by minxi @ 2022-04-25T13:33:25.785Z):
+Hi Andrew,
+Thank you very much!
+About motivation to make an unbinned fit. We are interested in the phase space with a small number of data events. I do not like to use a wider bin to cover the whole region and have to move to an unbinned fit.
+I test vertical morphing for RooHistPdf with the “Up/Down” method and it works well.
+However, I still do not understand how to implement MC stat uncertainties by hand. There are several hundreds of bins of the template and MC stats uncertainties are independent in each bin. It seems not very reasonable to just assign an uncertainty for each bin. Do you have suggestions that how to implement this properly?
+Regards,
+Minxi Yang
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-04-25T14:11:44.129Z):
+Hi Minxi,
+I think there is still some confusion on my side: if every process is modelled with a binned pdf, and all pdfs have the same binning, then there is no reason at all to use unbinned data - it should give exactly the same result as binned data just (potentially much) more slowly. So I’m not saying you should use wider bins, only that you could describe the data with a RooDataHist instead of a RooDataSet.
+But if you are modelling every process with a RooHistPdf, then I don’t understand why you can’t just use the standard TH1-based input to combine. The RooFit PDFs we build from these have several advantages over RooHistPdf (in particular, automatic and efficient MC stat uncertainties). Can you explain a bit more why this won’t work in your case?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by minxi @ 2022-04-25T16:31:51.616Z):
+Hi Andrew,
+I think in a binned shape analysis, we need to assume that the bin content is distributed as Poisson to run the likelihood test.
+In my study, I am interested in the high mass region, and only a few data events are reconstructed in that region. But I have enough MC to build a good template with many bins and high statistics.in each bin.
+If I use the binned data, it will be a counting experiment and a wider bin is used to cover the whole
+region. Then I will lose a lot of sensitivity
+Regards,
+Minxi Yang
+----------------------------------------
+
+REPLY 6 (by agilbert @ 2022-04-25T17:33:57.196Z):
+Hi Minxi,
+I’m afraid this doesn’t really make sense to me:
+
+If I use the binned data, it will be a counting experiment and a wider bin is used to cover the whole
+region. Then I will lose a lot of sensitivity
+
+I’m saying that both approaches will be identical in terms of the likelihood. If you use binned data you would use exactly the same binning as what you have for your MC templates. I don’t see why you would be forced to use a wider bin to cover the whole region. There is no problem if some of the data bins contain zero events, for example, this is handled correctly according to the Poisson likelihood.
+One way to think about it: in the unbinned case, two data events with different observable values but both falling within the same bin of the model pdf will have the same contribution to the total likelihood (since the pdf value is constant across the bin).
+So I think unless I’m missing something, it should be fine to use binned data, and so I’m still not understanding the need to use RooHistPdf over combine’s own binned pdf implementation.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 7 (by minxi @ 2022-04-25T20:45:15.380Z):
+Hi Andrew,
+The distribution of the bin content is Binomial actually. When the event number is large in that bin,  for example, 5-10, Poisson is a good approximation. And if the number is more larger, the bin content can be assumed distributed Gaussian.
+https://arxiv.org/pdf/1007.1727.pdf. In this paper, Fig. 3(a), you can check the difference in the likelihood ratio between the MC experiment and approximation equation with the Poisson assumption.
+Then, unbinned shape analysis is necessary for the phase region that lack the events.
+And I also think the unbinned shape analysis should have less systemical uncertainty since there is more data point and constraints on the nuisance parameters.
+Regards,
+Minxi Yang
+----------------------------------------
+
+REPLY 8 (by agilbert @ 2022-04-26T07:07:10.569Z):
+Hi Minxi,
+The figure in the paper you refer to has nothing to do with the issue we are discussing here. We are not talking about the approximation of the test statistic sampling distribution, we are talking about the form of the likelihood calculation, and the best technical approach to follow in combine.
+I’ve tried my best to offer advice, but you seem fairly determined to proceed in a particular way, so there’s nothing more I can add, and we’ll have to agree to disagree.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 9 (by nckw @ 2022-04-26T07:53:42.231Z):
+In addition, I recommend Minxi that you read the paper you pointed to. That figure has nothing to do with a Poisson assumption in addition to having nothing to do with Andrew’s advice. I also have no idea where you got the impression that the Poisson approximates a binomial when there are 5-10 events, the Poisson is the limiting case for small success (the “p” parameter in the binomial) rate, when the number of trials is large - which is almost always the case for our analyses in CMS.
+You should consider stepping back and writing very clearly the likelihood function that you want and then perhaps the experts can advise the best way to achieve it using combine.
+Nick
+----------------------------------------

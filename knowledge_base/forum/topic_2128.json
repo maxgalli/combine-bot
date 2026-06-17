@@ -1,0 +1,111 @@
+{
+  "topic_id": 2128,
+  "title": "Getting NAN value while doing postfit plot",
+  "url": "https://cms-talk.web.cern.ch/t/2128",
+  "category_id": 279,
+  "created_at": "2021-07-26T08:52:16.000Z",
+  "last_posted_at": "2021-08-11T13:44:43.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2021-07-26T08:52:16.000Z",
+      "updated_at": "2023-02-07T10:55:37.054Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Higgs Combine experts,\nI am trying to get prefit, postfit plot in my resonant analysis, but I got NAN value at few mass points. I put the datacard.txt, workspace_MASS.root, output (out.txt) of combine command for all mass points in following directories\n/afs/cern.ch/work/s/snandan/public/2017_500\n/afs/cern.ch/work/s/snandan/public/2018_500\n/afs/cern.ch/work/s/snandan/public/2018_300\n/afs/cern.ch/work/s/snandan/public/2018_800\nIt seems problem is in the systematic CMS_btag_cferr1_2017_2018, CMS_btag_cferr2_2017_2018, I looked at the distribution for few processes and don\u2019t see anything strange.\nI used following command\ncombineTool.py -M FitDiagnostics datacard.txt --verbose 3 --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-1000,1000 --saveShapes --saveWithUncertainties --saveNormalization --saveOverallShapes --saveWorkspace --skipSBFit --saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,0:1.0 --X-rtd MINIMIZER_no_analytic --keepFailures --robustHesse 1\nCan anybody please help me to understand what the problem is and how to solve that?\nThanks and Regrads,\nSaswati",
+      "cooked_html": "<p>Dear Higgs Combine experts,</p>\n<p>I am trying to get prefit, postfit plot in my resonant analysis, but I got NAN value at few mass points. I put the datacard.txt, workspace_MASS.root, output (out.txt) of combine command for all mass points in following directories<br>\n/afs/cern.ch/work/s/snandan/public/2017_500<br>\n/afs/cern.ch/work/s/snandan/public/2018_500<br>\n/afs/cern.ch/work/s/snandan/public/2018_300<br>\n/afs/cern.ch/work/s/snandan/public/2018_800</p>\n<p>It seems problem is in the systematic CMS_btag_cferr1_2017_2018, CMS_btag_cferr2_2017_2018, I looked at the distribution for few processes and don\u2019t see anything strange.</p>\n<p>I used following command<br>\ncombineTool.py -M FitDiagnostics datacard.txt --verbose 3 --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-1000,1000 --saveShapes --saveWithUncertainties --saveNormalization --saveOverallShapes --saveWorkspace --skipSBFit --saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,0:1.0 --X-rtd MINIMIZER_no_analytic --keepFailures --robustHesse 1</p>\n<p>Can anybody please help me to understand what the problem is and how to solve that?</p>\n<p>Thanks and Regrads,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-07-26T15:54:21.000Z",
+      "updated_at": "2021-11-17T08:36:39.200Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Saswati,\nIt looks like the issue is related to the usage of RobustHesse to get a\npositive-definite covariance matrix; which in this case is dropping a\nfew of the nuisance parameters to accomplish this. The covariance matrix\nresampling step that is triggered when you run with --saveShapes\n--saveWithUncertainties appears to set the dropped parameter(s) to NaN,\ngiving you these errors. We don't have a simple fix within\nFitDiagnostics for this, but what you can do is run FitDiagnostics\n*without* --saveShapes --saveWithUncertainties, and produce the pre- and\npost-fit shapes with PostFitShapesFromWorkspace [*], a tool available in\nCombineHarvester.\nYou will still need to run FitDiagnostics to produce the covariance\nmatrix. In the example in the documentation fit_s is passed, as you are\nskipping the S+B fit you should pass fit_b (so -f\nfitDiagnostics.root:fit_b) because it's the only one that exists.\nBest,\nAdinda\n[*]\nhttp://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Saswati,</p>\n<p>It looks like the issue is related to the usage of RobustHesse to get a<br>\npositive-definite covariance matrix; which in this case is dropping a<br>\nfew of the nuisance parameters to accomplish this. The covariance matrix<br>\nresampling step that is triggered when you run with --saveShapes<br>\n--saveWithUncertainties appears to set the dropped parameter(s) to NaN,<br>\ngiving you these errors. We don't have a simple fix within<br>\nFitDiagnostics for this, but what you can do is run FitDiagnostics<br>\n*without* --saveShapes --saveWithUncertainties, and produce the pre- and<br>\npost-fit shapes with PostFitShapesFromWorkspace [*], a tool available in<br>\nCombineHarvester.</p>\n<p>You will still need to run FitDiagnostics to produce the covariance<br>\nmatrix. In the example in the documentation fit_s is passed, as you are<br>\nskipping the S+B fit you should pass fit_b (so -f<br>\nfitDiagnostics.root:fit_b) because it's the only one that exists.</p>\n<p>Best,<br>\nAdinda</p>\n<p>[*]<br>\n<a href=\"http://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2021-07-27T05:33:10.000Z",
+      "updated_at": "2021-11-17T08:36:39.365Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nThank you very much for your advice. I ran the following command without --saveShapes --saveWithUncertainties\ncombineTool.py -M FitDiagnostics datacard.txt\\\n--verbose 3 --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-1000,1000\\\n--saveNormalization --saveOverallShapes --saveWorkspace --skipSBFit --saveToys --saveNLL\\ --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,0:1.0\\\n--X-rtd MINIMIZER_no_analytic --keepFailures --robustHesse 1\nAnd then ran the following command:\nPostFitShapesFromWorkspace -d datacrd -w workspace_800.root -f fit.root:fit_b --postfit --sampling -o postfit.root\nfit.root is obtained from previous command. When I open the postfit.root and look at the bin error of postfit distribution, I get nan value. I put the postfit.root file here\n/afs/cern.ch/work/s/snandan/public/2018_800/postfit.root\nIs it expected? In that case, how can I show the uncertainty band in postfit distribution? Or did I make any mistake in the command?\nThanks and Regards,\nSaswati",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Thank you very much for your advice. I ran the following command without --saveShapes --saveWithUncertainties</p>\n<p>combineTool.py -M FitDiagnostics datacard.txt\\<br>\n--verbose 3 --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-1000,1000\\<br>\n--saveNormalization --saveOverallShapes --saveWorkspace --skipSBFit --saveToys --saveNLL\\ --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,0:1.0\\<br>\n--X-rtd MINIMIZER_no_analytic --keepFailures --robustHesse 1</p>\n<p>And then ran the following command:<br>\nPostFitShapesFromWorkspace -d datacrd -w workspace_800.root -f fit.root:fit_b --postfit --sampling -o postfit.root</p>\n<p>fit.root is obtained from previous command. When I open the postfit.root and look at the bin error of postfit distribution, I get nan value. I put the postfit.root file here<br>\n/afs/cern.ch/work/s/snandan/public/2018_800/postfit.root</p>\n<p>Is it expected? In that case, how can I show the uncertainty band in postfit distribution? Or did I make any mistake in the command?</p>\n<p>Thanks and Regards,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-07-27T16:35:56.000Z",
+      "updated_at": "2021-11-17T08:36:39.727Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Saswati,\nOk, that's odd. For me it works fine without --X-rtd\nMINIMIZER_no_analytic as a FitDiagnostics option, but I see the same\nproblem when I include it. If you don't strictly need to disable the\nanalytic minimization, can you try without this option? It will also\nmake the fit run a bit faster. Will try to investigate in the meantime.\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Saswati,</p>\n<p>Ok, that's odd. For me it works fine without --X-rtd<br>\nMINIMIZER_no_analytic as a FitDiagnostics option, but I see the same<br>\nproblem when I include it. If you don't strictly need to disable the<br>\nanalytic minimization, can you try without this option? It will also<br>\nmake the fit run a bit faster. Will try to investigate in the meantime.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2021-08-03T04:15:20.000Z",
+      "updated_at": "2021-11-17T08:36:39.940Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nI am still getting binerror NAN for a few mass points. I put the workspace.root, datacard,.txt and the root file obtained from PostFitShapes in the following dorectories\n/afs/cern.ch/work/s/snandan/public/2017_400_v1/\n/afs/cern.ch/work/s/snandan/public/2017_500_v1/\n/afs/cern.ch/work/s/snandan/public/2018_800_v1/\nI ran the following commands:\ncombineTool.py -M workspace_bkg_MASS.root --verbose 3 --redefineSignalPOIs r --setParameters r=1.0 \\ --setParameterRanges r=-1000,1000 --saveNormalization --saveOverallShapes --saveWorkspace --skipSBFit \\\n--saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,1:1.0 --keepFailures --robustHesse 1\nfollowed by\nPostFitShapesFromWorkspace -d datacard.txt -w workspace_bkg_MASS.root \\\n-f fitDiagnostics_shapes_combine_MASS_spin2_bkg_2018_v1.root:fit_b  --postfit --sampling\nAre the above commands correct?\nThanks and Regards,\nSaswati",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>I am still getting binerror NAN for a few mass points. I put the workspace.root, datacard,.txt and the root file obtained from PostFitShapes in the following dorectories</p>\n<p>/afs/cern.ch/work/s/snandan/public/2017_400_v1/<br>\n/afs/cern.ch/work/s/snandan/public/2017_500_v1/<br>\n/afs/cern.ch/work/s/snandan/public/2018_800_v1/</p>\n<p>I ran the following commands:</p>\n<p>combineTool.py -M workspace_bkg_MASS.root --verbose 3 --redefineSignalPOIs r --setParameters r=1.0 \\ --setParameterRanges r=-1000,1000 --saveNormalization --saveOverallShapes --saveWorkspace --skipSBFit \\<br>\n--saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,1:1.0 --keepFailures --robustHesse 1</p>\n<p>followed by</p>\n<p>PostFitShapesFromWorkspace -d datacard.txt -w workspace_bkg_MASS.root \\<br>\n-f fitDiagnostics_shapes_combine_MASS_spin2_bkg_2018_v1.root:fit_b  --postfit --sampling</p>\n<p>Are the above commands correct?</p>\n<p>Thanks and Regards,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2021-08-04T15:07:16.000Z",
+      "updated_at": "2021-11-17T08:36:40.226Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nIs there any way to solve the issue? I was trying to understand the reason and saw that I am getting NAN value here\nhttps://github.com/cms-analysis/CombineHarvester/blob/master/CombineTools/src/CombineHarvester_Evaluate.cc#L330\nBut don't know why it is nan.\nThanks and Regards,\nSaswati",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Is there any way to solve the issue? I was trying to understand the reason and saw that I am getting NAN value here</p>\n<p><a href=\"https://github.com/cms-analysis/CombineHarvester/blob/master/CombineTools/src/CombineHarvester_Evaluate.cc#L330\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/CombineHarvester/blob/master/CombineTools/src/CombineHarvester_Evaluate.cc#L330</a><br>\nBut don't know why it is nan.</p>\n<p>Thanks and Regards,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-08-04T15:21:49.000Z",
+      "updated_at": "2021-11-17T08:36:40.628Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Saswati,\nI\u2019ve not had time to look into it what is going wrong yet. The reason you are getting NAN values almost certainly that there is still something not right in the covariance matrix. It could take some time to debug the issue.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Saswati,</p>\n<p>I\u2019ve not had time to look into it what is going wrong yet. The reason you are getting NAN values almost certainly that there is still something not right in the covariance matrix. It could take some time to debug the issue.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-08-05T07:40:12.000Z",
+      "updated_at": "2021-11-17T08:36:40.815Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Saswati,\nI've not had time to look into it what is going wrong yet. The reason\nyou are getting NAN values almost certainly that there is still\nsomething not right in the covariance matrix. It could take some time to\ndebug the issue.\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Saswati,</p>\n<p>I've not had time to look into it what is going wrong yet. The reason<br>\nyou are getting NAN values almost certainly that there is still<br>\nsomething not right in the covariance matrix. It could take some time to<br>\ndebug the issue.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-08-11T13:44:43.000Z",
+      "updated_at": "2021-11-17T08:36:41.057Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Saswati,\nSorry for the delay - I still don't fully understand why in some cases\nparameters that are dropped from the covariance matrix by robustHesse\ndon't cause issues in the production of the post-fit shapes +\nuncertainties. One thing that works around the issue is to freeze, in\nthe PostFitShapesFromWorkspace call, the parameters that get dropped\n(you can find it in the fit log) to be able to invert the Hessian. You\ncan do this by adding e.g. --freeze\nQCDscale_ttbar,CMS_bbwwsl_thu_shape_DY to the PostFitShapesFromWorkspace\ncommand.\nOf course it would be even better to investigate why those parameters\nare problematic, and resolve the issue, so that they don't need to be\nremoved for the Hessian to be invertible in the first place. Things you\ncould check are whether these parameters are strongly anti-correlated\nwith other parameters of the fit, or whether they have a highly\nasymmetric effect on the processes they act on. There is unfortunately\nno guaranteed set of steps that will lead to the solution, however.\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Saswati,</p>\n<p>Sorry for the delay - I still don't fully understand why in some cases<br>\nparameters that are dropped from the covariance matrix by robustHesse<br>\ndon't cause issues in the production of the post-fit shapes +<br>\nuncertainties. One thing that works around the issue is to freeze, in<br>\nthe PostFitShapesFromWorkspace call, the parameters that get dropped<br>\n(you can find it in the fit log) to be able to invert the Hessian. You<br>\ncan do this by adding e.g. --freeze<br>\nQCDscale_ttbar,CMS_bbwwsl_thu_shape_DY to the PostFitShapesFromWorkspace<br>\ncommand.</p>\n<p>Of course it would be even better to investigate why those parameters<br>\nare problematic, and resolve the issue, so that they don't need to be<br>\nremoved for the Hessian to be invertible in the first place. Things you<br>\ncould check are whether these parameters are strongly anti-correlated<br>\nwith other parameters of the fit, or whether they have a highly<br>\nasymmetric effect on the processes they act on. There is unfortunately<br>\nno guaranteed set of steps that will lead to the solution, however.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

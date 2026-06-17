@@ -1,0 +1,68 @@
+TOPIC: Unexpected behavior in Combine with analytical pdf on binned background template
+URL: https://cms-talk.web.cern.ch/t/125946
+DATE: 2025-06-13T16:11:13.659Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by jaltork @ 2025-06-13T16:11:13.839Z):
+Dear Combine Experts,
+We’re encountering an unexpected behavior when using Combine with a model that includes both analytical PDFs (for signal) and histogram templates (for background).
+We define the signal shape using a Crystal Ball function, scaled by the signal strength parameter r. The PDF is built as follows:
+def_buildPdf(self, name, x):
+if name == 'CrystalBall':
+MH = ROOT.RooRealVar("MH", "mean of gaussian", 400, 100, 1000)
+sigma = ROOT.RooRealVar("sigma", "width of gaussian", 20, 1, 100)
+alpha = ROOT.RooRealVar("alpha", "transition", -1., -10, 10)
+n = ROOT.RooRealVar("n", "power", 1, 0.1, 10)
+sig = ROOT.RooCBShape("sig", "RooCBShape", x, MH, sigma, alpha, n)
+return sig
+
+Our expectation was that the fitted value of r would correspond to the total number of signal events. However, after running the fit, we noticed that the post-fit integral of the signal shape (from shapes_fit_s) was smaller by roughly an order of magnitude.
+For example:
+Best fit r: 8351.01 -1083.38/+1231.39
+Post-fit integrals per jet category:
+0j: 22.90
+1j: 678.50
+2j: 133.66
+Sum total ≈ 835 (vs r = 8351)
+Upon further investigation, we found that the normalization of the analytical signal PDF in the workspace appears to be affected by the bin width of the observable. To test this, we increased the signal rate for this observable in the datacard from 1 to 10, and observed that the post-fit integrals of the signal shapes became more consistent with the fitted value of r. This suggests that Combine may be scaling the PDF in a way that introduces a dependence on the binning, which affects the interpretation of r as the expected number of signal events.
+We would like to confirm is this normalization behavior expected in Combine? if so would you recommend adjusting the signal rate directly in the datacard to compensate for it, or is there a more appropriate method to ensure that the normalization of the signal shape matches the expected event yield? Thank in you in advance.
+here are the commands used to do one fit:
+# Create workspace for toy generation
+text2workspace.py datacard.txt -o datacard_RPV_sb300_chi200_sl130.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=.*/.*sb.*:0' --PO 'map=.*/sig:0' --PO 'map=.*/.*'RPV_sb300_chi200_sl130'.*:r[1,-10,10]' --PO 'map=.*/Fake_*:0' --PO 'map=hww2l2v_13TeV_ww_.*/.*'RPV_sb300_chi200_sl130'.*:0'
+
+# Create workspace for fits
+text2workspace.py datacard.txt -o datacard_forfit.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=.*/.*sb.*:0' --PO 'map=.*/sig:r[1,0,20000]' --PO 'map=.*/Fake_*:0' --PO 'map=hww2l2v_13TeV_ww_.*/sig:0'
+
+# do the fit
+combine -M FitDiagnostics datacard_forfit.root --toysFile higgsCombineRPV_sb300_chi200_sl130.GenerateOnly.mH120.12345.root -t 1 --setParameters MH=220,sigma=10,alpha=10,n=20  --freezeParameter MH --setParameterRanges sigma=10,300:alpha=2,15:n=2,50:r=0,20000 --redefineSignalPOI r  --saveShapes -n .M220  --skipBOnlyFit --cminDefaultMinimizerStrategy 0
+
+I’ve attached one input root file and the corresponding datacard for the variable chi_mass for 1-jet category to this email for simplicity.
+But in this directory:
+/afs/cern.ch/user/j/jaltork/public/combine_issue/
+you can find the full combined datacard for chi_mass variable (including 0j, 1j, and 2j for both the top signal and WW control regions) in datacard_combined.txt along with the datacards for each individual jet category.
+histos_hww2l2v_13TeV_top_1j.root (191.7 KB)
+datacard.txt (58.2 KB)
+Best,
+Jawaher
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by nckw @ 2025-06-19T13:05:42.969Z):
+Hi Jawaher,
+Can I ask how you are calculating the yield from the histograms in the “shapes_fit_s” directory? If you are using the TH1::Integral method, you should also use the "width" argument. This is because when using RooDataHists, the resulting shapes will always be counts/bin width, not counts.
+The relevant part of the docs is here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#plotting (see screenshot attached)
+For example, if I run a fit with the card you attached, I get the following
+root -l fitDiagnosticsTest.root
+TH1F* h = (TH1F*) _file0->Get("shapes_prefit/hww2l2v_13TeV_top_1j/RPV_sb300_chi200_sl130");
+h->Integral("width")
+(double) 810.74929
+
+which seems to match that process rate in the datacard (note this is using the prefit but the same holds for postfit shapes).
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by nckw @ 2025-06-19T13:41:12.229Z):
+Apologies - I missed off the screen shot …
+Screenshot 2025-06-19 at 14.00.341168×426 117 KB
+----------------------------------------

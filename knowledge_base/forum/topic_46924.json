@@ -1,0 +1,51 @@
+{
+  "topic_id": 46924,
+  "title": "Error in RooFit: FitDiagnostics unrecognized CMS_channel name",
+  "url": "https://cms-talk.web.cern.ch/t/46924",
+  "category_id": 279,
+  "created_at": "2024-08-28T15:41:10.431Z",
+  "last_posted_at": "2024-08-29T09:04:01.730Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "kjaffel",
+      "name": "Khawla Jaffel",
+      "created_at": "2024-08-28T15:41:10.664Z",
+      "updated_at": "2024-08-28T15:41:10.664Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine expert,\nI recently updated my combine version but I start getting error from FitDiagnostics (only) due to CMS_channel naming. I think the issue could be caused by the presence of two periods (. ) in the my channel name mbb_MH_335.4_MA_82.14 .\nBy the way the error is triggered only when I add --saveShapes and I saw it in both v10.0.2 and v10.0.1 of combine.\nCould someone please confirm this issue and add patch to fix this if possible.\nDatacard, shapes and the workspace can be found here: /afs/cern.ch/user/k/kjaffel/public/forCombineIssue\nThis is the command I am running:\nname=\"HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14\"\nWORKSPACE=\"HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14_combine_workspace.root\"\n\ncombine -M FitDiagnostics --rMin -20 --rMax 20 ${WORKSPACE} \\\n-m 125  \\\n--saveWithUncertainties \\\n--savePredictionsPerToy \\\n--saveNorm \\\n--saveShapes \\\n--ignoreCovWarning \\\n-n ${name} \\\n--plots \\\n--verbose 0\n\nThis is the error;\n<<< Combine >>>\n<<< v10.0.2 >>>\n>>> Random number generator seed is 123456\n>>> Method used is FitDiagnostics\n[#0] ERROR:InputArguments -- Formula CMS_channel==CMS_channel::mbb_MH_335.4_MA_82.14 uses '::' to reference a category state as 'CMS_channel::mbb_MH_335' but the category 'CMS_channel' does not seem to have the state 'mbb_MH_335'.\nCaught exception CMS_channel==CMS_channel::mbb_MH_335.4_MA_82.14type or paste code here\n\nMany thanks in advance.\nCheers,\nKhawla",
+      "cooked_html": "<p>Dear Combine expert,</p>\n<p>I recently updated my combine version but I start getting error from <code>FitDiagnostics</code> (<code>only</code>) due to <code>CMS_channel</code> naming. I think the issue could be caused by the presence of two periods (<code>.</code> ) in the my channel name <code>mbb_MH_335.4_MA_82.14</code> .<br>\nBy the way the error is triggered only when I add <code>--saveShapes</code> and I saw it in both <code>v10.0.2</code> and <code>v10.0.1</code> of combine.</p>\n<p>Could someone please confirm this issue and add patch to fix this if possible.</p>\n<p>Datacard, shapes and the workspace can be found here: /<code>afs/cern.ch/user/k/kjaffel/public/forCombineIssue</code></p>\n<p>This is the command I am running:</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">name=\"HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14\"\nWORKSPACE=\"HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14_combine_workspace.root\"\n\ncombine -M FitDiagnostics --rMin -20 --rMax 20 ${WORKSPACE} \\\n        -m 125  \\\n        --saveWithUncertainties \\\n        --savePredictionsPerToy \\\n        --saveNorm \\\n        --saveShapes \\\n        --ignoreCovWarning \\\n        -n ${name} \\\n        --plots \\\n        --verbose 0\n</code></pre>\n<p>This is the error;</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\"> &lt;&lt;&lt; Combine &gt;&gt;&gt;\n &lt;&lt;&lt; v10.0.2 &gt;&gt;&gt;\n&gt;&gt;&gt; Random number generator seed is 123456\n&gt;&gt;&gt; Method used is FitDiagnostics\n[#0] ERROR:InputArguments -- Formula CMS_channel==CMS_channel::mbb_MH_335.4_MA_82.14 uses '::' to reference a category state as 'CMS_channel::mbb_MH_335' but the category 'CMS_channel' does not seem to have the state 'mbb_MH_335'.\nCaught exception CMS_channel==CMS_channel::mbb_MH_335.4_MA_82.14type or paste code here\n</code></pre>\n<p>Many thanks in advance.</p>\n<p>Cheers,<br>\nKhawla</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-08-28T16:53:47.423Z",
+      "updated_at": "2024-08-28T16:53:47.423Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI think you are correct, the offending characters are the dot(s) in any number. Only characters matching letters digits and underscore (i.e., regex \\w) currently match the variables names correctly.\nthis seems to be related to the processing of RooFormulaVar in newer (?) versions of ROOT/RooFit, though it seems to be also pretty established (>6.18 ?TBC).\nI believe that this is triggered by this line  and the matches in the RooFormulaVar constructions are in RooFit at the line 249 here.\nI managed to have a working setup w/ RooFit 6.12 in CMSSW_10_2_13. We may try to find a patch, but I don\u2019t know if it comes in the near future.\nFor the moment, you can change the channel name with combineCards (at least for single channel cards as your) should work out-of-the-box, as below. Maybe use _ instead of dots .)\ncombineCards.py ABC=HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14.dat > ABC.dat\ntext2workspace.py -m 125 -o ABC.root ABC.dat\ncombine -M FitDiagnostics --skipBOnlyFit --skipSBFit --saveShapes -v3  -n test_ABC ABC.root\n\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<p>I think you are correct, the offending characters are the dot(s) in any number. Only characters matching letters digits and underscore (i.e., regex <code>\\w</code>) currently match the variables names correctly.</p>\n<p>this seems to be related to the processing of RooFormulaVar in newer (?) versions of ROOT/RooFit, though it seems to be also pretty established (&gt;6.18 ?TBC).</p>\n<p>I believe that this is triggered by <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/FitDiagnostics.cc#L685\" rel=\"noopener nofollow ugc\">this line</a>  and the matches in the RooFormulaVar constructions are in RooFit at the <a href=\"https://root.cern.ch/doc/v630/RooFormula_8cxx_source.html\" rel=\"noopener nofollow ugc\">line 249 here</a>.</p>\n<p>I managed to have a working setup w/ RooFit <code>6.12</code> in <code>CMSSW_10_2_13</code>. We may try to find a patch, but I don\u2019t know if it comes in the near future.</p>\n<p>For the moment, you can change the channel name with <code>combineCards</code> (at least for single channel cards as your) should work out-of-the-box, as below. Maybe use _ instead of dots .)</p>\n<pre><code class=\"lang-auto\">combineCards.py ABC=HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14.dat &gt; ABC.dat\ntext2workspace.py -m 125 -o ABC.root ABC.dat\ncombine -M FitDiagnostics --skipBOnlyFit --skipSBFit --saveShapes -v3  -n test_ABC ABC.root\n</code></pre>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "kjaffel",
+      "name": "Khawla Jaffel",
+      "created_at": "2024-08-29T09:04:01.730Z",
+      "updated_at": "2024-08-29T09:04:01.730Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hello Andrea,\nThanks a lot for the suggestion, that will do for the time being  .\nCheers,\nKhawla",
+      "cooked_html": "<p>Hello Andrea,</p>\n<p>Thanks a lot for the suggestion, that will do for the time being <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=12\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"> .</p>\n<p>Cheers,<br>\nKhawla</p>"
+    }
+  ]
+}

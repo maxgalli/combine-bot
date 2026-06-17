@@ -1,0 +1,345 @@
+TOPIC: Difference in binErrors before and after fitDiagnostics in `prefit` shapes
+URL: https://cms-talk.web.cern.ch/t/141951
+DATE: 2026-02-12T13:00:56.789Z
+SOLVED: no
+============================================================
+
+QUESTION (by alkaloge @ 2026-02-12T13:00:57.172Z):
+Hello
+While investigating some poor FitDiagnostics results we are obtaining—particularly the very large uncertainties observed in the pre- and post-fit distributions—we noticed an unexpected behavior in the output ROOT file.
+Specifically, in the shapes_prefit directory for some of the processes, the uncertainties become extremely large.
+Naively, I would expect the  theprefit distributions, event yields and bin errors to match those from the original input ROOT file that was used to build the workspace. However, this does not seem to be the case.
+In particular, in the input file I have
+VV->Integral()
+(double) 217.98670
+root [8] VV->GetBinContent(15)
+(double) 4.0000000e-09
+root [9] VV->GetBinError(15)
+(double) 6.3245553e-05
+
+whereas for the same process from the fitDiagnostics root file and the shapes_prefit I see
+VV->Integral()
+(double) 217.98669
+root [6] VV->GetBinContent(15)
+(double) 3.9999999e-09
+root [7] VV->GetBinError(15)
+(double) 0.34297281
+
+The same is true for many other bins of low-statistics bins.
+Is this expected?
+Thanks for your input,
+Alexis
+----------------------------------------
+
+REPLY 2 (by ineuteli @ 2026-02-12T13:48:54.373Z):
+Hi Alexis,
+I think in Combine, the bin uncertainty of the input histograms for the expected model is only used to compute the MC bin-by-bin-uncertainties when you include autoMCstat.
+The bin errors of the pre-fit histogram should be the full (symmetrized) pre-fit uncertainty, which includes the all systematic uncertainties, as well as bin-by-bin uncertainties computed by autoMCstat. These can indeed be large depending on your prefit uncertainties.
+Typically the bin error of the post-fit histogram are typically much smaller because the uncertainties get constrained by fitting the data and the correlations are taken into account via the covariance matrix.
+However, are you using autoMCstat? These issue reminds me something I have encountered in Combine review, and of a previous question:
+
+fitDiagnostics blows up pre-fit error bars Statistical Interpretation Tools
+
+Dear combine experts,
+I am performing a combine fit with the following command:
+combine -M FitDiagnostics ../datacards/datacard_${IDENTIFIER}.txt -n .${IDENTIFIER} \
+--saveShapes \
+--saveWorkspace \
+--saveNormalizations \
+--saveWithUncertainties \
+--plots \
+--skipBOnlyFit \
+--verbose 9
+
+In my datacard I use ∗ autoMCStats 0 1 1.
+In the output root file I find the TDirectory shapes_prefit. The histograms stored in there have significan…
+
+Like in those previous cases, I noticed that the bin uncertainty of your input histogram is the square root of the bin content, sqrt(4e-9) = 6.32455532. This is probably an indication
+
+you created/filled the histograms without setting TH1::Sumw2, or
+you set the wrong bin error option, like kPoisson TH1::SetBinErrorOption. This sets the bin error to the (asymmetric) Poisson error, which is approximately square root of the bin content, sqrt(N). This should only used for real data to get the correct error bars in plots. I believe Combine does this for you for the data_obs output histograms.
+
+For MC histograms, you should always set the bin error option explicitly to TH1::Sumw2,
+which keeps track of the sum of weights squared, and sets the bin error to the square root of the sum of weights squared.
+The problem is that this bin error of the input histogram is wrong and too large, leading autoMCstat to create wrong and huge bin-by-bin uncertainties. This is because it computes the thresholds and size of the statistical uncertainty from the histogram bin errors with the Barlow–Beeston-lite algorithm, as you can read in detail in the Combine manual.
+When I saw this in Combine review the issue arose from histograms created with Coffea. Whatever framework you use, my suggestion is to use TH1::Sumw2 before filling the MC histograms.
+Cheers,
+Izaak
+P.S.
+As this has happened several times, we should probably add a check of the bin error options and if TH1::Sumw2() was set  in the autoMCstat algorithm to warn users.
+P.P.S.
+I actually think that TH1::Sumw2 be the default in ROOT upon creation, depending on the default global settings or fgDefaultSumw2, or when filling.
+>>> from ROOT import TH1F
+>>> h = TH1F('h','h',10,0,10)
+>>> for i in range(100): x=h.Fill(0.5,0.01)
+>>> h.GetBinContent(1), h.GetBinError(1)
+(0.9999993443489075, 0.09999999999999998)
+----------------------------------------
+
+REPLY 3 (by alkaloge @ 2026-02-12T18:34:20.489Z):
+Dear Izaak
+Thanks for the input, it is useful. And indeed, I do use autoMCStats and naively I would say that the TH1::Sumw2 was set when the histograms are filled -. But what you say, related to Coffea might be the answer.
+I will check all of these and report back,
+Thanks for your help!
+Regards
+----------------------------------------
+
+REPLY 4 (by ineuteli @ 2026-02-13T09:11:36.220Z):
+Hi Alexis,
+Thanks, it would be good to know what the cause is so we can properly warn people, and fix it if it’s an issue in a common framework.
+I am afraid this happens more often, but we only notice it when the bin content N is much smaller than 1 because only then we notice that the pre-fit relative error is several orders of magnitude larger because of how autoMCStats constructs the bin-by-bin uncertainties from N^2/e^2.
+Could you quickly share the output for these ROOT commands for your input histogram VV, please?
+VV->TestBit(TH1::kIsNotW)
+VV->GetBinErrorOption()
+VV->GetSumw2()
+VV->GetSumw2N()
+for(int i=0; i<=VV->GetNcells(); i++) printf("%3d %9.7g %9.7g %9.7g\n",i,VV->GetBinContent(i),VV->GetBinError(i),VV->GetSumw2()->At(i));
+
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 5 (by alkaloge @ 2026-02-13T09:54:38.043Z):
+Hi Izaak
+This is the output.
+VV->TestBit(TH1::kIsNotW)
+(bool) false
+root [4] VV->GetBinErrorOption()
+(TH1::EBinErrorOpt) (TH1::kNormal) : (unsigned int) 0
+root [5] VV->GetSumw2()
+(TArrayD *) 0x4984a20
+root [6] VV->GetSumw2N()
+(int) 25
+root [7] for(int i=0; i<=VV->GetNcells(); i++) printf("%3d %9.7g %9.7g %9.7g\n",i,VV->GetBinContent(i),VV->GetBinError(i),VV->GetSumw2()->At(i));
+0         0         0         0
+1 0.1787471  0.422785 0.1787471
+2  4.917347  2.217509  4.917347
+3  54.90856  7.410031  54.90856
+4  69.80172  8.354743  69.80172
+5  39.13344  6.255672  39.13344
+6  22.46859  4.740105  22.46859
+7  13.04469  3.611743  13.04469
+8  5.575998  2.361355  5.575998
+9  3.620937  1.902876  3.620937
+10  1.535079  1.238983  1.535079
+11  1.819539  1.348903  1.819539
+12 0.8428647 0.9180766 0.8428647
+13 0.1093096   0.33062 0.1093096
+14 0.02987359 0.1728398 0.02987359
+15     4e-09 6.324555e-05     4e-09
+16     4e-09 6.324555e-05     4e-09
+17     4e-09 6.324555e-05     4e-09
+18     4e-09 6.324555e-05     4e-09
+19     4e-09 6.324555e-05     4e-09
+20     4e-09 6.324555e-05     4e-09
+21     4e-09 6.324555e-05     4e-09
+22     4e-09 6.324555e-05     4e-09
+23     4e-09 6.324555e-05     4e-09
+24         0         0         0
+Error in <TArrayD::At>: index 25 out of bounds (size: 25, this: 0x4984a20)
+25         0         0         0
+
+Now, this is where I am getting confused…TH::Sumw2 seems to be there, but histograms downstream look like they are filled with w=1 hence the problem. That probably points to a problem while manipulating the histograms and creating the input for the datacards, so it is not a Combine problem. But yes, it would be extremely useful to add a relevant warning as you suggested in any case.
+Regars
+Alexis
+----------------------------------------
+
+REPLY 6 (by ineuteli @ 2026-02-13T10:15:08.551Z):
+Hi Alexis,
+Is it possible you use TH1::SetBinError somewhere? Because if you look in the source code, it sets the sumw2 to the error squared, which is just the bin content, as your output shows.
+Normally the sum of weights squared is accumulated event by event via TH1::Fill. Adding/subtracting/dividing histograms should preserve that. Maybe it has to do with how you manipulate the histograms when creating them, or you framework/script copies the contents from some other type of object?
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 7 (by alkaloge @ 2026-02-13T10:28:07.738Z):
+yes, must be the part of the code that check against negative bins, but apparently mistreats the BinError…
+Thanks for all of your help!
+Alexis
+----------------------------------------
+
+REPLY 8 (by alkaloge @ 2026-02-13T12:44:56.984Z):
+Dear Izaak @ineuteli
+Let me give some more feedback.
+Presumably, the BinError propagation/treatment is fixed now. This is what I get from the .root files that are used to create the datacards
+VV->TestBit(TH1::kIsNotW)
+(bool) false
+root [6] VV->GetBinErrorOption()
+(TH1::EBinErrorOpt) (TH1::kNormal) : (unsigned int) 0
+root [7] VV->GetSumw2()
+(TArrayD *) 0x2fdd280
+root [8] VV->GetSumw2N()
+(int) 25
+root [9] for(int i=0; i<=VV->GetNcells(); i++) printf("%3d %9.7g %9.7g %9.7g\n",i,VV->GetBinContent(i),VV->GetBinError(i),VV->GetSumw2()->At(i));
+0         0         0         0
+1 0.1787471 0.1524211 0.02323218
+2  4.917347  1.100799  1.211759
+3  54.90856  4.103939  16.84232
+4  69.80172  4.552161  20.72217
+5  39.13344  3.372092  11.37101
+6  22.46859   2.57412  6.626096
+7  13.04469  1.995179  3.980738
+8  5.575998  1.271729  1.617294
+9  3.620937  1.075308  1.156288
+10  1.535079 0.5826486 0.3394794
+11  1.819539 0.6991882 0.4888642
+12 0.8428647 0.5262511 0.2769402
+13 0.1093096 0.1093096 0.01194859
+14 0.02987359 0.02987358 0.000892431
+15     4e-09         0         0
+16     4e-09         0         0
+17     4e-09         0         0
+18     4e-09         0         0
+19     4e-09         0         0
+20     4e-09         0         0
+21     4e-09         0         0
+22     4e-09         0         0
+23     4e-09         0         0
+24         0         0         0
+Error in <TArrayD::At>: index 25 out of bounds (size: 25, this: 0x2fdd280)
+25         0         0         0
+
+but now looking the fitDiagnostics I get (the fit converges)
+
+muo_CR_1B->cd()
+(bool) true
+root [4] VV->GetBinContent(15)
+(double) 3.9999999e-09
+root [5] VV->GetBinError(15)
+(double) inf
+root [6]
+root [6]
+root [6] VV->TestBit(TH1::kIsNotW)
+(bool) false
+root [7] VV->GetBinErrorOption()
+(TH1::EBinErrorOpt) (TH1::kNormal) : (unsigned int) 0
+root [8] VV->GetSumw2()
+(TArrayD *) 0x473dac0
+root [9] VV->GetSumw2N()
+(int) 25
+root [10] for(int i=0; i<=VV->GetNcells(); i++) printf(“%3d %9.7g %9.7g %9.7g\n”,i,VV->GetBinContent(i),VV->GetBinError(i),VV->GetSumw2()->At(i));
+0         0         0         0
+1 0.1787471       inf       inf
+2  4.917347       inf       inf
+3  54.90856       inf       inf
+4  69.80172       inf       inf
+5  39.13343       inf       inf
+6  22.46859       inf       inf
+7  13.04469       inf       inf
+8  5.575998       inf       inf
+9  3.620936       inf       inf
+10  1.535079       inf       inf
+11  1.819539       inf       inf
+12 0.8428647       inf       inf
+13 0.1093096       inf       inf
+14 0.02987359       inf       inf
+15     4e-09       inf       inf
+16     4e-09       inf       inf
+17     4e-09 2.968138e+17 8.809844e+34
+18     4e-09 2.990119e+17 8.940814e+34
+19     4e-09 3.023779e+17 9.143241e+34
+20     4e-09 3.041529e+17 9.250896e+34
+21     4e-09 3.023218e+17 9.139846e+34
+22     4e-09 2.989223e+17 8.935456e+34
+23     4e-09 2.967335e+17 8.805078e+34
+24         0         0         0
+Error in TArrayD::At: index 25 out of bounds (size: 25, this: 0x473dac0)
+25         0         0         0
+
+and of course that breaks everything…
+If I now remove the BBB from the datacard I get kind of the same non-sense output
+
+VV->GetBinContent(15)
+(double) 2.1798699e-07
+root [4] VV->GetBinError(15)
+(double) 1.2037490e+18
+root [5]
+root [5] VV->TestBit(TH1::kIsNotW)
+(bool) false
+root [6] VV->GetBinErrorOption()
+(TH1::EBinErrorOpt) (TH1::kNormal) : (unsigned int) 0
+root [7] VV->GetSumw2()
+(TArrayD *) 0x48c7740
+root [8] VV->GetSumw2N()
+(int) 25
+root [9] for(int i=0; i<=VV->GetNcells(); i++) printf(“%3d %9.7g %9.7g %9.7g\n”,i,VV->GetBinContent(i),VV->GetBinError(i),VV->GetSumw2()->At(i));
+0         0         0         0
+1 0.1787474 3.436052e+16 1.180645e+33
+2  4.917355 3.436052e+16 1.180645e+33
+3  54.90864 3.436052e+16 1.180645e+33
+4  69.80182 3.436052e+16 1.180645e+33
+5  39.13349 3.436052e+16 1.180645e+33
+6  22.46863 3.436052e+16 1.180645e+33
+7  13.04471 3.436052e+16 1.180645e+33
+8  5.576006 3.436052e+16 1.180645e+33
+9  3.620942       inf       inf
+10  1.535081       inf       inf
+11  1.819541       inf       inf
+12 0.8428659       inf       inf
+13 0.1093098       inf       inf
+14 0.02987363       inf       inf
+15 2.17987e-07 1.203749e+18 1.449012e+36
+16 2.17987e-07 3.866874e+17 1.495271e+35
+17 2.17987e-07 3.436085e+16 1.180668e+33
+18 2.17987e-07 3.436164e+16 1.180722e+33
+19 2.17987e-07 3.436287e+16 1.180807e+33
+20 2.17987e-07 3.436352e+16 1.180852e+33
+21 2.17987e-07 3.436286e+16 1.180806e+33
+22 2.17987e-07 3.436162e+16 1.180721e+33
+23 2.17987e-07 3.436084e+16 1.180667e+33
+24         0         0         0
+Error in TArrayD::At: index 25 out of bounds (size: 25, this: 0x48c7740)
+25         0         0         0
+
+How is it even possible that the BinContent changed just by removing the autoMCStats? Any ideas?
+----------------------------------------
+
+REPLY 9 (by ineuteli @ 2026-02-13T13:03:55.004Z):
+Hi Alexis,
+As you said the fit converges, I am not sure what is happening there without looking into your datacards and shapes. The bin errors for the input look a lot more reasonable, i.e., the bin errors are smaller than the bin content, indicating you have good enough MC statistics.
+
+Alexis Kalogeropoulos:
+
+How is it even possible that the BinContent changed just by removing the autoMCStats? Any ideas?
+
+As said above, it is generally expected that the pre-fit uncertainty changes in each bin. This new uncertainty is the total (symmetrized) pre-fit uncertainty, which are basically all systematic uncertainties summed quadratically, without taking into account any correlations. These uncertainties include the bin-by-bin uncertainties as well if you included autoMCStats, because these are added as nuisance parameters.
+In your case something went awry, probably in the fit, but there’s no way of telling without the data cards and inputs…
+You could try several things yourself:
+
+Run ValidateDatacards.py to check for obvious mistakes in the shapes and their variations, see https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/validation/.
+Removing one by one systematics until pre-fit uncertainty looks reasonable and then try to understand what went wrong. You can simply remove the nuisance line from the datacard or use --freezeParameters.
+
+Perhaps someone else has an idea?
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 10 (by anigamov @ 2026-02-13T14:59:49.046Z):
+Hi @alkaloge,
+It is hard to judge what is going on without input shapes and datacards.
+I would be happy to look into it once you share the files.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 11 (by alkaloge @ 2026-02-13T18:03:32.773Z):
+Dear Aliya
+I have put the root files and the datacards here
+/afs/cern.ch/user/a/alkaloge/public/fitDiagnostics.tar
+that tarball has two folders datacards_recoSuu_mass0_topLt500_v24/ and the fitDiagnostics. The latter has already the combined and the worskpaces created, but the commands I used can be seen in the runfit.sh. so that you can reproduce my results.
+Please let me know
+Regards and thanks
+----------------------------------------
+
+REPLY 12 (by alkaloge @ 2026-02-18T15:58:30.315Z):
+Dear @anigamov @ineuteli did you maybe have the time to take a look?
+Regards,
+Alexis
+----------------------------------------
+
+REPLY 13 (by ineuteli @ 2026-02-20T14:37:31.142Z):
+Hi Alexis,
+No I didn’t, but have you tried my suggestions above; ValidateDatacards.py and removing/freezing systematics to pin down possible pathologies?
+Cheers,
+Izaak
+----------------------------------------

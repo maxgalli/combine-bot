@@ -1,0 +1,23 @@
+{
+  "topic_id": 27791,
+  "title": "CMS Combine tutorial on September 27th",
+  "url": "https://cms-talk.web.cern.ch/t/27791",
+  "category_id": 279,
+  "created_at": "2023-07-31T14:41:00.298Z",
+  "last_posted_at": "2023-07-31T14:41:00.716Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-07-31T14:41:00.716Z",
+      "updated_at": "2023-07-31T14:41:00.716Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nWe are happy to announce a Combine tool tutorial on Wednesday September 27th.\nBased on the feedback from the last tutorial this time we would like to focus on unfolding procedures in general as well as the implementation in Combine.\nPlease find the developing agenda at https://indico.cern.ch/event/1311191/, where you can already register for the event.\nAll the best,\nKyle and Aliya for the organisers",
+      "cooked_html": "<p>Dear all,</p>\n<p>We are happy to announce a Combine tool tutorial on Wednesday September 27th.<br>\nBased on the feedback from the last tutorial this time we would like to focus on unfolding procedures in general as well as the implementation in Combine.<br>\nPlease find the developing agenda at <a href=\"https://indico.cern.ch/event/1311191/\" rel=\"noopener nofollow ugc\">https://indico.cern.ch/event/1311191/</a>, where you can already register for the event.</p>\n<p>All the best,<br>\nKyle and Aliya for the organisers</p>"
+    }
+  ]
+}

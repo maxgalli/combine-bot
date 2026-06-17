@@ -1,0 +1,23 @@
+{
+  "topic_id": 142624,
+  "title": "Simultaneous Fit of S+B and B distribution",
+  "url": "https://cms-talk.web.cern.ch/t/142624",
+  "category_id": 279,
+  "created_at": "2026-03-04T10:21:03.614Z",
+  "last_posted_at": "2026-03-04T10:21:04.151Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "santocch",
+      "name": "Attilio Santocchia",
+      "created_at": "2026-03-04T10:21:04.151Z",
+      "updated_at": "2026-03-04T10:21:04.151Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear expert,\nIn the discussion with the ARC Chair and EXO conveners for EXO-25-002 I was asked to try to do a simultaneous fit of 2 distributions using combine and I\u2019d like to have a feedback to be sure that what I implemented is correct. All the details are here [0] but I\u2019d like to give you some additional information to better understand what I did.\n\nI have 2 dimuon invariant mass distributions (both obtained from data). The P-Distribution and the M-Distribution are identical (within statistical fluctuations) for SM events. If a BSM resonance exist, most of the signal will go into the P-Distribution. I consider  the M-Distribution as a control region where the signal contamination is negligible and then followed the combine tutorial.\nI implemented what is described in the combine tutorial (model  building) using the Rate Parameters to \u201cforce\u201d the P-Distribution and M-Distribution to be fitted simultaneously.\n\nSo my question is very simple: in [0] you can find the link to the combine card (and also to the workspace if you like to run combine by yourself), the result of the FitDiagnostic command and my interpretation of the Rate Parameter I introduced in the combine card. Is the implementation of the simultaneous fit correct?\nThanks for helping\nAttilio\n[0] https://cms-pub-talk.web.cern.ch/t/simultaneous-fit-of-p-and-m-distribution/48246",
+      "cooked_html": "<p>Dear expert,</p>\n<p>In the discussion with the ARC Chair and EXO conveners for EXO-25-002 I was asked to try to do a simultaneous fit of 2 distributions using combine and I\u2019d like to have a feedback to be sure that what I implemented is correct. All the details are here [0] but I\u2019d like to give you some additional information to better understand what I did.</p>\n<ul>\n<li>I have 2 dimuon invariant mass distributions (both obtained from data). The P-Distribution and the M-Distribution are identical (within statistical fluctuations) for SM events. If a BSM resonance exist, most of the signal will go into the P-Distribution. I consider  the M-Distribution as a control region where the signal contamination is negligible and then followed the combine tutorial.</li>\n<li>I implemented what is described in the combine tutorial (model  building) using the Rate Parameters to \u201cforce\u201d the P-Distribution and M-Distribution to be fitted simultaneously.</li>\n</ul>\n<p>So my question is very simple: in [0] you can find the link to the combine card (and also to the workspace if you like to run combine by yourself), the result of the FitDiagnostic command and my interpretation of the Rate Parameter I introduced in the combine card. Is the implementation of the simultaneous fit correct?</p>\n<p>Thanks for helping<br>\nAttilio</p>\n<p>[0] <a href=\"https://cms-pub-talk.web.cern.ch/t/simultaneous-fit-of-p-and-m-distribution/48246\" rel=\"noopener nofollow ugc\">https://cms-pub-talk.web.cern.ch/t/simultaneous-fit-of-p-and-m-distribution/48246</a></p>"
+    }
+  ]
+}

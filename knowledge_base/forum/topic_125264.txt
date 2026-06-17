@@ -1,0 +1,81 @@
+TOPIC: Connection between likelihood scan of NP and best fit in impact plots
+URL: https://cms-talk.web.cern.ch/t/125264
+DATE: 2025-05-27T08:38:57.529Z
+SOLVED: no
+============================================================
+
+QUESTION (by raschmie @ 2025-05-27T08:38:57.683Z):
+Dear all,
+during unblinding we performed an impact plot on data and a likelihood scan of the NP cross_section_VV to check its behavior. We can not make sense of how the result of the scan and the fit results of the impact plot for the NP come together. Is someone able to clarify?
+The NP is a lnN uncertainty of 7.5%.
+Attached is the scan and the impact plot (NP is ranked #1 with a pull value of 3.4)
+Commands for the scan:
+DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}"
+combineTool.py -M MultiDimFit \
+-m 125 \
+-d $DATACARD_OUTPUT/cmb/workspace.root \
+--algo grid \
+--points 50 \
+--setParameters cross_section_VV=1 \
+--setParameterRanges cross_section_VV=-10,10 \
+--redefineSignalPOIs cross_section_VV \
+--cminDefaultMinimizerStrategy 0 \
+--cminFallbackAlgo Minuit2,0:0.2 \
+-n cross_section_VV -v2
+outputname="scan"
+plot1DScan.py higgsCombinecross_section_VV.MultiDimFit.mH125.root --POI cross_section_VV -o $DATACARD_OUTPUT/$outputname --y-max 4
+
+and for the impacts:
+DATACARD_OUTPUT="${BASE_PATH}/${ERA}_${CHANNEL}/cmb"
+WORKSPACE=${DATACARD_OUTPUT}/workspace.root
+combineTool.py -M Impacts -d $WORKSPACE -m 125 --doInitialFit --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH --parallel 16
+
+combineTool.py -M Impacts -d $WORKSPACE -m 125 --doFits --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH --parallel 16
+combineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH
+combineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_WH=1.0 \
+--setParameterRanges r_WH=-5,5 \
+--redefineSignalPOIs r_WH
+plotImpacts.py -i $DATACARD_OUTPUT/sm_mc_${ERA}_${CHANNEL}_impacts.json -o $DATACARD_OUTPUT/sm_mc_${ERA}_${CHANNEL}_impacts --blind
+
+Screenshot from 2025-05-27 10-36-46697×570 6.91 KB
+Screenshot from 2025-05-27 10-36-29947×757 77.8 KB
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2025-05-27T08:42:23.925Z):
+Hi Ralf,
+I have a feeling that setting --redefineSignalPOIs cross_section_VV causes the constraint on this nuisance parameter to be dropped. Can you try putting -P cross_section_VV instead?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by raschmie @ 2025-05-27T08:49:07.942Z):
+Hi Andrew,
+great thank you very much for the quick reply. The results look now much more comparable. And we do expect the best fit result from the scan and its uncertainties to match the best fit values and uncertainties from the impact plot?
+Here is the plot after switching to -P cross_section_VV
+Cheers
+Ralf
+scan_minusPoption696×572 6.68 KB
+----------------------------------------
+
+REPLY 4 (by raschmie @ 2025-05-27T09:00:48.555Z):
+the results from the impact plot are for the fit values of cross_section_VV:
+1.19±0.935
+----------------------------------------
+
+REPLY 5 (by agilbert @ 2025-05-27T15:35:24.272Z):
+Hi Ralf,
+Yes, at this point I would expect the two to agree. The fact they don’t suggests some subtle difference in the set up of the two fits (e.g. is --setParameterRanges r_WH=-5,5 significant?).
+I would try to verify if the fit results are still different after making sure all relevant input settings are the same.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 6 (by raschmie @ 2025-05-28T09:47:23.672Z):
+Hi Andrew,
+thank you for the hint, we managed to get similar results. We were able to solve it by including this options in the scan:
+--floatOtherPOIs 1 --saveInactivePOI 1
+
+This flags are used in the production of the impact plots (by default we assume, as we did not pass those flags).
+Cheers,
+Ralf
+----------------------------------------

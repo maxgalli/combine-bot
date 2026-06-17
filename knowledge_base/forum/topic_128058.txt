@@ -1,0 +1,422 @@
+TOPIC: Post-fit yields with stat and syst separate
+URL: https://cms-talk.web.cern.ch/t/128058
+DATE: 2025-08-01T16:27:40.460Z
+SOLVED: no
+============================================================
+
+QUESTION (by eipearso @ 2025-08-01T16:27:40.761Z):
+Dear combine experts,
+We are in the process of unblinding our analysis and have been asked to make  pre and post background-only fit plots. We have been able to obtain the pre and post b-only fit yields with FitDiagnostics as detailed in [1] with the following:
+combine -M FitDiagnostics datacard.txt -m 1500 --plots --robustFit 1 -v2 --rMin -1 --rMax 3 --saveShapes --saveWithUncertainties --skipSBFit
+
+The workspace and datacard are attached [2, 3].
+However, we find that the uncertainties we obtain are the total (stat+syst) uncertainty. We would like to report the yield for each background process with the statistical and systematic uncertainties separately. There is a “Breakdown of uncertainties” section of the docs [4], but this uses MultiDimFit instead of FitDiagnostics and obtains the breakdown of uncertainties for the best-fit r value. How do we obtain post-fit yields with the statistic and systematic uncertainties separate?
+Note: We did try running FitDiagnostics with groups of nuisances frozen, but obtained results that were not self consistent. We ran the above command three times: once with all nuisances floating (to get total uncertainty), once with the statistical nuisances frozen (to get the systematic uncertainty), and once with the systematic nuisances frozen (to get the statistical uncertainty). However, when obtained in this way the sum in quadrature of the stat and syst uncertainties does not equal the total uncertainty.
+Thank you,
+Emma Pearson
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-diagnostics
+[2] workspace.root (39.7 KB)
+[3] datacard.txt (21.3 KB)
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-08-01T20:21:01.000Z):
+Dear Emma,
+Can you give us a bit more details of what you froze in the 3 times you ran your fit?
+Afaik, In combine there is not an option to freeze the statistical component, that’s why we usually estimate it from the difference of total and systematic. If you mean you froze the mcstat uncertainties, those are a systematic component so it is not surprising the results don’t add up.
+Best regards,
+Giacomo
+Il 1 Ago 2025 18:29, Emma Irene Pearson via CMS talk noreply-cms-talk@cern.ch ha scritto:
+
+Emma Irene Pearson eipearsoAugust 1
+
+Dear combine experts,
+We are in the process of unblinding our analysis and have been asked to make pre and post background-only fit plots. We have been able to obtain the pre and post b-only fit yields with FitDiagnostics as detailed in [1] with the following:
+combine -M FitDiagnostics datacard.txt -m 1500 --plots --robustFit 1 -v2 --rMin -1 --rMax 3 --saveShapes --saveWithUncertainties --skipSBFit
+
+The workspace and datacard are attached [2, 3].
+However, we find that the uncertainties we obtain are the total (stat+syst) uncertainty. We would like to report the yield for each background process with the statistical and systematic uncertainties separately. There is a “Breakdown of uncertainties” section of the docs [4], but this uses MultiDimFit instead of FitDiagnostics and obtains the breakdown of uncertainties for the best-fit r value. How do we obtain post-fit yields with the statistic and systematic uncertainties separate?
+Note: We did try running FitDiagnostics with groups of nuisances frozen, but obtained results that were not self consistent. We ran the above command three times: once with all nuisances floating (to get total uncertainty), once with the statistical nuisances frozen (to get the systematic uncertainty), and once with the systematic nuisances frozen (to get the statistical uncertainty). However, when obtained in this way the sum in quadrature of the stat and syst uncertainties does not equal the total uncertainty.
+Thank you,
+Emma Pearson
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-diagnostics
+[2] workspace.root (39.7 KB)
+[3] datacard.txt (21.3 KB)
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by amarini @ 2025-08-01T21:09:50.601Z):
+Hi,
+Please note (as Giacomo said) this:
+While the above procedure is guaranteed the have the effect that the sum in quadrature of the breakdown will equal the total uncertainty, the order in which you freeze the groups can make a difference due to correlations induced by the fit. You should check if the answers change significantly if changing the order and we recommend you start with the largest group (in terms of overall contribution to the uncertainty) first, working down the list in order of the size of the contribution.
+
+On top of this, if you want to do it for postfit uncertainties, make sure you start from the best fit and not from the prefit, similarly to what done in https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+Otherwise, you will get uncertainties that do not refer to the same fit.
+-Andrea
+----------------------------------------
+
+REPLY 4 (by eipearso @ 2025-08-04T16:05:00.708Z):
+Hi Giacomo and Andrea,
+Thank you for your responses. To Giacomo’s comment, we were freezing the autoMCStats group in an attempt to freeze only the statistical component. To try to freeze only the systematic component, we were freezing all of the non-MCStats nuisances (the ones that do not include prop_bin*) using freezeParameters and a comma-separated list, i.e.
+combine -M FitDiagnostics [rest of options] --freezeParameters DY_Norm,DY_Shape,EER...
+
+To Andrea’s comment, we were starting from the prefit each time rather than from the best fit, so that is likely part of the issue. Thank you for pointing this out.
+Also, the breakdown of uncertainties section of the docs says that one should use --freezeParameters allConstrainedNuiscances to obtain the statistical uncertainty only, but this appears to only work with MultiDimFit. If I freeze allConstrainedNuisances with FitDiagnostics I get a segmentation fault.
+So it’s still not really clear to me which nuisances (or group) I need to be freezing.
+In case it is relevant, and because I forgot to specify in the first post, I am using combine version 10.2.1.
+Thank you,
+Emma
+----------------------------------------
+
+REPLY 5 (by eipearso @ 2025-09-17T16:28:45.026Z):
+Dear combine experts,
+We thought we had figured this out, but we found that it does not work consistently for all of our mass points. The sequence of commands is as follows:
+(1) Run a b-only MultiDimFit with all nuisances floating and save the snapshot:
+combine -M MultiDimFit [datacard] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --saveWorkspace --setParameters r=0,signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam,r
+
+(2) Run FitDiagnostics with all nuisances floating and load the snapshot from (1):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam
+
+(3) Run FitDiagnostics like in (2), but with the systematics frozen. (Note that we defined a “systs” group in our datacard to make this easier):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam --freezeNuisanceGroup systs
+
+For some mass points this works just fine, and we can obtain the uncertainties broken into stat and syst components. For others, it fails in step (3) and we see an error message: Error in <ROOT::Math:: Fitter::SetFCN>: FCN function has zero parameters . The difference appears to be the amount of statistics in the backgrounds relative to the autoMCStats threshold. The above set of commands fails in step (3) for mass points with enough statistics that all years are above the autoMCStats threshold.
+Everything to reproduce this, including a txt file with combine commands with the mass and scale factors filled in, has been put here (https://cernbox.cern.ch/s/nSyDPmrVru78RDY) for mass 300 GeV (fails) and mass 1100 GeV (succeeds).
+What do you suggest to do about the masses where this fails?
+Thank you,
+Em Pearson
+----------------------------------------
+
+REPLY 6 (by gortona @ 2025-09-17T20:51:30.000Z):
+Dear Emma,
+The error message tells you that there are no systematic uncertainties that can be varied to compute your likelihood, as expected since you froze everything and there’s no autoMCstat in those points.
+Can you try adding the —fastScan option to your command in (3)? This turns off nuisance profiling in the fit.
+Best,
+Giacomo
+
+On 17 Sep 2025, at 18:29, Emma Irene Pearson via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Emma Irene Pearson eipearsoSeptember 17
+
+Dear combine experts,
+We thought we had figured this out, but we found that it does not work consistently for all of our mass points. The sequence of commands is as follows:
+(1) Run a b-only MultiDimFit with all nuisances floating and save the snapshot:
+combine -M MultiDimFit [datacard] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --saveWorkspace --setParameters r=0,signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam,r
+
+(2) Run FitDiagnostics with all nuisances floating and load the snapshot from (1):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam
+
+(3) Run FitDiagnostics like in (2), but with the systematics frozen. (Note that we defined a “systs” group in our datacard to make this easier):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam --freezeNuisanceGroup systs
+
+For some mass points this works just fine, and we can obtain the uncertainties broken into stat and syst components. For others, it fails in step (3) and we see an error message: Error in <ROOT::Math:: Fitter::SetFCN>: FCN function has zero parameters . The difference appears to be the amount of statistics in the backgrounds relative to the autoMCStats threshold. The above set of commands fails in step (3) for mass points with enough statistics that all years are above the autoMCStats threshold.
+Everything to reproduce this, including a txt file with combine commands with the mass and scale factors filled in, has been put here (https://cernbox.cern.ch/s/nSyDPmrVru78RDY) for mass 300 GeV (fails) and mass 1100 GeV (succeeds).
+What do you suggest to do about the masses where this fails?
+Thank you,
+Em Pearson
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Emma Irene Pearson eipearsoAugust 4
+
+Hi Giacomo and Andrea,
+Thank you for your responses. To Giacomo’s comment, we were freezing the autoMCStats group in an attempt to freeze only the statistical component. To try to freeze only the systematic component, we were freezing all of the non-MCStats nuisances (the ones that do not include prop_bin*) using freezeParameters and a comma-separated list, i.e.
+combine -M FitDiagnostics [rest of options] --freezeParameters DY_Norm,DY_Shape,EER...
+
+To Andrea’s comment, we were starting from the prefit each time rather than from the best fit, so that is likely part of the issue. Thank you for pointing this out.
+Also, the breakdown of uncertainties section of the docs says that one should use --freezeParameters allConstrainedNuiscances to obtain the statistical uncertainty only, but this appears to only work with MultiDimFit. If I freeze allConstrainedNuisances with FitDiagnostics I get a segmentation fault.
+So it’s still not really clear to me which nuisances (or group) I need to be freezing.
+In case it is relevant, and because I forgot to specify in the first post, I am using combine version 10.2.1.
+Thank you,
+Emma
+
+Andrea Carlo Marini amariniAugust 1
+
+Hi,
+Please note (as Giacomo said) this:
+While the above procedure is guaranteed the have the effect that the sum in quadrature of the breakdown will equal the total uncertainty, the order in which you freeze the groups can make a difference due to correlations induced by the fit. You should check if the answers change significantly if changing the order and we recommend you start with the largest group (in terms of overall contribution to the uncertainty) first, working down the list in order of the size of the contribution.
+
+On top of this, if you want to do it for postfit uncertainties, make sure you start from the best fit and not from the prefit, similarly to what done in https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+Otherwise, you will get uncertainties that do not refer to the same fit.
+-Andrea
+
+Giacomo Ortona gortonaAugust 1
+
+Dear Emma,
+Can you give us a bit more details of what you froze in the 3 times you ran your fit?
+Afaik, In combine there is not an option to freeze the statistical component, that’s why we usually estimate it from the difference of total and systematic. If you mean you froze the mcstat uncertainties, those are a systematic component so it is not surprising the results don’t add up.
+Best regards,
+Giacomo
+Il 1 Ago 2025 18:29, Emma Irene Pearson via CMS talk noreply-cms-talk@cern.ch ha scritto:
+
+Emma Irene Pearson eipearsoAugust 1
+
+Dear combine experts,
+We are in the process of unblinding our analysis and have been asked to make pre and post background-only fit plots. We have been able to obtain the pre and post b-only fit yields with FitDiagnostics as detailed in [1] with the following:
+combine -M FitDiagnostics datacard.txt -m 1500 --plots --robustFit 1 -v2 --rMin -1 --rMax 3 --saveShapes --saveWithUncertainties --skipSBFit
+
+The workspace and datacard are attached [2, 3].
+However, we find that the uncertainties we obtain are the total (stat+syst) uncertainty. We would like to report the yield for each background process with the statistical and systematic uncertainties separately. There is a “Breakdown of uncertainties” section of the docs [4], but this uses MultiDimFit instead of FitDiagnostics and obtains the breakdown of uncertainties for the best-fit r value. How do we obtain post-fit yields with the statistic and systematic uncertainties separate?
+Note: We did try running FitDiagnostics with groups of nuisances frozen, but obtained results that were not self consistent. We ran the above command three times: once with all nuisances floating (to get total uncertainty), once with the statistical nuisances frozen (to get the systematic uncertainty), and once with the systematic nuisances frozen (to get the statistical uncertainty). However, when obtained in this way the sum in quadrature of the stat and syst uncertainties does not equal the total uncertainty.
+Thank you,
+Emma Pearson
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-diagnostics
+[2] workspace.root (39.7 KB)
+[3] datacard.txt (21.3 KB)
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Emma Irene Pearson eipearsoAugust 1
+
+Dear combine experts,
+We are in the process of unblinding our analysis and have been asked to make pre and post background-only fit plots. We have been able to obtain the pre and post b-only fit yields with FitDiagnostics as detailed in [1] with the following:
+combine -M FitDiagnostics datacard.txt -m 1500 --plots --robustFit 1 -v2 --rMin -1 --rMax 3 --saveShapes --saveWithUncertainties --skipSBFit
+
+The workspace and datacard are attached [2, 3].
+However, we find that the uncertainties we obtain are the total (stat+syst) uncertainty. We would like to report the yield for each background process with the statistical and systematic uncertainties separately. There is a “Breakdown of uncertainties” section of the docs [4], but this uses MultiDimFit instead of FitDiagnostics and obtains the breakdown of uncertainties for the best-fit r value. How do we obtain post-fit yields with the statistic and systematic uncertainties separate?
+Note: We did try running FitDiagnostics with groups of nuisances frozen, but obtained results that were not self consistent. We ran the above command three times: once with all nuisances floating (to get total uncertainty), once with the statistical nuisances frozen (to get the systematic uncertainty), and once with the systematic nuisances frozen (to get the statistical uncertainty). However, when obtained in this way the sum in quadrature of the stat and syst uncertainties does not equal the total uncertainty.
+Thank you,
+Emma Pearson
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-diagnostics
+[2] workspace.root (39.7 KB)
+[3] datacard.txt (21.3 KB)
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by eipearso @ 2025-09-18T14:40:38.039Z):
+Hi Giacomo,
+When I do that, combine tells me that FitDiagnostics does not recognize the option --fastScan, and when looking through the output of combine -M FitDiagnostics --help I do not see that option or anything similar.
+Thank you,
+Em
+Screenshot 2025-09-18 at 9.37.03 AM2100×336 34.8 KB
+----------------------------------------
+
+REPLY 8 (by eipearso @ 2025-09-26T15:15:24.823Z):
+Dear Combine experts,
+Could you please let us know if there are any other suggestions regarding this topic? We need to decide what to do about this this soon to be able to continue with the review process for our analysis.
+Thank you,
+Em Pearson
+----------------------------------------
+
+REPLY 9 (by gallim @ 2025-09-28T18:00:00.174Z):
+Hi Emma,
+I’m investigating the issue here. Referring to the comment I made there, unfortunately I don’t know enough about the internals to say whether this behavior is intended or not. We’ll try to follow up.
+Best,
+Massimiliano
+----------------------------------------
+
+REPLY 10 (by gortona @ 2025-09-29T20:47:26.000Z):
+Dear Emma,
+We discussed a bit about this with Massimiliano.
+I don’t think there is an easy way out within fitDiagnostics to have a fit with no nuisance parameters and no POI. I can suggest you two possible solutions:
+The first one is to rely on MultiDimFit instead of fitDiagnostics in the last step. Although this means you would not get the postFit distribution in the output file.
+The other option is to add a negligible systematic uncertainty (like 0.1% or 0.01%) in the datacard and leave it floating. this should have no effect on the actual numbers you obtain but it introduces something for the fit to operate on.
+I hope it helps,
+Best regards,
+Giacomo
+
+On 28 Sep 2025, at 20:01, Massimiliano Galli via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Massimiliano Galli gallimSeptember 28
+
+Hi Emma,
+I’m investigating the issue here. Referring to the comment I made there, unfortunately I don’t know enough about the internals to say whether this behavior is intended or not. We’ll try to follow up.
+Best,
+Massimiliano
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Emma Irene Pearson eipearsoSeptember 26
+
+Dear Combine experts,
+Could you please let us know if there are any other suggestions regarding this topic? We need to decide what to do about this this soon to be able to continue with the review process for our analysis.
+Thank you,
+Em Pearson
+
+Emma Irene Pearson eipearsoSeptember 18
+
+Hi Giacomo,
+When I do that, combine tells me that FitDiagnostics does not recognize the option --fastScan, and when looking through the output of combine -M FitDiagnostics --help I do not see that option or anything similar.
+Thank you,
+Em
+
+Giacomo Ortona gortonaSeptember 17
+
+Dear Emma,
+The error message tells you that there are no systematic uncertainties that can be varied to compute your likelihood, as expected since you froze everything and there’s no autoMCstat in those points.
+Can you try adding the —fastScan option to your command in (3)? This turns off nuisance profiling in the fit.
+Best,
+Giacomo
+
+On 17 Sep 2025, at 18:29, Emma Irene Pearson via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Emma Irene Pearson eipearsoSeptember 17
+
+Dear combine experts,
+We thought we had figured this out, but we found that it does not work consistently for all of our mass points. The sequence of commands is as follows:
+(1) Run a b-only MultiDimFit with all nuisances floating and save the snapshot:
+combine -M MultiDimFit [datacard] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --saveWorkspace --setParameters r=0,signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam,r
+
+(2) Run FitDiagnostics with all nuisances floating and load the snapshot from (1):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam
+
+(3) Run FitDiagnostics like in (2), but with the systematics frozen. (Note that we defined a “systs” group in our datacard to make this easier):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam --freezeNuisanceGroup systs
+
+For some mass points this works just fine, and we can obtain the uncertainties broken into stat and syst components. For others, it fails in step (3) and we see an error message: Error in <ROOT::Math:: Fitter::SetFCN>: FCN function has zero parameters . The difference appears to be the amount of statistics in the backgrounds relative to the autoMCStats threshold. The above set of commands fails in step (3) for mass points with enough statistics that all years are above the autoMCStats threshold.
+Everything to reproduce this, including a txt file with combine commands with the mass and scale factors filled in, has been put here (https://cernbox.cern.ch/s/nSyDPmrVru78RDY) for mass 300 GeV (fails) and mass 1100 GeV (succeeds).
+What do you suggest to do about the masses where this fails?
+Thank you,
+Em Pearson
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Emma Irene Pearson eipearsoAugust 4
+
+Hi Giacomo and Andrea,
+Thank you for your responses. To Giacomo’s comment, we were freezing the autoMCStats group in an attempt to freeze only the statistical component. To try to freeze only the systematic component, we were freezing all of the non-MCStats nuisances (the ones that do not include prop_bin*) using freezeParameters and a comma-separated list, i.e.
+combine -M FitDiagnostics [rest of options] --freezeParameters DY_Norm,DY_Shape,EER...
+
+To Andrea’s comment, we were starting from the prefit each time rather than from the best fit, so that is likely part of the issue. Thank you for pointing this out.
+Also, the breakdown of uncertainties section of the docs says that one should use --freezeParameters allConstrainedNuiscances to obtain the statistical uncertainty only, but this appears to only work with MultiDimFit. If I freeze allConstrainedNuisances with FitDiagnostics I get a segmentation fault.
+So it’s still not really clear to me which nuisances (or group) I need to be freezing.
+In case it is relevant, and because I forgot to specify in the first post, I am using combine version 10.2.1.
+Thank you,
+Emma
+
+Andrea Carlo Marini amariniAugust 1
+
+Hi,
+Please note (as Giacomo said) this:
+While the above procedure is guaranteed the have the effect that the sum in quadrature of the breakdown will equal the total uncertainty, the order in which you freeze the groups can make a difference due to correlations induced by the fit. You should check if the answers change significantly if changing the order and we recommend you start with the largest group (in terms of overall contribution to the uncertainty) first, working down the list in order of the size of the contribution.
+
+On top of this, if you want to do it for postfit uncertainties, make sure you start from the best fit and not from the prefit, similarly to what done in https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+Otherwise, you will get uncertainties that do not refer to the same fit.
+-Andrea
+
+Giacomo Ortona gortonaAugust 1
+
+Dear Emma,
+Can you give us a bit more details of what you froze in the 3 times you ran your fit?
+Afaik, In combine there is not an option to freeze the statistical component, that’s why we usually estimate it from the difference of total and systematic. If you mean you froze the mcstat uncertainties, those are a systematic component so it is not surprising the results don’t add up.
+Best regards,
+Giacomo
+Il 1 Ago 2025 18:29, Emma Irene Pearson via CMS talk noreply-cms-talk@cern.ch ha scritto:
+
+Emma Irene Pearson eipearsoAugust 1
+
+Dear combine experts,
+We are in the process of unblinding our analysis and have been asked to make pre and post background-only fit plots. We have been able to obtain the pre and post b-only fit yields with FitDiagnostics as detailed in [1] with the following:
+combine -M FitDiagnostics datacard.txt -m 1500 --plots --robustFit 1 -v2 --rMin -1 --rMax 3 --saveShapes --saveWithUncertainties --skipSBFit
+
+The workspace and datacard are attached [2, 3].
+However, we find that the uncertainties we obtain are the total (stat+syst) uncertainty. We would like to report the yield for each background process with the statistical and systematic uncertainties separately. There is a “Breakdown of uncertainties” section of the docs [4], but this uses MultiDimFit instead of FitDiagnostics and obtains the breakdown of uncertainties for the best-fit r value. How do we obtain post-fit yields with the statistic and systematic uncertainties separate?
+Note: We did try running FitDiagnostics with groups of nuisances frozen, but obtained results that were not self consistent. We ran the above command three times: once with all nuisances floating (to get total uncertainty), once with the statistical nuisances frozen (to get the systematic uncertainty), and once with the systematic nuisances frozen (to get the statistical uncertainty). However, when obtained in this way the sum in quadrature of the stat and syst uncertainties does not equal the total uncertainty.
+Thank you,
+Emma Pearson
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-diagnostics
+[2] workspace.root (39.7 KB)
+[3] datacard.txt (21.3 KB)
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Emma Irene Pearson eipearsoAugust 1
+
+Dear combine experts,
+We are in the process of unblinding our analysis and have been asked to make pre and post background-only fit plots. We have been able to obtain the pre and post b-only fit yields with FitDiagnostics as detailed in [1] with the following:
+combine -M FitDiagnostics datacard.txt -m 1500 --plots --robustFit 1 -v2 --rMin -1 --rMax 3 --saveShapes --saveWithUncertainties --skipSBFit
+
+The workspace and datacard are attached [2, 3].
+However, we find that the uncertainties we obtain are the total (stat+syst) uncertainty. We would like to report the yield for each background process with the statistical and systematic uncertainties separately. There is a “Breakdown of uncertainties” section of the docs [4], but this uses MultiDimFit instead of FitDiagnostics and obtains the breakdown of uncertainties for the best-fit r value. How do we obtain post-fit yields with the statistic and systematic uncertainties separate?
+Note: We did try running FitDiagnostics with groups of nuisances frozen, but obtained results that were not self consistent. We ran the above command three times: once with all nuisances floating (to get total uncertainty), once with the statistical nuisances frozen (to get the systematic uncertainty), and once with the systematic nuisances frozen (to get the statistical uncertainty). However, when obtained in this way the sum in quadrature of the stat and syst uncertainties does not equal the total uncertainty.
+Thank you,
+Emma Pearson
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-diagnostics
+[2] workspace.root (39.7 KB)
+[3] datacard.txt (21.3 KB)
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Emma Irene Pearson eipearsoSeptember 17
+
+Dear combine experts,
+We thought we had figured this out, but we found that it does not work consistently for all of our mass points. The sequence of commands is as follows:
+(1) Run a b-only MultiDimFit with all nuisances floating and save the snapshot:
+combine -M MultiDimFit [datacard] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --saveWorkspace --setParameters r=0,signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam,r
+
+(2) Run FitDiagnostics with all nuisances floating and load the snapshot from (1):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam
+
+(3) Run FitDiagnostics like in (2), but with the systematics frozen. (Note that we defined a “systs” group in our datacard to make this easier):
+combine -M FitDiagnostics [multiDimFit snapshot] -m [mass] --rMin -1 --rMax 2 --robustFit 1 --skipSBFit --plots --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --snapshotName MultiDimFit --setParameters signalScaleParam=[SF] --trackParameters signalScaleParam --freezeParameters signalScaleParam --freezeNuisanceGroup systs
+
+For some mass points this works just fine, and we can obtain the uncertainties broken into stat and syst components. For others, it fails in step (3) and we see an error message: Error in <ROOT::Math:: Fitter::SetFCN>: FCN function has zero parameters . The difference appears to be the amount of statistics in the backgrounds relative to the autoMCStats threshold. The above set of commands fails in step (3) for mass points with enough statistics that all years are above the autoMCStats threshold.
+Everything to reproduce this, including a txt file with combine commands with the mass and scale factors filled in, has been put here (https://cernbox.cern.ch/s/nSyDPmrVru78RDY) for mass 300 GeV (fails) and mass 1100 GeV (succeeds).
+What do you suggest to do about the masses where this fails?
+Thank you,
+Em Pearson
+
+Emma Irene Pearson eipearsoAugust 4
+
+Hi Giacomo and Andrea,
+Thank you for your responses. To Giacomo’s comment, we were freezing the autoMCStats group in an attempt to freeze only the statistical component. To try to freeze only the systematic component, we were freezing all of the non-MCStats nuisances (the ones that do not include prop_bin*) using freezeParameters and a comma-separated list, i.e.
+combine -M FitDiagnostics [rest of options] --freezeParameters DY_Norm,DY_Shape,EER...
+
+To Andrea’s comment, we were starting from the prefit each time rather than from the best fit, so that is likely part of the issue. Thank you for pointing this out.
+Also, the breakdown of uncertainties section of the docs says that one should use --freezeParameters allConstrainedNuiscances to obtain the statistical uncertainty only, but this appears to only work with MultiDimFit. If I freeze allConstrainedNuisances with FitDiagnostics I get a segmentation fault.
+So it’s still not really clear to me which nuisances (or group) I need to be freezing.
+In case it is relevant, and because I forgot to specify in the first post, I am using combine version 10.2.1.
+Thank you,
+Emma
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 11 (by nckw @ 2025-09-29T21:15:29.000Z):
+Hi all
+Just one thought. Since this only seems to be an issue in cases where the analytic minimisation kicks in (and hence no MC stats uncertainty in the fit) - you could simply disable this for these studies using --X-rtd MINIMIZER_no_analytic.
+Did you already try that? I didn’t try myself but might be worth a shot,
+Best
+Nick
+
+| Giacomo Ortona gortonaSeptember 29 |
+
+| - |
+
+Dear Emma,
+We discussed a bit about this with Massimiliano.
+I don’t think there is an easy way out within fitDiagnostics to have a fit with no nuisance parameters and no POI. I can suggest you two possible solutions:
+The first one is to rely on MultiDimFit instead of fitDiagnostics in the last step. Although this means you would not get the postFit distribution in the output file.
+The other option is to add a negligible systematic uncertainty (like 0.1% or 0.01%) in the datacard and leave it floating. this should have no effect on the actual numbers you obtain but it introduces something for the fit to operate on.
+I hope it helps,
+Best regards,
+Giacomo
+
+···
+On 29 Sept 2025 22:00, Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------

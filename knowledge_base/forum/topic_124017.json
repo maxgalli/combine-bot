@@ -1,0 +1,45 @@
+{
+  "topic_id": 124017,
+  "title": "How make background only fit in S+B model",
+  "url": "https://cms-talk.web.cern.ch/t/124017",
+  "category_id": 279,
+  "created_at": "2025-04-22T14:18:13.040Z",
+  "last_posted_at": "2025-04-22T16:10:41.535Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2025-04-22T14:18:13.283Z",
+      "updated_at": "2025-04-22T14:18:13.283Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nwith this command:\ncombine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3\nI do in first pass S+B fit and  in second pass B only fit.\nHow should I modify it to make background only fit ?  Clearly I should remove --algo fixed and  --fixedPointPOI mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0\nbut how I should setup zero all signal strengths ?\nI have tried\ncombine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --freezeParameters mean,width,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0,r -v3\nbut it still makes S+B fit and reports\nbest fit parameter values:\nmu_sr1_2017 :   +40.510\nmu_sr2_2017 :   +25.891\nmu_sr3_2017 :   +58.530\nand at the beginning said:\nRedefining the POIs to be: RooArgSet:: = (mu_sr1_2017,mu_sr2_2017,mu_sr3_2017)\nWARNING: cannot freeze nuisance parameter mu_sr1_2017=0 if it doesn\u2019t exist!\nWARNING: cannot freeze nuisance parameter mu_sr2_2017=0 if it doesn\u2019t exist!\nWARNING: cannot freeze nuisance parameter mu_sr3_2017=0 if it doesn\u2019t exist!\nPlease, help.\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>with this command:</p>\n<p>combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3</p>\n<p>I do in first pass S+B fit and  in second pass B only fit.</p>\n<p>How should I modify it to make background only fit ?  Clearly I should remove --algo fixed and  --fixedPointPOI mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0</p>\n<p>but how I should setup zero all signal strengths ?</p>\n<p>I have tried</p>\n<p>combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --freezeParameters mean,width,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0,r -v3</p>\n<p>but it still makes S+B fit and reports</p>\n<p>best fit parameter values:<br>\nmu_sr1_2017 :   +40.510<br>\nmu_sr2_2017 :   +25.891<br>\nmu_sr3_2017 :   +58.530</p>\n<p>and at the beginning said:</p>\n<p>Redefining the POIs to be: RooArgSet:: = (mu_sr1_2017,mu_sr2_2017,mu_sr3_2017)<br>\nWARNING: cannot freeze nuisance parameter mu_sr1_2017=0 if it doesn\u2019t exist!<br>\nWARNING: cannot freeze nuisance parameter mu_sr2_2017=0 if it doesn\u2019t exist!<br>\nWARNING: cannot freeze nuisance parameter mu_sr3_2017=0 if it doesn\u2019t exist!</p>\n<p>Please, help.</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-04-22T15:52:14.627Z",
+      "updated_at": "2025-04-22T15:52:14.627Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nThe feature that you observe is because you have included the =0 in your --freezeParameters option - this option should only contain the names of the parameters you want to fix, not any values. Changing your command above to\ncombine -M MultiDimFit -d combined.txt \\\n--redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 \\\n--setParameters mean=27.3,width=3.2,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 \\\n--freezeParameters mean,width,mu_sr1_2017,mu_sr2_2017,mu_sr3_2017,r -v3\n\nshould do the trick.\nThat being said, I\u2019m not sure I understand what you want to do. --algo fixed evaluates the post-fit NLL at a certain point. Is this what you want to do? Or do you want to compare the NLL you obtain from a b-only fit with the s+b NLL at a given set of parameters?\nSide note: you can use\n\n--saveFitResult to save a RooFitResult object that contains the hessian and post-fit values of your parameters\n--saveWorkspace option to save the post-fit workspace. You can load the post-fit workspace using the corresponding snap shot, see the docs here.\n\nHope this helps! Cheers,\nPhilip",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>The feature that you observe is because you have included the <code>=0</code> in your <code>--freezeParameters</code> option - this option should only contain the names of the parameters you want to fix, not any values. Changing your command above to</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">combine -M MultiDimFit -d combined.txt \\\n  --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 \\\n  --setParameters mean=27.3,width=3.2,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 \\\n  --freezeParameters mean,width,mu_sr1_2017,mu_sr2_2017,mu_sr3_2017,r -v3\n</code></pre>\n<p>should do the trick.</p>\n<p>That being said, I\u2019m not sure I understand what you want to do. <code>--algo fixed</code> evaluates the post-fit NLL at a certain point. Is this what you want to do? Or do you want to compare the NLL you obtain from a b-only fit with the s+b NLL at a given set of parameters?</p>\n<p>Side note: you can use</p>\n<ul>\n<li><code>--saveFitResult</code> to save a <code>RooFitResult</code> object that contains the hessian and post-fit values of your parameters</li>\n<li><code>--saveWorkspace</code> option to save the post-fit workspace. You can load the post-fit workspace using the corresponding snap shot, see the docs <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/?h=snapshot#loading-snapshots\" rel=\"noopener nofollow ugc\">here</a>.</li>\n</ul>\n<p>Hope this helps! Cheers,<br>\nPhilip</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2025-04-22T16:10:41.535Z",
+      "updated_at": "2025-04-22T16:10:41.535Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Philip,\nThank you, it works !\nActually I want to do separately S+B fit  and then B only fit.  In both separate fits I have my initial parameters for bkg functions as input.\nAnd I would like if possible to get two NLL for these two fits.\nMy problem is that when I do combine with --algo fixed  it does first fit S+B\nand for the second B-only fit it gets initial values not from me, but from the first fit.  And some time due to this I got  into local minimum in B-only fit.\nThanks, Sasha.",
+      "cooked_html": "<p>Hi Philip,</p>\n<p>Thank you, it works !</p>\n<p>Actually I want to do separately S+B fit  and then B only fit.  In both separate fits I have my initial parameters for bkg functions as input.<br>\nAnd I would like if possible to get two NLL for these two fits.</p>\n<p>My problem is that when I do combine with --algo fixed  it does first fit S+B<br>\nand for the second B-only fit it gets initial values not from me, but from the first fit.  And some time due to this I got  into local minimum in B-only fit.</p>\n<p>Thanks, Sasha.</p>"
+    }
+  ]
+}

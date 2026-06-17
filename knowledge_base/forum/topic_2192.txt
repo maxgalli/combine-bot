@@ -1,0 +1,69 @@
+TOPIC: Issues with non converging MultiDimFit for pulls and impacts
+URL: https://cms-talk.web.cern.ch/t/2192
+DATE: 2021-10-28T15:43:29.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by fbury @ 2021-10-28T15:43:29.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+I am facing a problem with non converging MultiDimFits for pulls and
+impacts in my analysis (HH->bbWW). Whether it is running pulls and
+impacts on my blinded categories with command [1] or on my unblinded
+background-only categories with command [2] I always have 2 or 3
+systematics that fail to converge. Either I use the `--robustFit 1`
+option, then the error message below appears and the output `limit` tree
+has only 2 entries (which I understand as a failed fit).
+"Info in <Minuit2>: Minuit2Minimizer::Minimize : Minimization did NOT
+converge, Edm is above max"
+On the other end when I do not use the `--robustFit` option nor any
+optimization options I get a `limit` tree with 3 entries, but pulls are
+one sided and the following error message is printed
+"[WARNING] Minimisation finished with status 1 (covariance forced
+positive definite), this could indicate a problem with the minimim!"
+Note that for pulls on unblinded background categories I need to enlarge
+the range of the fit since the signal is very weak there and otherwise I
+would reach the default maximum of r=20.
+I have tried many optimization options, I also tried using a snapshot
+and I examined the shapes that caused problems without spotting any
+issues by eye. All the other systematics seem to have relatively fine
+pulls and impacts.
+All the necessary files to reproduce the issue are in [3], more
+specifically the workspaces + commands in txt file that show the problem
+are in [4] and [5] for the unblinded and blinded background categories
+respectively.
+Any help would be very much appreciated, let me know in case I need to
+provide any additional information.
+Best, Florian
+[1] combine -M MultiDimFit --verbose 1 --mass 125.0 --redefineSignalPOIs
+r --setParameters r=1.0 --robustFit 1 --seed 69 --algo impact -P
+<parameter> --saveFitResult --floatOtherPOIs 1 --saveInactivePOI 1 -d
+workspace.root --toys -1 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+--cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0
+--cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2
+--cminFallbackAlgo Minuit2,0:0.4 (with snapshot : -d
+higgsCombineSnapshot.MultiDimFit.mH125.0.root --snapshotName
+"MultiDimFit")
+[2] combine -M MultiDimFit --verbose 1 --mass 125.0 --redefineSignalPOIs
+r --setParameters r=1.0 --setParameterRanges r=-6000.0,6000.0
+--robustFit 1 --seed 107 --algo impact -P <parameter> --saveFitResult
+--floatOtherPOIs 1 --saveInactivePOI 1 -d workspace.root --X-rtd
+REMOVE_CONSTANT_ZERO_POINT=1 --cminDefaultMinimizerType Minuit2
+--cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1
+--cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 (with
+snapshot : -d higgsCombineSnapshot.MultiDimFit.mH125.0.root
+--snapshotName "MultiDimFit")
+[3] /afs/cern.ch/user/f/fbury/public/HHDatacards/HN_issue/
+[4]
+/afs/cern.ch/user/f/fbury/public/HHDatacards/HN_issue/pulls_impacts_blinded
+[5]
+/afs/cern.ch/user/f/fbury/public/HHDatacards/HN_issue/pulls_impacts_unblinded_bkg
+----------------------------------------
+
+REPLY 2 (by snandan @ 2023-02-07T10:31:00.457Z):
+Hi Florian,
+I also faced the same problem in bbww analysis many times. The way I solved the problem is using different options for --cminDefaultMinimizerStrategy 0/1/2 and also using --X-rtd MINIMIZER_no_analytic option.
+You can try these options if it hepls.
+Thanks and Regards,
+Saswati
+----------------------------------------

@@ -1,0 +1,23 @@
+{
+  "topic_id": 43258,
+  "title": "Question on LEE with Feldman-Cousins for the combination of 6 regions",
+  "url": "https://cms-talk.web.cern.ch/t/43258",
+  "category_id": 279,
+  "created_at": "2024-07-08T08:37:20.671Z",
+  "last_posted_at": "2024-07-08T08:37:20.795Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "kodolova",
+      "name": "Olga Kodolova",
+      "created_at": "2024-07-08T08:37:20.795Z",
+      "updated_at": "2024-07-08T08:37:20.795Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI have the question.\nWe have 6 categories in Data with different number of events in each.\nI generated 1 toy experiment with command:\ncombine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 10000 -s -1 --freezeParameters sigma --setParameterRanges mean=25,30:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017\nI looked into higgsCombineTest.HybridNew.mH120.384492348.root\nand see 11156 toy_azimov RooDataSet entries. Each of them has 6 mass values.\nI can print each of these 11156 sets.\nHow these sets are used for p-value definition?\n\nNote, in Data we have 2000-3000 events in SR1,SR3 and 300-400 in SR2, i.e. the number of events is different depending on category.\nBest regards,\nOlga",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I have the question.<br>\nWe have 6 categories in Data with different number of events in each.<br>\nI generated 1 toy experiment with command:<br>\ncombine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 10000 -s -1 --freezeParameters sigma --setParameterRanges mean=25,30:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017</p>\n<p>I looked into higgsCombineTest.HybridNew.mH120.384492348.root<br>\nand see 11156 toy_azimov RooDataSet entries. Each of them has 6 mass values.<br>\nI can print each of these 11156 sets.</p>\n<pre><code>How these sets are used for p-value definition?\n</code></pre>\n<p>Note, in Data we have 2000-3000 events in SR1,SR3 and 300-400 in SR2, i.e. the number of events is different depending on category.</p>\n<pre><code>           Best regards,\n                                               Olga\n</code></pre>"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+TOPIC: How make background only fit in S+B model
+URL: https://cms-talk.web.cern.ch/t/124017
+DATE: 2025-04-22T14:18:13.040Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-04-22T14:18:13.283Z):
+Dear experts,
+with this command:
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3
+I do in first pass S+B fit and  in second pass B only fit.
+How should I modify it to make background only fit ?  Clearly I should remove --algo fixed and  --fixedPointPOI mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0
+but how I should setup zero all signal strengths ?
+I have tried
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --freezeParameters mean,width,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0,r -v3
+but it still makes S+B fit and reports
+best fit parameter values:
+mu_sr1_2017 :   +40.510
+mu_sr2_2017 :   +25.891
+mu_sr3_2017 :   +58.530
+and at the beginning said:
+Redefining the POIs to be: RooArgSet:: = (mu_sr1_2017,mu_sr2_2017,mu_sr3_2017)
+WARNING: cannot freeze nuisance parameter mu_sr1_2017=0 if it doesn’t exist!
+WARNING: cannot freeze nuisance parameter mu_sr2_2017=0 if it doesn’t exist!
+WARNING: cannot freeze nuisance parameter mu_sr3_2017=0 if it doesn’t exist!
+Please, help.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2025-04-22T15:52:14.627Z):
+Hi Sasha,
+The feature that you observe is because you have included the =0 in your --freezeParameters option - this option should only contain the names of the parameters you want to fix, not any values. Changing your command above to
+combine -M MultiDimFit -d combined.txt \
+--redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 \
+--setParameters mean=27.3,width=3.2,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 \
+--freezeParameters mean,width,mu_sr1_2017,mu_sr2_2017,mu_sr3_2017,r -v3
+
+should do the trick.
+That being said, I’m not sure I understand what you want to do. --algo fixed evaluates the post-fit NLL at a certain point. Is this what you want to do? Or do you want to compare the NLL you obtain from a b-only fit with the s+b NLL at a given set of parameters?
+Side note: you can use
+
+--saveFitResult to save a RooFitResult object that contains the hessian and post-fit values of your parameters
+--saveWorkspace option to save the post-fit workspace. You can load the post-fit workspace using the corresponding snap shot, see the docs here.
+
+Hope this helps! Cheers,
+Philip
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2025-04-22T16:10:41.535Z):
+Hi Philip,
+Thank you, it works !
+Actually I want to do separately S+B fit  and then B only fit.  In both separate fits I have my initial parameters for bkg functions as input.
+And I would like if possible to get two NLL for these two fits.
+My problem is that when I do combine with --algo fixed  it does first fit S+B
+and for the second B-only fit it gets initial values not from me, but from the first fit.  And some time due to this I got  into local minimum in B-only fit.
+Thanks, Sasha.
+----------------------------------------

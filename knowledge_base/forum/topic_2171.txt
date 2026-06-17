@@ -1,0 +1,32 @@
+TOPIC: Decreased observed search significance after combination of analyses
+URL: https://cms-talk.web.cern.ch/t/2171
+DATE: 2021-09-24T15:51:17.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by vwachira @ 2021-09-24T15:51:17.000Z):
+Dear Combine experts,
+I am currently working on a combination of four top quark searches from different final states, and I have calculated observed search significance from different final states and in different years using the following command:
+combine -M Significance  --freezeParameters scale_tttt --name Observed
+The parameter scale_tttt is used in the old analysis to scale the four top quark production to match the current cross section, and many parts of the analysis do not have this parameter, so I understand that combine will give out warning that those final states do not include this parameter, but it should not interfere with the results in the end.
+I have also calculated observed search significance from several combinations of different final states and years of data-taking using a similar command and a combined workspace file created via CombineHarvester library. However, I noticed that in some cases the observed significance in the combination becomes smaller than the observed significance obtained from individual analyses.
+So my question is: is it possible that the observed significance calculated from the combination be lower than the observed significance obtained from individual analysis that makes up the combination? If there is a potential mistake in my combination results, where should I start looking for faults?
+Regards,
+Vichayanun
+Vichayanun Wachirapusitanand
+Department of Physics, Faculty of Science
+Chulalongkorn University
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-09-24T20:30:49.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+Possible, everything is possible. If it is or is not correct is something we cannot answer.
+Generally, when you combine results you expect your observation x_common to lie somewhere in between x_min and x_max observed, and thus, the significance to be bounded by the minimum one.
+However, this is not true in case of correlations (none of the two statements).
+A simple example is the following.
+You have two datacards with one and two bins, respectively, and only two processes sig and bkg. The bkg is affected by a large systematic uncertainty.
+The second datacard is capable (through one of its two bins) to constrain the background. It happen by the observations that the background is pulled up.
+This will increase the background estimation in datacard one, as well, where the signal presence (and its singnificance) will be now largely reduced with the new background estimation (and even have a new negative best estimate in the case below).
+See for example:
+----------------------------------------

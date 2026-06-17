@@ -1,0 +1,15 @@
+TOPIC: Question about FitDiagnostics and scan for resonance width
+URL: https://cms-talk.web.cern.ch/t/37070
+DATE: 2024-03-19T07:52:19.296Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-19T07:52:19.452Z):
+Dear experts,
+in my signal model I have as parameters signal strength (r), width and mass.
+I would like to evaluate width and its uncertainties using FitDiagnostics since
+errors are assymetrical for sure. I use
+combine -M FitDiagnostics 2017UL_dimuon_SR1.txt --robustFit=1 --rMin 0 --rMax 100 --redefineSignalPOIs width
+question is - should I still used rMin and rMax in above command and if yes, what will be the meaning - range of width or range of signal strenght ?
+Thanks, Sasha.
+----------------------------------------

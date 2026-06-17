@@ -1,0 +1,51 @@
+TOPIC: Understanding rateParam from long Exercise
+URL: https://cms-talk.web.cern.ch/t/45162
+DATE: 2024-08-05T16:07:15.206Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by hyeonseo @ 2024-08-05T16:07:15.638Z):
+Dear Combine experts,
+I have a noob question, and I apologize if this question has been already answered (I have an inkling that this question has been asked before, but I couldn’t find it). In the long exercises, there’s a section that introduces rateParam option, stating that without it, “… in the fit both (processes) would be adjusted by the nuisance parameters only, and constrained to the nominal yields.”
+I had been assuming that a Log normal nuisance parameter directly impacts the yields of the process (ie by up and down 5 percent if the value is 1.05 on the data card), but the quotation above implies that that’s not what’s happening given the condition of being “constrained to the nominal yields”. If that’s the case, what would this example logN nuisance parameter be impacting instead?
+Thank you in advance!
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by kcormier @ 2024-08-05T16:20:28.918Z):
+Dear Hyeon-Seo,
+Nuisance parameters such as those introduced as lnN or shape uncertainties do indeed affect the yields of the processes as you had previously understood. I think the intent of the sentence you quote is not ‘fixed’ to the nominal yields, but rather ‘constrained to vary around their nominal yields, only as allowed by their respective nuisance parameters’.
+I hope that clarifies things.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by hyeonseo @ 2024-08-05T16:44:15.636Z):
+Dear Kyle,
+Thank you for the quick response. I have a quick follow-up question if you don’t mind:
+You mentioned that  shape uncertainties also impact the yields of the processes. In what specific setting do shape nuisance parameters impact this scalar value? For example, when doing the template fits, if you specify the rate of the process with a value instead of -1 flag, ie:
+---------------
+bin                                      Bin1
+process                                  Proc1
+process                                  1
+rate                                     1389.00
+---------------
+
+would the shape nuisance parameter still override that said rate with its sum weights value?
+Thank you in advance,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 4 (by amarini @ 2024-08-05T19:01:34.638Z):
+Hi Hyeon-Seo,
+There is probably a little bit of confusion on what a fit or a nuisance is supposed to do.
+shape uncertainties modify the process normalization with a log-normal uncertainty (as well as the shape). Thus, I we can here discuss only log-normal uncertainty effect.
+The shape/rate specification with -1 or with the actual value as integral is identical, and it refers to the prefit normalization. The -1 will read your 1389 from the histogram, instead specifying it manually.  Nuisance parameters may allow to modify a normalization (postfit) with (eventually) a penalty term related to how much the nuisance is pulled.
+In your example, the likelihood is going to be a Poisson likelihood with a rate value of 1389, given the observation (n_obs).
+\mathcal{L} = \mathcal{P}(\lambda = 1389 + \dots |n_\text{obs}) (the + will refer to the parts with the actual pameters, like the signal strength r)
+If you include a log-normal uncertainty on that process (let’s say eg with a kappa of k=1.05), you allow this 1389 to be slightly different and can vary within ~5%.
+This means that an additional parameter is added to the likelihood and (approx) constraint within 5% to allow this to happen.  The likelihood is going to be:
+\mathcal{L}=\mathcal{P}( \lambda \cdot k^\theta + \dots| n_\text{obs}) \mathcal{N}(\theta,0,1).     (Now, you have one more parameter, \theta)
+As you can see, the prefit value (\lambda) didn’t change, but postfit the nuisance parameter \theta can move and thus also the best fit value for you yields. The nuisance parameter is not free to float (as for the rate parameters), but it is actually constraint to a gaussian distribution.
+Cheers,
+-Andrea
+----------------------------------------

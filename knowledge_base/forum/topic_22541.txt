@@ -1,0 +1,264 @@
+TOPIC: Using HiggsCombine to measure top Yukawa coupling values
+URL: https://cms-talk.web.cern.ch/t/22541
+DATE: 2023-04-10T16:36:52.531Z
+SOLVED: no
+============================================================
+
+QUESTION (by vwachira @ 2023-04-10T16:36:52.652Z):
+Dear Combine experts,
+I am working on the measurement of the top Yukawa coupling (yt) value based on a four-top quark production, but rather than comparing the cross sections from theoretical predictions to the measured values (like the one performed in TOP-18-003), I am using a distribution from a specifically-trained neural network which should have different shapes depending on different values of yt. This work should be pretty much in line with TOP-21-001 where Wilson coefficients can alter the distributions.
+Let me outline the list of objects that I have right now or I can generate:
+
+Background mountain range distributions from ttbar and ttH processes, which could be represented into one shape histogram or several histograms.
+Signal (four tops) mountain range distributions, generated at LO with different values of yt (which I want to measure). This can be represented as different sets of histograms per each yt value, which should be normalised to the theoretical cross section value as a function of yt. The yt values used to generate these distributions include the SM value.
+Histograms representing shape uncertainties for background and signal processes.
+Signal (four tops) mountain range distribution, generated at NLO from a central sample. I originally plan to use this as a signal distribution, scaled to the measured cross section value of 17 ± 5 fb, as reported in TOP-21-005.
+
+Here’s what I have in mind to measure the value of yt from these objects:
+
+For each yt value, construct a datacard containing signal and background distributions. These datacards should have the same set of both normalisation and shape uncertainties for background processes, and same normalisation uncertainties for signal processes. Shape uncertainties for signal processes should be different for each yt value.
+As this is a work in progress, I would like to start small by constructing an Asimov dataset based on four tops distributions with yt = SM. (I may use the same method with four tops NLO sample, scaled with measured cross section as well.) Based on this Asimov dataset, calculate the likelihood value (or -2 ln L) based on each yt value.
+Based on -2 ln L values from each yt value, measure the best probable value of yt using NLL procedure.
+
+The problem that I have with this procedure right now is that the distributions change with different values of yt, and there’s no guarantee that the changes are linear like a conventional signal strength. Furthermore, since the distributions are different depending on yt, they have to be represented in different datacards. As far as I checked in the Combine documentation, there is no direct way to calculate the likelihood value for each yt case, compare them, and make measurements manually as I am proposing.
+Could you please suggest a way I could use Higgs Combine to measure yt values based on different distributions as I have described above?
+Best regards,
+Vichayanun
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-04-11T12:28:13.078Z):
+Hi Vichayanun,
+Given that you are trying to measure yt, it sounds like you would like this to be your parameter of interest in the fit, rather than setting up datacards to perform fits for different values of yt.
+Since yt is your parameter of interest, you probably want to construct a PhysicsModel class which properly handles this. The PhysicsModel class defines the parameters of interest (POI), as well as how they scale process yields. The default model is a simple one in which all signal processes scale linearly with a single POI, “r”. But there are others. For example there is a MultiSignalModel which is defined and can scale different processes with different POIs.
+But the models don’t need to scale linearly with the POI. This can be defined by the PhysicsModel class. A good place to start is probably looking at the Phyics Models section of the documentation [1].
+There are existing PhysicsModels within the code which were already developed for many Higgs Analysis, and there are examples of how these are set up and used in some of the previous combine tutorials, where there are specific presentations on PhysicsModels such as [2]. As you can see, its possible to define a PhysicsModel handling many cases, beyond simple linear scaling of a signal with the POI.
+Have you considered defining a PhysicsModel to handle your case? If there’s some reason this doesn’t work for you, let us know.
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/
+[2] https://indico.cern.ch/event/747340/timetable/#9-physics-models
+----------------------------------------
+
+REPLY 3 (by vwachira @ 2023-04-11T15:01:54.720Z):
+Dear Kyle,
+Thank you for your suggestions on constructing PhysicsModel to measure yt. As far as I have checked on the available models, I think SMHiggsBuilder model [1] is the closest to my use case, since it uses RooSpline1D object to interpolate between discrete points, and I only have discrete histograms per each yt value and not the scaling function that can be applied to all bins of the distribution of the histograms. However, the model doesn’t seem to fully fit to my use case, so I’m afraid I need to invest in some time writing a new model from scratch.
+Another possibility is that we can construct several datacards per each yt value and measure NLL at r=1, in the same fashion as discrete profiling [2] and as pointed out in [3]. I think this will be much faster to do than writing a PhysicsModel class from scratch just for this use case, so I will use this approach instead.
+Do you have any resources for me to learn how to write a PhysicsModel class from scratch? I understand that Combine documentation shows several models already available, but I’m afraid none of these would match my use case and I prefer to understand every single part of my new model rather than using off-the-shelf model and understand nothing about it.
+Regards,
+Vichayanun
+[1] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/SMHiggsBuilder.py
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+[3] Discrete profiling shows the wrong profile
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-04-12T09:10:06.787Z):
+Dear Vichayanun,
+Unfortunately I am not particularly familiar with many of the existing physics models implemented directly in the combine package yet. I’m also not entirely familiar with your analysis. So I can’t say if there is an existing model which would suit your case out-of-the-box. Maybe someone else already knows, and is able to chime in.  But in any case, of course, you should make sure that the Model at hand really implements the physics you are interested in; I suspect this will require adapting an existing Model or writing a new one.
+Nonetheless, I do think that using a custom PhysicsModel which suits your case is the way to go. What you are trying to do is not really what Discrete Profiling is designed for, and I think trying to adapt another technique to this purpose will cause a lot more difficulty than using a PhysicsModel, which is really designed for such things.
+I think the documentation (both the manual and the presentation on physics models) are the best documentation on creating a physics model. You can also see the examples in the code [1].
+However, given that you’ve Identified a couple of similar analyses (TOP-18-003, and TOP-21-001), perhaps they already have an implemented model which is close to what you need and could serve as a starting point?
+From the TOP-21-001 Analysis Note (sec. 9.2), [2], I see they mention using a custom physics model. They also mention that their statistical setup is based on that used in TOP-19-001 [3]. Some more details are given in that Analysis Note (section 8), which says that everything required to run with their PhysicsModel is stored in github [4]. Unfortunately, following that link I didn’t manage to find the code. But perhaps it has been moved and one of the authors is able to help.
+Unfortunately, in a brief look at  the AN for T0P-18-003 [5], I didn’t find a description of the statistical set up. But perhaps I’ve just missed it. If you contact the authors, they should be able to provide details.
+Maybe some additional documentation on PhysicsModels, some more description of the existing implemented models, and centralizing models used in individual analyses is something we can try to work on. But at the moment, this is what I’m aware of. Maybe someone else has some additional helpful information.
+If there are specific things you are having trouble implementing in the PhysicsModel, let us know and we can try to help on that.
+Best,
+Kyle
+[1] See this directory: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/tree/main/python
+there are many examples of models therein, for example in:
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/PhysicsModel.py
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/AdditionalModels.py
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/STXStoEFTModel.py
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/STXSModels.py
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/SingleTopModels.py
+( and many others)
+[2] retrieved from their CADI line: https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=TOP-21-001&tp=an&id=2406&ancode=TOP-21-001
+[3] CADI: https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=TOP-19-001&tp=an&id=2203&ancode=TOP-19-001
+[4] https://github.com/cms-govner
+[5] from their CADI: https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=TOP-18-003&tp=an&id=2091&ancode=TOP-18-003
+----------------------------------------
+
+REPLY 5 (by anigamov @ 2023-04-12T09:50:06.738Z):
+Dear Vichayanun,
+I think you should contact the TOP-22-014 team, they should have the yt model implementation in combine. Likely you would have to derive your own parametrisation, because the signal processes are different, but they should at least be able to help you with the initial setup.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 6 (by byates @ 2023-04-12T11:57:59.000Z):
+Hi all,
+Just to follow up on Kyle’s post, here is the updated link to our model from TOP-19-001 [1] as well as the template based version we’re using in TOP-22-006.
+[1] https://github.com/TopEFT/EFTFit/blob/master/Fitter/python/EFTModel.py
+[2] https://github.com/TopEFT/EFTFit/blob/master/Fitter/python/AnomalousCouplingEFTNegative.py
+Brent Yates
+
+···
+
+From: Aliya Nigamova via CMS talk noreply@cms-talk.web.cern.ch
+Sent: Wednesday, April 12, 2023 5:51:18 AM
+To: Yates, Brent R. yates.313@osu.edu
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Using HiggsCombine to measure top Yukawa coupling values
+Aliya Nigamova anigamov April 12 Dear Vichayanun, I think you should contact the TOP-22-014 team, they should have the yt model implementation in combine. Likely you would have to derive your own parametrisation, because the signal processes
+
+Aliya Nigamova anigamovApril 12
+
+Dear Vichayanun,
+I think you should contact the TOP-22-014 team, they should have the yt model implementation in combine. Likely you would have to derive your own parametrisation, because the signal processes are different, but they should at least be able to help you with the initial setup.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by vwachira @ 2023-04-19T14:33:36.008Z):
+Dear all,
+Thank you for your suggestions on PhysicsModel objects. I have been looking into the models all of you have presented along with some investigations to the modelling of four tops event normalisations with respect to y_t values as well as JES and JER uncertainties.
+I found out that the normalisation of four tops event yields can be fitted with fourth-order polynomial with respect to y_t, both in separate histogram bins per category and in overall normalisation (that is, the sum of yields from all histogram bins per category). This fitting makes sense since there is one leading order diagram for four-top quark production containing two ttH vertices, thus giving the amplitude proportional to y_t^4. Furthermore, event yields from JES and JER samples also follow the same behaviour, that is, the templates for JES and JER for four tops can also be fitted with fourth-order polynomials.
+Now that we can have a fitting for four top event yields with fourth-order polynomials, I understand that we can now construct y_t as a parameter of interest and scale the normalisations. However, I also found out that y_t can also change the shape of the histogram template, both nominal and shape uncertainties (e.g. JES and JER), so I need the PhysicsModel to adjust both normalisation and shape for both signal yield and signal uncertainties.
+With this requirement, I would like to ask some questions about the PhysicsModel approach.
+
+Is it possible to construct a model that would allow the changes in both normalisation and shape of signal distributions, both in signal yield rates and shape uncertainties?
+How would I model shape uncertainties that have their shapes changed with respect to y_t?
+Is it possible to read the information off the histogram template ROOT file specified in a datacard right from PhysicsModel class? If I can read the information from the templates, I can perform a fourth-order polynomial fit within the PhysicsModel object, instead of performing fits separately and import into PhysicsModel later.
+How would the datacard setup look like once I incorporate this PhysicsModel object? I expect the datacard to contain both normalisation and shape uncertainties applied to both background and signal processes, but there will be some uncertainties that will have to be adjusted with different values of y_t, mainly in the shape form, but I want to know how would I have to set it up if it is in the form of lnN uncertainties just in case.
+
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 8 (by anigamov @ 2023-04-20T08:44:43.302Z):
+Dear Vichayanun,
+To answer your first question, I think there are two options:
+
+Implement a version of interference model like described in combine instructions and implemented in TOP for EFT measurements. It is possible if you can extract signal templates for each component of yt cross section parametrisation separately, and I’m not entirely sure if it is feasible  in your case. You would treat these templates as additional processes and apply your systematics the same way as for any other process.
+
+The other option is implemented in the TOP-22-014 analysis I mentioned in my previous message where the shape dependence is introduced by extracting the yt parametrisation in each bin of analysis observable.
+
+You can parametrise your lnN or gaussian uncertainties in the physics model like implemented here for example.
+I will try to get back to you with actual datacards examples. Unfortunately, PhysicsModel implementations across PAGs are not very well documented in CMS, we will try to change that.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 9 (by vwachira @ 2023-05-03T10:31:30.047Z):
+Dear all,
+Thank you for your suggestions on TOP-22-014 analysis. I have tried contacting the team working on this analysis but I have not received any responses back.
+In the meantime, I have contacted a person working on TOP-19-008, which is a y_t measurement analysis on ttbar production. In that analysis, the combine setup is made using a separate datacard for each histogram bin, without using PhysicsModel. With this way, they can set up rateParams to adjust the signal yields with y_t per histogram bin.
+This setup is the one I aim to do as well, but in addition to adjusting the signal and background yields with rateParams, I would also like to adjust the normalisation uncertainty per each histogram bin as well, since I have found out earlier that event yields of each histogram bin in JES template can also be fit with fourth-order polynomial.
+So my question now is, is it possible to modify uncertainties in the same way as modifying normalisations using rateParam?
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 10 (by vwachira @ 2023-05-04T16:31:21.733Z):
+Dear all,
+Maida Tariq from TOP-22-014 team sent me a set of example datacards with the uncertainty implementation. In her set of datacards, she introduced a new rateParam entry with another param which acts as a nuisance parameter. As far as I checked in the datacard, one term in the rateParam she introduced behaves like lnN uncertainty with the corresponding param as the nuisance parameter.
+However, the uncertainties I want to implement (such as JES/JER) are asymmetric, and as far as I understand they should be in the form of shape uncertainty which is a piecewise function with different cases for |\theta| < 1 (in sixth-order polynomial) and |\theta| \geq 1 (in a linear form) as shown here.
+Could you please suggest me on how to implement a piecewise function in a rateParam in order to apply shape-like uncertainties? If that is not possible, could you please suggest me how to construct a rateParam term that supports asymmetric uncertainties? My guess would be to construct this in asymmetric lnN form, but I do not have any idea on how to apply this yet.
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 11 (by anigamov @ 2023-05-04T16:48:05.702Z):
+Dear @vwachira,
+For the shape uncertainties you don’t have to perform any manual interpolation, combine does it for you once you provide up and down templates using the format described here and also in the tutorial here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 12 (by vwachira @ 2023-05-04T17:00:02.091Z):
+Dear Aliya,
+Thank you for your swift response. However, the implementation of shape uncertainty I am looking for is the one that can be changed with different yt values. To put it in other way, I am looking for an uncertainty implementation with a nuisance parameter \theta where the up/down shape (or \delta^+ and \delta^-) is dependent on y_t. As far as I understand, the current implementation in combine uses a fixed template with only one nuisance parameter, and it does not support modifications through other parameters like y_t.
+What I have in mind right now is that, since I can have a fourth-order polynomial fit of y_t for a variant of uncertainty, such as JESup or JESdown, I want something like this:
+\delta^+ = f(JESup, yt) / f(nominal, yt)
+\delta^- = f(JESdown, yt) / f(nominal, yt)
+Do you have any suggestions on this use case?
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 13 (by anigamov @ 2023-05-04T17:13:04.210Z):
+Dear Vichayanun,
+I don’t think that this is possible or needed. Do you observe some kind of correlation between yt and experimental uncertainties such as JES, JER? If so it would be nice if you could share some plots demonstrating this unusual behaviour.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 14 (by vwachira @ 2023-05-04T17:50:54.640Z):
+Dear Aliya,
+I have observed (although VERY PRELIMINARY) some dependence of JES and JER uncertainties for four tops process with respect to yt in my privately-generated dataset of four top quark production. The plot below shows the normalisation changes with different y_t in x-axis in each histogram bin of the distribution, which is obtained from a custom neural network. The upper (in red) and lower (in blue) uncertainty sizes shown in the plot is calculated from the ratio of fourth-order polynomial fitting of histogram bin yield between JESup/JESdown versus nominal histogram (shown in black lines). As you can see, the uncertainties in some histogram bins are not constant throughout y_t. One reason I have in mind is that the statistics of some bins are low, especially in high jet multiplicity categories on the right.
+
+image2390×913 205 KB
+
+Please note that this plot is VERY PRELIMINARY and I might have some bugs in the plot. However, the idea remains the same: I would like to apply shape-like uncertainties (or any kind of asymmetric uncertainty) where the up/down variants are dependent of an extra parameter.
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 15 (by anigamov @ 2023-05-08T06:44:35.646Z):
+Dear Vichayanun,
+thanks for the nice plots! I don’t see trends in any of the distributions up to the very high yt values (around 150-170, is this region of interest to you?). I think that your interpretation is correct and it indeed happens due to the statistical fluctuations in the systematics templates. Therefore in my opinion this effect does not need to be parametrised, since it is unphysical.
+Large fluctuations in JES templates are known to be the cause of significant constraints of JES NPs in several analyses. The best solution would be to smooth the JES templates. Could you consider this option? I think in the TOP-22-014 analyses the experimental uncertainty templates causing event migrations are smoothed as it is described in their AN. As I mentioned earlier, it is not possible to parametrise the shape uncertainty and I don’t think that it is needed in your case.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 16 (by vwachira @ 2023-05-18T19:17:33.160Z):
+Dear Aliya,
+Sorry for the long radio silence. I have applied LOWESS algorithm and uncertainty symmetrization to JES templates and they now have smooth behaviour as you can see in the following slides. I have also applied the same algorithm to some other uncertainties as well. Furthermore, I am happy to report that after applying LOWESS algorithm, the up and down templates can still be fitted to a fourth-order polynomial.
+
+image800×450 36.8 KB
+
+image800×450 39.2 KB
+
+However, I now have a different problem in modelling uncertainties with dependence to yt. I have already received a datacard kindly provided by TOP-22-014 team. The approach that they use is breaking down one datacard with many histogram template bins into many datacards with exactly one bin. With this way, they can define the yt dependence of ttbar in rateParams. However, I also need to model uncertainties which are dependent to yt, such as JES, so I decided to implement it in the form of rateParams in the same way as in TOP-21-004 analysis.
+My approach for the implementation is that, since it is a shape uncertainty, I should follow the interpolation described in Higgs Combine documentation [1], but since each datacard now has one histogram bin, f(\theta=0) should be 1. Since the nominal/upper/lower templates can be fitted to polynomials, I can write the yield of each bin in the form of P_0(y_t), P_+(y_t), and P_-(y_t) respectively.
+Based on the interpolation formula, I should have \delta^+ = P_+(y_t)/P_0(y_t) - 1 and \delta^- = P_-(y_t)/P_0(y_t) - 1, and from these parameters I define the rateParam with the structure of
+1 + (((delta_p-delta_m)*theta + (3*theta^6-10*theta^4+15*theta^2)/8)/2) * (theta < 1 and theta > -1) + delta_p*theta * (theta > 1) + delta_m*theta * (theta < -1)
+Here is the snippet I used to generate such rateParams:
+tttt_fitting = polynomial_print(coeffs)
+tttt_fitting_unc = {}
+for key in fourtops_fitting_unc.keys():
+tttt_fitting_unc[key] = polynomial_print(coeffs_unc[key])
+
+combine_card_customparams += f"{binname}_ttttrate       rateParam       {binname}  tttt  {tttt_fitting} yt\n"
+for unc in unc_names:
+deltap = f"({tttt_fitting_unc[unc+'Up']})/({tttt_fitting})-1"
+deltam = f"({tttt_fitting_unc[unc+'Down']})/({tttt_fitting})-1"
+shapeunc_formulation = f"1+(((({deltap})-({deltam}))*@1+(({deltap})+({deltam}))*(3*@1^6-10*@1^4+15*@1^2)/8)/2)*(@1>-1&&@1<1)"
+shapeunc_formulation += f"+({deltap})*@1*(@1>=1)+({deltam})*@1*(@1<=-1)"
+if unc in ["jeslowess", "jerlowess"]:
+combine_card_customparams += f"{binname}_ttttrate_{unc} rateParam {binname}  tttt  {shapeunc_formulation} yt,{unc}\n"
+else:
+combine_card_customparams += f"{binname}_ttttrate_{unc} rateParam {binname}  tttt  {shapeunc_formulation} yt,tttt_{unc}\n"
+
+However, after I have generated these datacards, combined all of them using combineCards.py, and performed NLL scan with Combine, I faced an error where number of events become negative. I suspect that I am implementing the shape uncertainty rateParams wrong.
+Could you please help me examine my implementation of shape-llike rateParams, or do you have any suggestions on implementing this kind of uncertainties? I have also attached one of the datacards used in the fit here.
+datacard_49.81_nJ5m_bin0.txt (8.2 KB)
+Regards,
+Vichayanun
+[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#shape-analysis
+----------------------------------------
+
+REPLY 17 (by vwachira @ 2023-05-18T20:57:10.537Z):
+I just got this idea: since the templates are symmetrised and each datacard only contain one bin from the template, can I treat shape uncertainties which have been symmetrised and applied with LOWESS algorithm as lnN?
+Another question would be how do I apply asymmetric lnN uncertainties as rateParams? My idea here is that, since I have separated the datacards so that it has one bin each, the up/down template should be able to be represented as asymmetric lnN uncertainty.
+Sorry for the brevity. It’s almost 4am here in Bangkok and I just got this idea before bed.
+Vichayanun
+----------------------------------------
+
+REPLY 18 (by anigamov @ 2023-05-22T08:26:08.164Z):
+Dear Vichayanun,
+Thanks for the investigations and the plots (I’m struggling a bit to read the legends and the axis labels though).
+I think you are right that since there is one bin per datacard category you can assign the shape systematics as log-normal which gives you freedom to parametrise the variations as you wish. But I still think that it is not a good idea to have experimental uncertainties analytically dependent on POI that you are trying to measure. If you really think that these effects are important, perhaps a better option would be to introduce templates for various values of yt as separate signal processes and apply morphing, which leads to a completely different implementation within combine.
+Anyway at this point this discussion goes beyond “Statistical Tools” and I would recommend you to ask the CMS Statistics Committee (cms-statistics-committee@cern.ch or via cms-talk) if it makes sense to have the analytical dependence of JES on the POI in the statistical model you are trying to implement.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 19 (by vwachira @ 2023-05-22T16:36:08.212Z):
+Dear Aliya,
+Thank you for your suggestions. I have created a separate topic here on CMS Talk.
+On a technical side, could you please suggest on how to apply morphing in my case? I don’t really like the idea of having separate signal processes in the datacard, so instead of doing that, can I encode some form of interpolation (maybe linearly with respect to yt) as rateParam directly into the datacard? Morphing is a form of interpolation, after all.
+Regards,
+Vichayanun
+----------------------------------------

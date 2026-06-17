@@ -1,0 +1,75 @@
+TOPIC: RooFit - different RooParametricHists sharing a similar floating parameter
+URL: https://cms-talk.web.cern.ch/t/43431
+DATE: 2024-07-10T23:03:06.681Z
+SOLVED: no
+============================================================
+
+QUESTION (by ecannaer @ 2024-07-10T23:03:07.081Z):
+Dear Combine/RooFit experts,
+I am trying to create two pdfs (as RooParametricHists) in RooFit that represent the expected number of QCD events in my analysis’ signal region (=SR, 1+ b-tagged jets) and control region (= CR, 0 b-tagged jets). These PDFs simply consist of the MC SR/CR yields where each bin has an additional lnN correction factor applied to account for data/MC discrepancies. These correspond to the first terms in parentheses in the equations below where \beta_{QCD} are the correction factors.
+image1194×140 14.6 KB
+Corresponding bins in the SR and CR (e.g. bin 1 in both the SR and CR) share a common correction factor, and when these pdfs are imported into data cards and a fit is done simultaneously over both regions, the fit correction value should be the one that maximizes the overall likelihood.
+I have attempted to implement this in [1] with very simple test datacard [2], but what I am seeing from in the output from [1] is that RooFit is creating different floating parameters (by appending SR/CR to the RooRealVar names) for the SR and CR instead of sharing a single parameter. When importing the RooParametricHists into the workspace, I am specifying the RecycleConflictNodes parameter, so I it is unclear to my why these existing RooRealVars are not reused. I unfortunately overwrote the input root files used by the script, but am working to recreate these so that one can test the process.
+The above script follows this technique in the Combine documentation, but I admit I am not experienced in writing my own RooFit pdfs. In essence, what I am doing is this:
+
+import the SR and CR QCD yields from an input root file
+define RooArgLists for the SR and CR
+for every bin of the SR/CR histograms, add a RooFormulaVar to these RooArgLists consisting of that bin’s MC QCD yield multiplied by a bin correction parameter.
+create a RooParametricHist from these RooArgLists for both regions
+import both RooParametricHists into the workspace
+
+To anyone more knowledgeable in RooFit, is the technique in this script reasonable, and if so, am I implementing this correctly in [1]? Furthermore, why might it be that separate correction factors are being created for the SR and CR, and are there ways to prevent this from happening? Thanks, and please let me know if you have comments or need clarifications.
+[1]  create_ws_test.C (5.1 KB)
+[2] datacard_Suu4_chi1_2018_test.txt (2.7 KB)
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-07-15T15:07:39.795Z):
+Dear Ethan,
+It’s not clear to me which parameter in your script you were expecting to be shared between SR and CR - could you clarify which one it is? At the moment from a quick look I don’t see which parameter you wanted it to be.
+Thanks,
+Adinda
+----------------------------------------
+
+REPLY 3 (by ecannaer @ 2024-07-15T15:59:59.388Z):
+Dear Adinda,
+Thanks for your response. The parameter that I want to be shared between corresponding SR and CR bins is ‘uncert_pars’ as defined/used in these lines-
+RooArgList uncert_pars;   // bin to store bin uncertainty parameters, uncert_pars[iii]  gives the bin uncertainty parameter for bin iii
+...
+// loop over bins
+// for this bin, create a RooRealVar corresponding to a bin uncertainty
+RooRealVar * bin_uncert = new RooRealVar( ("bin_uncert_bin"+std::to_string(iii+1)).c_str(), (" nuisance parameter for bin "+std::to_string(iii+1)).c_str(),0,-5.,5.);
+uncert_pars.add(*bin_uncert);
+wspace.import(*bin_uncert);
+...
+// create formula var for signal region yield
+RooFormulaVar *QCD_SR_corrected = new RooFormulaVar( ("QCD_SR_bin"+std::to_string(iii+1)).c_str(),("estimated number of QCD events in signal region (corrected), bin "+std::to_string(iii+1)).c_str(),
+"@0 * TMath::Power(1.10,@0)",RooArgList(QCD_SR_yields[iii],uncert_pars[iii] ));
+QCD_SR.add(*QCD_SR_corrected);
+// create formula var for control region yield
+RooFormulaVar *QCD_CR_corrected = new RooFormulaVar( ("QCD_CR_bin"+std::to_string(iii+1)).c_str(),("estimated number of QCD events in control region (corrected), bin "+std::to_string(iii+1)).c_str(),
+"@0 * TMath::Power(1.10,@0)",RooArgList(QCD_CR_yields[iii],uncert_pars[iii] ));
+QCD_CR.add(*QCD_CR_corrected);
+
+For each bin iii of the SR and CR, I create a floating parameter ‘bin_uncert’ corresponding to the bin uncertainty, add it to the uncert_pars RooArgList, and then use this floating bin parameter to define RooFormulaVars for the SR and CR yields (QCD_SR_corrected and QCD_CR_corrected) that I later make into RooParametricHists (p_QCD_SR, p_QCD_CR).
+
+Ethan
+----------------------------------------
+
+REPLY 5 (by ecannaer @ 2024-07-15T18:06:06.322Z):
+Ethan Michael Cannaert:
+
+To clarify the above, for bin iii, it is uncert_pars[iii] that I want to be shared between the SR and CR RooFormulaVars.
+
+To clarify the above, for bin iii, it is uncert_pars[iii] that I want to be shared between the SR and CR RooFormulaVars.
+----------------------------------------
+
+REPLY 6 (by adewit @ 2024-07-16T15:09:25.063Z):
+Dear Ethan,
+Thanks for the clarification - this
+RooFormulaVar *QCD_SR_corrected = new RooFormulaVar( ("QCD_SR_bin"+std::to_string(iii+1)).c_str(),("estimated number of QCD events in signal region (corrected), bin "+std::to_string(iii+1)).c_str(),
+"@0 * TMath::Power(1.10,@0)",RooArgList(QCD_SR_yields[iii],uncert_pars[iii] ))
+
+contains @0*TMath::Power(1.10,@0), so will only apply the first element of the RooArgList, not uncert_pars[iii]. So my guess is that you are not finding the bin_uncert_bin[iii+1] parameters in your workspace at all. Correct?
+Best,
+Adinda
+----------------------------------------

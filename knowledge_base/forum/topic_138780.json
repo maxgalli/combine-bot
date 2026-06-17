@@ -1,0 +1,34 @@
+{
+  "topic_id": 138780,
+  "title": "CMSHistSum vs. CMSHistErrorPropagator",
+  "url": "https://cms-talk.web.cern.ch/t/138780",
+  "category_id": 279,
+  "created_at": "2025-11-19T12:57:41.525Z",
+  "last_posted_at": "2025-11-19T14:44:38.174Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "klin",
+      "name": "Kuan-Yu Lin",
+      "created_at": "2025-11-19T12:57:41.660Z",
+      "updated_at": "2025-11-19T12:57:41.660Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nMay I ask if it is recommended to use CMSHistSum instead of CMSHistErrorPropagator by using the option --use-histsum to create the workspace? The Combine documentation suggested that the former saved memories and I wondered if it could help to alleviate my high memory problems. I have a workspaces with 400+ floating NPs and sometimes the peak memory usage hit > 12 GB when I did MultiDimFit.\nBest regards,\nKuan",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>May I ask if it is recommended to use <code>CMSHistSum</code> instead of <code>CMSHistErrorPropagator</code> by using the option <code>--use-histsum</code> to create the workspace? The Combine documentation suggested that the former saved memories and I wondered if it could help to alleviate my high memory problems. I have a workspaces with 400+ floating NPs and sometimes the peak memory usage hit &gt; 12 GB when I did <code>MultiDimFit</code>.</p>\n<p>Best regards,</p>\n<p>Kuan</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2025-11-19T14:44:38.174Z",
+      "updated_at": "2025-11-19T14:44:38.174Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Kuan,\nIt\u2019s possible it could improve things, but would depend on the exact structure of your model. Some things don\u2019t work when using CMSHistSum (IIRC), for example the extraction of post-fit shapes, but for basic fitting you could test it and see if it helps. Would also be good to verify you get identical fit results first.\ncheers,\nAndrew",
+      "cooked_html": "<p>Dear Kuan,</p>\n<p>It\u2019s possible it could improve things, but would depend on the exact structure of your model. Some things don\u2019t work when using CMSHistSum (IIRC), for example the extraction of post-fit shapes, but for basic fitting you could test it and see if it helps. Would also be good to verify you get identical fit results first.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+TOPIC: Non-commuting categories in combine fit
+URL: https://cms-talk.web.cern.ch/t/119115
+DATE: 2025-03-18T13:34:17.541Z
+SOLVED: no
+============================================================
+
+QUESTION (by rseidita @ 2025-03-18T13:34:17.810Z):
+Dear Combine experts,
+I’m contacting you because of an issue in the context of the EXO-24-010 analysis (search for t-channel production of semi visible jets). We are performing a template fit using ABCD to estimate the shape and normalization of our background, combining 4 categories across the 3 run2 years.
+We observe that when adding shape uncertainties on our signal, the order in which we combine the categories seems to change the result of the fit. A minimal example, with only two categories and a single shape uncertainty, can be found here.
+We compared the datacards obtained when combining the categories in the two permutations and found nothing obviously out of place. We also tried dumping the contents of the workspaces we get from the combined cards (via text2workspace.py), but could not find obvious differences apart from the different mapping of categories to channels, which is expected and seems consistent.
+We are running on combine v10.1.0 under CMSSW 14_1_0_pre4.
+Thank you very much in advance for any insight,
+Cheers,
+Roberto, for the EXO-24-010 team
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-03-18T16:21:31.646Z):
+Hi Roberto,
+That is indeed rather strange. Can you try a simple change just to rule it out.
+Can you rename the observable for one of the two sets of workspaces. I noticed that MET has the same range across all channels but has a different binning set. Can you change it so that the one with 9 bins is called MET_new or something like that?
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by nckw @ 2025-03-18T16:41:45.090Z):
+Just to add, I manually tried doing this with the workspaces you sent and then it seems like both ordering give consistent results when I do,
+Nick
+----------------------------------------
+
+REPLY 4 (by rseidita @ 2025-03-18T17:25:55.749Z):
+Dear Nick,
+thank you for your very quick reply! Indeed, renaming the observable in one of the categories seems to fix the issue and I now get consistent results. Is this known/expected behavior?
+Thank you so much for you help,
+Cheers,
+Roberto
+----------------------------------------
+
+REPLY 5 (by nckw @ 2025-03-18T17:50:34.000Z):
+Hi Roberto,
+I suspect it’s an issue when creating the dataset. The code will use the binning from the relevant observable to create an Asimov dataset, whichever version it imported first will then be used to create the Asimov for all channels (since as far as it’s concerned, there is only one observable called MET with 9 bins or 16 depending on the order)
+If the names are different, each observable is treated properly
+It’s an issue I’ve seen before many times when the ranges are different. Generally it’s safest to use a different name for each category to avoid any issues (there is a warning about this in the docs here https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#shape-analyses)
+Best,
+Nick
+
+| Roberto Seidita rseiditaMarch 18 |
+
+| - |
+
+Dear Nick,
+thank you for your very quick reply! Indeed, renaming the observable in one of the categories seems to fix the issue and I now get consistent results. Is this known/expected behavior?
+Thank you so much for you help,
+Cheers,
+Roberto
+
+···
+On 18 Mar 2025 17:31, Roberto Seidita via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------
+
+REPLY 6 (by rseidita @ 2025-03-18T18:04:22.985Z):
+Indeed we missed that warning  Thanks again for the lightning-fast turnaround,
+Cheers,
+Roberto
+----------------------------------------
+
+REPLY 7 (by nckw @ 2025-03-18T18:11:05.000Z):
+Happy to help
+
+| Roberto Seidita rseiditaMarch 18 |
+
+| - |
+
+Indeed we missed that warning Thanks again for the lightning-fast turnaround,
+Cheers,
+Roberto
+
+···
+On 18 Mar 2025 18:08, Roberto Seidita via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------

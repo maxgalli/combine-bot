@@ -1,0 +1,94 @@
+{
+  "topic_id": 40999,
+  "title": "Condor does not work on SL9 with combine environment",
+  "url": "https://cms-talk.web.cern.ch/t/40999",
+  "category_id": 279,
+  "created_at": "2024-05-10T12:11:06.204Z",
+  "last_posted_at": "2024-06-19T09:32:38.652Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    },
+    {
+      "id": 99,
+      "name": "condor",
+      "slug": "condor"
+    },
+    {
+      "id": 225,
+      "name": "el9",
+      "slug": "el9"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "rasharma",
+      "name": "Ram Krishna Sharma",
+      "created_at": "2024-05-10T12:11:06.612Z",
+      "updated_at": "2024-05-10T12:11:51.297Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI set up the combine based on official instructions [1], and it\u2019s working fine. I can reproduce the results.\nHowever, after setting up the combine environment using\nsource env_standalone.sh\n\ncondor does not work:\n$ condor_q\ncondor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by condor_q)\ncondor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib64/libcondor_utils_23_0_2.so)\ncondor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib64/libclassad.so.23.0.2)\n\nbefore sourcing the combine environment I don\u2019t see any error by running the command condor_q.\nIs there any instruction, on how we can use the condor on the EL9 machine?\nwith regards,\nRam\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#compilation-on-lxplus9",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I set up the combine based on official instructions [1], and it\u2019s working fine. I can reproduce the results.</p>\n<p>However, after setting up the combine environment using</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">source env_standalone.sh\n</code></pre>\n<p>condor does not work:</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">$ condor_q\ncondor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by condor_q)\ncondor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib64/libcondor_utils_23_0_2.so)\ncondor_q: /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/gcc/9.3.0/lib64/libstdc++.so.6: version `GLIBCXX_3.4.29' not found (required by /lib64/libclassad.so.23.0.2)\n</code></pre>\n<p>before sourcing the combine environment I don\u2019t see any error by running the command <code>condor_q</code>.</p>\n<p>Is there any instruction, on how we can use the condor on the EL9 machine?</p>\n<p>with regards,<br>\nRam</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#compilation-on-lxplus9\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#compilation-on-lxplus9</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-05-13T10:32:10.198Z",
+      "updated_at": "2024-05-13T10:32:10.198Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Ram,\nTo submit the Combine jobs to HTCondor you need the combineTool.py which works only with CMSSW.\nOnce you setup the Combine as described in [1] and compile it with slc7 environment (by running the cmssw-el7 beforehand) the condor submission files should pick up the environment settings correctly.\nWe are lucky to have some slc7 machines to run the condor jobs, so it should work fine. You can also to set the OS settings manually, as described here.\nIt is true that you probably can\u2019t run the condor commands from the container, so you have to exit it before running condor_submit <submission_file_name>.sub.\nWe are working on a combine release compatible with the el9 architecture, so you won\u2019t have to use the slc7 containers in the future.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Ram,</p>\n<p>To submit the Combine jobs to HTCondor you need the <code>combineTool.py</code> which works only with CMSSW.<br>\nOnce you setup the Combine as described in [1] and compile it with slc7 environment (by running the <code>cmssw-el7</code> beforehand) the condor submission files should pick up the environment settings correctly.<br>\nWe are lucky to have some slc7 machines to run the condor jobs, so it should work fine. You can also to set the OS settings manually, as described <a href=\"https://batchdocs.web.cern.ch/local/submit.html#os-choice\" rel=\"noopener nofollow ugc\">here</a>.<br>\nIt is true that you probably can\u2019t run the condor commands from the container, so you have to exit it before running <code>condor_submit &lt;submission_file_name&gt;.sub</code>.<br>\nWe are working on a combine release compatible with the el9 architecture, so you won\u2019t have to use the slc7 containers in the future.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "rasharma",
+      "name": "Ram Krishna Sharma",
+      "created_at": "2024-05-15T15:14:11.115Z",
+      "updated_at": "2024-05-15T15:14:11.115Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear @anigamov ,\nThank you for your response.\nIf I understand it correctly, the issue is with the environments set by the combine. I can run condor_q before sourcing the env_standalone.sh and it works, but it does not work after sourcing the env_standalone.sh.\nWhen I run condor_q, I am not inside the sl7 container. I make sure that I am out of it. I also tested this by logging out and logging back into lxplus9. And now, as the combine is already set up, I don\u2019t need the sl7 container. So, I just sourced the environment and it breaks condor_q.\nwith regards,\nRam",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/anigamov\">@anigamov</a> ,</p>\n<p>Thank you for your response.</p>\n<p>If I understand it correctly, the <strong>issue is with the environments set by the combine</strong>. I can run <code>condor_q</code> before sourcing the <code>env_standalone.sh</code> and it works, but it does not work after sourcing the <code>env_standalone.sh</code>.</p>\n<p>When I run <code>condor_q</code>, I am not inside the sl7 container. I make sure that I am out of it. I also tested this by logging out and logging back into lxplus9. And now, as the combine is already set up, I don\u2019t need the sl7 container. So, I just sourced the environment and it breaks <code>condor_q</code>.</p>\n<p>with regards,<br>\nRam</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-05-17T11:10:20.875Z",
+      "updated_at": "2024-05-17T11:10:20.875Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Ram,\nApologies, probably it was not so clear from my post above, but the proposal is to go with the CMSSW setup (see instructions here) while we do not have an el9 compatible Combine version realized and the standalone script is not up to date with the el9 architecture.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Ram,</p>\n<p>Apologies, probably it was not so clear from my post above, but the proposal is to go with the CMSSW setup (see instructions <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#combine-v9-recommended-version\" rel=\"noopener nofollow ugc\">here</a>) while we do not have an el9 compatible Combine version realized and the standalone script is not up to date with the el9 architecture.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-06-12T12:20:19.137Z",
+      "updated_at": "2024-06-12T12:20:19.137Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Ram,\nIn case you didn\u2019t see it the release of combine v10 which should run directly on the el9 machines was just anounced: The latest recommended Combine and CombineHarvester versions - #6 by anigamov\nBest,\nKyle",
+      "cooked_html": "<p>Dear Ram,</p>\n<p>In case you didn\u2019t see it the release of combine v10 which should run directly on the el9 machines was just anounced: <a href=\"https://cms-talk.web.cern.ch/t/the-latest-recommended-combine-and-combineharvester-versions/25462/6\" class=\"inline-onebox\">The latest recommended Combine and CombineHarvester versions - #6 by anigamov</a></p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "rasharma",
+      "name": "Ram Krishna Sharma",
+      "created_at": "2024-06-19T09:32:38.652Z",
+      "updated_at": "2024-06-19T09:32:58.540Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Dear Kyle,\nThank you for the information. I noted that email.\nJust for the completeness I would like to add one more information. CAT group release the settings for EL7, using which one can use the EL7 container and condor jobs within it. In case someone have to use EL7  (like me  ) then they can use this:\nhttps://gitlab.cern.ch/cms-cat/cmssw-lxplus\nwith regards,\nRam",
+      "cooked_html": "<p>Dear Kyle,</p>\n<p>Thank you for the information. I noted that email.</p>\n<p>Just for the completeness I would like to add one more information. CAT group release the settings for EL7, using which one can use the EL7 container and condor jobs within it. In case someone have to use EL7  (like me <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/smiley.png?v=12\" title=\":smiley:\" class=\"emoji\" alt=\":smiley:\" loading=\"lazy\" width=\"20\" height=\"20\"> ) then they can use this:</p>\n<p><a href=\"https://gitlab.cern.ch/cms-cat/cmssw-lxplus\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-cat/cmssw-lxplus</a></p>\n<p>with regards,<br>\nRam</p>"
+    }
+  ]
+}

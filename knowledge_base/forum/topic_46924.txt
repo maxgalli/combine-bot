@@ -1,0 +1,60 @@
+TOPIC: Error in RooFit: FitDiagnostics unrecognized CMS_channel name
+URL: https://cms-talk.web.cern.ch/t/46924
+DATE: 2024-08-28T15:41:10.431Z
+SOLVED: no
+============================================================
+
+QUESTION (by kjaffel @ 2024-08-28T15:41:10.664Z):
+Dear Combine expert,
+I recently updated my combine version but I start getting error from FitDiagnostics (only) due to CMS_channel naming. I think the issue could be caused by the presence of two periods (. ) in the my channel name mbb_MH_335.4_MA_82.14 .
+By the way the error is triggered only when I add --saveShapes and I saw it in both v10.0.2 and v10.0.1 of combine.
+Could someone please confirm this issue and add patch to fix this if possible.
+Datacard, shapes and the workspace can be found here: /afs/cern.ch/user/k/kjaffel/public/forCombineIssue
+This is the command I am running:
+name="HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14"
+WORKSPACE="HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14_combine_workspace.root"
+
+combine -M FitDiagnostics --rMin -20 --rMax 20 ${WORKSPACE} \
+-m 125  \
+--saveWithUncertainties \
+--savePredictionsPerToy \
+--saveNorm \
+--saveShapes \
+--ignoreCovWarning \
+-n ${name} \
+--plots \
+--verbose 0
+
+This is the error;
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+[#0] ERROR:InputArguments -- Formula CMS_channel==CMS_channel::mbb_MH_335.4_MA_82.14 uses '::' to reference a category state as 'CMS_channel::mbb_MH_335' but the category 'CMS_channel' does not seem to have the state 'mbb_MH_335'.
+Caught exception CMS_channel==CMS_channel::mbb_MH_335.4_MA_82.14type or paste code here
+
+Many thanks in advance.
+Cheers,
+Khawla
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-08-28T16:53:47.423Z):
+Hi,
+I think you are correct, the offending characters are the dot(s) in any number. Only characters matching letters digits and underscore (i.e., regex \w) currently match the variables names correctly.
+this seems to be related to the processing of RooFormulaVar in newer (?) versions of ROOT/RooFit, though it seems to be also pretty established (>6.18 ?TBC).
+I believe that this is triggered by this line  and the matches in the RooFormulaVar constructions are in RooFit at the line 249 here.
+I managed to have a working setup w/ RooFit 6.12 in CMSSW_10_2_13. We may try to find a patch, but I don’t know if it comes in the near future.
+For the moment, you can change the channel name with combineCards (at least for single channel cards as your) should work out-of-the-box, as below. Maybe use _ instead of dots .)
+combineCards.py ABC=HToZATo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_OSSF_mbb_MH_335.4_MA_82.14.dat > ABC.dat
+text2workspace.py -m 125 -o ABC.root ABC.dat
+combine -M FitDiagnostics --skipBOnlyFit --skipSBFit --saveShapes -v3  -n test_ABC ABC.root
+
+-Andrea
+----------------------------------------
+
+REPLY 3 (by kjaffel @ 2024-08-29T09:04:01.730Z):
+Hello Andrea,
+Thanks a lot for the suggestion, that will do for the time being  .
+Cheers,
+Khawla
+----------------------------------------

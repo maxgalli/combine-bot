@@ -1,0 +1,53 @@
+TOPIC: S+B fit from workspace
+URL: https://cms-talk.web.cern.ch/t/10820
+DATE: 2022-05-24T09:41:33.432Z
+SOLVED: no
+============================================================
+
+QUESTION (by jbabbar @ 2022-05-24T09:41:33.833Z):
+Dear Experts,
+I am performing S+B fit with a function defined as a pdf. The limits are calculated by Asymptotic method with an additional option --saveworkspace also given. I can see the background distribution from the Roodatasets saved in the workspace. But I want to see how the S+B fit look like for the different bins of the input mass histogram.
+Can you please tell how I can see the S+B fit from the saved workspace or any other method? Please let me know if more details are needed from my side.
+Thanks a lot !!
+Best Regards
+Jyoti Babbar
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-05-24T09:50:09.446Z):
+Hi Jyoti,
+combine -M MultiDimFit --saveWorkspace saves the workspace used by combine and a snapshot of the S+B background with name MultiDimFit
+If you want to visualize the distributions,
+combine -M FitDiagnostics --saveShapes save as TH1 the prefit, b-only, and s+b shapes.  If you want also unceratinties on the fits, you can use additionally the option --saveWithUncertainties, which is slow, but resamples the covariance matrix.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by jbabbar @ 2022-05-24T10:30:56.821Z):
+Hi  Andrea,
+Thanks for the prompt response.
+Just to clarify I checked  using combine -M  FitDiagnostics :
+I see the TDirectoryFile	shapes_prefit  , and in this directory there are histograms for signal and bkg. There is  also a  histogram named “total”, is this S+B distribution?
+Thanks again!!
+Best Regards
+Jyoti Babbar
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-05-24T10:41:37.000Z):
+Hi,
+Yes, shapes_prefit has the histogram as you put them in your datacards. total corresponds to the S+B, total_background to the sum of all backgrounds and total_signal to the sum of all signals.
+-A
+On Tue, May 24, 2022 at 12:32 PM Jyoti Babbar via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Jyoti Babbar jbabbarMay 24
+
+Hi Andrea,
+Thanks for the prompt response.
+Just to clarify I checked using combine -M FitDiagnostics :
+I see the TDirectoryFile shapes_prefit , and in this directory there are histograms for signal and bkg. There is also a histogram named “total”, is this S+B distribution?
+Thanks again!!
+Best Regards
+Jyoti Babbar
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

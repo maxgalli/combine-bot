@@ -1,0 +1,153 @@
+TOPIC: What is the meaning of --rMin and --rMax what I run FitDiagnostics with --redefineSignalPOIs
+URL: https://cms-talk.web.cern.ch/t/37088
+DATE: 2024-03-19T11:09:06.117Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-19T11:09:06.276Z):
+Dear experts,
+when I run
+combine -M FitDiagnostics 2017UL_dimuon_SR2.txt --robustFit=1 --rMin -100 --rMax 100 --redefineSignalPOIs width
+I got
+— FitDiagnostics —
+Best fit width: 0.816369  -0.816369/+4.78363  (68% CL)
+when I run without of rMIn and rMax
+combine -M FitDiagnostics 2017UL_dimuon_SR2.txt --robustFit=1 --redefineSignalPOIs width
+I got very different values
+— FitDiagnostics —
+Best fit width: 0.421421  -0.421421/+0.912963  (68% CL)
+Why it is so ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-03-19T11:36:13.233Z):
+Dear Sasha,
+Do you get any warning about the parameter r being at a boundary when running without the rMin/rMax options?
+When you run without those option you are using the default range for r which should be [0:20]. My first guess would be the best fit for r lies outside this range, hence the difference between the 2 results.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-03-19T12:04:49.000Z):
+Dear Giacomo,
+when I run
+combine -M FitDiagnostics 2017UL_dimuon_SR2.txt --robustFit=1 --rMin -100 --rMax 100 --redefineSignalPOIs width
+it tells
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— FitDiagnostics —
+Best fit width: 0.816369 -0.816369/+4.78363 (68% CL)
+when I run
+combine -M FitDiagnostics 2017UL_dimuon_SR2.txt --robustFit=1 --redefineSignalPOIs width
+it tells:
+[WARNING] Found [r] at boundary.
+[WARNING] Found [r] at boundary.
+Error: closed range without finding crossing.
+— FitDiagnostics —
+Best fit width: 0.421421 -0.421421/+0.912963 (68% CL)
+I do not understand why it has these warning. I am not on boundary 0.
+Are rMin and rMax in the first case are boundaries on width or
+on signal strength ? It was my question. I have actuialy set a range of
+width [0-5.6] GeV in my .C macro preparing RooFitWorkspace
+Thanks you, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, March 19, 2024 12:37
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] What is the meaning of --rMin and --rMax what I run FitDiagnostics with --redefineSignalPOIs
+
+Giacomo Ortona gortonaMarch 19
+
+Dear Sasha,
+Do you get any warning about the parameter r being at a boundary when running without the rMin/rMax options?
+When you run without those option you are using the default range for r which should be [0:20]. My first guess would be the best fit for r lies outside this range, hence the difference between the 2 results.
+Best regards,
+Giacomo
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by fiemmi @ 2024-03-19T12:09:57.832Z):
+Dear Sasha,
+I agree with what Giacomo just said. In your second fit, r isn’t allowed to exceed 20 and this is why your “positive-side” error for width is reduced a lot.
+To add on top of this, I believe this is expected. I don’t know the details of your analysis, but I think I can interpret r as the signal strength and width as some parameter (natural width?) that can make the peak of your signal distribution broader. Now, if you think in terms of PDFs, it turns out that r and width are positively correlated: if width increases, the peak gets broader and in order for the PDF normalization to stay ==1, the peak also gets “shorter”. To compensate for this, the fit will increase r to bring it “back up”.
+Thus, if when you fit width you don’t allow r to take values that are large enough, you are basically artificially spoiling this correlation (because r can’t grow above 20).
+BTW, --rMin and --rMax are setting boundaries on r. You can set ranges in a more general way by doing --setParameterRanges  r=-100.0,100.0:width=0.0,5.6.
+I hope this helps, all the best,
+Fabio.
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2024-03-19T12:11:23.000Z):
+Dear Giacomo,
+one more thing.
+When I scan width with
+combine -M MultiDimFit 2017UL_dimuon_SR2.txt --rMin 0 --rMax 10 --algo grid --points 100 -P width --floatOtherPOIs=1 -v 3
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI width
+it gives me very strange result (attached) which is not compatible at all with
+results of FitDiagnostics (see previous email below)
+Thanks, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Tuesday, March 19, 2024 13:04
+To: CMS talk cmstalk+8afeae5e6076bb3017c84a97471c501a@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] What is the meaning of --rMin and --rMax what I run FitDiagnostics with --redefineSignalPOIs
+Dear Giacomo,
+when I run
+combine -M FitDiagnostics 2017UL_dimuon_SR2.txt --robustFit=1 --rMin -100 --rMax 100 --redefineSignalPOIs width
+it tells
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— FitDiagnostics —
+Best fit width: 0.816369 -0.816369/+4.78363 (68% CL)
+when I run
+combine -M FitDiagnostics 2017UL_dimuon_SR2.txt --robustFit=1 --redefineSignalPOIs width
+it tells:
+[WARNING] Found [r] at boundary.
+[WARNING] Found [r] at boundary.
+Error: closed range without finding crossing.
+— FitDiagnostics —
+Best fit width: 0.421421 -0.421421/+0.912963 (68% CL)
+I do not understand why it has these warning. I am not on boundary 0.
+Are rMin and rMax in the first case are boundaries on width or
+on signal strength ? It was my question. I have actuialy set a range of
+width [0-5.6] GeV in my .C macro preparing RooFitWorkspace
+Thanks you, Sasha.
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, March 19, 2024 12:37
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] What is the meaning of --rMin and --rMax what I run FitDiagnostics with --redefineSignalPOIs
+
+Giacomo Ortona gortonaMarch 19
+
+Dear Sasha,
+Do you get any warning about the parameter r being at a boundary when running without the rMin/rMax options?
+When you run without those option you are using the default range for r which should be [0:20]. My first guess would be the best fit for r lies outside this range, hence the difference between the 2 results.
+Best regards,
+Giacomo
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+
+scan.pdf (17.5 KB)
+----------------------------------------
+
+REPLY 6 (by fiemmi @ 2024-03-19T12:27:21.148Z):
+HI Sasha;
+indeed the likelihood scan looks weird. My suggestion would be to set properly the parameter you want to scan (-P option), the ranges for all the POIs (--setParameterRanges option) and also to save the POIs that are “inactive” (in this case, r) during the scan (--saveInactivePOI 1 option) , so that you can check the correlation between r and width during your likelihood scan.
+Something like:
+combine -M MultiDimFit 2017UL_dimuon_SR2.txt -P width --setParameterRanges r=-100.0,100.0:width=0.0,5.0 --algo grid --points 100  --floatOtherPOIs=1 --saveInactivePOI 1 -v 3.
+When the scan is over, you can open the output .root file and do:
+limit->Draw("r:width")
+and see what the correlation looks like.
+I hope this helps, cheers,
+F.
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2024-03-31T12:37:02.324Z):
+Hi Fabio,
+it works nice, thanks you !
+Cheers, Sasha.
+----------------------------------------

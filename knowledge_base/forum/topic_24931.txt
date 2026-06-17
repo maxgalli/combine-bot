@@ -1,0 +1,40 @@
+TOPIC: Issue with maximum profile likelihood
+URL: https://cms-talk.web.cern.ch/t/24931
+DATE: 2023-06-01T15:48:18.424Z
+SOLVED: no
+============================================================
+
+QUESTION (by amkaur @ 2023-06-01T15:48:18.723Z):
+Dear experts,
+I am working on the ratio measurement of dimuon to dielectron using ABCD method with maximum profile likelihood function (unbinned shape analysis). I have tagged muon yields as signal and electrol yields as control (as mentioned in the attached datacard) according to the below formula where DY1 is events in Drell-Yan above certain mass threshold, DY2 events in Drell-Yan below certain mass threshold (bkg) and other respresents other SM bkgs.
+Screenshot 2023-06-01 at 11.40.17 AM1246×224 12.9 KB
+While executing the attached datacard with combine; I am running into following error which shows no other messages.
+<<< Combine >>>
+
+random number generator seed is 123456
+method used is MultiDimFit
+Warning: Bin control has no signal processes contributing to it
+Caught exception ERROR: channel signal factorized to zero.
+
+Please let me know what could be the possible issue. The inputs are also attached with this message for easy debugging.
+Thank you in advance,
+Regards,
+Amandeep Kaur
+ROOT Version: 6.12 (on lxplus)
+elec_data_ws.root (9.2 KB)
+muon_obs_ws.root (9.2 KB)
+temp_datacard.txt (2.4 KB)
+testRooFit.root (33.3 KB)
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-06-07T17:01:38.437Z):
+Dear @amkaur,
+Sorry for a delayed response. Let me first try to understand what are you trying to do.
+You mentioned unbinned fit but at the same time you consider bkg templates (binned) in your model, it can not be both, so help me to understand please.
+A technical point for the datacard, I think you should define data_obs in the same format as signal and background processes (RooDataHist). Then when you run the text2workspace.py you can scale di-muon and di-electron processes with common POI and extract the ratio, i.e.
+text2workspace.py temp_datacard.txt  -m 125 -o test_1.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel  --PO verbose  --PO 'map=control/el_DY_S:r_el[1,0,10]'  --PO 'map=signal/mu_DY_S:r_mu=expr;;r_mu("@0*@1",r_el,R[1,0,2])'
+
+where R = r_mu/r_el.
+Best,
+Aliya
+----------------------------------------

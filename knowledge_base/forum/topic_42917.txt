@@ -1,0 +1,153 @@
+TOPIC: Minimization problems when running combine with HybridNew and discrete profiling
+URL: https://cms-talk.web.cern.ch/t/42917
+DATE: 2024-07-01T08:04:30.531Z
+SOLVED: no
+============================================================
+
+QUESTION (by regartne @ 2024-07-01T08:04:30.664Z):
+Dear combine experts,
+I want to compute upper limits using the HybridNew method, since I am in the case of very low number of events. I want to use discrete profiling to take into account different possible background PDFs.
+When I use only an Exponential and a PowerLaw PDF in my  MultiPDF object, everything works fine. But when I also add Bernstein Polynomials to the MultiPDF, I get this warning:
+[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum!
+So I run it again with increased verbosity and then the output (see attached file) tells me that sometimes there is an invalid minimum. Is this an issue for the final limit and if yes, what can I do about it?
+The exact commands I run are:
+text2workspace.py datacard_category_A1_BR_Bd_0_BR_Bs_86e-10.txt  -o wspace.root --X-assign-flatParam-prior
+combine -M HybridNew wspace.root --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC -T 50 --rule CLs > output_HN_50_3pdfs.txt
+I am running this command here with 50 toys just for test purposes - I am aware that for the final limits, the number of toys has to be much higher. Another thing I am confused about is that the output tells me that the total number of toys is 18826. Should it not be 50? Where does that mismatch come from?
+I am attaching an example datacard and the workspaces.
+Thanks in advance for your help.
+Best,
+Rebecca
+Link to output file (too big to upload): https://polybox.ethz.ch/index.php/s/TNZqWwfaXsx5o1K
+wspace.root (24.3 KB)
+datacard_category_A1_BR_Bd_0_BR_Bs_86e-10.root (13.1 KB)
+datacard_category_A1_BR_Bd_0_BR_Bs_86e-10.txt (2.0 KB)
+----------------------------------------
+
+REPLY 2 (by hyeonseo @ 2024-07-03T22:12:18.127Z):
+I also have a very similar issue involving the usage of Bernstein polynomials with Multipdf. I basically tried to follow the comebine tutorial, where I would replace the pdflist for RooMultipdf with a RooBernstein instance and nothing else, and it will give this Segmentation fault error:
+(/depot/cms/kernels/root632) [yun79@purdue-af-42 quick_tests]$ combine -M MultiDimFit -d combine_test_datacard.txt --points 70 --algo grid --setParameterRanges r=400,800 --cminDefaultMinimizerStrategy 0 --saveNLL -n Envelope -m 125 --setParameters myIndex=-1 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+<<< Combine >>>
+<<< v10.0.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Set Range of Parameter r To : (400,800)
+Warning: Did not find a parameter with name myIndex
+Doing initial fit:
+PDF didn't factorize!
+Parameters:
+1) RooRealVar::                BWZxBern_Bernstein_c_0 = 0.171369 +/- 0.220375
+2) RooRealVar::                BWZxBern_Bernstein_c_1 = 0.335027 +/- 0.429571
+3) RooRealVar::                BWZxBern_Bernstein_c_2 = 1.05224 +/- 1.21116
+4) RooRealVar::                                    MH = 125
+5) RooRealVar::  n_exp_bindimuon_mass_proc_background = 1
+6) RooCategory::                             pdf_index = _pdf0(idx = 0)
+
+7) RooRealVar::                                     r = 1
+8) RooRealVar:: shapeBkg_background_dimuon_mass__norm = 1000
+9) RooRealVar::                                 sigma = 1.2
+Obs:
+1) RooRealVar:: dimuon_mass = 149.75
+2) RooCategory:: CMS_channel = dimuon_mass(idx = 0)
+
+*** Break *** segmentation violation
+Generating stack trace...
+0x00007f6cea013c1c in RooRealIntegral::evaluate() const + 0x74c from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007f6ce9e0d752 in RooAbsReal::traceEval(RooArgSet const*) const + 0x12 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007f6cea00fe8a in RooRealIntegral::getValV(RooArgSet const*) const + 0x7a from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007f6ce9deefbb in RooAbsPdf::syncNormalization(RooArgSet const*, bool) const + 0x5bb from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007f6ce9dedc34 in RooAbsPdf::getValV(RooArgSet const*) const + 0x34 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007f6cecc4ae6b in RooMultiPdf::getValV(RooArgSet const*) const at /depot/cms/kernels/root632/include/RooTemplateProxy.h:300 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6ceca5428f in cacheutils::CachingPdf::realFill_(RooAbsData const&, std::vector<double, std::allocator<double> >&) at /depot/cms/kernels/root632/include/RooAbsReal.h:117 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6ceca5639b in cacheutils::CachingPdf::eval(RooAbsData const&) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:304 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6ceca546fd in cacheutils::CachingAddNLL::evaluate() const at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:635 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6ceca5b684 in cacheutils::CachingAddNLL::CachingAddNLL(char const*, char const*, RooAbsPdf*, RooAbsData*, bool) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:399 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6ceca5d62d in cacheutils::CachingSimNLL::setup_() at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:1039 (discriminator 5) from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6ceca5f0a6 in cacheutils::CachingSimNLL::CachingSimNLL(RooSimultaneous*, RooAbsData*, RooArgSet const*) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:877 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6cecbbe62e in RooSimultaneousOpt::createNLLImpl(RooAbsData&, RooLinkedList const&) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/../interface/RooSimultaneousOpt.h:40 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6cecae71cb in FitterAlgoBase::doFit(RooAbsPdf&, RooAbsData&, RooArgList const&, RooCmdArg const&, bool, int, bool, bool) at /depot/cms/kernels/root632/lib/gcc/x86_64-conda-linux-gnu/12.3.0/include/c++/bits/unique_ptr.h:95 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6cecb8f690 in MultiDimFit::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/MultiDimFit.cc:204 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6cecae65f0 in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/FitterAlgoBase.cc:203 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6cecaa51d1 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/Combine.cc:288 (discriminator 4) from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007f6cecab22d8 in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/Combine.cc:1006 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x000055da8e305737 in main + 0x2c77 from combine
+0x00007f6ce8bc9d85 in __libc_start_main + 0xe5 from /lib64/libc.so.6
+0x000055da8e306350 in <unknown> from combine
+
+Like Rebecca, everything else runs fine without the bernstein function, as I have confirmed by just defining multipdf with Sum Exp and BWZ Redux functions as shown in the screenshot below:
+image956×680 94.9 KB
+If more info is needed, or if this is an unrelated issue, please let me know! I would be happy make a separate CMS Talk post. Thank you!
+----------------------------------------
+
+REPLY 3 (by amarini @ 2024-07-04T10:56:30.651Z):
+iirc in the rooberbstein there is one degenerate dof, which can be reassorbed in the total normalization. You may need to freeze the first coeff.
+In the RooBernsteinFast, this does not happen. Here the first coeff should always be 1.
+Note that the RooBernsteinFast were originally developed to have analytical integrals and are in combine.
+A
+----------------------------------------
+
+REPLY 4 (by hyeonseo @ 2024-07-04T15:47:04.265Z):
+ROOT.Bernstein is the function I have been using (I guess it’s same for @regartne ?), and it’s a seperate class to ROOT.BernsteinFast. Would you say ROOT.BernsteinFast is the way to go, @amarini ?
+----------------------------------------
+
+REPLY 5 (by hyeonseo @ 2024-07-04T22:54:42.188Z):
+Ah ok, I think I misunderstood your comment. As you suggested, I have frozen the first coefficient of RooBernstein to be equal to one, and managed to fit and save all necessary parts to RooMultipdf. However, I still get the segmentation error below.
+<<< Combine >>>
+<<< v10.0.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Set Range of Parameter r To : (400,800)
+Warning: Did not find a parameter with name myIndex
+Doing initial fit:
+PDF didn't factorize!
+Parameters:
+1) RooRealVar::                         BWZ_exp_coeff = 0.00926264 +/- 0.00243407
+2) RooRealVar::                BWZxBern_Bernstein_c_0 = 1
+3) RooRealVar::                BWZxBern_Bernstein_c_1 = 1.67066 +/- 0.0907945
+4) RooRealVar::                BWZxBern_Bernstein_c_2 = 2 +/- 0.153836
+5) RooRealVar::                                    MH = 125
+6) RooRealVar::                               bwWidth = 2.5
+7) RooRealVar::                                  bwmZ = 91.2
+8) RooRealVar::  n_exp_bindimuon_mass_proc_background = 1
+9) RooCategory::                             pdf_index = _pdf0(idx = 0)
+
+10) RooRealVar::                                     r = 1
+11) RooRealVar:: shapeBkg_background_dimuon_mass__norm = 1000
+12) RooRealVar::                                 sigma = 1.2
+13) RooRealVar::                                 smf_0 = -0.0061603 +/- 0.0073316
+Obs:
+1) RooRealVar:: dimuon_mass = 149.75
+2) RooCategory:: CMS_channel = dimuon_mass(idx = 0)
+
+*** Break *** segmentation violation
+Generating stack trace...
+0x00007efc1f8fbd13 in RooAbsPdf::getValV(RooArgSet const*) const + 0x113 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1faf37c9 in RooProdPdf::calculate(RooProdPdf::CacheElem const&, bool) const + 0x4f9 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1f8fbd13 in RooAbsPdf::getValV(RooArgSet const*) const + 0x113 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1fb05562 in RooProduct::evaluate() const + 0x142 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1f91b752 in RooAbsReal::traceEval(RooArgSet const*) const + 0x12 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1f91b9bb in RooAbsReal::getValV(RooArgSet const*) const + 0xbb from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1fb220b1 in RooRealIntegral::evaluate() const + 0xbe1 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1f91b752 in RooAbsReal::traceEval(RooArgSet const*) const + 0x12 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1fb1de8a in RooRealIntegral::getValV(RooArgSet const*) const + 0x7a from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1fa49a25 in RooGenProdProj::evaluate() const + 0x65 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1f91b752 in RooAbsReal::traceEval(RooArgSet const*) const + 0x12 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1f91b9bb in RooAbsReal::getValV(RooArgSet const*) const + 0xbb from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1faf37c9 in RooProdPdf::calculate(RooProdPdf::CacheElem const&, bool) const + 0x4f9 from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc1f8fbc6b in RooAbsPdf::getValV(RooArgSet const*) const + 0x6b from /depot/cms/kernels/root632/lib/libRooFitCore.so.6.32
+0x00007efc22758e6b in RooMultiPdf::getValV(RooArgSet const*) const at /depot/cms/kernels/root632/include/RooTemplateProxy.h:300 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc2256228f in cacheutils::CachingPdf::realFill_(RooAbsData const&, std::vector<double, std::allocator<double> >&) at /depot/cms/kernels/root632/include/RooAbsReal.h:117 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc2256439b in cacheutils::CachingPdf::eval(RooAbsData const&) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:304 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc225626fd in cacheutils::CachingAddNLL::evaluate() const at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:635 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc22569684 in cacheutils::CachingAddNLL::CachingAddNLL(char const*, char const*, RooAbsPdf*, RooAbsData*, bool) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:399 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc2256b62d in cacheutils::CachingSimNLL::setup_() at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:1039 (discriminator 5) from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc2256d0a6 in cacheutils::CachingSimNLL::CachingSimNLL(RooSimultaneous*, RooAbsData*, RooArgSet const*) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/CachingNLL.cc:877 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc226cc62e in RooSimultaneousOpt::createNLLImpl(RooAbsData&, RooLinkedList const&) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/../interface/RooSimultaneousOpt.h:40 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc225f51cb in FitterAlgoBase::doFit(RooAbsPdf&, RooAbsData&, RooArgList const&, RooCmdArg const&, bool, int, bool, bool) at /depot/cms/kernels/root632/lib/gcc/x86_64-conda-linux-gnu/12.3.0/include/c++/bits/unique_ptr.h:95 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc2269d690 in MultiDimFit::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/MultiDimFit.cc:204 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc225f45f0 in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/FitterAlgoBase.cc:203 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc225b31d1 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/Combine.cc:288 (discriminator 4) from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+0x00007efc225c02d8 in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) at /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/src/Combine.cc:1006 from /depot/cms/purdue-af/combine/HiggsAnalysis/CombinedLimit/build/lib/libHiggsAnalysisCombinedLimit.so
+
+Do you suppose I should stick to RooBernsteinFast, the combine method instead of the native ROOT method (RooBernstein)?
+----------------------------------------

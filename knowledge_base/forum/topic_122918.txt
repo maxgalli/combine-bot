@@ -1,0 +1,42 @@
+TOPIC: Is combined NLL a sum of individual NLL?
+URL: https://cms-talk.web.cern.ch/t/122918
+DATE: 2025-04-09T16:22:40.280Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-04-09T16:22:40.555Z):
+Dear experts,
+I do combined fit of three independent regions using MutiDimFit.
+Can I say that combined NLL = NLL1+NLL2+NLL3 ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-04-10T08:25:58.000Z):
+Hi Sasha,
+I think the statistical committee would be better placed to answer, but I believe that’s correct, yes. That’s basically like taking the weighted average of independent measurements.
+Although even if the regions are mutually exclusive, I would expect some parameters like luminosity or detector effects to be correlated, simply because all data are taken with the same experiment, so I don’t think this actually applies to CMS measurements except for very fringe cases.
+Cheers,
+Giacomo
+
+On 9 Apr 2025, at 18:23, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 9
+
+Dear experts,
+I do combined fit of three independent regions using MutiDimFit.
+Can I say that combined NLL = NLL1+NLL2+NLL3 ?
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2025-04-10T08:55:55.399Z):
+Hi Giacomo,
+thank you for answer !
+My regions are mutually exclusive and fit is based purely on data using
+signal and background modes. Bkg. models found from data sidebands.
+So, I think technically in combine  total NLL is a sum of NLLs for each individual regions.
+Cheers, Sasha.
+----------------------------------------

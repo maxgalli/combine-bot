@@ -1,0 +1,85 @@
+TOPIC: Accuracy of expected upper limits
+URL: https://cms-talk.web.cern.ch/t/126352
+DATE: 2025-06-25T01:40:06.059Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by mmadhu @ 2025-06-25T01:40:06.208Z):
+Dear experts,
+I’m trying to calculate median expected upper limits in a low statistics regime. When I use a simple counting experiment datacard with zero background (first attachment) and execute it in Combine v10.0.2 with the following options:
+combineTool.py -M HybridNew --LHCmode LHC-limits --rMin 0 --rMax 50 --cl 0.90 -T 10000 --expectedFromGrid 0.5 --rRelAcc=0.001
+
+I get a limit of 15.4252 (+/- 0.064595). This is expected as ln(1/0.1)/0.1495 = 15.40 for zero background.
+However, when I introduce uncertainties on the signal and background like in the second attachment and run it with the same options, the limit becomes better (15.0571 +/- 0.0849267). I would have expected the limit to become worse after introducing uncertainties and to get a value higher than 15.40. Is there a way to get a more accurate value for the expected upper limit using HybridNew?
+-Arun
+example.txt (737 Bytes)
+unprojected_test.txt (1.1 KB)
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by nckw @ 2025-06-25T08:22:05.320Z):
+Hi Arun,
+I think this is related to a known issue with the usual way we do limits, in that it can happen that an upper limit can improve when there is some background compared to no background (it happens due to the nature of the Poisson pdf and trying to calculate exact intervals).
+In your case, in the first card, you have a non-zero background rate and this can be modified by the very small uncertainty.
+Generally, our standard method for limit setting in combine is not suitable for zero or very close to zero expected background. Instead, you can use the approach described in this paper : https://www.sciencedirect.com/science/article/pii/0168900292907945?via%3Dihub (Cousins & Highland).
+In combine, this can be achieved by following the instructions here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#computing-limits-with-toys (look for the term “Hybrid-Bayesian”).
+Can you try with this method and see if the results look more like what you would expect?
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by mmadhu @ 2025-06-25T13:59:22.816Z):
+Hi Nick,
+Thank you for the reply.
+Using HybridBayesian ( with --generateNuisances=1 --generateExternalMeasurements=0 and removing --LHCmode LHC-limits) did give results closer to what I want. However, the upper limit while using systematic uncertainties was still better than what I expected (15.2912 +/- 0.0985729), which is still within the margin of error, relative to 15.40. The results aren’t completely stable.
+I also want to do projections of these limits at higher luminosities. When (in terms of background event counts) is it recommended to stop using HybridBayesian? 5-10 events?
+Regards,
+Arun
+----------------------------------------
+
+REPLY 4 (by nckw @ 2025-06-25T15:18:13.234Z):
+Hi Arun,
+I don’t really have a good benchmark - ideally when they both agree, you can revert back to the “LHC-limits” style.
+What I can say is that typically its the no background as opposed to no data that causes this difference. Indeed, once you get to O(10), expected background, I don’t think you would see a difference between the two approaches (though it depends how big the uncertainties are too)
+If you intend to scale to higher lumis, how do you intend on doing so? Would you also expect no background events at higher luminosities or does the 0 expected come from some estimate that is currently statistically limited?
+Best,
+Nick
+----------------------------------------
+
+REPLY 5 (by mmadhu @ 2025-06-25T15:30:50.257Z):
+Hi Nick,
+I would not expect zero background at higher luminosities (the 0 background comes from an estimate that is currently statistically limited). I have a method for relaxing BDT cuts and estimating backgrounds at higher luminosities, which can give expected backgrounds > 10 in some case.
+Regards,
+Arun
+----------------------------------------
+
+REPLY 6 (by mmadhu @ 2025-06-25T19:29:19.960Z):
+Hi Nick,
+I do have one additional question. Why is this issue not seen with the AsymptoticLimits method, which is also a “classical” way of computing limits? With the AsymptoticLimits method, the limits do get worse as the signal uncertainty gets worse (unlike HybridNew with LHC-limits).
+Regards,
+Arun
+----------------------------------------
+
+REPLY 7 (by nckw @ 2025-06-25T22:51:23.000Z):
+Hi Arun,
+Good question - essentially the asymptotic calculation already assumes we’re in the high statistics regime and in this regime things behave as expected. These calculations are wrong in your case so I would say the conclusions drawn are also wrong and I wouldn’t ascribe too much meaning to those asymptotic results here
+Best
+Nick
+
+| Arun Madhu mmadhuJune 25 |
+
+| - |
+
+Hi Nick,
+I do have one additional question. Why is this issue not seen with the AsymptoticLimits method, which is also a “classical” way of computing limits? With the AsymptoticLimits method, the limits do get worse as the signal uncertainty gets worse (unlike HybridNew with LHC-limits).
+Regards,
+Arun
+
+···
+On 25 Jun 2025 20:30, Arun Madhu via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------
+
+REPLY 8 (by mmadhu @ 2025-06-25T22:55:52.529Z):
+Okay, thank you for answering.
+Regards,
+Arun
+----------------------------------------

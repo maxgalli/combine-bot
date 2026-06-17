@@ -1,0 +1,48 @@
+TOPIC: Fitting a ratio (Response)
+URL: https://cms-talk.web.cern.ch/t/36117
+DATE: 2024-02-28T14:35:43.990Z
+SOLVED: no
+============================================================
+
+QUESTION (by rverma @ 2024-02-28T14:35:44.163Z):
+Dear experts,
+I was curious to know if there is a way to fit a function (e.g. ax+bx^2) to a TProfile (which has ratio of var1/var2 in bins of var2) in combine. For example, in the attache plot, we have “Response” from three channels:
+
+(a) How to fit the response for each channel separately?
+(b) Since the response could differ for different systematic uncertainties, how to incorporate the uncertainties (stat + systematics)?
+(c) And then how to do a combined fit to the three channels?
+(d) Then how to combine the responses from different years (e.g. full Run-3)?
+
+If (a) and (b) can be done using a datacard, then I think we can combine the datacards in the usual way for (c) and (d).
+image1410×1394 115 KB
+Thank you,
+Ravindra
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-03-01T11:05:50.068Z):
+Hi Ravindra,
+Although combine is a very useful tool, this is actually one use case it is not really set up for. The tool is really designed for cases where you have a Poisson-distributed count of observations that is the data you are fitting.  But the TProfile point you are using are not poisson distributed observations. The underlying histogram that the TProfile comes from presumably has poisson distributed counts. But I’m not sure that going back to that helps you with your goal. Perhaps someone else can comment if they have a clever idea.
+That being said, we are happy to try to help with the tools for this, whether or not you use combine. Do you already have some basic fitting set up?
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by rverma @ 2024-03-13T08:28:42.293Z):
+Hi Kyle,
+Thank you for your response.
+We do have a working standalone code for that [1] which is being used to derive the jet energy correction (JEC). We were wondering if we can do the same thing using combine. If so, we can perfom many fit sanity checks easily. We could also gain when doing combined fits for different years, channels, categories, etc.
+Since the dominant source of systematic uncertainty for many CMS analyes comes from JEC, any improvement in deriving JEC would be beneficial for them.
+Thank you,
+Ravindra
+[1] https://github.com/miquork/jecsys3/blob/main/src/GlobalFit.cxx#L353-L362
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-04-09T15:04:51.882Z):
+Hi Ravindra, all,
+I happened to be chatting to Kyle and Aliya about this and I think there is a way which you could use combine for this.
+I put a short README together [1] (sorry about the formatting, the html worked better locally for me) with a simple example of building a combine-friendly set of inputs. The idea is to fit the parameters of the function form describing the resolution function in my case, but it could be adapted to other scenarios. The nice thing is of course adding backgrounds, systematics and running diagnostics should be simple once things are setup.
+Have a look and let me know if this could be useful - would be very happy to help with more issues.
+Cheers,
+Nick
+[1] https://nckw.web.cern.ch/CalibrationExample/
+----------------------------------------

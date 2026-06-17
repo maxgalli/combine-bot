@@ -1,0 +1,34 @@
+{
+  "topic_id": 2137,
+  "title": "Potential bug in Combine `calculate_pulls.py` for pull definition `unconstPullAsym`",
+  "url": "https://cms-talk.web.cern.ch/t/2137",
+  "category_id": 279,
+  "created_at": "2021-08-06T07:39:30.000Z",
+  "last_posted_at": "2021-08-09T09:49:38.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Robert_Stephen_White",
+      "name": "Robert Stephen White",
+      "created_at": "2021-08-06T07:39:30.000Z",
+      "updated_at": "2023-02-07T10:55:38.144Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHey,\nI've recently been calculating pulls with the `diffNuisances.py` module,\nand trying different `--pullDef` options. One of these,\n`unconstPullAsym`, returns an error `NameError: global name 'relDiff' is\nnot defined`. Based on the code, the `relDiff` function is missing but\nthere is a `relDiffAsymErrors`, see here:\n\ngithub.com\n\ncms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/python/calculate_pulls.py#L45\n\nreturn ret\n\ndef diffPullAsym(x,x0,sxu,sxu0,sxd,sxd0):\n# as defined in http://physics.rockefeller.edu/luc/technical_reports/cdf5776_pulls.pdf\nif x > x0 : ret = diffPull(x,x0,sxd,sxd0)\nelse : ret =  diffPull(x,x0,sxu,sxu0)\nret.append(ret[-1])\nreturn ret\n\ndef unconstPullAsym(x,x0,sxu,sxu0,sxd,sxd0):\nif x<x0: ret = relDiff(x,x0,sxu)\nelse :  ret =  relDiff(x,x0,sxd)\nreturn ret\n\ndef relDiffAsymErrs(x,x0,sxu,sxu0,sxd,sxd0):\npull = x - x0\npull = (pull/sxu0) if pull >= 0 else (pull/sxd0)\npull_hi = x+sxu - x0\npull_hi = (pull_hi/sxu0) if pull_hi >= 0 else (pull_hi/sxd0)\npull_hi = pull_hi - pull\npull_lo = x-sxd -x0\n\nI'm pretty confident this is a bug and not an issue with our pulls, I\nwondered if anyone had any knowledge/advice for this?\nRob",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hey,</p>\n<p>I've recently been calculating pulls with the `diffNuisances.py` module,<br>\nand trying different `--pullDef` options. One of these,<br>\n`unconstPullAsym`, returns an error `NameError: global name 'relDiff' is<br>\nnot defined`. Based on the code, the `relDiff` function is missing but<br>\nthere is a `relDiffAsymErrors`, see here:</p><aside class=\"onebox githubblob\" data-onebox-src=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/python/calculate_pulls.py#L45\">\n  <header class=\"source\">\n\n      <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/python/calculate_pulls.py#L45\" target=\"_blank\" rel=\"noopener nofollow ugc\">github.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <h4><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/python/calculate_pulls.py#L45\" target=\"_blank\" rel=\"noopener nofollow ugc\">cms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/python/calculate_pulls.py#L45</a></h4>\n\n\n\n    <pre class=\"onebox\"><code class=\"lang-py\">\n      <ol class=\"start lines\" start=\"35\" style=\"counter-reset: li-counter 34 ;\">\n          <li>  return ret</li>\n          <li>\n          </li>\n<li>def diffPullAsym(x,x0,sxu,sxu0,sxd,sxd0):</li>\n          <li>  # as defined in http://physics.rockefeller.edu/luc/technical_reports/cdf5776_pulls.pdf</li>\n          <li>  if x &gt; x0 : ret = diffPull(x,x0,sxd,sxd0)</li>\n          <li>  else : ret =  diffPull(x,x0,sxu,sxu0)</li>\n          <li>  ret.append(ret[-1])</li>\n          <li>  return ret</li>\n          <li>\n          </li>\n<li>def unconstPullAsym(x,x0,sxu,sxu0,sxd,sxd0):</li>\n          <li class=\"selected\">  if x&lt;x0: ret = relDiff(x,x0,sxu)</li>\n          <li>  else :  ret =  relDiff(x,x0,sxd)</li>\n          <li>  return ret</li>\n          <li>\n          </li>\n<li>def relDiffAsymErrs(x,x0,sxu,sxu0,sxd,sxd0):</li>\n          <li>  pull = x - x0 </li>\n          <li>  pull = (pull/sxu0) if pull &gt;= 0 else (pull/sxd0)</li>\n          <li>  pull_hi = x+sxu - x0</li>\n          <li>  pull_hi = (pull_hi/sxu0) if pull_hi &gt;= 0 else (pull_hi/sxd0)</li>\n          <li>  pull_hi = pull_hi - pull</li>\n          <li>  pull_lo = x-sxd -x0</li>\n      </ol>\n    </code></pre>\n\n\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n\n<p>I'm pretty confident this is a bug and not an issue with our pulls, I<br>\nwondered if anyone had any knowledge/advice for this?</p>\n<p>Rob</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-08-09T09:49:38.000Z",
+      "updated_at": "2021-11-17T08:36:48.775Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Rob,\nYou're right, this looks like a bug in the script. I think to get\nresults for that method you'll need to replace the two instances of\nrelDiff in L45-46 with unconstPull [*]. Thanks for flagging it up, we'll\nfix this in a future combine release.\nBest,\nAdinda\n[*]\nhttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/calculate_pulls.py#L9",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Rob,</p>\n<p>You're right, this looks like a bug in the script. I think to get<br>\nresults for that method you'll need to replace the two instances of<br>\nrelDiff in L45-46 with unconstPull [*]. Thanks for flagging it up, we'll<br>\nfix this in a future combine release.</p>\n<p>Best,<br>\nAdinda</p>\n<p>[*]<br>\n<a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/calculate_pulls.py#L9\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/calculate_pulls.py#L9</a></p>"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+TOPIC: Combining workspaces, not data cards
+URL: https://cms-talk.web.cern.ch/t/10112
+DATE: 2022-05-05T18:16:18.699Z
+SOLVED: no
+============================================================
+
+QUESTION (by dspitzba @ 2022-05-05T18:16:18.865Z):
+Dear Experts,
+We’re trying to combine two different analysis channels, where the analysis of one of them has been finalized some time ago. Because of hardware failures in the meantime the data cards of this analysis were lost, however, we could retrieve the corresponding combine workspace. In order to combine with another channel we now have two options:
+
+Convert the workspace back into a data card and run combineCards.py. Is there some functionality in the combine tool that does that rather automatically (basically an inverted text2workspace.py)? Since all the information is still available we can of course write some code that extracts all the numbers and shapes from the workspace, but maybe somebody else already ran into a similar issue?
+Combine two workspaces. Does that work, and if yes, how? I couldn’t find any information about that.
+
+Thanks for your help!
+Cheers,
+Daniel
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-05-05T19:01:34.629Z):
+Hi Daniel,
+Both options are generally little explored in CMS and have pros and cons (many cons).
+The first question that I have is if you check the gitlab repositories that we use to save datacards.
+HIG does this since run I and datacards are uploaded starting at pre-approval and should be updated whenever a change happens; for HIG, it is an analyzer’s responsibility to make sure that the published results correspond to the latest updated datacard!
+which cadilines are they? are you sure that somebody doesn’t have a copy of the datacards somewhere? Finding the datacards is probably the better, easier, and less error prone option.
+For HIG, and part of SMP:
+https://gitlab.cern.ch/cms-hcg/cadi
+I know that other PAGs, e.g. EXO, also have a similar repository.
+For what concerns your two questions:
+
+there are no scripts, as far as I know, that converts a workspace into a datacard.
+we can probably adapt scripts that navigates the workspaces, but this may depend on how the workspaces were constructed, i.e. starting from which inputs, and the physics model used.
+The task may become a little complex. The advantage may be that you have datacards and next time it is going to be easier, and that you can change the interpretation (physics model) you are making.
+We have scripts for the LHC Combination, but at the moment they assume that one workspace is from ATLAS and one from CMS. Large adaptations are likely needed and limitations are currently present (last time I tried to do it with two CMS workspaces failed, but maybe it was due to something I was testing). One would still need to double check by hand a set of sanity checks done by combineCards+text2workspace and be aware of a lack of flexibility, potentially check the workspace results by hand. Do you remember which options were used to run text2workspace?
+
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by dspitzba @ 2022-05-05T20:29:07.151Z):
+Hi Andrea,
+Thanks for the quick response. Maybe I should have been a bit more precise in my message - in addition to the workspace we do actually have the text file data card, but not the root files that contain e.g. the parametric models which are needed to run the data card. Both the workspace and data card have been uploaded to the gitlab area (of the TOP PAG in this case [1]), so I guess the analysis is fully reproducible since limits etc can all be run from the workspace. It just seems that combining with other cards / analyses / channels becomes tricky.
+I’d be happy to try running scripts from the LHC combination, or any other suggestion you might still have.
+Cheers,
+Daniel
+[1] https://gitlab.cern.ch/CMS-TOPPAG/Datacards/-/tree/TOP-20-007/TOP-20-007
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-05-06T07:45:58.000Z):
+Hi Daniel,
+The easiest thing to do is to take the shapes and normalization from the workspace following the text datacard you have.
+/afs/cern.ch/user/a/amarini/public/TOP-20-007/rewire.py
+This doesn’t check the values of the uncertainties.
+From a first check with FitDiagnostics the shapes and data seem to be taken correctly.
+You will have to run further checks.
+The fit seems to be very close, although it is a bit unstable in both dc.
+This may be due to residual differences in how the physics model is applied and/or to differences in the uncertainties, options in the fit (e.g. ranges), or you may have a more up to date version somewhere else.
+Cheers,
+-Andrea
+image.png1772×1134 121 KB
+On Thu, May 5, 2022 at 10:31 PM Daniel Spitzbart via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Daniel Spitzbart dspitzbaMay 5
+
+Hi Andrea,
+Thanks for the quick response. Maybe I should have been a bit more precise in my message - in addition to the workspace we do actually have the text file data card, but not the root files that contain e.g. the parametric models which are needed to run the data card. Both the workspace and data card have been uploaded to the gitlab area (of the TOP PAG in this case [1]), so I guess the analysis is fully reproducible since limits etc can all be run from the workspace. It just seems that combining with other cards / analyses / channels becomes tricky.
+I’d be happy to try running scripts from the LHC combination, or any other suggestion you might still have.
+Cheers,
+Daniel
+[1] https://gitlab.cern.ch/CMS-TOPPAG/Datacards/-/tree/TOP-20-007/TOP-20-007
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by ksalyer @ 2022-07-27T12:30:19.280Z):
+Hello Andrea,
+I’m wondering if there is also some way to extract the systematic uncertainties from the root workspace as well. If we have only the workspaces and not any associated .txt datacards, which the rewire.py script expects, is there still some way to produce a txt datacard that can be combined with other analyses?
+Thanks,
+Kaitlin Salyer
+----------------------------------------
+
+REPLY 6 (by agilbert @ 2022-08-01T15:52:02.301Z):
+Hi Kaitlin,
+In theory this could be done, but I don’t think we have any nice scripts to automate it. It also depends on which kinds of uncertainties you want to extract. The lnN uncertainties could be unpacked from the corresponding ProcessNormalization objects in the workspace. The  shape uncertainties are more difficult, partly because the shape and normalization effects are separated in the workspace, but again it could be done by extracting the information from the relevant RooFit objects.
+cheers,
+Andrew
+----------------------------------------

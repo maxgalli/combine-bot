@@ -1,0 +1,42 @@
+TOPIC: An unfolding problem with combination tools
+URL: https://cms-talk.web.cern.ch/t/5092
+DATE: 2022-01-24T17:59:57.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by heyang @ 2022-01-24T17:59:57.000Z):
+Dear expert,
+I am trying to use combination tools to do unfolding.
+At the beginning, I only wrote the statistic uncertainty in the datacard, then it succeeded.
+But after I added more uncertainties on the datacards, such as the pileup and prefile uncertainties, and then it failed.
+The cards without pileup and prefile uncertainties which succeeded are :/afs/desy.de/user/h/hengyang/public/combination/successcard/z_pt_bin_*.txt
+and the output is : /afs/desy.de/user/h/hengyang/public/combination/successcard/output.txt
+The cards with more uncertainties which failed are :/afs/desy.de/user/h/hengyang/public/combination/failcard/z_pt_bin_*.txt
+and the error is: /afs/desy.de/user/h/hengyang/public/combination/failcard/error.txt
+the command I ran for both is : /afs/desy.de/user/h/hengyang/public/combination/run.sh
+Do you have some suggestions?
+Cheers,
+Heng
+----------------------------------------
+
+REPLY 2 (by heyang @ 2022-01-25T15:58:00.548Z):
+I was wondering does anyone have some suggestions?
+----------------------------------------
+
+REPLY 3 (by adewit @ 2022-01-25T17:54:09.202Z):
+Dear Heng,
+The error message (“no observed data data_obs in the workspace”) suggests that the combined datacard did not get produced correctly. Indeed, running your command I see, in all.txt: "   if pdf not in [“trG”, “dFD”, “dFD2”] and errline[b][p] < 0: raise ValueError(‘Found “%s” in the nuisances affecting %s in %s. This would lead to NANs later on, so please fix it.’%(r,p,b))
+ValueError: Error reading line 18 of file z_pt_bin_6.txt: Found “-0.0717523847642” in the nuisances affecting genbin4 in recobin6. This would lead to NANs later on, so please fix it."
+So I think you have a typo in z_pt_bin_6.txt - that part of the line was probably supposed to say “- 0.0717523847642”.
+I note that this would correspond to a very large uncertainty, which I don’t think you would expect for this uncertainty source, but that is of course another matter.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 4 (by heyang @ 2022-01-26T15:57:08.493Z):
+Dear Adinda,
+It is exactly like what you said. It works after I change the negative number.
+Thanks a lot.
+Cheers,
+Heng
+----------------------------------------

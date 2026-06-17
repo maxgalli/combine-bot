@@ -1,0 +1,170 @@
+TOPIC: Shape variations for the RooParametricHist (RooParametricHist::addMorphs)
+URL: https://cms-talk.web.cern.ch/t/20344
+DATE: 2023-02-15T10:03:55.081Z
+SOLVED: no
+============================================================
+
+QUESTION (by ytakahas @ 2023-02-15T10:03:55.373Z):
+Dear combine expert,
+I want to define +/-1 sigma shape variations for the RooParametricHist [0].
+First of all, following the instructions in [1], I wrote my code as shown in [2] and produced the workspace [3]. Basically, what I did is to define three RooParametricHists; one is nominal, one for up variation and one for down variation.
+After preparing my datacard [4] (the name for the nuisance is fakeshape_[year (2016/2017/2018)]), I then tried text2workspace as followings.
+text2workspace.py datacard_tauhad_all.txt -o datacard_tauhad_all.root -m 125
+Then, I got the following error messages.
+Traceback (most recent call last):
+File "/work/ytakahas/work/Combination/CMSSW_10_2_13/bin/slc7_amd64_gcc700/text2workspace.py", line 63, in <module>
+MB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel)
+File "/work/ytakahas/work/Combination/CMSSW_10_2_13/python/HiggsAnalysis/CombinedLimit/ModelTools.py", line 128, in doModel
+self.doIndividualModels()
+File "/work/ytakahas/work/Combination/CMSSW_10_2_13/python/HiggsAnalysis/CombinedLimit/ShapeTools.py", line 97, in doIndividualModels
+(pdf,coeff) = (self.getPdf(b,p), self.out.function("n_exp_bin%s_proc_%s" % (b,p)))
+File "/work/ytakahas/work/Combination/CMSSW_10_2_13/python/HiggsAnalysis/CombinedLimit/ShapeTools.py", line 694, in getPdf
+nominalPdf.addMorphs(shapeUp,shapeDown,coeffs.find(syst),qrange)
+TypeError: void RooParametricHist::addMorphs(RooDataHist&, RooDataHist&, RooRealVar&, double) =>
+could not convert argument 1
+
+If I don’t have this nuisance (fakeshape_[year]) in the datacard, everything works fine. Is my way of implementing shape variations for the RooParametricFit correct? I appreciate your advice!
+Related to this, the recipe [1] defines normalization (lnN) uncertainty as RooRealVar, but I specify this directly in the datacard as shown in [5]. Is this equivalent? If I plot prefit distribution, it indeed seems to have reasonable uncertainty but I want to double-check this with you, too.
+Many thanks,
+Yuta
+[0]
+The reason why I’m using RooParametericHist is that I would like to derive my background distribution in sideband by doing data - MC. Since MC contains signals, whose signal strength is unknown, we would like to go in this way.
+[1]
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes
+[2]
+
+github.com
+
+gitytakahas/combine4rJpsi/blob/Yuta_simultaneous/examplews.C#L328-L422
+
+RooRealVar TF(str_tf1.c_str(), str_tf2.c_str(), ratio);
+
+string _str3(target_sr.Data());
+
+std::vector<RooFormulaVar> bins_sr;
+std::vector<RooFormulaVar> bins_sr_up;
+std::vector<RooFormulaVar> bins_sr_down;
+for(int i=1; i<=nbins; i++){
+stringstream s;
+s << i;
+
+string mystring1 = "bg_bin" + s.str() + "_" + _str3;
+string mystring2 = "Background yield for " + _str2 + " in signal region, bin " + s.str();
+
+RooFormulaVar bin(mystring1.c_str(),mystring2.c_str()," @0*@1",RooArgList(TF, bins[i-1]));
+bins_sr.push_back(bin);
+
+//// up variations ...
+
+string mystring1_up = "bg_bin" + s.str() + "_" + _str3 + "_up";
+
+This file has been truncated. show original
+
+[3]
+
+github.com
+
+gitytakahas/combine4rJpsi/blob/Yuta_simultaneous/datacard/param_tauhad_ws.root
+
+This file is binary. show original
+
+[4]
+
+github.com
+
+gitytakahas/combine4rJpsi/blob/Yuta_simultaneous/datacard/datacard_tauhad_all.txt
+
+imax 6
+jmax 3
+kmax 322
+--------------------------------------------------------------------------------
+shapes 	 * 	 tauhad_sr_2016 	 param_tauhad_ws.root wspace:$PROCESS_tauhad_sr_2016 wspace:$PROCESS_$SYSTEMATIC_tauhad_sr_2016
+shapes 	 * 	 tauhad_sb_2016 	 param_tauhad_ws.root wspace:$PROCESS_tauhad_sb_2016 wspace:$PROCESS_$SYSTEMATIC_tauhad_sb_2016
+shapes 	 * 	 tauhad_sr_2017 	 param_tauhad_ws.root wspace:$PROCESS_tauhad_sr_2017 wspace:$PROCESS_$SYSTEMATIC_tauhad_sr_2017
+shapes 	 * 	 tauhad_sb_2017 	 param_tauhad_ws.root wspace:$PROCESS_tauhad_sb_2017 wspace:$PROCESS_$SYSTEMATIC_tauhad_sb_2017
+shapes 	 * 	 tauhad_sr_2018 	 param_tauhad_ws.root wspace:$PROCESS_tauhad_sr_2018 wspace:$PROCESS_$SYSTEMATIC_tauhad_sr_2018
+shapes 	 * 	 tauhad_sb_2018 	 param_tauhad_ws.root wspace:$PROCESS_tauhad_sb_2018 wspace:$PROCESS_$SYSTEMATIC_tauhad_sb_2018
+shapes 	 data_obs 	 tauhad_* 	 param_tauhad_ws.root wspace:$PROCESS wspace:$PROCESS_$SYSTEMATIC
+--------------------------------------------------------------------------------
+bin 	tauhad_sr_2016	tauhad_sb_2016	tauhad_sr_2017	tauhad_sb_2017	tauhad_sr_2018	tauhad_sb_2018
+observation 	5377	43386	2837	26787	6115	61101
+--------------------------------------------------------------------------------
+bin 	tauhad_sr_2016	tauhad_sr_2016	tauhad_sr_2016	tauhad_sr_2016	tauhad_sb_2016	tauhad_sb_2016	tauhad_sb_2016	tauhad_sb_2016	tauhad_sr_2017	tauhad_sr_2017	tauhad_sr_2017	tauhad_sr_2017	tauhad_sb_2017	tauhad_sb_2017	tauhad_sb_2017	tauhad_sb_2017	tauhad_sr_2018	tauhad_sr_2018	tauhad_sr_2018	tauhad_sr_2018	tauhad_sb_2018	tauhad_sb_2018	tauhad_sb_2018	tauhad_sb_2018
+process 	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes
+process 	0	1	2	3	0	1	2	3	0	1	2	3	0	1	2	3	0	1	2	3	0	1	2	3
+rate 	193.82	83.71	282.21	1	298.23	243.06	436.33	1	272.83	75.03	344.19	1	361.80	274.14	598.61	1	560.82	149.26	725.03	1	708.94	542.47	1199.47	1
+--------------------------------------------------------------------------------
+
+This file has been truncated. show original
+
+[5]
+
+github.com
+
+gitytakahas/combine4rJpsi/blob/Yuta_simultaneous/datacard/datacard_tauhad_all.txt#L21
+
+shapes 	 data_obs 	 tauhad_* 	 param_tauhad_ws.root wspace:$PROCESS wspace:$PROCESS_$SYSTEMATIC
+--------------------------------------------------------------------------------
+bin 	tauhad_sr_2016	tauhad_sb_2016	tauhad_sr_2017	tauhad_sb_2017	tauhad_sr_2018	tauhad_sb_2018
+observation 	5377	43386	2837	26787	6115	61101
+--------------------------------------------------------------------------------
+bin 	tauhad_sr_2016	tauhad_sr_2016	tauhad_sr_2016	tauhad_sr_2016	tauhad_sb_2016	tauhad_sb_2016	tauhad_sb_2016	tauhad_sb_2016	tauhad_sr_2017	tauhad_sr_2017	tauhad_sr_2017	tauhad_sr_2017	tauhad_sb_2017	tauhad_sb_2017	tauhad_sb_2017	tauhad_sb_2017	tauhad_sr_2018	tauhad_sr_2018	tauhad_sr_2018	tauhad_sr_2018	tauhad_sb_2018	tauhad_sb_2018	tauhad_sb_2018	tauhad_sb_2018
+process 	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes	jpsi_tau	bc_others	jpsi_hc	fakes
+process 	0	1	2	3	0	1	2	3	0	1	2	3	0	1	2	3	0	1	2	3	0	1	2	3
+rate 	193.82	83.71	282.21	1	298.23	243.06	436.33	1	272.83	75.03	344.19	1	361.80	274.14	598.61	1	560.82	149.26	725.03	1	708.94	542.47	1199.47	1
+--------------------------------------------------------------------------------
+fakeNorm_2016 	lnN	-	-	-	1.3	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+trigger_2016 	lnN	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-
+sfIdJpsi_2016 	lnN	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-
+bcnorm_2016 	lnN	1.3	1.3	1.3	-	1.3	1.3	1.3	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+sfReco_2016 	lnN	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-
+fakeshape_2016 	shape	-	-	-	1.0	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-	-
+fakeNorm_2017 	lnN	-	-	-	-	-	-	-	-	-	-	-	1.3	-	-	-	-	-	-	-	-	-	-	-	-
+trigger_2017 	lnN	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-
+sfIdJpsi_2017 	lnN	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-
+bcnorm_2017 	lnN	-	-	-	-	-	-	-	-	1.3	1.3	1.3	-	1.3	1.3	1.3	-	-	-	-	-	-	-	-	-
+sfReco_2017 	lnN	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-	1.03	1.03	1.03	-
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-02-15T12:04:45.076Z):
+Hi Yuta,
+Unfortunately, I don’t have an immediate answer to your question, as I am not an expert on the use of RooParametricHists in combine. However, please note that general combine support has now migrated to the CAT statistical tools, and to the relevant cms-talk forum: https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279 .
+I will try to take a look in the coming days, but perhaps one of the experts in this part of combine will get to it before me.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by adewit @ 2023-02-16T09:03:10.846Z):
+Hi Yuta,
+I noticed that you have named the up and down shapes, for example fakes_fakeshape_2016Up_tauhad_sr_2016 - I think combine expects the Up and Down labels at the end (ie fakes_fakeshape_2016_tauhad_sr_2016Up. Can you try renaming the shapes so the Up and Down labels are at the end and see if that solves the issue?
+I’ll let others comment on your second question.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 4 (by nckw @ 2023-02-16T10:04:17.000Z):
+Hi All,
+I should have posted here. I followed up with Yuta and its not a case of naming (since in the data card, the systematic & process keywords are just swapped around from our usual convention but text2workspace will pick that up). The reason is that the workspace defines the Up/Down as RooHistPdfs but they should be RooDataHists instead.
+For the second Question, its fine to just use the lnN as normal defined in the datacards, the example given in the docs is just meant to be an example of including uncertainties in transfer functions directly,
+Best,
+Nick
+
+On 16 Feb 2023, at 09:04, Adinda De Wit via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Adinda De Wit adewit Higgs convenerFebruary 16
+
+Hi Yuta,
+I noticed that you have named the up and down shapes, for example fakes_fakeshape_2016Up_tauhad_sr_2016 - I think combine expects the Up and Down labels at the end (ie fakes_fakeshape_2016_tauhad_sr_2016Up. Can you try renaming the shapes so the Up and Down labels are at the end and see if that solves the issue?
+I’ll let others comment on your second question.
+Best,
+Adinda
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by ytakahas @ 2023-02-16T15:22:20.296Z):
+Thanks @nckw @kcormier and @adewit It seems to work properly now with RooDataHist as uncertainties!
+Best,
+Yuta
+----------------------------------------

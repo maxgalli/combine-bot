@@ -1,0 +1,109 @@
+TOPIC: Setting limits on Wilson coefficients using output of parametrised neural network
+URL: https://cms-talk.web.cern.ch/t/12478
+DATE: 2022-07-05T13:18:26.756Z
+SOLVED: no
+============================================================
+
+QUESTION (by veelken @ 2022-07-05T13:18:27.139Z):
+Dear combine experts,
+I would like to ask for your advice concerning the following problem: In a search for new physics, I would like to set limits on the parameters of a new physics model. Because I expect the event kinematics of the signal to vary as function of the model parameters, I use the output of a neural network (NN) that is parametrized by the model parameters (i.e. uses the model parameters as inputs). I believe that training the NN and computing the NN output is straightforward. The problem is the “feedback loop” between the histograms used for the signal extraction in combine and the model parameters. Ideally, I would implement the maximum-likelihoood (ML) fit in combine such that for each point in model parameter space that is probed by combine I would run on an Ntuple, which contains all the MC and data events that passe the analysis cuts, and compute the NN output for this specific point in model parameter space.
+Now my questions: Is this possible to do ? Is there a better way to solve this problem ? Do you know of any CMS (or ATLAS) analysis that has done something similar in the past ?
+In my concrete case, the model parameter space is of dimension ~20 (spanned by the Wilson coefficients of EFT operators that are relevant for the ttH multilepton analysis, which I am currently updating in preparation for LHC Run 3).
+Thank you very much and with kind regards,
+Christian
+----------------------------------------
+
+REPLY 2 (by vischia @ 2022-07-05T13:29:58.000Z):
+Hi Christian,
+yes, it’s rather standard technique nowadays, it has been done for the first time in HIG-17-006, and then we did it in HIG-18-004, and more recently by an analysis in SUSY I think, plus probably others.
+If I understand correctly your question, yes it’s trivial: the most straightforward way is to just take a slice of the network for a fixed value of the parameter, produce histograms for your data and MC for that output of the NN, and from there everything is exactly the same as with any other limit setting, i.e. you use CLs on these histograms. When I say “take a slice” I mean computing the output by fixing the input parameter to the value for which you want to run the usual hypothesis test.
+Cheers,
+Pietro
+
+···
+Dr. Pietro Vischia
+FNRS Fellow
+http://cp3.irmp.ucl.ac.be/Members/pvischia
+mobile: 0034 666 986 616 (ES)
+office: +32 10 473205
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 3 (by nckw @ 2022-07-05T13:46:01.000Z):
+Just an additional point on top of what Pietro said. If the aim is to simply set an exclusion limit at a fixed point in the parameter space, then as Pietro says, you can just create the distributions (histograms) for data & MC fixing the parameter inputs of the NN and run the usual CLs with combine to get an exclusion limit on the cross-section (or signal strength) at that parameter point.
+However, if the plan is to try to create a likelihood function as a function of the parameters (say for usual parameter inference - what if you saw a signal and wanted to fit the best parameters  ), I’m afraid this isn’t something we can do. The reason is that the likelihood ratio methods assumes the data is constant which is no longer the case if you vary the output of the NN depending on those parameter values for the data (I’m not really sure any likelihood based parameter inference is going to ever work in that case).
+All the best,
+Nick
+
+On 5 Jul 2022, at 14:32, Pietro Vischia via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Pietro Vischia vischiaJuly 5
+
+Hi Christian,
+yes, it’s rather standard technique nowadays, it has been done for the first time in HIG-17-006, and then we did it in HIG-18-004, and more recently by an analysis in SUSY I think, plus probably others.
+If I understand correctly your question, yes it’s trivial: the most straightforward way is to just take a slice of the network for a fixed value of the parameter, produce histograms for your data and MC for that output of the NN, and from there everything is exactly the same as with any other limit setting, i.e. you use CLs on these histograms. When I say “take a slice” I mean computing the output by fixing the input parameter to the value for which you want to run the usual hypothesis test.
+Cheers,
+Pietro
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by veelken @ 2022-07-06T11:46:53.986Z):
+Dear Pietro and Nick,
+thank you very much for the prompt reply and for pointing me to the HIG-17-006 and HIG-18-004 papers. Although my question wasn’t actually on the parametrized NN itself, but rather on the problem with the signal extraction, which arises from the use of the parametrized NN, the HIG-18-004 paper reminded me that it may be useful to “reframe” the problem:
+Nick, in the MSSM Higgs->tautau analysis we use a physics model in which we build signal shape templates consisting of H+A+h for each point in the mA-tanBeta plane. We then test whether or not individual points in the mA-tanBeta plane are excluded or not, using the likelihood ratio L(BSM)/L(SM), as described in Sections 3.2.3 and 3.2.4 of AN-2014/012 ( https://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2014_012_v7.pdf ). I believe the same approach would work for the case of setting limits on the Wilson coefficients of an EFT model, wouldn’t it ?
+(except for the complication that in the EFT case one would need to scan a higher-dimensional parameter space)
+In AN-2014/012 it is argued that using the likelihood ratio L(BSM)/L(SM) comes at the price that one needs to use the “TeVatron test statistic” (Eq. 8 in AN-2014/012), and as a consequence, one needs to run toys in order to compute the distributions in the test statistic that are expected for the signal and for the signal+background hypotheses (because no asymptotic approximation is known for the TeVatron test statistic). Does this statement about the need to run toys when using the TeVatron test statistic still hold ?
+Thank you very much again,
+Christian
+----------------------------------------
+
+REPLY 5 (by amarini @ 2022-07-06T12:03:03.000Z):
+Hi Christian,
+The problem of limit setting in the likelihood framework that Nick was mentioning is related to the likelihood ratio definition.
+The fact is that the likelihood ratio is (well) defined [*] if the numerator and the denominator share the same data.
+So if your coefficient (theta), you can write the likelihood as:
+L ( r | d(theta), theta) → you can do an hypothesis test between r = 0 and 1.
+This is similar to the AN you mentioned.
+You cannot write the “likelihood” as [**]:
+L( theta, d(theta) | ??) and have a free theta parameter. so that you can write the ratio as:
+L (theta, d(theta) ) / L(theta_hat) and get a parameter estimation on theta from ( < 1 / 4 …)
+Cheers,
+-Andrea
+[*] in statistical theory, as well in the numerical methods we (root, roofit, combine, minuit …) use; the latter is due to the many places where we implicitly drop constant terms.
+[**] It’s hard to call this likelihood, since the dataset is changing, and here is the double quote.
+Although technically we may find ways to do it, for the unclear usage I don’t think it is worth trying to.
+On Wed, Jul 6, 2022 at 1:48 PM Christian Veelken via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Christian Veelken veelkenJuly 6
+
+Dear Pietro and Nick,
+thank you very much for the prompt reply and for pointing me to the HIG-17-006 and HIG-18-004 papers. Although my question wasn’t actually on the parametrized NN itself, but rather on the problem with the signal extraction, which arises from the use of the parametrized NN, the HIG-18-004 paper reminded me that it may be useful to “reframe” the problem:
+Nick, in the MSSM Higgs->tautau analysis we use a physics model in which we build signal shape templates consisting of H+A+h for each point in the mA-tanBeta plane. We then test whether or not individual points in the mA-tanBeta plane are excluded or not, using the likelihood ratio L(BSM)/L(SM), as described in Sections 3.2.3 and 3.2.4 of AN-2014/012 ( https://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2014_012_v7.pdf ). I believe the same approach would work for the case of setting limits on the Wilson coefficients of an EFT model, wouldn’t it ?
+(except for the complication that in the EFT case one would need to scan a higher-dimensional parameter space)
+In AN-2014/012 it is argued that using the likelihood ratio L(BSM)/L(SM) comes at the price that one needs to use the “TeVatron test statistic” (Eq. 8 in AN-2014/012), and as a consequence, one needs to run toys in order to compute the distributions in the test statistic that are expected for the signal and for the signal+background hypotheses (because no asymptotic approximation is known for the TeVatron test statistic). Does this statement about the need to run toys when using the TeVatron test statistic still hold ?
+Thank you very much again,
+Christian
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Nicholas Wardle nckw Higgs convenerJuly 5
+
+Just an additional point on top of what Pietro said. If the aim is to simply set an exclusion limit at a fixed point in the parameter space, then as Pietro says, you can just create the distributions (histograms) for data & MC fixing the parameter inputs of the NN and run the usual CLs with combine …
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by veelken @ 2022-07-06T12:25:40.216Z):
+Hi Andrea,
+I realize that I forgot to mention that my idea is to use the test statistic given by Eq. 8 in AN-2014/012 to probe individual points in the high-dimensional space of Wilson coefficients. For each point that is probed, the NN parametrization would be set to this point when evaluating the BSM as well as the SM hypothesis in Eq. 8, so the data is the same in the numerator and in the denominator.
+Sorry for not making this point more clear.
+With kind regards,
+Christian
+----------------------------------------

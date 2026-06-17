@@ -1,0 +1,45 @@
+{
+  "topic_id": 28232,
+  "title": "Rescaling Luminosity in Combine",
+  "url": "https://cms-talk.web.cern.ch/t/28232",
+  "category_id": 279,
+  "created_at": "2023-08-10T10:35:46.365Z",
+  "last_posted_at": "2023-08-11T10:24:52.651Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "sajmal",
+      "name": "Sehar Ajmal",
+      "created_at": "2023-08-10T10:35:46.699Z",
+      "updated_at": "2023-08-10T10:35:46.699Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi everyone,\nI\u2019m currently working on a shape-based analysis using templates that were produced with Run 2 statistics. I\u2019m interested in understanding if it\u2019s possible to rescale the analysis results to account for a different integrated luminosity scenario, such as HL-LHC.\nSpecifically, I\u2019m wondering if the combine tool offers a way to rescale the results to different luminosities while considering the impact on the significance, background rates, and systematic uncertainties.\nIf anyone has experience with this or can provide guidance on how to correctly handle luminosity rescaling in combine, I\u2019d greatly appreciate your insights. Are there specific options or commands I should use?\nThank you in advance for your expertise and advice!\nregards\nSehar",
+      "cooked_html": "<p>Hi everyone,</p>\n<p>I\u2019m currently working on a shape-based analysis using templates that were produced with Run 2 statistics. I\u2019m interested in understanding if it\u2019s possible to rescale the analysis results to account for a different integrated luminosity scenario, such as HL-LHC.<br>\nSpecifically, I\u2019m wondering if the <code>combine</code> tool offers a way to rescale the results to different luminosities while considering the impact on the significance, background rates, and systematic uncertainties.<br>\nIf anyone has experience with this or can provide guidance on how to correctly handle luminosity rescaling in <code>combine</code>, I\u2019d greatly appreciate your insights. Are there specific options or commands I should use?</p>\n<p>Thank you in advance for your expertise and advice!</p>\n<p>regards<br>\nSehar</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2023-08-10T11:47:36.707Z",
+      "updated_at": "2023-08-10T11:47:36.707Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sehar,\nYou can apply a rateParam to all processes to scale them to the desired luminosity, such as\nlumiScale rateParam * * NNN\nto increase the yield of all processes by a factor NNN. I would also suggest to freeze the lumiScale parameter when running combine.\nIt is also possible to scale constraints on nuisance parameters as well, to match some expected effects, see for example:\nhttp://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#scaling-constraints\nI hope it helps,\nBest,\nGiacomo",
+      "cooked_html": "<p>Dear Sehar,</p>\n<p>You can apply a rateParam to all processes to scale them to the desired luminosity, such as<br>\n<code>lumiScale rateParam * * NNN</code><br>\nto increase the yield of all processes by a factor NNN. I would also suggest to freeze the <code>lumiScale</code> parameter when running combine.<br>\nIt is also possible to scale constraints on nuisance parameters as well, to match some expected effects, see for example:<br>\n<a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#scaling-constraints\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#scaling-constraints</a></p>\n<p>I hope it helps,<br>\nBest,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "sajmal",
+      "name": "Sehar Ajmal",
+      "created_at": "2023-08-11T10:24:52.651Z",
+      "updated_at": "2023-08-11T10:24:52.651Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo, Thanks alot for your response. Very helpful.",
+      "cooked_html": "<p>Dear Giacomo, Thanks alot for your response. Very helpful.</p>"
+    }
+  ]
+}

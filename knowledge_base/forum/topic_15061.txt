@@ -1,0 +1,82 @@
+TOPIC: Likelihood scans using GSLMultiMin over Minuit2 for final results in paper
+URL: https://cms-talk.web.cern.ch/t/15061
+DATE: 2022-09-15T10:41:11.689Z
+SOLVED: no
+============================================================
+
+QUESTION (by rowhite @ 2022-09-15T10:41:11.913Z):
+Dear all,
+I am a member of the HIG-21-007 analysis on Higgs-to-invisible in ttH and VH channels. We recently found that we have a bump in the likelihood scans of our VH categories for mu < 0, which we traced to disagreement between the VH 2j0b category in 2016 and 2017 (and is not due to any single particular systematic). The plot of VH in full is here, using the default Minuit2 options (and MinimiserStrategy 1):
+original_scan_default_minuit2.pdf (17.3 KB)
+We have tried changing the type and algo of the minimiser and have managed to iron this bump out, using the command line options ``–cminDefaultMinimizerType GSLMultiMin --cminDefaultMinimizerAlgo ConjugateFR’'. The result is here:
+fix_scan_GSLMultiMin_vh.pdf (17.3 KB)
+The best fit value in both cases is mu = 0.22, with the unc changing from +0.26 -0.22 to +0.23 -0.30.
+We intend to update our PAS and paper with this new plot (short thread on this here: https://cms-pub-talk.web.cern.ch/t/lh-scan-in-vh-categories-fix-with-gslmultimin/7174), but wanted confirmation from the HComb committee that this procedure is indeed appropriate for a final result? We are exploring other avenues to improve the plot curve, beyond changing the minimiser type.
+Kind regards,
+Rob and the authors
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-09-16T09:18:37.206Z):
+Hi Rob,
+The pdf links don’t seem to work for me, but I found the plots on the linked thread.
+Even if the scan works with the alternative minimizer, it’s probably still worth understanding what goes wrong in the default Minuit fit, since it suggests some odd behaviour in the NLL function.
+That’s not to say the GSLMultiMin scan is wrong, but we don’t have as much experience with it. The fact that it also changed the +1sigma uncertainty is odd.
+So to understand the Minuit scan it would be good to check a couple of things:
+
+Do you see the same jump if all constrained systematics are frozen to their best fit value?
+If no, would be good to study how the NP values behave in the scan in the region around the bump. You can add --saveSpecifiedNuis all to get the profiled values in the ouput, and then see if any of them jump or have odd behaviour in this region.
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by rowhite @ 2022-09-16T13:57:04.497Z):
+Hi Andrew,
+Thanks for the response. For ease I’ll reupload the pdf plots - I imagine it’s because I just c&p’d the text from the original thread rather than properly embedded them here:
+original_scan_default_minuit2.pdf (17.3 KB)
+fix_scan_GSLMultiMin_vh.pdf (17.3 KB)
+So, in response to your suggestions:
+(1) we tried freezing the systematics that resulted in the largest impacts/pulls, and this had no effect or the bump actually got larger in the plot.
+(2) If I’m understanding this correctly, then we did a similar thing to this where we tracked and plotted the nuisance parameters against mu (just for the systs with the leading pulls) and made this deck of slides (granted this is for VH resolved for 2016–18 and not just VH 2j0b 2016+17 wherein the issue manifests: https://docs.google.com/presentation/d/1Wbio9Ni1B-TGX-9KL0VQ2s5ko-h3pSExSlj5-LvYuKM/edit#slide=id.g13900c5c042_0_30) Again with these we didn’t find anything that would suggest there’s a singular cause for our bump or degeneracy.
+I did happen to do a fresh run with the --saveSpecifiedNuis all today, but I’m not exactly sure what I’m looking for here, the ROOT file containing the individual params doesn’t seem to show anything out-of-the-ordinary based on my limited understanding of what I’m looking at in here.
+Kind regards,
+Rob and the authors
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-09-16T14:20:36.924Z):
+Hi Rob,
+
+Robert Stephen White:
+
+(1) we tried freezing the systematics that resulted in the largest impacts/pulls, and this had no effect or the bump actually got larger in the plot.
+
+There’s no reason a-priori why this has to be caused by the systematics with the large impacts. Probably best to check all of them.
+The scans of the NP values vs mu in the slides is exactly what I mean, but it would be good to check all the nuisance parameters for the problematic likelihood scan. I don’t know technically how you made these plots already, but I was suggesting to use --saveSpecifiedNuis as a way to get the needed values in one go as you perform the NLL scan for the POI with --algo grid. Then essentially from the limit TTree instead of plotting the deltaNLL vs mu, you just plot the nuisance parameter value vs mu. The hope is that one or more of the parameters show a clear jump in value around the point in mu where the NLL bump occurs.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by rowhite @ 2022-09-20T12:17:45.608Z):
+Hi Andrew,
+Thanks for this, so I’ve been running through all the syst values in a small range around r = -0.04, but there’s really nothing that looks out-of-the-ordinary. Yes there’s variation in the values, with some of the stats parameters as high as 1 and some as low as -1, but not really “spikes” in these values.
+Is there something more I need to be looking at for these? See txt file of the values attached:
+LH results VH2j0b1617 (22.6 KB)
+Kind regards,
+Rob
+----------------------------------------
+
+REPLY 6 (by agilbert @ 2022-09-30T16:34:22.102Z):
+Hi Rob,
+Sorry for the slow reply on this, I was away the previous week.
+It’s a bit hard to tell from the txt file whether there’s a problem, since we’re looking for some discontinuity or jump in one or more NP values (which should normally vary smoothly. Four points may not be enough to notice this, and perhaps plotted as a curve it would be easier to tell.
+If there’s really nothing odd then it’s harder to understand what’s going on. I would still recommend running the scan with all systematics frozen - that should make the jump go away, but if it doesn’t then that’s a useful piece of information.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 7 (by rowhite @ 2022-10-03T10:25:17.030Z):
+Hi Andrew,
+So I’ve just run the scan on VH 2j0b 2016+17, and yes, the bump disappears when the nuisances are frozen. So it is contributions due to nuisance parameters that cause the behaviour. However as before, when looking at the plots of the nuisances individually, there are several that have small bumps but none that have a large bump.
+Thanks,
+Rob
+----------------------------------------

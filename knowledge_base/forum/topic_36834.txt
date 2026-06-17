@@ -1,0 +1,32 @@
+TOPIC: ValidateDatacards.py not working for RooDataHist
+URL: https://cms-talk.web.cern.ch/t/36834
+DATE: 2024-03-14T14:26:14.223Z
+SOLVED: no
+============================================================
+
+QUESTION (by mcampana @ 2024-03-14T14:26:15.151Z):
+Dear Experts,
+I am performing an analysis with the signal described by a RooDataHist, while the background is described by a binned PDF. When I try running the ValidateDatacards.py script I get this error:
+image1920×302 62.1 KB
+You can find an example datacard attached, but the root file with the histogram and the pdf are to heavy to be uploaded here.
+How can I solve the issue to proceed with the analysis pre-approval?
+Thanks,
+Mattia
+datacard_std_3par_LQumu_M1000_L1p0.txt (17.4 KB)
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-03-14T15:40:12.614Z):
+Dear Mattia,
+ValidateDatacards is mainly intended for histogram(TH1)-based analyses. I thought it exited a bit more gracefully in case of non-TH1-based analyses though - do you know what version of CombineHarvester you are using? (Or alternatively, if you cannot check this, when you checked it out?)
+Either way, I think in your case you’ll probably have to skip this step of the automated validation checks.
+Best wishes,
+Adinda
+----------------------------------------
+
+REPLY 3 (by mcampana @ 2024-03-14T15:52:33.768Z):
+Dear Adinda,
+thank you for your quick reply, I am using the CombineHarvester master branch and I did the last pull on 2023-05-11.
+I will skip this step then.
+Best,
+Mattia
+----------------------------------------

@@ -1,0 +1,33 @@
+TOPIC: Impact plot debugging
+URL: https://cms-talk.web.cern.ch/t/77423
+DATE: 2024-12-12T11:24:50.655Z
+SOLVED: no
+============================================================
+
+QUESTION (by eipearso @ 2024-12-12T11:24:50.849Z):
+Dear combine experts,
+We are working on an analysis which searches for a new particle over a range of masses from 300 GeV to 3 TeV in 100 GeV increments. We define a specific selection for each hypothetical signal mass considered by cutting on the output of a boosted decision tree which was trained specifically for that mass. Then we do a counting experiment with the resulting yields. We are producing impact plots for each mass with the following set of commands, using combine version 10.0.2 in CMSSW_14_1_0_pre4 and running on lxplus.
+combineTool.py -v2 -M Impacts -d [workspace] -m [mass] --doInitialFit --robustFit 1 --rMin -5 --setParameters signalScaleParam=[scale factor] --freezeParameters signalScaleParam --trackParameters signalScaleParam
+
+combineTool.py -v2 -M Impacts -d [workspace] -m [mass] --doFits --robustFit 1 --rMin -5 --setParameters signalScaleParam=[scale factor] --freezeParameters signalScaleParam --trackParameters signalScaleParam
+
+combineTool.py -v2 -M Impacts -d [workspace] -m [mass] -o impacts.m[mass].json —rMin -5 --setParameters signalScaleParam=[scale factor] --freezeParameters signalScaleParam --trackParameters signalScaleParam
+
+plotImpacts.py --summary -i impacts.m[mass].json -o impacts.m[mass]
+
+We are also producing likelihood scans for each mass with:
+combine -M MultiDimFit [workspace] --algo grid --saveFitResult --rMin -5 --points=1000 --mass [mass] -v2 --setParameters signalScaleParam=[scale factor] --freezeParameters signalScaleParam --trackParameters signalScaleParam
+
+plot1DScan.py higgsCombineTest.MultiDimFit.mH[mass].root -o likelihoodScan_LQ[mass]
+
+where [mass] is the mass of interest (in GeV), [workspace] is the workspace generated from the datacard for that mass, and [scale factor] is one of a set of scale factors we determined in doing the nominal limit calculation. In the nominal limit calculation, we rescale signal yields using a rate parameter in the datacard which we call “signalScaleParam” so that we set the median expected limit near r=1. We decided to use the same values for that parameter here because without them combine seems to have trouble doing the initial fit step, e.g., the likelihood scan curves for our highest masses were very shallow, leading to difficulty in finding the minimum and a very large uncertainty on r.
+I have linked at the end of this post a CERNBox folder with the datacards, workspaces, and all output and log files from the above commands for masses 2.8, 2.9, and 3 TeV. 1.5 TeV. is also included as an example of what the plots look like at masses in the middle of the range. For every mass we consider except for 3 TeV, we get reasonable results. For the 3 TeV point, we observe the following (also in the CERNBox folder, but copied here as well):
+impacts_m30001610×1322 226 KB
+likelihoodScan_LQ3000696×572 6.76 KB
+We also observe that these results for 3 TeV are very unstable. Making small changes to the settings, such as adjusting rMin or adjusting the scale factor, sometimes results in a complete failure. By that I mean that nearly all of our fit parameters are simply missing from the impacts.m3000.json file output by the third step. However, I do not see any indication in the combine_logger.out file that this has happened. I do see fit failures, but I also see some fit failures in the log for ‘successful’ trials (’successful’ meaning trials that finish running, even if the results are strange). Results from one such failed trial, where the only change I made was to set rMin = -10, are in the CERNBox folder in 3000/bad_outputs.
+We do not see any difference between the 3 TeV datacard and those for 2.8 and 2.9 TeV which we think would cause these problems. It’s also worth noting that we run ValidateDatacards.py on all of our datacards and the only warnings we receive are for > 10% normalization effects, which is expected for our analysis. The scale factor for the 3 TeV point is. ~= 251. For 2.8 and 2.9 TeV they are ~= 253 and 260 respectively. For 1.5 TeV it is only ~= 0.28.
+Do you have any suggestions for further debugging so that we can produce a reasonable impact plot for the 3 TeV mass point?
+Thank you,
+Emma Pearson
+CERNBox link: https://cernbox.cern.ch/s/Qb7fwPHcqxU9FTq
+----------------------------------------

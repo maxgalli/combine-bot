@@ -1,0 +1,45 @@
+TOPIC: combineCreateNLL not properly integrated with pyROOT on with combine v10.2.0 onwards
+URL: https://cms-talk.web.cern.ch/t/137088
+DATE: 2025-11-07T18:50:58.823Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by hyeonseo @ 2025-11-07T18:50:59.281Z):
+Hello,
+I would like to report a bug(?) where combineTool’s FastScan method is not working from v10.2.0 onwards. Here’s my script:
+text2workspace.py -m 125 datacard_comb_sig_all_ggh.txt
+combineTool.py -M FastScan -w datacard_comb_sig_all_ggh.root:w --no-match pdf_index_ggh  --setParameters pdf_index_ggh=0  --freezeParameters pdf_index_ggh --cminDefaultMinimizerStrategy=0 --parallel 60 -o nll_pdf_index0
+
+This leads to this error statement:
+Traceback (most recent call last):
+File "/depot/cms/private/users/yun79/combine/old_ver/CMSSW_14_1_0_pre4/bin/el8_amd64_gcc12/combineTool.py", line 76, in <module>
+method.run_method()
+File "/depot/cms/private/users/yun79/combine/old_ver/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/tool_base/FastScan.py", line 60, in run_method
+nll = ROOT.combineCreateNLL(pdf, data)
+File "/cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.07-f3322c77db1c59847b28fde88ff7218c/lib/ROOT/_facade.py", line 196, in _fallback_getattr
+raise AttributeError("Failed to get attribute {} from ROOT".format(name))
+AttributeError: Failed to get attribute combineCreateNLL from ROOT
+
+This error directly comes from FastScan.py’s importing function ROOT.combineCreateNLL in order to extract the NLL values. This modue exists in the combineTool’s code, but it’s not being integrated properly with pyROOT package when I set it up following the official instructions.
+Fortunately, I checked FastScan.py from v10.1.0, and it extracts the NLL values using a different method. I can confirm that when I compile my combine environment with v10.1.0, my FastScan script runs fine.
+Please let me know if I was compiling my combine wrong.
+Thank you,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by anigamov @ 2025-11-14T15:28:46.711Z):
+Hi @hyeonseo,
+Thanks a lot for reporting the issue, it is fixed in the v10.3.3 as announced in
+
+The latest recommended Combine and CombineHarvester versions Statistical Interpretation Tools
+
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.3.3. This release addresses the bug in FastScan method, details are in the release notes. Please update your Combine setup.
+Combine: v10.3.3, setup instructions
+CombineHarvester: v3.0.0 , setup instructions (the same as before).
+Best,
+Massimiliano
+
+Best,
+Aliya
+----------------------------------------

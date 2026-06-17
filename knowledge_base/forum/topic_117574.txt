@@ -1,0 +1,43 @@
+TOPIC: How to manually specify observables to combine
+URL: https://cms-talk.web.cern.ch/t/117574
+DATE: 2025-03-07T23:49:29.593Z
+SOLVED: no
+============================================================
+
+QUESTION (by ecannaer @ 2025-03-07T23:49:30.029Z):
+Dear experts,
+Is there any insight on how one manually sets the main observable for a channel in Combine? I have created some RooParametricHists that are functions of an arbitrary observable that I defined, and I can see after running text2workspace.py on my data card that each RooParametricHist is recognized as depending on these observables (e.g. lines like these in the workspace printout: RooParametricHist::shapeBkg_QCD_AT0b_15[ observable=MdiSJ_MSJ_uw_AT_16preAPV _pars=(QCD_AT0b_bin1 … where MdiSJ_MSJ_uw_AT_16preAPV is the observable I defined). However, when I try to run combine with FitDiagnostics, I get messages like these:
+[#1] INFO:InputArguments -- The formula CMS_channel==CMS_channel::AT0b_15 claims to use the variables (MdiSJ_MSJ_uw_AT_16preAPV,MdiSJ_MSJ_uw_AT_17,MdiSJ_MSJ_uw_AT_18,CMS_channel) but only (CMS_channel) seem to be in use.   inputs:         CMS_channel==CMS_channel::AT0b_15
+This make it seem like Combine isn’t recognizing my observables as valid. Is there anyone familiar with what this means? I don’t know to what extent this actually affects how the fit is done, but I use separate binning in different eras and regions, so I need to be sure that Combine doesn’t use the same observable for all eras and regions. Strangely enough, I only get these printouts when I include the FitDiagnostics options --saveShapes. Any thoughts?
+
+Ethan
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-03-10T14:51:40.000Z):
+Dear Ethan,
+I think other experts probably know more than me, but I think you should be safe. CMS_channel is used to pick up the category you are using (so which part of the phase space corresponds to which part of the PDF. If I remember correctly, it is used in fitDiagnostics to cut the observed/expected datasets to the subregion of the phase space where the PDF is actually defined, so the other variables you see listed are those that define such phase space, but once it is defined there’s no more dependence on them, thus the warning.
+Cheers,
+Giacomo
+
+On 8 Mar 2025, at 00:50, Ethan Michael Cannaert via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Ethan Michael Cannaert ecannaerMarch 7
+
+Dear experts,
+Is there any insight on how one manually sets the main observable for a channel in Combine? I have created some RooParametricHists that are functions of an arbitrary observable that I defined, and I can see after running text2workspace.py on my data card that each RooParametricHist is recognized as depending on these observables (e.g. lines like these in the workspace printout: RooParametricHist::shapeBkg_QCD_AT0b_15[ observable=MdiSJ_MSJ_uw_AT_16preAPV _pars=(QCD_AT0b_bin1 … where MdiSJ_MSJ_uw_AT_16preAPV is the observable I defined). However, when I try to run combine with FitDiagnostics, I get messages like these:
+[#1] INFO:InputArguments -- The formula CMS_channel==CMS_channel::AT0b_15 claims to use the variables (MdiSJ_MSJ_uw_AT_16preAPV,MdiSJ_MSJ_uw_AT_17,MdiSJ_MSJ_uw_AT_18,CMS_channel) but only (CMS_channel) seem to be in use. inputs: CMS_channel==CMS_channel::AT0b_15
+This make it seem like Combine isn’t recognizing my observables as valid. Is there anyone familiar with what this means? I don’t know to what extent this actually affects how the fit is done, but I use separate binning in different eras and regions, so I need to be sure that Combine doesn’t use the same observable for all eras and regions. Strangely enough, I only get these printouts when I include the FitDiagnostics options --saveShapes. Any thoughts?
+
+Ethan
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by ecannaer @ 2025-03-11T02:25:57.362Z):
+Dear Giacomo,
+Thanks very much for the info! My models seemed to be working, but those printouts were making me concerned that I had missed something. Cheers!
+
+Ethan
+----------------------------------------

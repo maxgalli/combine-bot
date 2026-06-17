@@ -1,0 +1,67 @@
+{
+  "topic_id": 56180,
+  "title": "Regarding integer values in the gmN model in Combine v9",
+  "url": "https://cms-talk.web.cern.ch/t/56180",
+  "category_id": 279,
+  "created_at": "2024-10-25T06:22:19.501Z",
+  "last_posted_at": "2024-10-25T14:55:45.669Z",
+  "tags": [],
+  "accepted_answer_post_number": 4,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2024-10-25T06:22:20.010Z",
+      "updated_at": "2024-10-25T06:22:20.010Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am trying to setup a datacard which takes as input the sideband event counts (in the gmN model) and an extrapolation factor to estimate the background yield:\nimax 1 number of bins\njmax * number of processes minus 1\nkmax * number of nuisance parameters\n--------------------------------------------------------------------------------\n--------------------------------------------------------------------------------\nbin               categorytaue\nobservation       -1\n--------------------------------------------------------------------------------\n\nbin                                     categorytaue       categorytaue\nprocess                                 signal              background\nprocess                                 0                   1\nrate                                   0.2378        0.2064\n--------------------------------------------------------------------------------\nlumi              lnN                       1.025               -\nZxs               lnN                       1.0249              -\nBrTauX            lnN                       1.0022        -\nextrap_factor_taue     gmN     1    -                   0.212121\nextrap_factor_unc lnN                       -                   1.10\n--------------------------------------------------------------------------------\n\nIs there any way to use non-integer values for this the side-band event count in Combine v9? If not, what could I use as alternatives to accomplish the same (non-integer expected events in side-band with Poisson uncertainty and an extrapolation factor)?\nThanks in advance!",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am trying to setup a datacard which takes as input the sideband event counts (in the gmN model) and an extrapolation factor to estimate the background yield:</p>\n<pre><code class=\"lang-auto\">imax 1 number of bins\njmax * number of processes minus 1\nkmax * number of nuisance parameters\n--------------------------------------------------------------------------------\n--------------------------------------------------------------------------------\nbin               categorytaue\nobservation       -1\n--------------------------------------------------------------------------------\n\nbin                                     categorytaue       categorytaue\nprocess                                 signal              background\nprocess                                 0                   1\nrate                                   0.2378        0.2064\n--------------------------------------------------------------------------------\nlumi              lnN                       1.025               -\nZxs               lnN                       1.0249              -\nBrTauX            lnN                       1.0022        -\nextrap_factor_taue     gmN     1    -                   0.212121\nextrap_factor_unc lnN                       -                   1.10\n--------------------------------------------------------------------------------\n</code></pre>\n<p>Is there any way to use <em><strong>non-integer values</strong></em> for this the side-band event count in Combine v9? If not, what could I use as alternatives to accomplish the same (non-integer expected events in side-band with Poisson uncertainty and an extrapolation factor)?</p>\n<p>Thanks in advance!</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-10-25T07:43:10.109Z",
+      "updated_at": "2024-10-25T07:43:10.109Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Arun,\nI\u2019m sure there will be a way to achieve what you need, but it might help to clarify first what you\u2019re trying to do and why. The gamma, gmN, uncertainties are meant to describe a situation in which you have some sort of transfer factor which describes ratios of events in two regions (let\u2019s call them \u2018Control\u2019 and \u2018Signal\u2019) which is assumed to be known to good precision. Then in the Control region, you observe some number of events, and the number in the signal region should be related to this value by the transfer factor.\nThe uncertainty takes on a Poisson form precisely because there are statistical fluctuations in the number of events observed in the Control region, but it is expected number of events (i.e. the Poisson mean) which you expect to be related by the transfer factor, not the actual number of observed counts.\nThere are a few different ways to achieve the same thing in combine in various scenarios. But the reason the (first) input to the gmN is an integer is because it is assumed to be an observation of a poisson process. If it\u2019s not, then the logic behind using a Poisson constraint is not clear. But if you give some more information on what you\u2019re trying to achieve, I\u2019m sure we can help you.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Arun,</p>\n<p>I\u2019m sure there will be a way to achieve what you need, but it might help to clarify first what you\u2019re trying to do and why. The gamma, <code>gmN</code>, uncertainties are meant to describe a situation in which you have some sort of transfer factor which describes ratios of events in two regions (let\u2019s call them \u2018Control\u2019 and \u2018Signal\u2019) which is assumed to be known to good precision. Then in the Control region, you observe some number of events, and the number in the signal region should be related to this value by the transfer factor.</p>\n<p>The uncertainty takes on a Poisson form precisely because there are statistical fluctuations in the number of events observed in the Control region, but it is expected number of events (i.e. the Poisson mean) which you expect to be related by the transfer factor, not the actual number of observed counts.</p>\n<p>There are a few different ways to achieve the same thing in combine in various scenarios. But the reason the (first) input to the <code>gmN</code> is an integer is because it is assumed to be an observation of a poisson process. If it\u2019s not, then the logic behind using a Poisson constraint is not clear. But if you give some more information on what you\u2019re trying to achieve, I\u2019m sure we can help you.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2024-10-25T14:11:59.680Z",
+      "updated_at": "2024-10-25T14:11:59.680Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThanks for the reply!\nI am indeed using the gmN uncertainties exactly as you described: observing a certain number of events in the \u2018Control\u2019 region and then using a transfer factor for the signal region.\nHowever, I also want to estimate what the expected upper limits would be if, let\u2019s say, the luminosity were to be slightly higher. In that case, I won\u2019t have an observation of the number of events in the control channel, but an estimate (not necessarily an integer). This is why I am also interested in the case where it is not an integer.\n-Arun",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>Thanks for the reply!</p>\n<p>I am indeed using the gmN uncertainties exactly as you described: observing a certain number of events in the \u2018Control\u2019 region and then using a transfer factor for the signal region.</p>\n<p>However, I also want to estimate what the expected upper limits would be if, let\u2019s say, the luminosity were to be slightly higher. In that case, I won\u2019t have an observation of the number of events in the control channel, but an estimate (not necessarily an integer). This is why I am also interested in the case where it is not an integer.</p>\n<p>-Arun</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-10-25T14:21:13.245Z",
+      "updated_at": "2024-10-25T14:21:13.245Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "It is slightly slower, but you can implement the number of events as a counting control region with a rate parameter for the transfer factor.\nWith this implementation, luminosity projection will end up being a frozen rate parameter for scaling.\n-A",
+      "cooked_html": "<p>It is slightly slower, but you can implement the number of events as a counting control region with a rate parameter for the transfer factor.</p>\n<p>With this implementation, luminosity projection will end up being a frozen rate parameter for scaling.</p>\n<p>-A</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2024-10-25T14:55:45.669Z",
+      "updated_at": "2024-10-25T14:55:45.669Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea, thanks for the answer! I will try this method since there\u2019s no simple way to use a decimal with gmN.\n-Arun",
+      "cooked_html": "<p>Hi Andrea, thanks for the answer! I will try this method since there\u2019s no simple way to use a decimal with gmN.</p>\n<p>-Arun</p>"
+    }
+  ]
+}

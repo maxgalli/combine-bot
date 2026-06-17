@@ -1,0 +1,61 @@
+TOPIC: Regarding integer values in the gmN model in Combine v9
+URL: https://cms-talk.web.cern.ch/t/56180
+DATE: 2024-10-25T06:22:19.501Z
+SOLVED: yes (reply 4)
+============================================================
+
+QUESTION (by mmadhu @ 2024-10-25T06:22:20.010Z):
+Dear experts,
+I am trying to setup a datacard which takes as input the sideband event counts (in the gmN model) and an extrapolation factor to estimate the background yield:
+imax 1 number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+bin               categorytaue
+observation       -1
+--------------------------------------------------------------------------------
+
+bin                                     categorytaue       categorytaue
+process                                 signal              background
+process                                 0                   1
+rate                                   0.2378        0.2064
+--------------------------------------------------------------------------------
+lumi              lnN                       1.025               -
+Zxs               lnN                       1.0249              -
+BrTauX            lnN                       1.0022        -
+extrap_factor_taue     gmN     1    -                   0.212121
+extrap_factor_unc lnN                       -                   1.10
+--------------------------------------------------------------------------------
+
+Is there any way to use non-integer values for this the side-band event count in Combine v9? If not, what could I use as alternatives to accomplish the same (non-integer expected events in side-band with Poisson uncertainty and an extrapolation factor)?
+Thanks in advance!
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-10-25T07:43:10.109Z):
+Hi Arun,
+I’m sure there will be a way to achieve what you need, but it might help to clarify first what you’re trying to do and why. The gamma, gmN, uncertainties are meant to describe a situation in which you have some sort of transfer factor which describes ratios of events in two regions (let’s call them ‘Control’ and ‘Signal’) which is assumed to be known to good precision. Then in the Control region, you observe some number of events, and the number in the signal region should be related to this value by the transfer factor.
+The uncertainty takes on a Poisson form precisely because there are statistical fluctuations in the number of events observed in the Control region, but it is expected number of events (i.e. the Poisson mean) which you expect to be related by the transfer factor, not the actual number of observed counts.
+There are a few different ways to achieve the same thing in combine in various scenarios. But the reason the (first) input to the gmN is an integer is because it is assumed to be an observation of a poisson process. If it’s not, then the logic behind using a Poisson constraint is not clear. But if you give some more information on what you’re trying to achieve, I’m sure we can help you.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by mmadhu @ 2024-10-25T14:11:59.680Z):
+Hi Kyle,
+Thanks for the reply!
+I am indeed using the gmN uncertainties exactly as you described: observing a certain number of events in the ‘Control’ region and then using a transfer factor for the signal region.
+However, I also want to estimate what the expected upper limits would be if, let’s say, the luminosity were to be slightly higher. In that case, I won’t have an observation of the number of events in the control channel, but an estimate (not necessarily an integer). This is why I am also interested in the case where it is not an integer.
+-Arun
+----------------------------------------
+
+REPLY 4 [ACCEPTED ANSWER] (by amarini @ 2024-10-25T14:21:13.245Z):
+It is slightly slower, but you can implement the number of events as a counting control region with a rate parameter for the transfer factor.
+With this implementation, luminosity projection will end up being a frozen rate parameter for scaling.
+-A
+----------------------------------------
+
+REPLY 5 (by mmadhu @ 2024-10-25T14:55:45.669Z):
+Hi Andrea, thanks for the answer! I will try this method since there’s no simple way to use a decimal with gmN.
+-Arun
+----------------------------------------

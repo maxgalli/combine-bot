@@ -1,0 +1,58 @@
+TOPIC: Problem calculate observed and expected limits from crab output grid files
+URL: https://cms-talk.web.cern.ch/t/130272
+DATE: 2025-08-28T21:06:14.185Z
+SOLVED: yes (reply 6)
+============================================================
+
+QUESTION (by dazhang @ 2025-08-28T21:06:14.397Z):
+Dear experts,
+I’m trying to follow the instructions on the grid submission with crab3. I did the same steps and commands as the tutorial, submitted crab jobs, and they finished without errors.
+After that, I performed an hadd operation on the output files from the crab jobs, as required at the end of the instructions. Then I tried to run the commands here to calculate the expected and observed limits. However, both commands gave me the same error:
+(twoD-env) dazhang@uaf-2 crab_B1_MD2000_MBH10000_n2 $ combine card.root -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged.root --expectedFromGrid 0.5 -v 2
+
+>>> Random number generator seed is 123456
+>>> using the Profile Likelihood test statistic modified for upper limits (Q_LHC)
+>>> Method used is HybridNew
+Search for upper limit using pre-computed grid of p-values
+GRID, as is.
+
+Caught exception The grid must contain at least 2 points.
+0 log messages saved to combine_logger.out
+
+I attached the card.root file converted from the datacard, and the merged grid file merged.root. Could you please look into this issue?
+card.root (36.1 KB)
+merged.root (171.1 KB)
+Thank you for your help!
+Best,
+Danyi
+----------------------------------------
+
+REPLY 2 (by dazhang @ 2025-08-28T21:10:45.381Z):
+For your reference, I’m using Combine version v10.0.1.
+----------------------------------------
+
+REPLY 3 (by tvami @ 2025-09-02T17:28:45.267Z):
+Hi @nckw @gortona , all,
+do you have any suggestions for this?
+Thanks,
+Tamas
+----------------------------------------
+
+REPLY 4 (by amarini @ 2025-09-02T17:50:33.447Z):
+Can you share the command you used to generate the grid?
+It should look like this plus the grid submission from combineTools
+-A
+----------------------------------------
+
+REPLY 5 (by dazhang @ 2025-09-02T19:48:24.647Z):
+Yes! Here is the command:
+combineTool.py -d card.root -M HybridNew --LHCmode LHC-limits --clsAcc 0 -T 2000 -s -1 --singlePoint 0.01:0.21:0.02 --saveToys --saveHybridResult -m 125 --job-mode crab3 --task-name grid-test --custom-crab ../custom_crab.py
+----------------------------------------
+
+REPLY 6 [ACCEPTED ANSWER] (by dazhang @ 2025-09-03T03:25:27.231Z):
+Hello Andrea,
+We figured out the solution is to add the option --mass 125 when running the limits.
+Thank you for your time!
+Best,
+Danyi
+----------------------------------------

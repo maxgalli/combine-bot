@@ -1,0 +1,45 @@
+{
+  "topic_id": 52093,
+  "title": "Parameter and its error",
+  "url": "https://cms-talk.web.cern.ch/t/52093",
+  "category_id": 279,
+  "created_at": "2024-10-07T13:46:27.201Z",
+  "last_posted_at": "2024-10-09T08:49:49.234Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-10-07T13:46:27.281Z",
+      "updated_at": "2024-10-07T13:46:27.281Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nfollowing Aliya\u2019s suggestion I have three parameters and its errors  in my data cards connecting signal event yields between 2017 and 2018 data (obtained from sideband data):\nRsr1_2018_2017  param  1.53 0.04\nRsr2_2018_2017  param  1.52 0.11\nRsr3_2018_2017  param  1.50 0.04\nmy question is:  does it apply in the fit a Gaussian variation of the parameter with the corresponding sigma I have put in above ?\nIt was a question of one of authors of our analysis.\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>following Aliya\u2019s suggestion I have three parameters and its errors  in my data cards connecting signal event yields between 2017 and 2018 data (obtained from sideband data):</p>\n<p>Rsr1_2018_2017  param  1.53 0.04<br>\nRsr2_2018_2017  param  1.52 0.11<br>\nRsr3_2018_2017  param  1.50 0.04</p>\n<p>my question is:  does it apply in the fit a Gaussian variation of the parameter with the corresponding sigma I have put in above ?</p>\n<p>It was a question of one of authors of our analysis.</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-10-08T09:53:35.350Z",
+      "updated_at": "2024-10-08T09:53:35.350Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nThis instruct combine to apply on those parameters a Gaussian uncertainty, where the mean and sigma of the Gaussian are the values you specified. Be careful that the mean value you put is the mean value of the Gaussian you use to estimate the uncertainty. Depending on the details of your implementation, this is likely different from the mean value of the parameter you have in the model.\nThe details of this sintax can be found here:\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analyses\nand some examples of its usage here:\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#parametric-shape-uncertainties\nI hope it helps,\nBest,\nGiacomo",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>This instruct combine to apply on those parameters a Gaussian uncertainty, where the mean and sigma of the Gaussian are the values you specified. Be careful that the mean value you put is the mean value of the Gaussian you use to estimate the uncertainty. Depending on the details of your implementation, this is likely different from the mean value of the parameter you have in the model.</p>\n<p>The details of this sintax can be found here:<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analyses\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analyses</a><br>\nand some examples of its usage here:<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#parametric-shape-uncertainties\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#parametric-shape-uncertainties</a></p>\n<p>I hope it helps,<br>\nBest,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-10-09T08:49:49.234Z",
+      "updated_at": "2024-10-09T08:49:49.234Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thanks, Giacomo !\nCheers, Sasha.",
+      "cooked_html": "<p>Thanks, Giacomo !<br>\nCheers, Sasha.</p>"
+    }
+  ]
+}

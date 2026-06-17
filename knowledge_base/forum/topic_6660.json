@@ -1,0 +1,23 @@
+{
+  "topic_id": 6660,
+  "title": "GoF equivalent test for unbinned fits",
+  "url": "https://cms-talk.web.cern.ch/t/6660",
+  "category_id": 279,
+  "created_at": "2022-02-16T14:04:49.407Z",
+  "last_posted_at": "2022-02-16T14:04:49.593Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "lata",
+      "name": "Lata Panwar",
+      "created_at": "2022-02-16T14:04:49.593Z",
+      "updated_at": "2023-02-07T10:58:08.387Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nFor HIG-21-011, we are using an unbinned fit with envelop method. As you know that at the unblinding stage, we also perform Goodness-of-fit (GoF) test but it is not possible in our case. Could you please let me know if there is any test equivalent to GoF for such cases?\nThanks,\nLata",
+      "cooked_html": "<p>Dear experts,</p>\n<p>For HIG-21-011, we are using an unbinned fit with envelop method. As you know that at the unblinding stage, we also perform Goodness-of-fit (GoF) test but it is not possible in our case. Could you please let me know if there is any test equivalent to GoF for such cases?</p>\n<p>Thanks,</p>\n<p>Lata</p>"
+    }
+  ]
+}

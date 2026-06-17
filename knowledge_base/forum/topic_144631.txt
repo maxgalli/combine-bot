@@ -1,0 +1,59 @@
+TOPIC: Question about discrete profiling: NLL for background
+URL: https://cms-talk.web.cern.ch/t/144631
+DATE: 2026-05-03T09:52:28.528Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2026-05-03T09:52:29.003Z):
+Dear experts,
+reading IC paper I learned that for S+B fits the envelope of all NLLs is taken.
+What I do not understand what is taken as NLL for B only fits ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2026-05-03T09:57:31.633Z):
+Hi Sasha,
+for the B-only fit, you still take the envelope. The model is the same between the S+B and the B-only fit, in the latter the signal strength r is just set to 0.
+-A
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2026-05-04T15:50:05.645Z):
+Hi Andrea,
+Thanks !  Still I do not understand.
+Suppose we have 4 functions ând B only fit.  Thus, we have 4 NLL for B only fit. What NLL we take to calculate
+NLL(S+B) - NLL(B)
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 4 (by amarini @ 2026-05-04T17:47:46.010Z):
+Hi Sasha,
+for any value of r, the fit evaluates the nll for all the functional forms and takes the minimum of all of them (w/ eventually the penalization terms for the different deegrees of freedom).
+The -\Delta \log\mathcal{L}  is now taken as difference in the two points.
+Note that the minimum NLL at a fixed r (e.g., r=10) can have a different background function wrt the one computed at any other value of r (e.g. r=0). Thus, what you are doing, is “enlarging” the deltaNLL profile, and indeed accounting for the choice as a systematic [*].
+Cheers,
+-Andrea
+[*] provided that the envelope set is chosen appropriately.
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2026-05-05T10:18:01.038Z):
+Hi Andrea,
+thanks !
+Can you check if I understood it right in my words.
+We take the minimum of the envelop from S+B fits, NLL(S+B). This minimum corresponds to a certain bkg. function i.  When we do  deltaNLL we take NLL(B) of function i for B only fit.
+Is it correct understanding ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 6 (by gortona @ 2026-05-05T10:43:10.006Z):
+Hi Sasha,
+When you compute the NLL of the background only fit you take the minimum of the envelope for r=0. This select a background function “j” that in principle is not the same background function “i” you selected for S+B.
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2026-05-05T10:59:40.606Z):
+Hi Giacomo,
+ah, I understand now. It make a sence.
+Many thanks !
+Cheers, Sasha.
+----------------------------------------

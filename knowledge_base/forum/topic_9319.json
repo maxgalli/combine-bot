@@ -1,0 +1,67 @@
+{
+  "topic_id": 9319,
+  "title": "Combining analyses with different signal normalizations",
+  "url": "https://cms-talk.web.cern.ch/t/9319",
+  "category_id": 279,
+  "created_at": "2022-04-14T09:07:14.999Z",
+  "last_posted_at": "2022-04-14T13:40:58.933Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2022-04-14T09:07:15.165Z",
+      "updated_at": "2023-02-07T12:10:53.375Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts\nI am planning combine several analyses in which results are already public and development ended. Therefore there is no chance of datacards being remade.\nSome of those analyses have datacards with signal normalized to one unit (pb) and the results of the individual fits for those will not be stable if just plain normalizing the signal to other unit (fb). The opposite case would happen with other set of the analyses.\nDo you think there is a way to circumvent this problem in a combination?\nI was thinking a solution could be eg:\nMaking the combination assuming the signal in pb in adding POI\u2019s to  the analyses that are only stable with signal in fb and fix them to a value that would uniformize signal units. But I am not sure if fit stability problem will still be an issue.\nSo before trying that I wanted to know if you have better ideas, or if situations like that already happened.\nthank you\nXanda\nps: I can provide cards for tests if that is the case",
+      "cooked_html": "<p>Dear experts</p>\n<p>I am planning combine several analyses in which results are already public and development ended. Therefore there is no chance of datacards being remade.</p>\n<p>Some of those analyses have datacards with signal normalized to one unit (pb) and the results of the individual fits for those will not be stable if just plain normalizing the signal to other unit (fb). The opposite case would happen with other set of the analyses.</p>\n<p>Do you think there is a way to circumvent this problem in a combination?</p>\n<p>I was thinking a solution could be eg:<br>\nMaking the combination assuming the signal in pb in adding POI\u2019s to  the analyses that are only stable with signal in fb and fix them to a value that would uniformize signal units. But I am not sure if fit stability problem will still be an issue.</p>\n<p>So before trying that I wanted to know if you have better ideas, or if situations like that already happened.</p>\n<p>thank you<br>\nXanda</p>\n<p>ps: I can provide cards for tests if that is the case</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-04-14T09:18:52.242Z",
+      "updated_at": "2022-04-14T09:18:52.242Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Xanda,\nI think that the easiest way is to bring them to a common normalization through frozen rate parameters that you can append in the datacard and can act on different channels/processes. Then everything is as usual.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi Xanda,</p>\n<p>I think that the easiest way is to bring them to a common normalization through frozen rate parameters that you can append in the datacard and can act on different channels/processes. Then everything is as usual.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2022-04-14T12:27:49.199Z",
+      "updated_at": "2022-04-14T12:27:49.199Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea\nI tried that (adding rateParam).\nThe issue is that the fit for given individual channels do not give stable results if the normalization of the signal is changed by factor (\u00b1)e3.\nThat is more a mathematical question than a procedure\u2019s one.\nTrying to rephrase: How can I make sure a combination of analyses that individually are not stable when the signals have that same units is stable/correct?\nThank you.\nXanda\nps.: I am sorry if this reply was sent twice, I am getting used to CMS Talk and I am not sure the first attempt went thought",
+      "cooked_html": "<p>Hi Andrea</p>\n<p>I tried that (adding rateParam).</p>\n<p>The issue is that the fit for given individual channels do not give stable results if the normalization of the signal is changed by factor (\u00b1)e3.</p>\n<p>That is more a mathematical question than a procedure\u2019s one.</p>\n<p>Trying to rephrase: How can I make sure a combination of analyses that individually are not stable when the signals have that same units is stable/correct?</p>\n<p>Thank you.</p>\n<p>Xanda</p>\n<p>ps.: I am sorry if this reply was sent twice, I am getting used to CMS Talk and I am not sure the first attempt went thought</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "woodson",
+      "name": "Javier Mauricio Duarte",
+      "created_at": "2022-04-14T12:53:04.613Z",
+      "updated_at": "2022-04-14T13:39:56.790Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Xanda,\nI think the suggestion was to do this:\nPOI (r) in units of pb\n(1) analysis that works well with pb: scale signal with r as normal\n(2) analysis that only works well with fb: scale all signal processes with a frozen rateParam with a size 1/1000\nThen float the POI r as normal. To analysis (1) it\u2019s as if the POI is in pb; to analysis (2) it\u2019s as if the POI is in fb.\nBut I now realize that this may not work because it could really come down to what the range of r is. Sometimes the fits are very sensitive to that, especially \u201cclose to\u201d the boundaries, because of the nonlinear transformation that MINUIT uses.\nSo maybe one question is: what are the typical limits (in pb say) that are placed by these two analyses? Are they very different? And what range of r works well (again in pb) for each?\nThanks,\nJavier",
+      "cooked_html": "<p>Hi Xanda,</p>\n<p>I think the suggestion was to do this:</p>\n<p>POI (r) in units of pb</p>\n<p>(1) analysis that works well with pb: scale signal with r as normal</p>\n<p>(2) analysis that only works well with fb: scale all signal processes with a frozen rateParam with a size 1/1000</p>\n<p>Then float the POI r as normal. To analysis (1) it\u2019s as if the POI is in pb; to analysis (2) it\u2019s as if the POI is in fb.</p>\n<p>But I now realize that this may not work because it could really come down to what the range of r is. Sometimes the fits are very sensitive to that, especially \u201cclose to\u201d the boundaries, because of the nonlinear transformation that MINUIT uses.</p>\n<p>So maybe one question is: what are the typical limits (in pb say) that are placed by these two analyses? Are they very different? And what range of r works well (again in pb) for each?</p>\n<p>Thanks,</p>\n<p>Javier</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2022-04-14T13:40:58.933Z",
+      "updated_at": "2022-04-14T13:40:58.933Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Javier\n\nThen float the POI r as normal. To analysis (1) it\u2019s as if the poi is in pb; to analysis (2) it\u2019s as if the poi is in fb.\n\nRepeating/rephrasing to be sure I got it: it is to keep each search in the units in which the limit computation is stable. Combine will be able to do the computation as try to put limits in terms of r, not in terms of the units (that is unknow to it), that makes (partial) sense to me. Because, then:\na)  how do I interpret the result in r from the combination afterwards? In which units?\nb) if, lets say, I interpret the r for the final combined result as in units of pb, wouldn\u2019t the weight of the constrain from a search in which signal is interpreted with an scale 1/1000 wrt the rest be 1000 times what if should be?\nI hope that makes sense\n\nwhat are the typical limits (in pb say)\n\nThey can be similar in size up to two orders of magnitude apart, depending on resonance mass (this is for resonance searches)\n\nAnd what range of r works well (again in pb) for each?\n\nTrying to find common stable results I ended up using [-2000.0, 2000.0] in r, that works for (1) and (2), in its respective preferred units. That range for r will cover the full mass range for a given search.\nI did not fine tuned that to a smaller range/mass to improve precision, maybe I should. By now I checked that the results are compatible with the ones produced by the analysts in the respective publications.\nthanks again\nXanda",
+      "cooked_html": "<p>Hi Javier</p>\n<blockquote>\n<p>Then float the POI r as normal. To analysis (1) it\u2019s as if the poi is in pb; to analysis (2) it\u2019s as if the poi is in fb.</p>\n</blockquote>\n<p>Repeating/rephrasing to be sure I got it: it is to keep each search in the units in which the limit computation is stable. Combine will be able to do the computation as try to put limits in terms of r, not in terms of the units (that is unknow to it), that makes (partial) sense to me. Because, then:</p>\n<p>a)  how do I interpret the result in r from the combination afterwards? In which units?</p>\n<p>b) if, lets say, I interpret the r for the final combined result as in units of pb, wouldn\u2019t the weight of the constrain from a search in which signal is interpreted with an scale 1/1000 wrt the rest be 1000 times what if should be?</p>\n<p>I hope that makes sense</p>\n<blockquote>\n<p>what are the typical limits (in pb say)</p>\n</blockquote>\n<p>They can be similar in size up to two orders of magnitude apart, depending on resonance mass (this is for resonance searches)</p>\n<blockquote>\n<p>And what range of r works well (again in pb) for each?</p>\n</blockquote>\n<p>Trying to find common stable results I ended up using [-2000.0, 2000.0] in r, that works for (1) and (2), in its respective preferred units. That range for r will cover the full mass range for a given search.<br>\nI did not fine tuned that to a smaller range/mass to improve precision, maybe I should. By now I checked that the results are compatible with the ones produced by the analysts in the respective publications.</p>\n<p>thanks again<br>\nXanda</p>"
+    }
+  ]
+}

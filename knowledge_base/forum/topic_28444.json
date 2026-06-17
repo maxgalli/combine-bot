@@ -1,0 +1,67 @@
+{
+  "topic_id": 28444,
+  "title": "dNLL curve as a function of a constrained parameter",
+  "url": "https://cms-talk.web.cern.ch/t/28444",
+  "category_id": 279,
+  "created_at": "2023-08-16T09:52:19.427Z",
+  "last_posted_at": "2023-08-16T10:30:59.747Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-08-16T09:52:19.806Z",
+      "updated_at": "2023-08-16T09:52:19.806Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi experts,\nI am interested in the dNLL curve as a function of certain parameters. Now, when talking about unconstrained ones, I get it by invoking combine -M MultidimFit --algo fixed --fixedPointPOIs 'param=value', and to append a --redefineSignalPOIs param if param is a NP. So far so good.\nNow I find myself interested in the same thing, but keeping the constraint (Gaussian in this case) on param. Taking away --redefineSignalPOIs param is no go; it plays the double role of removing the constraint and takes param out of the list of parameters to be profiled. Can you please tell me what is the correct option for doing only the latter, if it exists?\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi experts,</p>\n<p>I am interested in the dNLL curve as a function of certain parameters. Now, when talking about unconstrained ones, I get it by invoking <code>combine -M MultidimFit --algo fixed --fixedPointPOIs 'param=value'</code>, and to append a <code>--redefineSignalPOIs param</code> if <code>param</code> is a NP. So far so good.</p>\n<p>Now I find myself interested in the same thing, but keeping the constraint (Gaussian in this case) on <code>param</code>. Taking away <code>--redefineSignalPOIs param</code> is no go; it plays the double role of removing the constraint and takes <code>param</code> out of the list of parameters to be profiled. Can you please tell me what is the correct option for doing only the latter, if it exists?</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2023-08-16T09:57:39.416Z",
+      "updated_at": "2023-08-16T09:57:39.416Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nI think what you want is MultiDimFits --parameter option (you can put this option multiple times for multiple parameters) , which tells combine to use this as the parameter for scans etc. this can include nuisance parameters but will not remove the constraint term for them,\nBest\nNick",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>I think what you want is MultiDimFits <code>--parameter</code> option (you can put this option multiple times for multiple parameters) , which tells combine to use this as the parameter for scans etc. this can include nuisance parameters but will not remove the constraint term for them,</p>\n<p>Best<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-08-16T10:17:30.581Z",
+      "updated_at": "2023-08-16T10:17:30.581Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nThank you. That\u2019s exactly the pointer I needed.\nTo be more specific, instead of\ncombine -M MultidimFit --algo fixed --redefineSignalPOIs param --fixedPointPOIs 'param=value'\ndo\ncombine -M MultidimFit --algo fixed -P param --setParameters 'param=value'\nto obtain the same scan with the constraint term.\nAfiq",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>Thank you. That\u2019s exactly the pointer I needed.</p>\n<p>To be more specific, instead of<br>\n<code>combine -M MultidimFit --algo fixed --redefineSignalPOIs param --fixedPointPOIs 'param=value'</code><br>\ndo<br>\n<code>combine -M MultidimFit --algo fixed -P param --setParameters 'param=value'</code><br>\nto obtain the same scan with the constraint term.</p>\n<p>Afiq</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2023-08-16T10:20:52.101Z",
+      "updated_at": "2023-08-16T10:20:52.101Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nThat\u2019s right. Just out of curiosity, if you are performing a scan, why not use the --algo grid option? This avoids having to calculate the best fit point for each fixed point and allows you to break the job into as many points as needed \u2026 See here for details http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans\nBest\nNick",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>That\u2019s right. Just out of curiosity, if you are performing a scan, why not use the <code>--algo grid</code> option? This avoids having to calculate the best fit point for each fixed point and allows you to break the job into as many points as needed \u2026 See here for details <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans</a></p>\n<p>Best<br>\nNick</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2023-08-16T10:30:59.747Z",
+      "updated_at": "2023-08-16T10:30:59.747Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nThanks for pointing it out. For the FC contours I found it easier to break the jobs into parts externally, ie not using the facilities combine offers, and the scripts for the NLL scan was inherited off that one, so it just happened to follow the same approach.\n--algo grid is indeed better for the scan, and this is what I will update to.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>Thanks for pointing it out. For the FC contours I found it easier to break the jobs into parts externally, ie not using the facilities combine offers, and the scripts for the NLL scan was inherited off that one, so it just happened to follow the same approach.</p>\n<p><code>--algo grid</code> is indeed better for the scan, and this is what I will update to.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    }
+  ]
+}

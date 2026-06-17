@@ -1,0 +1,33 @@
+TOPIC: How to get deltaNLL from discrete profiling
+URL: https://cms-talk.web.cern.ch/t/133341
+DATE: 2025-10-02T12:42:35.636Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-10-02T12:42:36.065Z):
+Dear experts,
+we use discrete profiling tool in combine.   While it is explain in User Guide how to get scans of parameter of interest, like mass, width and NS for the signal, we can´t find how to extract deltaNLL.
+Could you explain, please.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-10-02T12:52:25.468Z):
+Hi Sasha,
+Do you mean
+combine MultiDimFit [...]
+
+?
+See e.g.,
+
+cms-analysis.github.io
+
+Common statistical methods - Combine
+
+cms-analysis.github.io
+
+Parametric Models - Combine
+
+Make sure that the discrete index is added as a discrete nuisance in the datacard.
+Cheers,
+-Andrea
+----------------------------------------

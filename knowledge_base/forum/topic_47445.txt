@@ -1,0 +1,58 @@
+TOPIC: Error on T2W with expression for POI, on combine v10
+URL: https://cms-talk.web.cern.ch/t/47445
+DATE: 2024-09-02T14:10:14.981Z
+SOLVED: no
+============================================================
+
+QUESTION (by bribeiro @ 2024-09-02T14:10:15.042Z):
+Dear all,
+I recently upgraded to the new Combine version (v10.0.2), and now I can’t create workspaces using expressions for the POIs. For example, I have this command:
+text2workspace.py chASYM_datacard.txt -o chASYM_datacard.root \
+-P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose \
+--PO 'map=.*/signal0:r_ttg0[1,0.4,1.6]' \
+--PO 'map=.*/signal1:r_ttg1=expr;;r_ttg1("1.010339*@0*(100+@1)/(100-@1)",r_ttg0,r_Ac[-0.5143048,-50,50])'
+
+And the output is
+Mapping  r_ttg0  to  ['.*/signal0']  patterns
+Will create expression  r_ttg1  with factory  expr::r_ttg1("1.010339*@0*(100+@1)/(100-@1)",r_ttg0,r_Ac[-0.5143048,-50,50])
+Mapping  r_ttg1  to  ['.*/signal1']  patterns
+MH (not there before) will be assumed to be 0
+free(): invalid pointer
+*** Break *** abort
+
+followed by a crash that is not helpful. Even if I simplify the expression a lot, e.g. just a sum, the result is the same, If I remove the expression and just scale a process directly, there is no error.
+This same code was running well in combine v9. Does anyone have any idea of what could be the issue?
+Thanks in advance,
+Beatriz
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-09-02T14:49:35.093Z):
+Hi Beatriz,
+Can you explain a bit more about the model you want to setup. I just tried a similar command in v10.0.2 on our toy hgg datacard and things work as expected (*). Can you send your datacard so that we can test with your setup?
+Best,
+Nick.
+(*) I run the following
+text2workspace.py data/tutorials/multiDim/toy-hgg-125.txt -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose \
+--PO 'map=.*/ggH:r_ggH[1,0.4,1.6]' \
+--PO 'map=.*/qqH:r_qqH=expr::r_qqH("1.010339*@0+@1",r_ggH,r_Ac[-0.5143048,-50,50])'
+
+and get,
+Will create a POI  r_ggH  with factory  r_ggH[1,0.4,1.6]
+Mapping  r_ggH  to  ['.*/ggH']  patterns
+Will create expression  r_qqH  with factory  expr::r_qqH("1.010339*@0+@1",r_ggH,r_Ac[-0.5143048,-50,50])
+Mapping  r_qqH  to  ['.*/qqH']  patterns
+MH (not there before) will be assumed to be 125.0
+Will scale  incl/ggH  by  r_ggH
+Will scale  incl/qqH  by  r_qqH
+Will scale  incl/bkg  by  1
+Will scale  dijet/ggH  by  r_ggH
+Will scale  dijet/qqH  by  r_qqH
+Will scale  dijet/bkg  by  1
+----------------------------------------
+
+REPLY 3 (by bribeiro @ 2024-09-02T15:22:51.364Z):
+Dear Nick,
+Thanks for your quick reply. I just tried to run the same thing but on lxplus (was previously running on the DESY NAF) and there it works, I cannot reproduce the error that I get on the NAF. So I think it must be a problem with my setup there and not with Combine. I will just run on lxplus, sorry for wasting your time!
+Cheers,
+Beatriz
+----------------------------------------

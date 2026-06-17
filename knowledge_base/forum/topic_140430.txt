@@ -1,0 +1,34 @@
+TOPIC: Question about toy generatios
+URL: https://cms-talk.web.cern.ch/t/140430
+DATE: 2026-01-05T15:13:43.172Z
+SOLVED: no
+============================================================
+
+QUESTION (by gmelachr @ 2026-01-05T15:13:43.392Z):
+Dear Experts,
+for BPH-24-005, we want to generate some toys in order to estimate the fit bias for the background pdf choices. For this analysis we are reconstructing many B decays which at quark level are described by b->sμμ transitions, and we want to measure the branching ratios of these decays as a function of the q^2 = m^2(μμ). The mass distributions are unblinded - the blinding factor is an unknown random number which multiplies the BR values. We are using Combine and we are following the instructions in order to generate and fit the toys. However, what is not clear is how many background and signal candidates are produced. For example, let’s suppose that for the background function #1 we have 1000+50 background candidates and 100+10 signal candidates. So, once we produce the toys, will Combine produce strictly 1000 background candidates and 100 signal candidates or it is allowed to produce 1000+X background candidates and 100+Y signal candidates, with X and Y being normally distributed around 0 with σ=50 and 10 for the background and the signal respectively?
+Thank you,
+Giorgos
+----------------------------------------
+
+REPLY 2 (by nckw @ 2026-01-05T16:11:35.579Z):
+Hi Georgios,
+I think there may be some confusion about how the toys are generated. I will assume that for now we are only talking about the case without systematics (note there are different ways to account for these in the toy generation which you can find out about here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#toy-data-generation)
+Combine will use the pdf of the signal+background to generate toys. This means that for each toy, you cannot specify how many background or how many signal are generated, only the total number of events. Of course if you set the signal strength to zero, then you know all the toys are generated from a background only pdf. The number of events will be determined by the expected rate (of signal + background) which is defined by the datacard. Note that combine creates the “extended” term of the pdf so that the number is drawn from a Poisson with mean equal to the expected rate. So if in total you expect 100 events (i.e the rate in your datacard would be 100), then combine will generate N events in each toy, where N is drawn from a Poisson with lambda (mean) = 100.
+Hope that clarifies things and please do read through the documentation on the toy data generation for details.
+Nick
+----------------------------------------
+
+REPLY 3 (by gmelachr @ 2026-01-05T18:45:18.359Z):
+Dear Nick,
+Yes, we are talking about the case without systematics, there are no nuissances at all in the likelihood.
+We had discussed the Combine setup for this analysis in this thread: COMBINE Physics model for simultaneous measurements . The signal strength is frozen to 1 across the whole analysis, the yields for both the background and the signal are calculated directly from the data, i.e. the rates in the datacards are 1. Please let me know if you need any more clarifications.
+
+The number of events will be determined by the expected rate (of signal + background) which is defined by the datacard. Note that combine creates the “extended” term of the pdf so that the number is drawn from a Poisson with mean equal to the expected rate. So if in total you expect 100 events (i.e the rate in your datacard would be 100), then combine will generate N events in each toy, where N is drawn from a Poisson with lambda (mean) = 100.
+Hope that clarifies things and please do read through the documentation on the toy data generation for details.
+
+Ok, so, the number of candidates is not 100 but it is drawn from a Poisson with mean 100. Thanks.
+I will check what does COMBINE generate using the documentaion using the datacard as it is now, with rate parameters set to 1.
+Best,
+Giorgos
+----------------------------------------

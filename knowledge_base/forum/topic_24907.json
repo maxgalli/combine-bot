@@ -1,0 +1,56 @@
+{
+  "topic_id": 24907,
+  "title": "Toy generation options",
+  "url": "https://cms-talk.web.cern.ch/t/24907",
+  "category_id": 279,
+  "created_at": "2023-06-01T11:42:07.087Z",
+  "last_posted_at": "2023-06-01T13:43:19.102Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mrogulji",
+      "name": "Matej Roguljic",
+      "created_at": "2023-06-01T11:42:07.454Z",
+      "updated_at": "2023-06-01T11:42:07.454Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nFor the purpose of generating toys does the  --toysFrequentist option\n\nrandomly evaluate nuisance parameters using the postfit central values and uncertainties?\n\nor\n\nset the nuisance parameters to their postfit central values\n\nI tried reading the section on toy generation options, but it was not clear to me.\nThanks,\nMatej",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>For the purpose of generating toys does the  <code>--toysFrequentist</code> option</p>\n<ol>\n<li>randomly evaluate nuisance parameters using the postfit central values and uncertainties?</li>\n</ol>\n<p>or</p>\n<ol start=\"2\">\n<li>set the nuisance parameters to their postfit central values</li>\n</ol>\n<p>I tried reading the section on <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#nuisance-parameter-generation\" rel=\"noopener nofollow ugc\">toy generation options</a>, but it was not clear to me.</p>\n<p>Thanks,<br>\nMatej</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-06-01T12:10:05.529Z",
+      "updated_at": "2023-06-01T12:10:05.529Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Matej,\nWith  the --toysFrequentist option combine randomises the NPs around the post-fit values within the post-fit uncertainties, so the case 1. as you described it.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Matej,</p>\n<p>With  the <code>--toysFrequentist</code> option combine randomises the NPs around the post-fit values within the post-fit uncertainties, so the case 1. as you described it.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-06-01T13:02:24.954Z",
+      "updated_at": "2023-06-01T13:02:24.954Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Matej, Aliya,\nOne specification: it\u2019s true that when running with --toysFrequentist the nuisance parameters are not ignored, but it\u2019s not the nuisance parameters themselves that are randomized. They are set to the post-fit values, and the \u2018global observables\u2019 (= the gaussian constraints) are randomized. While we generate starting from the post-fit nuisance parameter values, the width of the gaussian is unchanged (ie the pre-fit constraints are used, not the post-fit)\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Matej, Aliya,</p>\n<p>One specification: it\u2019s true that when running with <code>--toysFrequentist</code> the nuisance parameters are not ignored, but it\u2019s not the nuisance parameters themselves that are randomized. They are set to the post-fit values, and the \u2018global observables\u2019 (= the gaussian constraints) are randomized. While we generate starting from the post-fit nuisance parameter values, the width of the gaussian is unchanged (ie the pre-fit constraints are used, not the post-fit)</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-06-01T13:43:19.102Z",
+      "updated_at": "2023-06-01T13:43:19.102Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Ah, yes, sorry for confusion and thanks for important clarifications.\nBest,\nAliya",
+      "cooked_html": "<p>Ah, yes, sorry for confusion and thanks for important clarifications.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

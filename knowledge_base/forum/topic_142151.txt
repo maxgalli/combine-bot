@@ -1,0 +1,69 @@
+TOPIC: Large prefit uncertainty using FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/142151
+DATE: 2026-02-18T13:28:31.506Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmajor @ 2026-02-18T13:28:31.835Z):
+Dear Experts,
+our analysis has a validation region that is used to test the background estimation methods and validate the statistical model. This VR has a corresponding, disjunct bin for every single bin used in the normal analysis, and is used unblinded for this testing.
+When running combine -M FitDiagnostics I am surprised by the apparent large uncertainty (230 events) seen in one of the bins, C_16for the lost lepton (LL) process, a MC-based estimate. (Bin 13 in the figure attached)
+grafik1294×1340 93.4 KB
+In this bin the observation is 8, the LL MC yield is 0.7138+/-0.7113 from 396 events, modelled as an lnN 2 uncertainty. Other backgrounds (Znunu, Egamma) are essentially zero, the difference between the observation and these backgrounds is the QCD contribution (used for an ABCD method). Some systematic uncertainties are large, such as
+CMS_res_j_2018 lnN 0.18
+CMS_scale_j_2018 lnN 0.4
+CMS_scale_met_unclustered_energy_2018 lnN 0.65
+CMS_scale_j_2017 lnN 0.7
+CMS_scale_met_unclustered_energy_2017 lnN 1.42
+CMS_scale_met_unclustered_energy_2016postVFP lnN 1.5
+Adding up the nuisances, I expect a < 600% uncertainty on this contribution at most
+>>> v = np.array([2, 1.0031, 1.0018, 1.0064, 1.01, 1.20, 0.9987, 0.9999, 1.0000, 0.9992, 1.0000, 1.0019, 1.0000, 1.0000, 1.0008, 1.0000, 1.0000, 1.0000, 1.0004, 1.0009, 1.0013, 1.0104, 1.0000, 1.0000, 1.0000, 1.0083, 1.6665, 1.0000, 0.9928, 0.9986, 0.9803, 0.1751, 1.0026, 0.9871, 0.9978, 0.6978, 0.4036, 1.5059, 1.0034, 1.4189, 0.6560, 1.0004])
+>>> v[v<1] = 1/v[v<1]
+>>> np.sum((v-1)**2)**.5
+5.172668221426832
+
+The bin is also connected to a constrained rate parameter
+
+CMS_SUS24006_LL_lowMET
+rateParam
+A*
+LL
+1.667
+
+CMS_SUS24006_LL_lowMET
+rateParam
+C*
+LL
+1.667
+
+CMS_SUS24006_LL_lowMET
+param
+1.667
+0.667
+
+These are large uncertainties, but not enough to justify the uncertainty of 230.
+I wrote a script to freeze the nuisance parameters one by one and performed FitDiagnostics. I do not see a single nuisance the freezing of which eliminates this issue. The prefit uncertainties are attached as well as the datacard. Can you please help point out where the uncertainty is coming from?
+Cheers,
+Peter, @mbartok, @gpasztor
+g2000chi600.csv (65.5 KB)
+nuisanceExamination.csv (6.5 KB)
+----------------------------------------
+
+REPLY 2 (by jowulff @ 2026-03-25T12:55:50.708Z):
+Hi Peter,
+sorry – this topic has already been sitting here a while. From my experience I would expect these overly large prefit uncertainties to come from autoMCStats. You could check if that’s the issue by just commenting out your * autoMCStats <threshold> line in the datacard. If this is indeed the issue, its likely due to the autoMCStats handling of bins with effective unweighted events below the threshold.
+----------------------------------------
+
+REPLY 3 (by pmajor @ 2026-03-25T13:23:24.991Z):
+Johan Wilfried Wulff:
+
+his topic has already been sitting here a while. From my experience I would expect these overly large prefit uncertainties to come from autoMCStats. You could check if that’s the issue by just commenting out your * autoMCStats <threshold> line in the datacard. If this is indeed the issue, its likely due to the autoMCStats
+
+Hi Johan,
+thank you for the reply. Our datacard is a counting card with separate nuisance parameters modeling the statistical uncertainties. We do not use autoMCStats.
+----------------------------------------
+
+REPLY 4 (by jowulff @ 2026-03-25T13:42:11.607Z):
+Hi Peter,
+sorry - I should have checked your datacard before posting. Unfortunately I don’t have a good suggestion for you then.
+----------------------------------------

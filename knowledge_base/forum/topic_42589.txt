@@ -1,0 +1,265 @@
+TOPIC: Failing fits for unblinded impacts
+URL: https://cms-talk.web.cern.ch/t/42589
+DATE: 2024-06-20T19:14:24.783Z
+SOLVED: no
+============================================================
+
+QUESTION (by jspah @ 2024-06-20T19:14:25.504Z):
+Dear Combine experts,
+in the context of the HIG-23-014 analysis, we would like to compute the a-posteriori (“unblinded”) impacts after updating our NTuples and propagating the changes to the datacard level. Please note that the GL to perform all unblinding steps for the updated NTuples in one go has been given by the HIG PAG L2 conveners (see PubTalk thread).
+The txt datacard and the resulting workspace are attached.
+Datacard.txt (103.4 KB)
+Datacard_mu_fiducial.root (706.6 KB)
+The workspace is created with the command
+text2workspace.py Datacard.txt -o Datacard_mu_fiducial.root -m 125.38 higgsMassRange=122,128 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO "map=.*/ggh_in.*:r[1,0,2]" --PO "map=.*/vbf_in.*:r[1,0,2]" --PO "map=.*/vh_in.*:r[1,0,2]" --PO "map=.*/tth_in.*:r[1,0,2]"
+
+The best-fit value determined from a robust fit with
+combine -M MultiDimFit Datacard_mu_fiducial.root -m 125.38 -n TEST --cminDefaultMinimizerStrategy=0 --algo grid --points 30 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 -P r --saveFitResult --freezeParameters MH --floatOtherPOIs 1 --saveWorkspace --saveSpecifiedIndex pdfindex_best_resolution_2022_13TeV,pdfindex_medium_resolution_2022_13TeV,pdfindex_worst_resolution_2022_13TeV --cminApproxPreFitTolerance 0.01
+
+which succeeds thanks to an improved cminApproxPreFitTolerance is approximately 1.158.
+The previously used command to perform the initial fit for the unblinded impacts fails:
+>> combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r --freezeParameters MH --robustFit 1 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 -m 125.38 -d ../Datacard_mu_fiducial.root
+<<< Combine >>>
+<<< v9.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Doing initial fit:
+
+---------------------------
+WARNING: MultiDimFit failed
+---------------------------
+
+Done in 0.02 min (cpu), 0.02 min (real)
+
+This is a bit surprising but perhaps the likelihood is not as well behaved anymore.
+We managed to alleviate this problem by passing 1.15 as the initial value for the POI:
+combineTool.py -M Impacts -d ../Datacard_mu_fiducial.root -m 125.38 --freezeParameters MH --doInitialFit --robustFit 1 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --cminApproxPreFitTolerance 0.01 --setParameters r=1.15
+
+gives
+>> combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r --freezeParameters MH --robustFit 1 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --cminApproxPreFitTolerance 0.01 -m 125.38 -d ../Datacard_mu_fiducial.root --setParameters r=1.15
+<<< Combine >>>
+<<< v9.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Set Default Value of Parameter r To : 1.15
+Doing initial fit:
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r : +1.158 -0.182/+0.193 (68%)
+Done in 0.25 min (cpu), 0.26 min (real)
+
+However, the fits for many of the nuisance parameters fail when running the previously used second command required for the impacts:
+combineTool.py -M Impacts -d ../Datacard_mu_fiducial.root -m 125.38 --freezeParameters MH --robustFit 1 --doFits --parallel 12 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --setParameters r=1.158
+
+We observe error messages like MultiDimFit failed, [ERROR] Minimization failed at CMS_hgg_pdfWeight_19_shape = -4.53701e-07 (also for other pdfWeights) and [ERROR] Closed range without finding crossing!. We tried removing the pdfWeights from the datacard, building the workspace and performing the initialFit again. However, the initial fit seems even more unstable here as it fails when giving --setParameters r=1.15 with --cminApproxPreFitTolerance 0.01, which we do not understand.
+Further tries included reducing the tolerance and step sizes when using robustHesse
+combineTool.py -M Impacts -d ../Datacard_mu_fiducial.root -m 125.38 --freezeParameters MH --robustFit 1 --doFits --parallel 12 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --cminApproxPreFitTolerance 0.01 --stepSize 0.05 --setCrossingTolerance 0.00005 --setParameters r=1.158 --robustHesse 1
+
+or using minos instead:
+combineTool.py -M Impacts -d ../Datacard_mu_fiducial.root -m 125.38 --freezeParameters MH --robustFit 1 --doFits --parallel 12 --cminDefaultMinimizerStrategy 1 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --cminApproxPreFitTolerance 0.01 --stepSize 0.05 --setCrossingTolerance 0.00005 --setParameters r=1.158
+
+However, the situation does not really improve and many of the fits fail, still. Only about 61 of the 168 nuisance parameters have valid results and even many of those have one-sided constraints and impacts. An example impact plot from one of these runs is attached to illustrate this behaviour.
+impacts_unblinded_bad_behaviour.pdf (28.3 KB)
+Do you see anything wrong in the commands that we use? Could you help us fix this behaviour to obtain the unblinded impacts for the provided datacard/workspace? Thanks a lot in advance!
+NB: We are using
+COMBINE_TAG=07b56c67ba6e4304b42c3a6cdba710d59c719192
+COMBINEHARVESTER_TAG=94017ba5a3a657f7b88669b1a525b19d34ea41a2
+
+on an EL9 machine with CMSSW_14_1_0_pre4.
+Best,
+Jan Lukas for HIG-23-014
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-06-20T21:37:35.029Z):
+Hi Jan Lukas,
+Just some quick feedback - not completely sure what’s going on.
+
+For the impacts I would recommend setting the discrete indexes to their known best-fit values and then skipping the discrete profiling (can use --X-rtd MINIMIZER_skipDiscreteIterations).
+If that doesn’t help, fits that fail quite randomly by changing initial conditions might point to cases where the Hessian is not very accurate, perhaps due to an odd shape or discontinuities in the likelihood, or strong correlations. One check is to run robustHesse on top of a simple fit and check that the Hessian is inverted successfully - it will also report any strong correlations. Just add --robustHesse 1 to your successful initial fit command. Note that adding this to your impacts command as above won’t help - even if robustHesse runs in this case it won’t be used in the impact calculation.
+Have a look at the unprofilled NLL scans and the first and second derivatives: combineTool.py -M FastScan -w workspace.root:w -o fastscan -f multidimfit.root:fit_mdf, see if anything looks odd
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by jspah @ 2024-06-21T09:15:14.928Z):
+Hi Andrew, all,
+thanks a lot for your feedback. I tried your three suggestions one-by-one.
+Disabling discrete profiling
+I determined the appropriate PDF indices by running
+combineTool.py -M Impacts -d ../Datacard_mu_fiducial.root -m 125.38 --freezeParameters MH --doInitialFit --robustFit 1 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --cminApproxPreFitTolerance 0.01 --setParameters r=1.15 --saveWorkspace --saveSpecifiedIndex pdfindex_best_resolution_2022_13TeV,pdfindex_medium_resolution_2022_13TeV,pdfindex_worst_resolution_2022_13TeV
+
+and plotting the information from the saved workspace. The indices I find are best_resolution: 1, medium_resolution: 2, worst_resolution: 1.
+Then, I set the discrete profiling parameters to these values and disable the discrete profiling for the impact command. This time, the situation improves as around 90 nuisances are plotted, although some of them still only have one side of the post-fit uncertainty determined successfully and some impacts are one-sided. I use the command
+combineTool.py -M Impacts -d ../Datacard_mu_fiducial.root -m 125.38 --freezeParameters MH --robustFit 1 --doFits --parallel 12 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --setParameters r=1.158,pdfindex_best_resolution_2022_13TeV=1,pdfindex_medium_resolution_2022_13TeV=2,pdfindex_worst_resolution_2022_13TeV=1 --X-rtd MINIMIZER_skipDiscreteIterations
+
+I get suspicious error messages related to the data-driven background PDFs in the terminal when some of the fits for the different nuisances are performed. For example, for CMS_hgg_scale_0_shape:
+Warning in <ROOT::Math::GSLInterpolator::Eval>: input domain error
+Warning in <ROOT::Math::GSLInterpolator::Eval>: input domain error
+Warning in <ROOT::Math::GSLInterpolator::Eval>: input domain error
+Warning in <ROOT::Math::GSLInterpolator::Eval>: input domain error
+Warning in <ROOT::Math::GSLInterpolator::Eval>: Suppressing additional warnings
+WARNING: underflow to nan in pdf_binbest_resolution_obsOnly for bin 0, weight 254
+FASTEXIT from pdf_binbest_resolution_obsOnly
+WARNING: underflow to nan in pdf_binmedium_resolution_obsOnly for bin 0, weight 1164
+FASTEXIT from pdf_binmedium_resolution_obsOnly
+WARNING: underflow to nan in pdf_binworst_resolution_obsOnly for bin 0, weight 2658
+FASTEXIT from pdf_binworst_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binbest_resolution_obsOnly for bin 0, weight 254
+FASTEXIT from pdf_binbest_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binmedium_resolution_obsOnly for bin 0, weight 1164
+FASTEXIT from pdf_binmedium_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binworst_resolution_obsOnly for bin 0, weight 2658
+FASTEXIT from pdf_binworst_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binbest_resolution_obsOnly for bin 0, weight 254
+FASTEXIT from pdf_binbest_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binmedium_resolution_obsOnly for bin 0, weight 1164
+FASTEXIT from pdf_binmedium_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binworst_resolution_obsOnly for bin 0, weight 2658
+FASTEXIT from pdf_binworst_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binbest_resolution_obsOnly for bin 0, weight 254
+FASTEXIT from pdf_binbest_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binmedium_resolution_obsOnly for bin 0, weight 1164
+FASTEXIT from pdf_binmedium_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binworst_resolution_obsOnly for bin 0, weight 2658
+FASTEXIT from pdf_binworst_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binbest_resolution_obsOnly for bin 0, weight 254
+FASTEXIT from pdf_binbest_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binmedium_resolution_obsOnly for bin 0, weight 1164
+FASTEXIT from pdf_binmedium_resolution_obsOnly
+WARNING: underflow to -nan in pdf_binworst_resolution_obsOnly for bin 0, weight 2658
+FASTEXIT from pdf_binworst_resolution_obsOnly
+Maximum failed steps (max=5) reached and minimization failed at MH = -nan
+
+I also tested one of the nuisances where the fit failed by hand, lowering the tolerance substantially. Then, the fit succeeded.
+combine -M MultiDimFit -n _paramFit_Test_CMS_hgg_SigmaEOverEShift --algo impact --redefineSignalPOIs r -P CMS_hgg_SigmaEOverEShift --floatOtherPOIs 1 --saveInactivePOI 1 --freezeParameters MH --robustFit 1 --cminDefaultMinimizerStrategy 1 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 --X-rtd MINIMIZER_skipDiscreteIterations -m 125.38 -d ../Datacard_mu_fiducial.root --setParameters r=1.158,pdfindex_best_resolution_2022_13TeV=1,pdfindex_medium_resolution_2022_13TeV=2,pdfindex_worst_resolution_2022_13TeV=1 --cminApproxPreFitTolerance 0.001
+
+However, this seems very arbitrary, as the exact same command for a different failing nuisance like CMS_hgg_AlphaS_shape does not converge: [ERROR] Closed range without finding crossing!.
+Checking with robustHesse
+As you advised, I performed the initialFit command again with the --robustHesse 1 command appended. In the output, I find
+>> Verifying eigenvalues are all positive (iteration 0)
+>> All eigenvalues are positive
+>> Inverting Hessian...
+>> Matrix inverted
+
+and no information about strong correlations, so that looks good I guess? I also get a lot of printouts about Parameter ... does not have a valid stencil and will be dropped but this only applies to the parameters for the background PDFs, perhaps that is expected.
+Fastscan
+I ran the command
+combineTool.py -M FastScan -w Datacard_mu_fiducial.root:w -o fastscan -f fastscan.root:fit_mdf
+
+but it fails and it is not really clear to me why. Perhaps also here some fits did not succeed? The terminal printout reads
+Error in <TFile::ReadBuffer>: error reading all requested bytes from file fastscan.root, got 222 of 300
+Error in <TFile::Init>: fastscan.root failed to read the file type data.
+Traceback (most recent call last):
+File "/.automount/net_rw/net__scratch_cms3a/spaeh/private/PhD/analyses/early_Run3_Hgg/fitting-14_1_0/CMSSW_14_1_0_pre4/bin/el9_amd64_gcc12/combineTool.py", line 84, in <module>
+method.run_method()
+File "/.automount/net_rw/net__scratch_cms3a/spaeh/private/PhD/analyses/early_Run3_Hgg/fitting-14_1_0/CMSSW_14_1_0_pre4/src/CombineHarvester/CombineTools/python/combine/FastScan.py", line 69, in run_method
+fitfile = ROOT.TFile(self.args.fitres.split(':')[0])
+File "/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_pythonization/_tfile.py", line 90, in _TFileConstructor
+raise OSError('Failed to open file {}'.format(args[0]))
+OSError: Failed to open file fastscan.root
+
+Background models
+Given that we see a curious error message related to the background PDFs, perhaps something is wrong there in the first place. Please find the models at https://cernbox.cern.ch/s/iSGA8FEue3Al62D. We will check them now and see if we can find anything wrong there. Please let us know if you have any suggestions what might have gone wrong or if you find anything immediately obvious when checking the ROOT files if you have the time.
+Thanks a lot!
+Best,
+Jan Lukas
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-06-22T07:46:49.168Z):
+Hi Jan Lukas,
+I think it might be useful to check each channel separately, perhaps we find an issue corresponding to a particular pdf. If you point me to the per-channel datacards I should be able to take a look.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by jspah @ 2024-06-24T08:56:29.920Z):
+Dear Aliya,
+this is a good suggestion. I was not able to produce per-channel datacards quickly, but I produced the single datacard again with channel masks. It is attached to this post:
+Datacard_mu_fiducial.root (706.8 KB)
+The masks can be applied to only include a subset of channels in a fit, which are the mass resolution categories “best_resolution”, “medium_resolution”, and “worst_resolution” in our case. For example, to only fit the best_resolution category, one can use --setParameters mask_medium_resolution=1,mask_worst_resolution=1.
+I tried to perform a singles fit to determine the best-fit POI with the \pm1\sigma interval for each of the channels separately. It only seems suspicious for the best-resolution category, where the low-error cannot be determined by minos. I attach the commands and the printouts for a verbosity of 2 as well as combine_logger.out for the best_resolution category fit with verbosity of 3.
+HIG-23-014_masking.txt (64.6 KB)
+combine_logger.out (16.8 KB)
+We are currently trying to investigate the reason why the best_resolution category is so problematic. If you have any insights, they would be greatly appreciated!
+Best,
+Jan Lukas
+----------------------------------------
+
+REPLY 6 (by jspah @ 2024-06-27T22:38:39.995Z):
+Dear Andrew, Aliya, others,
+we re-derived the workspace in an older CMSSW version (10_2_13) based on the very same NTuples. We only changed parts of the code in our framework to accommodate different package versions (in particular ROOT). Thus, to the best of our knowledge, the workspaces should contain basically the same physics information.
+When comparing the fits in the more recent Combine version (we use the 07b56c67 commit hash for 14_1_0_pre4) and the v8.2.0 (for 10_2_13), we observe interesting behaviour.
+Fitting with v8.2.0
+The simple fit command (no tuning of starting parameters or tolerances) to the 10_2_13 workspace succeeds:
+combine -M MultiDimFit Datacard_mu_fiducial_10_2_13.root -m 125.38 -n TEST --cminDefaultMinimizerStrategy=0 --algo singles  --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 -P r --saveFitResult --freezeParameters MH --saveWorkspace
+
+<<< Combine >>>
+>>> random number generator seed is 123456
+>>> method used is MultiDimFit
+>>> 0 out of 3 channels masked
+
+SimNLL created with 3 channels, 0 generic constraints, 128 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[WARNING] Found [env_pdf_0_2022_13TeV_exp3_p2] at boundary.
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +1.149   -0.182/+0.191 (68%)
+Done in 0.33 min (cpu), 0.33 min (real)
+
+Fitting in the newer Combine version
+The same command fails to find the low-error in 14_1_0_pre4 with Combine commit hash 07b56c67. Additionally, the high-error looks wrong when comparing to the previous fit.
+combine -M MultiDimFit Datacard_mu_fiducial_14_1_0_pre4.root -m 125.38 -n TEST --cminDefaultMinimizerStrategy=0 --algo singles  --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 -P r --saveFitResult --freezeParameters MH --saveWorkspace
+
+<<< Combine >>>
+<<< v9.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Doing initial fit:
+Error in <ROOT::Math::Fitter::CalculateMinosErrors>: Minos error calculation failed for all the selected parameters
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid low-error found, will report difference to minimum of range for : r
+r :    +1.152   -1.152/+0.144 (68%)
+Done in 0.05 min (cpu), 0.05 min (real)
+
+Interestingly enough, we managed to make the fit converge when specifying a starting parameter for one of the parameters of the background modelling PDFs that is in the envelope, which was found to be at the boundary in the previous fit:
+combine -M MultiDimFit Datacard_mu_fiducial_14_1_0_pre4.root -m 125.38 -n TEST --cminDefaultMinimizerStrategy=0 --algo singles  --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 -P r --saveFitResult --freezeParameters MH --saveWorkspace --setParameters env_pdf_0_2022_13TeV_exp3_p2=-0.5
+<<< Combine >>>
+<<< v9.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Set Default Value of Parameter env_pdf_0_2022_13TeV_exp3_p2 To : -0.5
+Doing initial fit:
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +1.152   -0.182/+0.194 (68%)
+Done in 0.05 min (cpu), 0.05 min (real)
+
+Question
+Unfortunately, even in the older version v8.2.1, the impacts fits are still failing for a non-negligible fraction of nuisances. We managed to produce some hand-crafted nuisance shift/constraint/impact plots for the most relevant nuisances by tuning the initial parameters for each fit (floating the POI and profiling all other nuisance per fit) and then reading in the post-fit workspaces. However, this is quite tedious. We would appreciate your help in getting the impacts to run without any big issues for our workspace, preferably the 14_1_0_pre4 one (recommended CMSSW/Combine versions). Thanks a lot!
+Workspaces
+The two workspaces are attached to this post.
+Datacard_mu_fiducial_14_1_0_pre4.root (704.5 KB)
+Datacard_mu_fiducial_10_2_13.root (1.0 MB)
+Best,
+Jan Lukas
+----------------------------------------
+
+REPLY 7 (by anigamov @ 2024-06-28T10:22:49.142Z):
+Hi Jan Lukas,
+I think the problem is indeed coming from env_pdf_0_2022_13TeV_exp3_p2 parameter. The initial value set in workspace is very close (less than 1 sigma away) to the upper boundary (0) which lead to the failing fits. So the question I have is whether this parameter actually brings something to your model or you can use different parametrization or to start with just freeze it.
+I managed to produce the plot below with:
+combineTool.py -M Impacts -d Datacard_mu_fiducial_14_1_0_pre4.root  -m 125.38 --freezeParameters MH,env_pdf_0_2022_13TeV_exp3_p2  --doFits  --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2  --job-mode condor
+
+i.e. env_pdf_0_2022_13TeV_exp3_p2 is frozen.
+impacts.pdf (48.4 KB)
+It is still concerning especially those one-sided impacts from CMS_hgg_pdfWeight_*_shape. Is it expected?
+Of course this also brings question what changed between different Combine releases and why this parameter hitting a limit was not an issue before. I actually checked that v10 with ROOT 6.22 in combine reproduces results from combine v8. So the changes are really coming from ROOT, or minuit2 updates with 6.30 release where they “improved” the minimization for cases where parameters hit the boundaries.
+Anyway I propose to freeze the problematic parameter and also check the  CMS_hgg_pdfWeight_*_shape. uncertainties
+Best,
+Aliya
+----------------------------------------

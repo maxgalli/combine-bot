@@ -1,0 +1,108 @@
+TOPIC: One-sidede uncertianty and impact of bkg function parameters with the discrete profiling method
+URL: https://cms-talk.web.cern.ch/t/16121
+DATE: 2022-10-10T15:13:23.097Z
+SOLVED: no
+============================================================
+
+QUESTION (by xuyan @ 2022-10-10T15:13:23.256Z):
+Hello combine experts,
+I have been trying to understand the impact calculation when using the discrete profiling method. This is a post following my original post here: One-sidede uncertianty and impact of the background function parameters when using discrete profiling method
+So I have been seeing the one-sided uncertainty and impact of some of my bkg function parameters.
+The command I used is:
+combine -M MultiDimFit -n POIScan --algo impact --redefineSignalPOIs r -P Dijet_p0_2016 --setParameterRanges Dijet_p1_2016=0,10 --floatOtherPOIs 1 --saveInactivePOI 1 -t -1 --expectSignal 0 --rMin -5 --cminDefaultMinimizerStrategy=0 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 -m 1 -d datacard.root --saveNLL --robustFit 1
+
+After some investigations these are what I found:
+1). One-sided uncertainty is caused by an error “Closed range without finding crossing!” in FitterAlgoBase.cc. The problem here is that after scanning the NLL curve, combine did not find the crossing at NLL_min+0.5.
+2). Using 1) as a clue, I used --algo grid to scan and plot the NLL curves, and I got:
+
+scan_Dijet_p1_2017_orig2196×1772 59.5 KB
+
+This is a very strange NLL curve, as it turns almost flat after passing a specific range (around 5-6.9) This is clearly not physical.
+3). My understanding here is that, due to the discrete profiling nature, after the parameter Dijet_p1_2017 passes this 5-6.9 range, the current choice of the pdf - the dijet function becomes no longer the pdf that gives the minimum POI NLL. The pdf_index switched to another pdf and the combine tool stopped further scanning the NP NLLs for dijet function parameters (and assigns it the last value it got)
+4). Based on 3), I tried to manually force the parameters of other pdf candidates to be within their undesired ranges so that they would surely give much worse POI NLLs (r) compared to the dijet function. My purpose here is to test if my suspension said in 3 is correct. Here is the NLL curve I got:
+
+scan_Dijet_p1_2017_fixed2196×1772 64.5 KB
+
+The two plots perfectly overlap with each other in the range:
+
+overlap841×384 28 KB
+
+I think this confirms my suspicion that the combine tool stops the scanning of current pdf parameters when another pdf begin to give the lowest POI NLL.
+If this is the case, the default combine impact method would not be able to give us the impact value, and I am not sure if the impact would still have its physical meaning.
+Do you have some suggestions?
+Thanks a lot!
+Best regards,
+Sebastian
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-10-10T15:22:46.514Z):
+Hi,
+yes, Combine will profile the NLL therefore will not report the crossing of the parameter(s) if those are not the active ones. This is what of profiled nll is.
+The ‘impact’ definition here is therefore ill-posed. You can define an impact of a parameter, fixing the envelope set to be scanned.  You can do this test for all the discrete values you have, and they can give you useful insight, but it is not automated because this would change the definition of the awkardly likelihood function.
+This will not account for the all uncertainty you have from the background model. You can derive the impact of the envelope checking the nll scans with and without envelope.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by xuyan @ 2022-10-10T15:31:39.096Z):
+Dear Andrea,
+Thanks a lot for your very quick reply!
+
+The ‘impact’ definition here is therefore ill-posed. You can define an impact of a parameter, fixing the envelope set to be scanned. You can do this test for all the discrete values you have, and they can give you useful insight, but it is not automated because this would change the definition of the awkardly likelihood function.
+
+Yes indeed, I think fixing the pdf_index to each of the possible discrete values and doing the combine-style impact test for each of them would be useful in this case.
+
+This will not account for the all uncertainty you have from the background model. You can derive the impact of the envelope checking the nll scans with and without envelope.
+
+However, could you elaborate a bit more about your final suggestion? In your suggestion, how would the “impact” be defined? What NLL scans you are suggesting (on POI? or on the NP?) Sorry that I am not quite following…
+Thanks a lot for your kind help!
+Best,
+Sebastian
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-10-10T15:42:09.000Z):
+Hi Sebastian,
+if you want to reply to the question: how much is the effect of the discrete profiling in the measurement
+what you can do is to compare the nll scans with and without the discrete profiling.
+In this way, you can assess with the standard impacts freezing the discrete nuisances at the bestfit, what is the impact of the different components in the background pdf (at the best fit),
+and the presence of the other backgrounds by comparing the two scans above.
+If you wish to have a similar insight on the non-bf background pdfs, you can rerun the impacts with the discrete nuisances frozen to the alternate value, but the should refer to the not global bestfit but to their own bestfit.
+Cheers,
+-Andrea
+On Mon, Oct 10, 2022 at 5:32 PM Xuli Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Xuli Yan xuyanOctober 10
+
+Dear Andrea,
+Thanks a lot for your very quick reply!
+
+The ‘impact’ definition here is therefore ill-posed. You can define an impact of a parameter, fixing the envelope set to be scanned. You can do this test for all the discrete values you have, and they can give you useful insight, but it is not automated because this would change the definition of the awkardly likelihood function.
+
+Yes indeed, I think fixing the pdf_index to each of the possible discrete values and doing the combine-style impact test for each of them would be useful in this case.
+
+This will not account for the all uncertainty you have from the background model. You can derive the impact of the envelope checking the nll scans with and without envelope.
+
+However, could you elaborate a bit more about your final suggestion? In your suggestion, how would the “impact” be defined? What NLL scans you are suggesting (on POI? or on the NP?) Sorry that I am not quite following…
+Thanks a lot for your kind help!
+Best,
+Sebastian
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Andrea Carlo Marini amariniOctober 10
+
+Hi, yes, Combine will profile the NLL therefore will not report the crossing of the parameter(s) if those are not the active ones. This is what of profiled nll is. The ‘impact’ definition here is therefore ill-posed. You can define an impact of a parameter, fixing the envelope set to be scanned. …
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by xuyan @ 2022-10-11T08:14:32.885Z):
+Dear Andrea,
+OK, I think I got your idea! Will then use your method to perform this study. Do you think it is worth adding some descriptions of this behavior to the combine manual? I know several people using discrete profiling have similar issues, and it might be beneficial to make it clearer in the manual, and I would be happy to do so.
+Thanks again for your kind help!
+Best regards,
+Sebastian
+----------------------------------------

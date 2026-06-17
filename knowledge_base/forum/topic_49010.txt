@@ -1,0 +1,67 @@
+TOPIC: Discrepancy in Errors Between Impact Plot and Scanned Likelihood Plot
+URL: https://cms-talk.web.cern.ch/t/49010
+DATE: 2024-09-14T08:39:23.414Z
+SOLVED: yes (reply 6)
+============================================================
+
+QUESTION (by sibashir @ 2024-09-14T08:39:23.567Z):
+Hi there,
+I prepared some impact plots and scanned likelihood plots; however, the uncertainty on the fit parameter differs between the two. Do you know why they are different?
+
+Thanks in Advance,
+Sima
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-09-16T07:09:37.520Z):
+Hi Sima,
+Are you sure that the same nuisance parameters are included in both fits (ie, you run on the same datacard/workspace, and you aren’t freezing any parameters on the command line)? Given your parameter ‘damp’ has an impact that is larger than the total uncertainty you get in the first plot you shared, I wondered if it was simply omitted from the fits for the explicit likelihood scan.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by sibashir @ 2024-09-16T10:26:46.380Z):
+Hi Adina,
+I checked it again, and all systematics are included. However, since I have three parameters to fit simultaneously, I need to profile one of the parameters in the likelihood scan plot. On the other hand, when drawing the impact plots, I don’t profile any parameters.
+Could the discrepancy arise from this? Should I also profile the parameters when drawing the impact plots?
+Cheers
+Sima
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-09-16T13:31:20.384Z):
+Dear Sima,
+First of all I wanted to let you know that I moved this thread to https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279 forum where it belongs. I think it would be easier to tell where is the disagreement coming from if you post the commands used to produce both of the plots.
+Thanks,
+Aliya
+----------------------------------------
+
+REPLY 5 (by sibashir @ 2024-09-16T14:55:11.176Z):
+Dear Aliya,
+let’s first simplify the plots, only consider the total uncertainty, where are different in impact and likelihood plots.
+the commands for drawing impacts are as below:
+combineTool.py -M Impacts -d output.root -m 125 --doInitialFit --robustFit 1 -t -1  --setParameters f0=0.687,fl=0.311,n=1.0   --expectSignal=1
+combineTool.py -M Impacts -d output.root -m 125 --robustFit 1 --doFits --parallel 8  -t -1  --setParameters f0=0.687,fl=0.311,n=1.0  --expectSignal=1
+combineTool.py -M Impacts -d output.root -m 125 -o impacts.json -t -1  --setParameters f0=0.687,fl=0.311,n=1.0   --expectSignal=1
+plotImpacts.py -i impacts.json -o impacts --POI fl
+
+the commands for drawing scanned likelihood plots:
+combine -M MultiDimFit  output.root  -n .fltoyworkspaceee18 --algo grid  --setParameters f0=0.687,fl=0.311,n=1  --saveWorkspace  --setParameterRanges f0=0.65,0.73:fl=0.28,0.34:n=0.9,1.1 -t -1 -P fl
+plot1DScan.py ./higgsCombine.scan.MultiDimFit.mH120.root   --POI fl
+
+the total uncertainty from the impact and likelihood plots is different. if you have any idea about this issue, please let me know.
+Cheers
+Sima
+----------------------------------------
+
+REPLY 6 [ACCEPTED ANSWER] (by adewit @ 2024-09-16T15:08:51.550Z):
+Hi Sima,
+Can you add the option --floatOtherPOIs 1 to your MultiDimFit command, and check whether that fixes the issue? (I assume that f0, fl, n have all been defined as parameters of interest; when you run the impacts they are set floating, but this is not done by default when you call MultiDimFit yourself.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 7 (by sibashir @ 2024-09-16T15:43:04.611Z):
+Hi Adinda,
+thanks, it resolved.
+Best regards,
+Sima
+----------------------------------------

@@ -1,0 +1,78 @@
+{
+  "topic_id": 125264,
+  "title": "Connection between likelihood scan of NP and best fit in impact plots",
+  "url": "https://cms-talk.web.cern.ch/t/125264",
+  "category_id": 279,
+  "created_at": "2025-05-27T08:38:57.529Z",
+  "last_posted_at": "2025-05-28T09:47:23.672Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "raschmie",
+      "name": "Ralf Schmieder",
+      "created_at": "2025-05-27T08:38:57.683Z",
+      "updated_at": "2025-05-27T08:38:57.683Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nduring unblinding we performed an impact plot on data and a likelihood scan of the NP cross_section_VV to check its behavior. We can not make sense of how the result of the scan and the fit results of the impact plot for the NP come together. Is someone able to clarify?\nThe NP is a lnN uncertainty of 7.5%.\nAttached is the scan and the impact plot (NP is ranked #1 with a pull value of 3.4)\nCommands for the scan:\nDATACARD_OUTPUT=\"${BASE_PATH}/${ERA}_${CHANNEL}\"\ncombineTool.py -M MultiDimFit \\\n-m 125 \\\n-d $DATACARD_OUTPUT/cmb/workspace.root \\\n--algo grid \\\n--points 50 \\\n--setParameters cross_section_VV=1 \\\n--setParameterRanges cross_section_VV=-10,10 \\\n--redefineSignalPOIs cross_section_VV \\\n--cminDefaultMinimizerStrategy 0 \\\n--cminFallbackAlgo Minuit2,0:0.2 \\\n-n cross_section_VV -v2\noutputname=\"scan\"\nplot1DScan.py higgsCombinecross_section_VV.MultiDimFit.mH125.root --POI cross_section_VV -o $DATACARD_OUTPUT/$outputname --y-max 4\n\nand for the impacts:\nDATACARD_OUTPUT=\"${BASE_PATH}/${ERA}_${CHANNEL}/cmb\"\nWORKSPACE=${DATACARD_OUTPUT}/workspace.root\ncombineTool.py -M Impacts -d $WORKSPACE -m 125 --doInitialFit --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH --parallel 16\n\ncombineTool.py -M Impacts -d $WORKSPACE -m 125 --doFits --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH --parallel 16\ncombineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH\ncombineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_WH=1.0 \\\n--setParameterRanges r_WH=-5,5 \\\n--redefineSignalPOIs r_WH\nplotImpacts.py -i $DATACARD_OUTPUT/sm_mc_${ERA}_${CHANNEL}_impacts.json -o $DATACARD_OUTPUT/sm_mc_${ERA}_${CHANNEL}_impacts --blind\n\nScreenshot from 2025-05-27 10-36-46697\u00d7570 6.91 KB\nScreenshot from 2025-05-27 10-36-29947\u00d7757 77.8 KB",
+      "cooked_html": "<p>Dear all,</p>\n<p>during unblinding we performed an impact plot on data and a likelihood scan of the NP <code>cross_section_VV</code> to check its behavior. We can not make sense of how the result of the scan and the fit results of the impact plot for the NP come together. Is someone able to clarify?<br>\nThe NP is a lnN uncertainty of 7.5%.<br>\nAttached is the scan and the impact plot (NP is ranked <span class=\"hashtag-raw\">#1</span> with a pull value of 3.4)<br>\nCommands for the scan:</p>\n<pre><code class=\"lang-auto\">DATACARD_OUTPUT=\"${BASE_PATH}/${ERA}_${CHANNEL}\"\ncombineTool.py -M MultiDimFit \\\n    -m 125 \\\n    -d $DATACARD_OUTPUT/cmb/workspace.root \\\n    --algo grid \\\n    --points 50 \\\n    --setParameters cross_section_VV=1 \\\n    --setParameterRanges cross_section_VV=-10,10 \\\n    --redefineSignalPOIs cross_section_VV \\\n    --cminDefaultMinimizerStrategy 0 \\\n    --cminFallbackAlgo Minuit2,0:0.2 \\\n    -n cross_section_VV -v2\noutputname=\"scan\"\nplot1DScan.py higgsCombinecross_section_VV.MultiDimFit.mH125.root --POI cross_section_VV -o $DATACARD_OUTPUT/$outputname --y-max 4\n</code></pre>\n<p>and for the impacts:</p>\n<pre><code class=\"lang-auto\">DATACARD_OUTPUT=\"${BASE_PATH}/${ERA}_${CHANNEL}/cmb\"\nWORKSPACE=${DATACARD_OUTPUT}/workspace.root\ncombineTool.py -M Impacts -d $WORKSPACE -m 125 --doInitialFit --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH --parallel 16 \n\ncombineTool.py -M Impacts -d $WORKSPACE -m 125 --doFits --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH --parallel 16 \ncombineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_WH=1.0 --setParameterRanges r_WH=-5,5 --redefineSignalPOIs r_WH\ncombineTool.py -M Impacts -d $WORKSPACE -m 125 -o sm_mc_${ERA}_${CHANNEL}_impacts.json --setParameters r_WH=1.0 \\\n            --setParameterRanges r_WH=-5,5 \\\n            --redefineSignalPOIs r_WH\nplotImpacts.py -i $DATACARD_OUTPUT/sm_mc_${ERA}_${CHANNEL}_impacts.json -o $DATACARD_OUTPUT/sm_mc_${ERA}_${CHANNEL}_impacts --blind\n</code></pre>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/3/355132155fd40f19d2b1f11fd1b54f6e5c5591d5.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/355132155fd40f19d2b1f11fd1b54f6e5c5591d5\" title=\"Screenshot from 2025-05-27 10-36-46\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/3/355132155fd40f19d2b1f11fd1b54f6e5c5591d5.png\" alt=\"Screenshot from 2025-05-27 10-36-46\" data-base62-sha1=\"7BFgxwSNsj0pNN2WVPw1mTkT4BD\" width=\"611\" height=\"500\" data-dominant-color=\"F8F8F8\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot from 2025-05-27 10-36-46</span><span class=\"informations\">697\u00d7570 6.91 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div><br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/921694bedcd2a839196d304ebbb45ebc2449fff8.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/921694bedcd2a839196d304ebbb45ebc2449fff8\" title=\"Screenshot from 2025-05-27 10-36-29\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/921694bedcd2a839196d304ebbb45ebc2449fff8_2_625x500.png\" alt=\"Screenshot from 2025-05-27 10-36-29\" data-base62-sha1=\"kQm5Bfl8Y0slcE5xGrPdAy5f5QQ\" width=\"625\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/921694bedcd2a839196d304ebbb45ebc2449fff8_2_625x500.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/921694bedcd2a839196d304ebbb45ebc2449fff8_2_937x750.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/9/921694bedcd2a839196d304ebbb45ebc2449fff8.png 2x\" data-dominant-color=\"E6E5E6\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot from 2025-05-27 10-36-29</span><span class=\"informations\">947\u00d7757 77.8 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2025-05-27T08:42:23.925Z",
+      "updated_at": "2025-05-27T08:42:23.925Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Ralf,\nI have a feeling that setting --redefineSignalPOIs cross_section_VV causes the constraint on this nuisance parameter to be dropped. Can you try putting -P cross_section_VV instead?\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Ralf,</p>\n<p>I have a feeling that setting <code>--redefineSignalPOIs cross_section_VV</code> causes the constraint on this nuisance parameter to be dropped. Can you try putting <code>-P cross_section_VV</code> instead?</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "raschmie",
+      "name": "Ralf Schmieder",
+      "created_at": "2025-05-27T08:49:07.942Z",
+      "updated_at": "2025-05-27T08:49:07.942Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\ngreat thank you very much for the quick reply. The results look now much more comparable. And we do expect the best fit result from the scan and its uncertainties to match the best fit values and uncertainties from the impact plot?\nHere is the plot after switching to -P cross_section_VV\nCheers\nRalf\nscan_minusPoption696\u00d7572 6.68 KB",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>great thank you very much for the quick reply. The results look now much more comparable. And we do expect the best fit result from the scan and its uncertainties to match the best fit values and uncertainties from the impact plot?<br>\nHere is the plot after switching to <code>-P cross_section_VV</code><br>\nCheers<br>\nRalf<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/9d7e94fa244235737229e57c05eaba1b36e77a8b.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/9d7e94fa244235737229e57c05eaba1b36e77a8b\" title=\"scan_minusPoption\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/9d7e94fa244235737229e57c05eaba1b36e77a8b.png\" alt=\"scan_minusPoption\" data-base62-sha1=\"mtga8bBkER54LMr4TS9oDMKVFp1\" width=\"608\" height=\"500\" data-dominant-color=\"F8F8F8\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">scan_minusPoption</span><span class=\"informations\">696\u00d7572 6.68 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "raschmie",
+      "name": "Ralf Schmieder",
+      "created_at": "2025-05-27T09:00:48.555Z",
+      "updated_at": "2025-05-27T09:01:18.018Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "the results from the impact plot are for the fit values of cross_section_VV:\n1.19\u00b10.935",
+      "cooked_html": "<p>the results from the impact plot are for the fit values of <code>cross_section_VV</code>:<br>\n1.19\u00b10.935</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2025-05-27T15:35:24.272Z",
+      "updated_at": "2025-05-27T15:35:24.272Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Ralf,\nYes, at this point I would expect the two to agree. The fact they don\u2019t suggests some subtle difference in the set up of the two fits (e.g. is --setParameterRanges r_WH=-5,5 significant?).\nI would try to verify if the fit results are still different after making sure all relevant input settings are the same.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Ralf,</p>\n<p>Yes, at this point I would expect the two to agree. The fact they don\u2019t suggests some subtle difference in the set up of the two fits (e.g. is <code>--setParameterRanges r_WH=-5,5</code> significant?).</p>\n<p>I would try to verify if the fit results are still different after making sure all relevant input settings are the same.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "raschmie",
+      "name": "Ralf Schmieder",
+      "created_at": "2025-05-28T09:47:23.672Z",
+      "updated_at": "2025-05-28T09:47:23.672Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nthank you for the hint, we managed to get similar results. We were able to solve it by including this options in the scan:\n--floatOtherPOIs 1 --saveInactivePOI 1\n\nThis flags are used in the production of the impact plots (by default we assume, as we did not pass those flags).\nCheers,\nRalf",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>thank you for the hint, we managed to get similar results. We were able to solve it by including this options in the scan:</p>\n<pre><code class=\"lang-auto\">--floatOtherPOIs 1 --saveInactivePOI 1\n</code></pre>\n<p>This flags are used in the production of the impact plots (by default we assume, as we did not pass those flags).<br>\nCheers,<br>\nRalf</p>"
+    }
+  ]
+}

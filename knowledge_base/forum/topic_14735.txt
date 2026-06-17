@@ -1,0 +1,70 @@
+TOPIC: Jump in likelihood profile
+URL: https://cms-talk.web.cern.ch/t/14735
+DATE: 2022-09-05T14:21:09.142Z
+SOLVED: no
+============================================================
+
+QUESTION (by davignon @ 2022-09-05T14:21:09.351Z):
+Dear Combine experts,
+In the context of the ttH + resolved VH Higgs to invisible analysis (HIG-21-007), we see a jump in the likelihood profile when scanning mu for the resolved VH part of the analysis (it does not appear in the ttH + VH resolved combination). The bump is around mu=-0.02 (we scan slightly negative mus because that is where the minimum for ttH is).
+Nick suggested that we look at the behaviour of the some of top-impact systematics as mu varies. You will find some slides (made by Rob) that summarize this study:
+
+docs.google.com
+
+VH res bump analysis
+
+VH res bump analysis Comparing systs vs μ
+
+As you can see, we indeed observe some bumps at around the same place for the lepton-related systematics (slides 5, 6 and 7).
+We are unsure about what we could do next to understand and cure this issue. The analysis’ approval is pending this to be fixed, and if possible/ideally the result could be presented next week at Higgs Hunting, so solving this is pressing.
+Thank you very much in advance for your help.
+Best regards,
+Olivier for the analyzers
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-09-05T16:45:48.000Z):
+Hi Oliver,
+the first thing to do is to try to isolate the “source” of the problem.
+If you have channels with discrete nuisances, try to freeze them at the best fit value and see if the bump is still there.
+If you don’t, try to check if freezing each of the large impacting sources at the time will make the bump disappear.
+In the last round of the higgs combination we check the parameters that between two values of the fit (best fit and bump point) differ most[*] to isolate it,
+since it was not one of the most impactful nuisances.
+Once you isolate the parameter, plot the nll scan of that parameter.
+In our case the nll was almost flat, but the global minimum was not found correctly.
+For us, it was sufficient to start the fit with (maybe your name is slightly different, but it was for one of the vhbb analysis IIRC).
+CMS_LHE_weights_scale_muF_Zj2b=0.5
+Below you can see example of the plots that helped us to identify and fix the problem.
+the param vs nll on the left, with the minimum slightly off and the param vs mu on the right with the color for the different values of the nll.
+image.png1453×811 108 KB
+Cheers,
+-Andrea
+[*] in absolute for constrained nuisances and in relative terms for background yields
+On Mon, Sep 5, 2022 at 4:22 PM Olivier Davignon via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Olivier Davignon davignonSeptember 5
+
+Dear Combine experts,
+In the context of the ttH + resolved VH Higgs to invisible analysis (HIG-21-007), we see a jump in the likelihood profile when scanning mu for the resolved VH part of the analysis (it does not appear in the ttH + VH resolved combination). The bump is around mu=-0.02 (we scan slightly negative mus because that is where the minimum for ttH is).
+Nick suggested that we look at the behaviour of the some of top-impact systematics as mu varies. You will find some slides (made by Rob) that summarize this study:
+docs.google.com
+### VH res bump analysis
+VH res bump analysis Comparing systs vs μ
+As you can see, we indeed observe some bumps at around the same place for the lepton-related systematics (slides 5, 6 and 7).
+We are unsure about what we could do next to understand and cure this issue. The analysis’ approval is pending this to be fixed, and if possible/ideally the result could be presented next week at Higgs Hunting, so solving this is pressing.
+Thank you very much in advance for your help.
+Best regards,
+Olivier for the analyzers
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by rowhite @ 2022-09-06T19:39:34.802Z):
+Hi Andrea,
+Thanks for your response. So I’ve been investigating this further with the most stand-out pull/largest impact systematics, and those that may be some way correlated between years, VH categories etc in our analysis (we have a VH category based on 0 b-jets, 1 b-jet and 2 b-jets). Unfortunately having sifted through countless syst vs mu plots I’ve not come across any significant “bumps” like that which appears in the original VH curve.
+Even with freezing certain parameters with the “largest” bumps (still these bumps are far smaller than the bump in the original plot) it seems like the bump becomes more “pronounced”.
+I have then run the likelihood scan over subsets of years and VH category, and have identified that it is in the 0 b-jet VH category that the curve isn’t smooth, and especially so when combining just 2016 and 2017. I’ve added a couple of slides to the original deck here: https://docs.google.com/presentation/d/1Wbio9Ni1B-TGX-9KL0VQ2s5ko-h3pSExSlj5-LvYuKM/edit#slide=id.g14b353e817a_0_30
+I think that we can explain this as a group of systematics potentially under tension that contribute to the observed behaviour, but please let us know if you think about other things that we could look at in order to identify the issue.
+Kind regards,
+Rob, Olivier
+----------------------------------------

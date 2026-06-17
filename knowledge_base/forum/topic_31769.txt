@@ -1,0 +1,62 @@
+TOPIC: HS3 discussion at the HSF Data Analysis WG meeting Monday, Nov 27 at 16:00 CET
+URL: https://cms-talk.web.cern.ch/t/31769
+DATE: 2023-11-17T09:52:18.048Z
+SOLVED: no
+============================================================
+
+QUESTION (by anigamov @ 2023-11-17T09:52:18.389Z):
+Dear all,
+Please see below the announcement of the next HSF meeting where the HEP Statistics Serialization Standard will be discussed.
+Best,
+Aliya
+
+Dear Data Analysis friends,
+The next HSF Data Analysis WG meeting is dedicated to the topic of the HEP Statistics Serialization Standard (HS3).
+It takes place on Monday, Nov 27 at 16:00 CET
+https://indico.cern.ch/event/1348309
+with Zoom connection details provided on the agenda.
+The HS3 project defines a standard for representing statistical models in a form that is both human- and machine-readable. Check out the GitHub repository [1] for more details! A common serialization format allows for the interoperability of statistical tools and helps streamline the publishing of statistical models.
+We would like to use this meeting to showcase the ongoing work to the DAWG community and also invite feedback about HS3.
+We are looking forward to seeing you there,
+Nicole, Nick, Alex
+[1] https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard
+----------------------------------------
+
+REPLY 2 (by mpierini @ 2023-11-17T13:31:09.857Z):
+Hello
+I have to say that I find the choice of venue for such a discussion quite peculiar.
+Question: are we engaged in the discussion more than what we were 8 months ago?
+We would like to avoid that a decision is imposed on us, as we already discussed in the past.
+Also, the discussion should be on the content, not just on the form. I don’t know how many statistics
+experts go to HSF meetings
+Cheers
+Maurizio
+----------------------------------------
+
+REPLY 3 (by ncsmith @ 2023-11-17T16:18:45.602Z):
+Hi Maurizio,
+The main intention here is to allow people from non-LHC experiments who follow HSF meetings to become aware of this development work. Indeed HS3 is still well away from finalization, and more input from a broader community is very welcome. @kskovpen may have details as to how CMS is engaged.
+I agree that statistics experts should be involved, but the fact that many statistical tool developers are already engaged is very promising and probably a good starting point.
+Thanks,
+~Nick
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-11-17T16:20:40.457Z):
+Hi Maurizio,
+The choice of the forum was made by those leading the HS3 effort as they are trying to make more people aware of the effort.
+We have not had much more engagement with HS3 than what was done in the spring and early summer with a few meetings/discussions. The only activity really is having set up a contact person for HS3 within CMS, and he’s had a first e-mail exchange with Carsten (leading the HS3 effort) where carsten provided some basic info about the status of the effort.
+But a major reason for our lack of involvement is the general lack of movement or discussion. As far as we know this is the first real meeting or discussion on the issue since the summer. At that point they decided that meetings were not as effective as they’d like and wanted to move the discussion more onto github [1]. There is some activity there, though not much.
+Perhaps @ncsmith can comment if I’ve missed something, as I know he has been somewhat active in the discussions. He already did.
+I also don’t know how many statisticians are likely to attend.
+Best,
+Kyle
+[1] https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard/discussions
+----------------------------------------
+
+REPLY 5 (by kskovpen @ 2023-11-17T16:30:46.425Z):
+Hi Maurizio,
+Just to confirm what Nick and Kyle mentioned in this thread.
+On the CMS side, I am serving as a contact person for the HS3 communications. There were no meetings organized so far - we expect to have the first discussion to take place on Nov 27 in order to clarify the strategy on harmonizing statistical model formats and define possible action items.
+Thanks,
+Kirill
+----------------------------------------

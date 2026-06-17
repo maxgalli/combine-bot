@@ -1,0 +1,45 @@
+{
+  "topic_id": 42380,
+  "title": "Segv with ValidateDatacards.py",
+  "url": "https://cms-talk.web.cern.ch/t/42380",
+  "category_id": 279,
+  "created_at": "2024-06-14T21:56:22.243Z",
+  "last_posted_at": "2024-06-22T21:07:56.718Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "wtford",
+      "name": "William Ford",
+      "created_at": "2024-06-14T21:56:22.755Z",
+      "updated_at": "2024-06-14T21:56:22.755Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI\u2019m getting a segv crash with this command:\n\nValidateDatacards.py 1DTChiHH800_LSP1_Data_Combo.txt\nThe card file is at [1].  The release is CMSSW_11_3_4, with CombineHarvester/CombineTools checked out.\nThe output is\n[SetFlag] Changing value of flag \u201ccheck-negative-bins-on-import\u201d from 1 to 0\n[SetFlag] Changing value of flag \u201cworkspaces-use-clone\u201d from 0 to 1\n[#1] INFO:ObjectHandling \u2013 RooWorkspace::import(_rateParams) importing RooRealVar::rp_xsig1_ybkg_met0_drmax1\n[#1] INFO:ObjectHandling \u2013 RooWorkspace::import(_rateParams) importing RooRealVar::rp_xbkg_ysig_met1_drmax1\n[#1] INFO:ObjectHandling \u2013 RooWorkspace::import(_rateParams) importing RooRealVar::rp_xbkg_ysig_met1_drmax0\n[#0] ERROR:InputArguments \u2013  RooWorkspace::argSet(_rateParams) no RooAbsArg named \u201crp_xbkg_ysig_met0_drmax1\u201d in workspace\n[#0] ERROR:InputArguments \u2013  RooWorkspace::argSet(_rateParams) no RooAbsArg named \u201crp_xbkg_ybkg_met0_drmax1\u201d in workspace\n[#0] ERROR:InputArguments \u2013  RooWorkspace::argSet(_rateParams) no RooAbsArg named \u201ckappa_xsig1_ysig_met0_drmax1\u201d in workspace\n[#0] ERROR:InputArguments \u2013 RooArgList::operator ERROR: index 1 out of range (0,1)\n*** Break *** segmentation violation\n\u2026\nThe rateParam lines (61 of them), are at the end of the datacard file.\n\n[1] https://cernbox.cern.ch/s/nlZa0WLmwFCLlVe\nAny pointers on how to diagnose this would be welcome.\nThanks,\nBill",
+      "cooked_html": "<p>Hi,</p>\n<p>I\u2019m getting a segv crash with this command:</p>\n<blockquote>\n<p>ValidateDatacards.py 1DTChiHH800_LSP1_Data_Combo.txt<br>\nThe card file is at [1].  The release is CMSSW_11_3_4, with CombineHarvester/CombineTools checked out.<br>\nThe output is<br>\n[SetFlag] Changing value of flag \u201ccheck-negative-bins-on-import\u201d from 1 to 0<br>\n[SetFlag] Changing value of flag \u201cworkspaces-use-clone\u201d from 0 to 1<br>\n[<span class=\"hashtag-raw\">#1</span>] INFO:ObjectHandling \u2013 RooWorkspace::import(_rateParams) importing RooRealVar::rp_xsig1_ybkg_met0_drmax1<br>\n[<span class=\"hashtag-raw\">#1</span>] INFO:ObjectHandling \u2013 RooWorkspace::import(_rateParams) importing RooRealVar::rp_xbkg_ysig_met1_drmax1<br>\n[<span class=\"hashtag-raw\">#1</span>] INFO:ObjectHandling \u2013 RooWorkspace::import(_rateParams) importing RooRealVar::rp_xbkg_ysig_met1_drmax0<br>\n[<span class=\"hashtag-raw\">#0</span>] ERROR:InputArguments \u2013  RooWorkspace::argSet(_rateParams) no RooAbsArg named \u201crp_xbkg_ysig_met0_drmax1\u201d in workspace<br>\n[<span class=\"hashtag-raw\">#0</span>] ERROR:InputArguments \u2013  RooWorkspace::argSet(_rateParams) no RooAbsArg named \u201crp_xbkg_ybkg_met0_drmax1\u201d in workspace<br>\n[<span class=\"hashtag-raw\">#0</span>] ERROR:InputArguments \u2013  RooWorkspace::argSet(_rateParams) no RooAbsArg named \u201ckappa_xsig1_ysig_met0_drmax1\u201d in workspace<br>\n[<span class=\"hashtag-raw\">#0</span>] ERROR:InputArguments \u2013 RooArgList::operator<a></a> ERROR: index 1 out of range (0,1)<br>\n*** Break *** segmentation violation<br>\n\u2026<br>\nThe rateParam lines (61 of them), are at the end of the datacard file.</p>\n</blockquote>\n<p>[1] <a href=\"https://cernbox.cern.ch/s/nlZa0WLmwFCLlVe\" rel=\"noopener nofollow ugc\">https://cernbox.cern.ch/s/nlZa0WLmwFCLlVe</a></p>\n<p>Any pointers on how to diagnose this would be welcome.</p>\n<p>Thanks,</p>\n<p>Bill</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-06-19T10:31:37.318Z",
+      "updated_at": "2024-06-19T10:31:37.318Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi Bill,\nSorry for the delayed response. I took a quick look, and I think the issue is related to the order in which things are being declared in your datacard.\nIt seems you have some RooFormulaVars defined which rely on params (or rateParams) which aren\u2019t defined until later lines in the datacard, I think this is what is causing the fault.  (see for example, the FormulaVar defined on line 181 which references rateParams defined on lines 235 and 219).\nCombineHarvester is parsing the formulaVar line first and crashing because the relevant parameters aren\u2019t in the workspace yet. There are some other lines like that too, so you\u2019ll need to fix them all.\nThen, unfortunately it seems there is another problem which is a bug in the current recommended release of CH (v2.1.0) however, it has been fixed in the main branch, so you could use that. There will also be a new CH release soon which will include the fix.\nHope that helps,\nKyle",
+      "cooked_html": "<p>Hi Bill,</p>\n<p>Sorry for the delayed response. I took a quick look, and I think the issue is related to the order in which things are being declared in your datacard.</p>\n<p>It seems you have some RooFormulaVars defined which rely on params (or rateParams) which aren\u2019t defined until later lines in the datacard, I think this is what is causing the fault.  (see for example, the FormulaVar defined on line 181 which references rateParams defined on lines 235 and 219).</p>\n<p>CombineHarvester is parsing the formulaVar line first and crashing because the relevant parameters aren\u2019t in the workspace yet. There are some other lines like that too, so you\u2019ll need to fix them all.</p>\n<p>Then, unfortunately it seems there is another problem which is a bug in the current recommended release of CH (v2.1.0) however, it has been fixed in the <code>main</code> branch, so you could use that. There will also be a new CH release soon which will include the fix.</p>\n<p>Hope that helps,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "wtford",
+      "name": "William Ford",
+      "created_at": "2024-06-22T21:07:56.718Z",
+      "updated_at": "2024-06-22T21:07:56.718Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thanks Kyle.  ValidateDatacards.py now works for me, after reordering to put formulaVars at the end of the txt file, and switching to the main branch of CombineHarvester.\nBill",
+      "cooked_html": "<p>Thanks Kyle.  ValidateDatacards.py now works for me, after reordering to put formulaVars at the end of the txt file, and switching to the main branch of CombineHarvester.</p>\n<p>Bill</p>"
+    }
+  ]
+}

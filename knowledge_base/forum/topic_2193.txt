@@ -1,0 +1,31 @@
+TOPIC: Question about limit calculation
+URL: https://cms-talk.web.cern.ch/t/2193
+DATE: 2021-10-29T22:48:58.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by SHI_Kun @ 2021-10-29T22:48:58.000Z):
+Hi Higgs combine group,
+I was trying to calculate the limit for Z’ searching. And found that there is a veto range between 8GeV to 10GeV. Within this range, the command “combine -M AsymptoticLimits datacard.root” does not working properly.
+Here is an example of that, between 8 and 10 GeV, it is just a straight line connecting them without the actual calculation value.
+The version of HiggsAnalysis is updated. I checked the output datacards are normal, only the AsymptoticLimits_Out.txt file didn’t show the expected limits like the other mass points. Do you know what is the problem of that and how to fix that? Thank you.
+Best regards,
+Kun
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-10-30T21:12:47.000Z):
+*** Discussion title: Higgs Combination
+Dear Kun,
+Something went wrong in one of the fits that are needed to set the
+limits - it's impossible to say what exactly the problem is without
+studying the fit a bit more. Since you mention it's a Z' search, perhaps
+you can discuss with the combine contact [*] for the PAG in which your
+analysis is reviewed (EXO?) how best to investigate what is happening.
+If after discussing with your PAG's combine contact you still can't
+solve the issue, we can of course try to help, but you would need to
+share your workspace/datacard and the exact commands you are running.
+Best,
+Adinda
+[*]
+https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters
+----------------------------------------

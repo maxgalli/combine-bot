@@ -1,0 +1,23 @@
+TOPIC: FITTER_NEWER_GIVE_UP and FITTER_BOUND flags
+URL: https://cms-talk.web.cern.ch/t/45078
+DATE: 2024-08-04T18:50:26.407Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by hyeonseo @ 2024-08-04T18:50:26.515Z):
+Dear combine experts,
+I have a quick question regarding two flags that have seen used by previous groups in my analysis (H->MuMu): FITTER_NEWER_GIVE_UP, FITTER_BOUND.
+I tried searching for these terms  in the combine documentation, but they didn’t give any results. For full context, the combine command in question is this one below:
+combine -M Significance -d datacard_comb_sig_cat0_ggh.root -m 125 -n _signif_cat0_ggh --cminDefaultMinimizerStrategy 1 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --setParameters pdf_index_ggh=0 --cminRunAllDiscreteCombinations --setParameterRanges r=-10,10 --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH
+
+which is taken from this repo.  Thank you in advance!
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by adewit @ 2024-08-05T08:35:45.085Z):
+Dear Hyeon-Seo,
+The options that are passed with --X-rtd are sometimes options that are not generally recommended to be used, which is why you don’t find them all documented in the documentation.
+First, FITTER_NEWER_GIVE_UP does not exist (FITTER_NEVER_GIVE_UP does), so this command simply does nothing. I note that unless I misread the code, both FITTER_BOUND and FITTER_NEVER_GIVE_UP seem to only do something in case another flag is set, which is not the case in your command.
+So in conclusion it looks to me like these options could be removed and will not change anything about the way your fit is run and the outcome.
+Best,
+Adinda
+----------------------------------------

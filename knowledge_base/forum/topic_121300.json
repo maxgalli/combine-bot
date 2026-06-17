@@ -1,0 +1,67 @@
+{
+  "topic_id": 121300,
+  "title": "Goodness Of Fit with only poisson",
+  "url": "https://cms-talk.web.cern.ch/t/121300",
+  "category_id": 279,
+  "created_at": "2025-03-31T14:10:13.635Z",
+  "last_posted_at": "2025-04-01T10:51:31.909Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "amassiro",
+      "name": "Andrea Massironi",
+      "created_at": "2025-03-31T14:10:13.771Z",
+      "updated_at": "2025-03-31T14:10:13.771Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am wondering if it\u2019s possible to generate toys during a goodness of fit [1] test with only poisson variations (namely toy ~ poisson [expected]) and with all the nusances and POIs fixed to the best fitted value?\nThis would be a real test of the goodness of fit, with a current model, to data.\nWhat would be the exact combine command to obtain this?\nE.g.:\ncombine -M GoodnessOfFit combined.root --algo=saturated -t 100  -s 12345 --toysFreq\n\nBest regards,\nAndrea\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/?h=goodne#goodness-of-fit-tests",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am wondering if it\u2019s possible to generate toys during a goodness of fit [1] test with only poisson variations (namely toy ~ poisson [expected]) and with all the nusances and POIs fixed to the best fitted value?<br>\nThis would be a real test of the goodness of fit, with a current model, to data.<br>\nWhat would be the exact combine command to obtain this?</p>\n<p>E.g.:</p>\n<pre><code>combine -M GoodnessOfFit combined.root --algo=saturated -t 100  -s 12345 --toysFreq\n</code></pre>\n<p>Best regards,<br>\nAndrea</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/?h=goodne#goodness-of-fit-tests\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/?h=goodne#goodness-of-fit-tests</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2025-03-31T14:27:28.662Z",
+      "updated_at": "2025-03-31T14:27:28.662Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nIndeed we suggest to use the --toysFreq option when running the saturated model exactly for the reason you quote.\nOn the other hand, by default the signal strength is free to float when you use GoodnessOfFit. If you want to fix it, you can use --fixedSignalStrength=\nCheers,\nGiacomo",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>Indeed we suggest to use the --toysFreq option when running the saturated model exactly for the reason you quote.<br>\nOn the other hand, by default the signal strength is free to float when you use GoodnessOfFit. If you want to fix it, you can use --fixedSignalStrength=</p>\n<p>Cheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "amassiro",
+      "name": "Andrea Massironi",
+      "created_at": "2025-03-31T14:33:30.253Z",
+      "updated_at": "2025-03-31T14:33:30.253Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nthanks for the fast reply.\nI have a follow up question, since it\u2019s not clear to me. In the documentation [1] I read:\n\n\u2013toysFrequentist the nuisance parameters in each toy are set to their nominal values which are obtained after first fitting to the observed data, with the POIs fixed, before generating the toy data sets. For evaluating likelihoods, the constraint terms are instead randomized within their PDFs around the post-fit nuisance parameter values.\n\nWhat is not clear to be is if the POIs are fixed to the best value (that is what I would like to have) or fixed to their default value of the model.\nWhich is the case?\nBest regards,\nAndrea\n[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>thanks for the fast reply.</p>\n<p>I have a follow up question, since it\u2019s not clear to me. In the documentation [1] I read:</p>\n<blockquote>\n<p>\u2013toysFrequentist the nuisance parameters in each toy are set to their nominal values which are obtained after first fitting to the observed data, with the POIs fixed, before generating the toy data sets. For evaluating likelihoods, the constraint terms are instead randomized within their PDFs around the post-fit nuisance parameter values.</p>\n</blockquote>\n<p>What is not clear to be is if the POIs are fixed to the best value (that is what I would like to have) or fixed to their default value of the model.<br>\nWhich is the case?</p>\n<p>Best regards,<br>\nAndrea</p>\n<p>[1] <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation</a></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2025-04-01T09:40:20.816Z",
+      "updated_at": "2025-04-01T09:40:20.816Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nWith --toysFrequentist the POIs are frozen to whichever values they happen to have in the workspace at that moment (*). It\u2019s normally recommended to set these explicitly with --setParameters to be sure the values are the desired ones.\nTo generate frequentist toys from the global best-fit, the easiest way I can think to do it is to first run a fit with MultiDimFit, save the workspace and a snapshot, then run again, load the snapshot, add --bypassFrequentistFit and the other desired toy generation options.\ncheers,\nAndrew\n(*)\n\ngithub.com/cms-analysis/HiggsAnalysis-CombinedLimit\n\nsrc/Combine.cc\n\nmain\n\ngobs.assignValueOnly(*snap);\nw->saveSnapshot(\"clean\", utils::returnAllVars(w));\n}\n}\nelse{\nif (genPdf == 0) throw std::invalid_argument(\"You can't generate background-only toys if you have no background-only pdf in the workspace and you have set --noMCbonly\");\nif (toysFrequentist_) {\nw->saveSnapshot(\"reallyClean\", utils::returnAllVars(w));\nif (dobs == 0) throw std::invalid_argument(\"Frequentist Asimov datasets can't be generated without a real dataset to fit\");\nRooArgSet gobsAsimov;\nutils::setAllConstant(*mc->GetParametersOfInterest(), true); // Fix poi, before fit\ndouble poiVal = 0.;\nif (mc->GetParametersOfInterest()->getSize()) {\npoiVal = dynamic_cast<RooRealVar *>(mc->GetParametersOfInterest()->first())->getVal();\n}\ndobs = asimovutils::asimovDatasetWithFit(mc, *dobs, gobsAsimov, !bypassFrequentistFit_, poiVal, verbose);\nif (mc->GetGlobalObservables()) {\nRooArgSet gobs(*mc->GetGlobalObservables());\ngobs = gobsAsimov;\n}\nutils::setAllConstant(*mc->GetParametersOfInterest(), false);",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>With <code>--toysFrequentist</code> the POIs are frozen to whichever values they happen to have in the workspace at that moment (*). It\u2019s normally recommended to set these explicitly with <code>--setParameters</code> to be sure the values are the desired ones.</p>\n<p>To generate frequentist toys from the global best-fit, the easiest way I can think to do it is to first run a fit with MultiDimFit, save the workspace and a snapshot, then run again, load the snapshot, add <code>--bypassFrequentistFit</code> and the other desired toy generation options.</p>\n<p>cheers,<br>\nAndrew</p>\n<p>(*)</p><aside class=\"onebox githubblob\" data-onebox-src=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/Combine.cc#L923\">\n  <header class=\"source\">\n\n      <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/Combine.cc#L923\" target=\"_blank\" rel=\"noopener nofollow ugc\">github.com/cms-analysis/HiggsAnalysis-CombinedLimit</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <h4><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/Combine.cc#L923\" target=\"_blank\" rel=\"noopener nofollow ugc\">src/Combine.cc</a></h4>\n\n<div class=\"git-blob-info\">\n  <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/Combine.cc#L923\" rel=\"noopener nofollow ugc\"><code>main</code></a>\n</div>\n\n\n\n    <pre class=\"onebox\"><code class=\"lang-cc\">\n      <ol class=\"start lines\" start=\"913\" style=\"counter-reset: li-counter 912 ;\">\n          <li>       gobs.assignValueOnly(*snap);</li>\n          <li>       w-&gt;saveSnapshot(\"clean\", utils::returnAllVars(w));</li>\n          <li>   }</li>\n          <li>}</li>\n          <li> else{</li>\n          <li>   if (genPdf == 0) throw std::invalid_argument(\"You can't generate background-only toys if you have no background-only pdf in the workspace and you have set --noMCbonly\");</li>\n          <li>   if (toysFrequentist_) {</li>\n          <li>       w-&gt;saveSnapshot(\"reallyClean\", utils::returnAllVars(w));</li>\n          <li>       if (dobs == 0) throw std::invalid_argument(\"Frequentist Asimov datasets can't be generated without a real dataset to fit\");</li>\n          <li>       RooArgSet gobsAsimov;</li>\n          <li class=\"selected\">       utils::setAllConstant(*mc-&gt;GetParametersOfInterest(), true); // Fix poi, before fit</li>\n          <li>       double poiVal = 0.;</li>\n          <li>       if (mc-&gt;GetParametersOfInterest()-&gt;getSize()) {</li>\n          <li>         poiVal = dynamic_cast&lt;RooRealVar *&gt;(mc-&gt;GetParametersOfInterest()-&gt;first())-&gt;getVal();</li>\n          <li>       }</li>\n          <li>       dobs = asimovutils::asimovDatasetWithFit(mc, *dobs, gobsAsimov, !bypassFrequentistFit_, poiVal, verbose);</li>\n          <li>       if (mc-&gt;GetGlobalObservables()) {</li>\n          <li>           RooArgSet gobs(*mc-&gt;GetGlobalObservables());</li>\n          <li>           gobs = gobsAsimov;</li>\n          <li>       }</li>\n          <li>       utils::setAllConstant(*mc-&gt;GetParametersOfInterest(), false);</li>\n      </ol>\n    </code></pre>\n\n\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n"
+    },
+    {
+      "post_number": 5,
+      "username": "amassiro",
+      "name": "Andrea Massironi",
+      "created_at": "2025-04-01T10:51:31.909Z",
+      "updated_at": "2025-04-01T10:51:31.909Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Andrew,\nthanks for the reply and for the instructions.\nBest regards,\nAndrea",
+      "cooked_html": "<p>Dear Andrew,</p>\n<p>thanks for the reply and for the instructions.</p>\n<p>Best regards,<br>\nAndrea</p>"
+    }
+  ]
+}

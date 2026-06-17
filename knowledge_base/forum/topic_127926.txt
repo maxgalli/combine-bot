@@ -1,0 +1,66 @@
+TOPIC: GoF saturated test distribution peaked at 0. Is it expected or is there a mistake?
+URL: https://cms-talk.web.cern.ch/t/127926
+DATE: 2025-07-31T04:29:15.601Z
+SOLVED: no
+============================================================
+
+QUESTION (by beozek @ 2025-07-31T04:29:18.369Z):
+Dear experts,
+I’m running goodness of fit tests for the UL17 muon+jets charge asymmetry analysis using Combine v10.2.1 (CMSSW_14_1_0_pre4).
+How I ran the test:
+For the saturated test I generated 1000 toy datasets with
+combine -M GoodnessOfFit datacard_muon_UL17_750_1000_SR.txt --algo=saturated -n result_toy_sb --toysFrequentist -t 1000
+
+and merge and plot them in the usual way (I used the commands from the Combine website)
+combine -M GoodnessOfFit datacard_muon_UL17_750_1000_SR.txt --algo saturated
+
+combineTool.py -M CollectGoodnessOfFit --input higgsCombineTest.GoodnessOfFit.mH120.root higgsCombineresult_toy_sb.GoodnessOfFit.mH120.123456.root -m 125.0 -o gof.json
+
+plotGof.py gof.json --statistic saturated --mass 125.0 -o gof_plot
+
+What I see
+The part I didn’t understand is that the toy distribution strongly peaks at 0 instead of looking more Gaussian-like. I attached the json file and the plot. The gof plot and the JSON are attached.
+More detail about my analysis:
+
+workspace has two SR bins (electron, muon). For this first trial I use muon channel only.
+I have 5 ttbar mass bins. This card covers only 750<Mtt<1000.
+all MC-stat uncertainties are added via autoMCStats
+shape nuisances (pu, JEC, b-tag, …) are present, please see all list from the attached datacard.
+Signal:
+
+TTbar_1 and TTbar_2 are two gen-level bins obtained by unfolding reco to gen.
+They include only matched events (projection of the response matrix).
+This match cuts the original ttbar sample size.
+
+Event counts in the ROOT file
+
+Matched ttbar (signal) 23,695
+Data 65,163
+Background 9,138
+
+Combine input ROOT file is attached.
+The output plot is attached for reference.
+
+Questions:
+
+Is the pronounced peak at 0 the expected behaviour?
+If yes, are there recommended alternative GoF tests?
+If not, what typical misconfigurations (frozen nuisances, wrong autoMCStats parameters) could force the toys down to 0?
+
+Thanks a lot for your help!
+Best regards,
+Beren
+gof_plot596×572 5.05 KB
+gof.json (25.6 KB)
+dY_UL17_muon_750_1000_SR_renamed.root (164.4 KB)
+datacard_muon_UL17_750_1000_SR.txt (6.1 KB)
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2025-07-31T07:06:25.039Z):
+Hi Beren,
+Roughly speaking the saturated GoF test tends to give expected distributions which look like \chi^2(n_d) where n_d is the number of bins in the analysis minus the number of free parameters. This is just a rough guide for your intuition, that’s the reason we perform the toys to estimate the distribution rather than performing some analytic calculation. But in terms of guiding your intuition it can be helpful.
+From what I see in your analysis after a quick look at your data card and root file, I think you are only covering 2 data bins with this test? So the naive expectation would be a chi-squared with  1 d.o.f. which is indeed peaked at 0. Judging based on the reported p-value you show and where I see the blue arrow for the observed point, it looks like the distribution is somewhat wider than a \chi^2 with 1 degree of freedom, but as I said this is a naive estimate, so I don’t think there’s anything to be alarmed about.
+in short: I didn’t check the rest of your setup/commands in any detail, but the expected GoF curve you show is consistent with my naive expectations due to it being a fit with 2 bins.
+Best,
+Kyle
+----------------------------------------

@@ -1,0 +1,261 @@
+TOPIC: Compatibility between fits
+URL: https://cms-talk.web.cern.ch/t/2178
+DATE: 2021-10-08T12:09:15.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by rseidita @ 2021-10-08T12:09:15.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+we are trying to gauge the compatibility of two fits to the same datacards. In one case we scale all signals with a sigle signal strenght, while in the other we have 4 signal strengths for different processes. We were wondering what would be the correct way to do it:
+- Naively, we took the difference between the the nll values at the minima of both fits, calculated -2*(nll_multiple - nll_single) and then got a p-value assuming a chi^2 distribution with 3 DoF. Is this correct?
+- Alternatively, we thought of getting the distribution od the test statistic from toys, and were wondering about the correct way to generate them. Would it be frequentist toys around the best fit with a single parameter?
+Thanks in advance, cheers,
+Roberto
+----------------------------------------
+
+REPLY 2 (by lenzip @ 2021-10-08T12:21:19.000Z):
+Hi,
+Also technically, how do we get the nll values at the minimum? We used the --saveNLL option and we get "nll" and "nll0" in the limit tree and we don't know exactly what they are.
+Thanks
+Giulio
+----------------------------------------
+
+REPLY 3 (by amarini @ 2021-10-08T12:43:18.000Z):
+*** Discussion title: Higgs Combination
+Hi Roberto,
+First considerations are the followings:
+(1) you may have two different workspaces (the output of text2workspace) with the two models. One with r and the other with (r1, r2, ... rN)
+(2) you can build a single workspace with the two models simultaneously inside, and  you may define the set of pois and the freezing or floating conditions at run time.
+(3) you may have a single physics model, with 'r' and additionally n-1 orthogonal points (r'1, r'2, .. r'N-1).
+I assume you did (2), since it is a bit more handy than (1). I also will highlight some sketch on possible expansions in the description using (3).
+As you correctly said, you could run an asymptotic test using Wilks' theorem.
+This can be achieved with:
+(a)
+combine -M MultiDimFit --saveWorkspace --redefineSignalPOIs r --freezeParameters r1,r2,rN --setParameters r1=1,r2=1,..,rN=1 -d (1) [...]
+(b)
+combine -M MultiDimFit -d (a) --snapshotName MultiDimFit --skipInitialFit --redefineSignalPOIs r1,r2,rN --freezeParameters r --setParameters r=1 [...]
+and comparing the deltaNLL value in the last limit tree. Since the second fit could be re-arranged such that the N degrees of freedom describes the first fit, this is effectively a test of a chi-square with N-1 degrees of freedom (Wilks').
+In principle the deltaNLL you are using above is the test statistics. You can check with toys (probably I would use the outcome of (a) to define toys frequentist postfit toys or simply repeat the fit as in (a) if it is not computationally expensive).
+combine -M GenerateOnly --toysFrequentist --saveToys --snapshotName MultiDimFit -d (a) --bypassFrequentistFit [...]
+and then fit them with (a) and (b) to obtain the distribution of deltaNLL.
+In this case, you will get directly a p-value.
+If you have constructed a workspace as in (3), previous steps can be obtain with a series of relaxations and enforcement of constraints, but ideally similar.
+However, the model is explicitly nested. This could be used to redefine for instance the test-statistics. In the case in which N=2, which I understand is not your case but let's take this as an example, you can for instance compute also one sided confidence intervals using the CLs prescription and the modified test-statistics for upper limit. An other possibility for a generic N, would be to obtain FC confidence intervals on the r'1..r'N-1 1D (one floating) or N-1 D (all floating) together with r, and checking if the null hypothesis is within the established intervals.
+Potentially, the asymptotic method should be fine in most of the cases, unless you are dealing with low counts. The verification with toys is feasible if the p-value to be estimated is not too small, otherwise a too large set may be needed.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 4 (by rseidita @ 2021-10-08T12:54:40.000Z):
+*** Discussion title: Higgs Combination
+Dear Andrea,
+thanks a lot for your prompt and complete answer. We're using setup (1) with two separate WSs. Is there a way to feed the snapshot from the fit on the first WS into the second without issues with the POI definitions? Or, in case this is complicated, could you please point me to instructions on how to include both models into a single WS?
+Cheers,
+Roberto
+----------------------------------------
+
+REPLY 5 (by amarini @ 2021-10-08T13:43:05.000Z):
+*** Discussion title: Higgs Combination
+Hi Roberto,
+Including the two models into the same workspace is indeed not much more complicated than a single model.
+If you are using multiSignalModel or an ad hoc model of you own,  you can return:
+r*r1, r*r2 ... when it is necessary. You could also set them freeze or float as default, and in your own model you could already include a default set of POIs.
+Feeding the snapshot in alternate way it is in principle possible with setParameters rgx/file/... but I would strongly discourage it since it may easily open to vulnerabilities in the bf point definition (since you are not performing the fit again).
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 6 (by lenzip @ 2021-10-08T14:27:13.000Z):
+Hi,
+Just to quickly close this, since the thread now has branched to more fundamental discussions, can I kindly reiterate my question on the meaning of those two numbers, before we proceed with the more fundamental discussion?
+Thanks
+Giulio
+----------------------------------------
+
+REPLY 7 (by adewit @ 2021-10-08T14:43:20.000Z):
+*** Discussion title: Higgs Combination
+Hi Giulio,
+nll is the value of the nll wrt "nll0", and "nll0" is the pre-fit nll
+value (so using the parameter values in the workspace plus any
+--setParameters overrides). Note however that for shape analyses this
+constant pre-fit value is subtracted, so that nll0 is always 0. (The
+absolute nll0 value can be stored by running with --X-rtd
+REMOVE_CONSTANT_ZERO_POINT=1 )
+Hope that helps, Adinda
+----------------------------------------
+
+REPLY 8 (by rseidita @ 2021-12-07T10:18:41.558Z):
+Dear combine experts,
+coming back to this old thread as I think the issue is related. As part of the HWW legacy review, we’re trying to gauge the compatibility of our STXS fit with the SM by doing something in line with what was discussed in this thread i.e., doing one fit with the full STXS POI scheme, a second one with a single POI scaling all signals and comparing NLLs as -2*(NLL_onepoi - NLL_manypois).
+Here the issue lies in the treatment of theoretical uncertainties on the signal templates, which in the STXS fit we tweak to remove their normalization effect since we quote cross sections as a result. On the one hand, fitting all STXS signals with a single POI w/o these uncertainties would not be representative as we’re effectively removing an important degree of freedom from the fit; on the other hand putting back these theoretical uncertainties in the fit with the full set of POIs (to remain consistent between the two) would give a different result, and thus be an unfair comparison as well.
+Do these reservations make sense to you? And if so, do you have any insight on how to preceed correctly?
+Cheers,
+Roberto
+----------------------------------------
+
+REPLY 9 (by amarini @ 2021-12-08T16:43:25.000Z):
+Hi,
+
+Here the issue lies in the treatment of theoretical uncertainties on the signal templates, which in the STXS fit we tweak to remove their normalization effect since we quote cross sections as a result.
+
+This removal changes (which I agree for quoting xsecs) the uncertainties but not the best fit point.
+Adding them back will make them strengths (i.e. ratio of obs/mc cross sections).
+This is due to the fact that the free parameters will always be preferred for compensation wrt the constrained one at the minimum of the likelihood.
+Can you try to put those back, rerunning the fit and check that the best-fit (observed) points don’t change?
+You should be able to add them in the datacard, possibly as lnN, since these affects only processes and you already have them split.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 10 (by rseidita @ 2021-12-10T11:25:18.651Z):
+Hi Andrea,
+thank you for your answer, indeed the best fit values stay in place when adding back the theoretical uncertainties. A few follow-up points:
+
+When calculating -2*(NLL_onepoi - NLL_manypois) on data we end up with a negative number, so I assume we’re simply missing a minus sign somewhere, can you confirm?
+Is it correct to check this number against a Chi^2 distribution with N_manypois - 1 DoF i.e., does Wilk’s theorem hold in this setup? We think it does since the space of 1 POI can be tought of as a subset of the space of the full set of POIs, but can you confirm?
+In any case, to make sure we ran a set of frequentist toys to get the distribution; however here we observe that the sign of the test statistic in data and in toys is flipped, as you can see here nll2.pdf. Could this have to do with the frequentist toys approach? We are generating them starting from the model with a single POI and then fitting them with both models, is this the correct thing to do?
+
+Thank you very much in advance,
+Cheers,
+Roberto
+----------------------------------------
+
+REPLY 11 (by amarini @ 2021-12-10T12:41:14.000Z):
+Hi Roberto,
+
+The NLL is the negative log-likelihood.
+
+The likelihood of the manyPOIs configuration should be always greater or equal than the likelihood of one-POI, thus the NLL_one >= NLL_many.
+I don’t see the missing minus sign. I think we need to make sure that the two configurations lead to a compatible log-likelihood ratio.
+
+Yes, it is correct. Wilks’ theorem states that the asymptotic distribution of the negative log-likelihood-ratio is a chi-square distribution with deltaParameters DoF, if the likelihood is well behaved (first and second derivatives exists), if you are not at the border of the parameter space in asymptotic conditions
+
+and your model is truly sensitive to that many parameters (i.e., the likelihood is not flat in some direction).
+This more or less happens in case of a “real” signal, while, for instance, a search with a floating mass will break these conditions (and thus have to deal with LEE).
+
+The absolute value of the likelihood (nll) is kind of meaningless, and has a meaning only in “deltas” (i.e., in likelihood ratios). In many practical cases, it is also difficult to track it down correctly since many numerical minimization tools (including both RooFit and Combine), remove large constant offsets in performing the minimization.
+
+For instance, in the Poisson likelihood, P(m| k) = exp(-m) m^k / k!, it is common practice to remove the large and difficult to compute factorial term (k!) that depends only on the observations.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 12 (by rseidita @ 2021-12-10T14:48:50.305Z):
+Hi Andrea,
+
+In that case, given NLL_one >= NLL_many, it would follow that -2*(NLL_one - NLL_many) would come out negative, but how does that compare to a Chi^2 then? Sorry this is probably dumb but I keep being confused
+When you say “the two configurations”, do you mean the one onPOI/manyPOIs ones or data/toys?
+The fact absolute NLLs do not carry meaning is clear to me, but the attachment was to show that taking the delta on data we get one sign while taking it on toys we get another, so one of the two is clearly off and we were wondering if it could be a mistake in the procedure to get/fit toys
+
+Cheers (and thank you),
+Roberto
+----------------------------------------
+
+REPLY 13 (by amarini @ 2021-12-11T09:56:01.000Z):
+Hi Roberto,
+
+for the first point, it means that there is something wrong. The models should be fully nested (as required also by Wilks’ thr), so it should always happen that the multipoi agrees more to the data than the one-poi only.
+
+onPOI/manyPOIs ones. Wilks’ theorem deals with a single realization.
+
+I think this is related to the point one. I don’t know exactly how.
+
+My suggestion is to try to stick the r parameter into the many-poi workspace, and simply run the two points you need.
+I remember you were using two separate workspaces, but any tiny inconsistency (even if practically negligible) will be reflected in an incorrect deltaNLL evaluation.
+These differences could be from small nuisance differences in the two workspaces, to a difference in the n. of bins/processes, eg how the htt proc is accounted for in the two workspaces, to more technicalities, …
+I think this should be the straight-forward way to debug it. I took one of the latest version of the command you have in the README; unfortunately, I can’t test them in the STXS, since the version in gitlab does not compile, so I give you the command below on the other datacard, mimicking what is done in the A1 (production x decays) physics model[*].
+This is also probably (?) not the exact thing that you do in the paper, at least in respect to the htt.
+I copied the commands here: ~amarini/public/forRoberto/test.sh
+----------------------------------------
+
+REPLY 14 (by lviliani @ 2021-12-14T13:07:33.325Z):
+Hi Andrea,
+thanks a lot for the useful inputs!
+We have reproduced the STXS workspace including both r and all the other POIs together, following your suggestion.
+Using your commands and running the fit on data we get essentially the same deltaNLL (=21.06) that we got using the 2 separate workspaces.
+Then, in order to get a p-value we generated frequentist toys and fitted them with the same approach as above, again using the commands you provided.
+But in the case of toys we always get a negative deltaNLL, as you can see in the attached plot (the blue histogram is the deltaNLL distribution in toys and the red line the value we get from data). This is again consistent with what we observed using 2 separate workspaces.
+At this point it is not clear to us whether there is a problem in the toy generation part or somewhere else, so any help to understand what is happening would be very appreciated.
+The commands that we used, as well as the STXS workspace are here: /afs/cern.ch/user/l/lviliani/public/ForAndrea
+Cheers,
+Lorenzo
+
+image1213×899 5.5 KB
+----------------------------------------
+
+REPLY 15 (by amarini @ 2021-12-15T11:28:40.000Z):
+Hi Lorenzo,
+I’m running some tests to confirm what follows.
+I think the largest problem is that the last fit is actually performed on data. (-t 0) and not on the generated toy (-t 1). (at least in the commands you gave me)
+Again, fixed the single toy (and the strategy[*]), the deltaNLL should be >=0.
+I’m also trying to add --toysFrequentists in the two MultiDim commands, and to leave floating r in the frequentist fit for the toy generation. (but this should be minor details).
+I think that we should expect from the toys (as per Wilks th.) a p-value compatible with n-1 d.o.f. for a chisquare distribution with outcome 21.06, with likely small deviations.
+
+root [0] TMath::Prob(21.06,16)
+(double) 0.17621575
+
+Cheers,
+-Andrea
+[*] but I’ll take some more time to think about the frequentist approach.
+
+···
+Il giorno mar 14 dic 2021 alle ore 14:08 Lorenzo Viliani via CMS talk <noreply@cms-talk.web.cern.ch> ha scritto:
+
+| Lorenzo Viliani lvilianiDecember 14 |
+
+| - |
+
+Hi Andrea,
+thanks a lot for the useful inputs!
+We have reproduced the STXS workspace including both r and all the other POIs together, following your suggestion.
+Using your commands and running the fit on data we get essentially the same deltaNLL (=21.06) that we got using the 2 separate workspaces.
+Then, in order to get a p-value we generated frequentist toys and fitted them with the same approach as above, again using the commands you provided.
+But in the case of toys we always get a negative deltaNLL, as you can see in the attached plot (the blue histogram is the deltaNLL distribution in toys and the red line the value we get from data). This is again consistent with what we observed using 2 separate workspaces.
+At this point it is not clear to us whether there is a problem in the toy generation part or somewhere else, so any help to understand what is happening would be very appreciated.
+The commands that we used, as well as the STXS workspace are here: /afs/[cern.ch/user/l/lviliani/public/ForAndrea](http://cern.ch/user/l/lviliani/public/ForAndrea)
+Cheers,
+Lorenzo
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 16 (by lviliani @ 2021-12-15T11:44:12.244Z):
+Hi Andrea,
+thanks a lot for looking into this!
+Just a quick question on the comparison with the chisquare distribution, as I also did the same test before checking with toys.
+I was assuming that deltaNLL is just the difference of the NLLs, i.e. without the factor 2, so when comparing with the chisquare distribution shouldn’t we consider 2*deltaNLL to get the actual test statistics?
+Thanks,
+Lorenzo
+----------------------------------------
+
+REPLY 17 (by amarini @ 2021-12-15T11:47:00.000Z):
+Yes, there should be a factor 2.
+-Andrea
+
+···
+Il giorno mer 15 dic 2021 alle ore 12:45 Lorenzo Viliani via CMS talk <noreply@cms-talk.web.cern.ch> ha scritto:
+
+| Lorenzo Viliani lvilianiDecember 15 |
+
+| - |
+
+Hi Andrea,
+thanks a lot for looking into this!
+Just a quick question on the comparison with the chisquare distribution, as I also did the same test before checking with toys.
+I was assuming that deltaNLL is just the difference of the NLLs, i.e. without the factor 2, so when comparing with the chisquare distribution shouldn’t we consider 2*deltaNLL to get the actual test statistics?
+Thanks,
+Lorenzo
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 18 (by lviliani @ 2021-12-15T13:40:41.979Z):
+Hi Andrea,
+I have run again the last step using -t 1 but I still get a negative deltaNLL.
+It’s possible that I’m still doing something wrong though, so any cross-check from you is welcome.
+Thanks!
+Lorenzo
+----------------------------------------

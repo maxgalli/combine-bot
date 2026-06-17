@@ -1,0 +1,31 @@
+TOPIC: Excluding Parameters with combineTool.py
+URL: https://cms-talk.web.cern.ch/t/47023
+DATE: 2024-08-29T20:49:17.214Z
+SOLVED: no
+============================================================
+
+QUESTION (by eertorer @ 2024-08-29T20:49:17.315Z):
+Dear combine experts,
+Is it possible to exclude certain parameters when running combineTool.py? If so, how can I do that? I checked the combine documentation but didn’t see instructions on how to do so.
+Thank you for your help,
+Erdem
+----------------------------------------
+
+REPLY 2 (by eertorer @ 2024-08-29T21:00:07.163Z):
+To be more specific, I want to exclude parameters when running impacts. I am trying to find a way not to create condor jobs for a subset of parameters when running impacts with the --doFits and the --job-mode condor options.
+----------------------------------------
+
+REPLY 3 (by amarini @ 2024-08-29T21:20:49.199Z):
+Hi,
+Did you already try --exclude?
+$combineTool.py -M Impacts --help
+[...]
+Impacts options:
+options specific to this method
+[...]
+--exclude PARAM1,PARAM2,...
+Skip these nuisances. Also accepts regexp with syntax 'rgx{<my regexp>}'
+[...]
+
+-A
+----------------------------------------

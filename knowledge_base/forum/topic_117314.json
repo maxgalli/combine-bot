@@ -1,0 +1,67 @@
+{
+  "topic_id": 117314,
+  "title": "Toy generation from postfit workspace",
+  "url": "https://cms-talk.web.cern.ch/t/117314",
+  "category_id": 279,
+  "created_at": "2025-03-05T13:21:22.443Z",
+  "last_posted_at": "2025-03-06T13:56:58.436Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "gboldrin",
+      "name": "Giacomo Boldrini",
+      "created_at": "2025-03-05T13:21:23.132Z",
+      "updated_at": "2025-03-05T13:21:23.132Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nWe are trying to build postfit uncertainty bands for a binned shape analysis with Combine. We are using the MultiSignal physics model defining four parameter of interest (signal strengths).\nThe first step after the creation of the workspace is to use MultiDimFit to save a snapshot of the best-fit workspace. Then we would like to use this snapshot to throw pseudo-random toys (GenerateOnly) and fit them wither with MultiDimFit method or with FitDiagnostics to save the toy shapes.\nUsing this procedure we realized that the snapshot was not loaded correctly when throwing toys, in particular the value of the POIs seemed to be random. This behaviour was cured by specifying the POI post-fit values when throwing toys (\u2013setParameters).\nYou can find a summary of this in the following slides:\nVBS_Combination_toys.pdf (1.4 MB)\nWhile generating toys within frequentist approach, it seems that Combine is really trying to retrieve the POI values from the snapshot and setting them to constants here.\nAm I misunderstanding something or is this the Combine expected behaviour?\nThank you!",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>We are trying to build postfit uncertainty bands for a binned shape analysis with Combine. We are using the MultiSignal physics model defining four parameter of interest (signal strengths).<br>\nThe first step after the creation of the workspace is to use MultiDimFit to save a snapshot of the best-fit workspace. Then we would like to use this snapshot to throw pseudo-random toys (GenerateOnly) and fit them wither with MultiDimFit method or with FitDiagnostics to save the toy shapes.</p>\n<p>Using this procedure we realized that the snapshot was not loaded correctly when throwing toys, in particular the value of the POIs seemed to be random. This behaviour was cured by specifying the POI post-fit values when throwing toys (\u2013setParameters).</p>\n<p>You can find a summary of this in the following slides:</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/lnnXuqXkOlyd1kdzw4LUzSWIrBA.pdf\">VBS_Combination_toys.pdf</a> (1.4 MB)</p>\n<p>While generating toys within frequentist approach, it seems that Combine is really trying to retrieve the POI values from the snapshot and setting them to constants <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/374e6221144298668fabbfbc73196e2078db5e7b/src/Combine.cc#L962-L976\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>Am I misunderstanding something or is this the Combine expected behaviour?</p>\n<p>Thank you!</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-03-06T10:39:47.617Z",
+      "updated_at": "2025-03-06T10:39:47.617Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nI think the behavior you are observing is totally expected, when throwing the toys with --toysFrequentist option you only specify that constraint terms should be centered around best-fit values, the treatment for other parameters is not specified, but you can do it with --bypassFrequentist and --setParameters.\nFor the post-fit plots, why don\u2019t you use the FitDiagnostics routine with --saveWithUncertainties or the PostFitShapesFromWorkspace, both of them sample from the covariance matrix to account for the correlations between the parameters.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>I think the behavior you are observing is totally expected, when throwing the toys with <code>--toysFrequentist</code> option you only specify that constraint terms should be centered around best-fit values, the treatment for other parameters is not specified, but you can do it with <code>--bypassFrequentist</code> and <code>--setParameters</code>.</p>\n<p>For the post-fit plots, why don\u2019t you use the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=plotti#plotting\" rel=\"noopener nofollow ugc\"><code>FitDiagnostics</code> routine</a> with <code>--saveWithUncertainties</code> or the <a href=\"https://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html\" rel=\"noopener nofollow ugc\">PostFitShapesFromWorkspace</a>, both of them sample from the covariance matrix to account for the correlations between the parameters.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gboldrin",
+      "name": "Giacomo Boldrini",
+      "created_at": "2025-03-06T10:49:37.335Z",
+      "updated_at": "2025-03-06T10:49:37.335Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nthank you for confirming and for the prompt answer. Is there a reason why you would fix constrain terms from the snapshot and not the POI? It seems very counter-intuitive to me but probably I am just missing the use case.\nI know about the tools you mentioned but I find the toy approach way faster and more parallelizable given the size of my workspace.\nBest,\nGiacomo",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>thank you for confirming and for the prompt answer. Is there a reason why you would fix constrain terms from the snapshot and not the POI? It seems very counter-intuitive to me but probably I am just missing the use case.</p>\n<p>I know about the tools you mentioned but I find the toy approach way faster and more parallelizable given the size of my workspace.</p>\n<p>Best,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-03-06T13:51:00.000Z",
+      "updated_at": "2025-03-06T13:51:45.454Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "The reason is that often when wants \u201cpost-fit expected\u201d, it means \u201cexpected assuming the a model like the SM\u201d and for this reason, the POIs are set to their default values, not those that we obtain from data.\nThe SM says nothing about the value of the JES, electron ID etc etc, so those we take from out best knowledge in the post-fit \u2013 i.e from the data.\nBest,\nNick\n\n\u00b7\u00b7\u00b7\nFrom: Giacomo Boldrini via CMS talk noreply-cms-talk@cern.ch\nDate: Thursday, 6 March 2025 at 10:53\nTo: Nicholas Wardle Nicholas.Wardle@cern.ch\nSubject: [Common Analysis Tools/Statistical Interpretation Tools] Toy generation from postfit workspace\n\nGiacomo Boldrini gboldrinMarch 6\n\nDear Aliya,\nthank you for confirming and for the prompt answer. Is there a reason why you would fix constrain terms from the snapshot and not the POI? It seems very counter-intuitive to me but probably I am just missing the use case.\nI know about the tools you mentioned but I find the toy approach way faster and more parallelizable given the size of my workspace.\nBest,\nGiacomo\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>The reason is that often when wants \u201cpost-fit expected\u201d, it means \u201cexpected assuming the a model like the SM\u201d and for this reason, the POIs are set to their default values, not those that we obtain from data.</p>\n<p>The SM says nothing about the value of the JES, electron ID etc etc, so those we take from out best knowledge in the post-fit \u2013 i.e from the data.</p>\n<p>Best,</p>\n<p>Nick</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p><strong>From:</strong> Giacomo Boldrini via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a><br>\n<strong>Date:</strong> Thursday, 6 March 2025 at 10:53<br>\n<strong>To:</strong> Nicholas Wardle <a href=\"mailto:Nicholas.Wardle@cern.ch\">Nicholas.Wardle@cern.ch</a><br>\n<strong>Subject:</strong> [Common Analysis Tools/Statistical Interpretation Tools] Toy generation from postfit workspace</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><br><br><img width=\"45\" height=\"45\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/g/f04885/45.png\"><br><br></th>\n<th><br><br><a href=\"https://cms-talk.web.cern.ch/u/gboldrin\"><strong>Giacomo Boldrini</strong></a> <strong>gboldrin</strong><br>March 6<br><br></th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Aliya,</p>\n<p>thank you for confirming and for the prompt answer. Is there a reason why you would fix constrain terms from the snapshot and not the POI? It seems very counter-intuitive to me but probably I am just missing the use case.</p>\n<p>I know about the tools you mentioned but I find the toy approach way faster and more parallelizable given the size of my workspace.</p>\n<p>Best,<br>\nGiacomo</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/toy-generation-from-postfit-workspace/117314/3\"><strong>Visit Topic</strong></a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a><strong>click here</strong></a>.</p>\n</details>"
+    },
+    {
+      "post_number": 5,
+      "username": "gboldrin",
+      "name": "Giacomo Boldrini",
+      "created_at": "2025-03-06T13:56:58.436Z",
+      "updated_at": "2025-03-06T13:56:58.436Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nOk this is understood, but one could do this by saving the snapshot after profiling NP from data in CR fixing signal strengths to 1 (I usually call it \u201cdata\u201d-asimov). This was my source of confusion.\nBut I now understand the behaviour, thank you for pointing it out.\nBest,\nGiacomo",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>Ok this is understood, but one could do this by saving the snapshot after profiling NP from data in CR fixing signal strengths to 1 (I usually call it \u201cdata\u201d-asimov). This was my source of confusion.</p>\n<p>But I now understand the behaviour, thank you for pointing it out.</p>\n<p>Best,<br>\nGiacomo</p>"
+    }
+  ]
+}

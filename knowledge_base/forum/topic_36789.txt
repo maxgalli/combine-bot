@@ -1,0 +1,46 @@
+TOPIC: How to access ln(Lb) and ln(Ls+b) (or difference) for each Search Region during combination
+URL: https://cms-talk.web.cern.ch/t/36789
+DATE: 2024-03-13T16:09:13.197Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-13T16:09:13.523Z):
+Dear experts
+we combine three Search Regions (SR1, SR2 and SR3) for 2017 data with three signal strengths. We use the same mass and width for the signal. It is possible to extract in MultiDimFit
+combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0  --redefineSignalPOIs r_sig1,r_sig2,r_sig3  2017UL_dimuon_SR1SR2SR3.root -v 3
+ln(Lb), ln(Ls+b) (or difference) for each SR after combined fit ?
+Also, is it possible to plot S+B fitted curve on data for each SR after combined fit ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-03-14T17:11:54.837Z):
+Dear Sasha,
+it is unclear to me what is the purpose of your test. In general, it is NOT going to be possible for a simultaneous fit to extract the delta log-likelihood for each single region. This is due to the fact that the likelihood function, in general, do not factorize and thus it is not going to be simply the sum of the three components, but you will have also the nuisance constrain term, which is added only once for the full fit. (and that’s part of the purpose of having a simultaneous fit, and not three separate fit. )
+For plotting, it is possible. You can produce the prefit/b-only/s+b fit in all regions and eventually the sum of them, with the postfit uncertainties resampled, if needed. Please, look the manual/tutorial pages under -M FitDiagnostics, --saveShapes, and --saveWithUncertainties options.
+-Andrea
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-03-14T17:41:01.000Z):
+Dear Andrea,
+thank you for answer. I have in fact three independent signal strenghts
+in my fit, so three normalization parameters. This log likelihood
+should be a sum of three, I guess. I just want to compare them with
+log likelihood for my individual fits for each Search Region.
+Cheers, Sasha.
+
+···
+
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, March 14, 2024 18:12
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] How to access ln(Lb) and ln(Ls+b) (or difference) for each Search Region during combination
+
+Andrea Carlo Marini amariniMarch 14
+
+Dear Sasha,
+it is unclear to me what is the purpose of your test. In general, it is NOT going to be possible for a simultaneous fit to extract the delta log-likelihood for each single region. This is due to the fact that the likelihood function, in general, do not factorize and thus it is not going to be simply the sum of the three components, but you will have also the nuisance constrain term, which is added only once for the full fit. (and that’s part of the purpose of having a simultaneous fit, and not three separate fit. )
+For plotting, it is possible. You can produce the prefit/b-only/s+b fit in all regions and eventually the sum of them, with the postfit uncertainties resampled, if needed. Please, look the manual/tutorial pages under -M FitDiagnostics, --saveShapes, and --saveWithUncertainties options.
+-Andrea
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

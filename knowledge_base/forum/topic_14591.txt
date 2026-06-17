@@ -1,0 +1,155 @@
+TOPIC: Combine Envelope Method Quitting with No Limit Output
+URL: https://cms-talk.web.cern.ch/t/14591
+DATE: 2022-09-01T16:10:10.715Z
+SOLVED: no
+============================================================
+
+QUESTION (by stclark @ 2022-09-01T16:10:10.938Z):
+Hi Combine Experts.
+I am working on using Combine with the Envelope method to employ multiple functions for a falling background fit. I have made a datacard utilizing RooMultiPdfs which can be found here: /afs/cern.ch/user/s/stclark/public/CombineFiles/CARD_multi_X400A2.txt along with the corresponding .root file.
+The problem I am seeing is that when I run on this datacard using
+combine CARD_multi_X400A2.txt -M AsmyptoticLimits
+combine seems to quit before computing limits. The entire output from the above command is pasted here:
+
+<<< Combine >>>
+>>> method used is AsymptoticLimits
+>>> random number generator seed is 123456
+Missing variable p3_diphoton_atlas declared as flatParam, will create one!
+Missing variable p3_diphoton_moddijet declared as flatParam, will create one!
+Missing variable p0_diphoton_dijet declared as flatParam, will create one!
+Missing variable p1_diphoton_moddijet declared as flatParam, will create one!
+Missing variable p4_diphoton_moddijet declared as flatParam, will create one!
+Missing variable p1_diphoton_atlas declared as flatParam, will create one!
+Missing variable p4_diphoton_atlas declared as flatParam, will create one!
+Missing variable diphoton_multi_bkg_norm declared as flatParam, will create one!
+Missing variable p2_diphoton_moddijet declared as flatParam, will create one!
+Missing variable p2_diphoton_atlas declared as flatParam, will create one!
+Warning! – You haven’t picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the ‘B-only’ ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+
+and then the output terminates without computing a limit. I am not so much concerned with the missing variables or the warnings, as this is something I’ve seen on working combine cards. I am able to make cards and compute limits for each of the functions individually, but I am unable to get any output now using this envelope method.
+I have not seen this issue before where combine simply dies before computing a limit. Any insight as to what might be causing this? I am happy to provide more details about how the datacard was made or answer any other questions upon request.
+In case one would be running this on there own, I have included the function definition header files in /afs/cern.ch/user/s/stclark/public/CombineFiles/FunctionDefs . One would need to move the .h files to  /interface/ directory and the .cc files to /src/ directory in the HiggsAnalysis/CombinedLimit in the working area. Then one would also need to add the proper includes to the appropriate classes.h file and add the following lines to classes.xml :
+<class name="RooDijet5ParamBinPdf" />
+<class name="RooAtlas5ParamBinPdf" />
+<class name="RooModDijet5ParamBinPdf" />
+
+Then rebuild with scram. I can also provide more details (or any missing files) if this is not enough information for one to duplicate. Note that I have done my work in CMSSW_11_1_0_pre7
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-09-01T16:31:48.197Z):
+Did you try to fit each function separately and see if they converge?
+Did you try simplier methods (MultiDimFit) and check if the fit converge? What does it tells with larger verbosity?
+
+Notice that we didn’t yet commission any version of combine in CMSSW 11, yet.
+-Andrea
+----------------------------------------
+
+REPLY 3 (by stclark @ 2022-09-01T17:38:16.254Z):
+I have tried each function separately, they will converge and produce limits. The problem only arises when I try to use the envelope method with multiple functions
+
+I just tried running with -M MultiDimFit . the output was nearly identical, but right before it quit, it also printed out this line:
+SimNLL created with 1 channels, 0 generic constraints, 3 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+Typically what I’ve seen when combine works is that it will print the above line a 2-5 times and then print the limits, but in this case it just printed it once and still died without computing the limits. The output root file it creates is empty.
+
+Per the advice of another colleague, I also tried running with the options as:
+combine output/combineCards/CARD_multi_X400A2_alpha0.txt -M AsymptoticLimits  --setParameterRanges r=0,5 --saveWorkspace --cminDefaultMinimizerTolerance 0.00100 --cminDefaultMinimizerStrategy 2 --strictBounds
+and there was no difference in the output. I also tried tweaking the upper limit in --setParamaterRanges from 0.005 to 500 in 10x steps and nothing changed the output
+----------------------------------------
+
+REPLY 4 (by adewit @ 2022-09-01T19:14:47.503Z):
+Hi Steven,
+One quick thing to try: can you call ulimit -s unlimited in your shell before running your combine command?
+For large fits, the default stack size can be too small, which can lead to a crash (which for some methods can look like combine finished without giving any results)
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by stclark @ 2022-09-01T23:16:58.406Z):
+Unfortunately that did not cause any change, combine still dying without computing limits
+----------------------------------------
+
+REPLY 6 (by amarini @ 2022-09-02T07:37:45.000Z):
+You have a problem in the pdf n. 1,2
+
+combine -M MultiDimFit -v 3 CARD_multi_X400A2.root -L FunctionDefs/RooAtlas5ParamBinPdf_cc.so -L FunctionDefs/RooDijet5ParamBinPdf_cc.so -L FunctionDefs/RooModDijet5ParamBinPdf_cc.so --setParameters pdf_index=1 --freezeParameters pdf_index
+
+Please check that the MultiPdf is created correctly:
+Possible states:
+--- RooAbsCategory ---
+Value = 0 "dijet)
+Possible states:
+atlas 1
+dijet 0
+moddijet 2
+
+MultiPdf servers:
+root [10] wdiphoton_multi->pdf("DIPHO_multi")->Print("V")
+--- RooAbsArg ---
+Servers:
+(0x72dfcd0,V-) RooCategory::pdf_index "pdf_index"
+(0x63bb410,V-) RooDijet5ParamBinPdf::diphoton_dijet_bkg "diphoton_dijet_bkg"
+Proxies:
+
+(I think we miss here pdfs corresponding to index 1, and 2.)
+root [11] wdiphoton_multi->cat("pdf_index")->setIndex(1)
+root [12] wdiphoton_multi->cat("pdf_index")->Print()
+RooCategory::pdf_index = atlas(idx = 1)
+
+root [14] wdiphoton_multi->pdf("DIPHO_multi")->Print() ### not V, because we want to try to evaluate it
+
+Let me stress again that the 112x is not yet fully commissioned or validated,
+although we are very close, we didn’t finish commissioning and tag the 112x branch, which is still receiving some developments and potentially bug fixes.
+You would need to check that a stable tag gives you a similar result (and backporting executable is less likely to work out-of-the-box).
+Cheers,
+-Andrea
+On Fri, Sep 2, 2022 at 1:19 AM Steven Clark via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Steven Clark stclarkSeptember 1
+
+Unfortunately that did not cause any change, combine still dying without computing limits
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Adinda De Wit adewit Higgs convenerSeptember 1
+
+Hi Steven, One quick thing to try: can you call ulimit -s unlimited in your shell before running your combine command? For large fits, the default stack size can be too small, which can lead to a crash (which for some methods can look like combine finished without giving any results) Best, Adind…
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by stclark @ 2022-09-05T12:49:21.903Z):
+Thanks for all the help. I tried all the suggestions here and even tried everything in CMSSW_10_2_1 to no avail, but no it looks like I have found the (somewhat silly) solution:
+I have been using a script that reads a config file and writes the datacard. I modified a config file from a previous analysis that was producing functioning datacards and I had one that was producing these broken datacards shared here. I found that the only difference between the two config files was a line like this:
+from bad config file:
+'RooMultiPdf::DIPHOM_multi(pdf_index,DIPHOM_bkgdijet, DIPHOM_bkgatlas, DIPHOM_bkgmoddijet)',
+from good config file:
+'RooMultiPdf::DIPHOM_multi(pdf_index,DIPHOM_bkgdijet,DIPHOM_bkgatlas,DIPHOM_bkgmoddijet)',
+The only difference is the spaces after the commas. This was then being split on the comma and then stored in a list, In the bad case, the list stored variables like " DIPHOM_bkgatlas" with a leading space. This caused the output .txt datacard to look identical to one without the leading spaces, but clearly broke something in the corresponding .root file.
+I don’t know exactly what is going wrong in the .root file, but it appears as if the problem has been solved. Fortunately it’s an easy solution though it caused much headache
+----------------------------------------
+
+REPLY 8 (by amarini @ 2022-09-05T16:31:10.000Z):
+Hi,
+naively seems more something related to the underlying software releases rather than the code itself.
+Root version, python garbage collector, bindings …
+Cheers,
+-Andrea
+On Mon, Sep 5, 2022 at 2:51 PM Steven Clark via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Steven Clark stclarkSeptember 5
+
+Thanks for all the help. I tried all the suggestions here and even tried everything in CMSSW_10_2_1 to no avail, but no it looks like I have found the (somewhat silly) solution:
+I have been using a script that reads a config file and writes the datacard. I modified a config file from a previous analysis that was producing functioning datacards and I had one that was producing these broken datacards shared here. I found that the only difference between the two config files was a line like this:
+from bad config file:
+'RooMultiPdf::DIPHOM_multi(pdf_index,DIPHOM_bkgdijet, DIPHOM_bkgatlas, DIPHOM_bkgmoddijet)',
+from good config file:
+'RooMultiPdf::DIPHOM_multi(pdf_index,DIPHOM_bkgdijet,DIPHOM_bkgatlas,DIPHOM_bkgmoddijet)',
+The only difference is the spaces after the commas. This was then being split on the comma and then stored in a list, In the bad case, the list stored variables like " DIPHOM_bkgatlas" with a leading space. This caused the output .txt datacard to look identical to one without the leading spaces, but clearly broke something in the corresponding .root file.
+I don’t know exactly what is going wrong in the .root file, but it appears as if the problem has been solved. Fortunately it’s an easy solution though it caused much headache
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

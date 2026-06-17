@@ -1,0 +1,56 @@
+{
+  "topic_id": 142151,
+  "title": "Large prefit uncertainty using FitDiagnostics",
+  "url": "https://cms-talk.web.cern.ch/t/142151",
+  "category_id": 279,
+  "created_at": "2026-02-18T13:28:31.506Z",
+  "last_posted_at": "2026-03-25T13:42:11.607Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2026-02-18T13:28:31.835Z",
+      "updated_at": "2026-02-18T13:28:31.835Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nour analysis has a validation region that is used to test the background estimation methods and validate the statistical model. This VR has a corresponding, disjunct bin for every single bin used in the normal analysis, and is used unblinded for this testing.\nWhen running combine -M FitDiagnostics I am surprised by the apparent large uncertainty (230 events) seen in one of the bins, C_16for the lost lepton (LL) process, a MC-based estimate. (Bin 13 in the figure attached)\ngrafik1294\u00d71340 93.4 KB\nIn this bin the observation is 8, the LL MC yield is 0.7138+/-0.7113 from 396 events, modelled as an lnN 2 uncertainty. Other backgrounds (Znunu, Egamma) are essentially zero, the difference between the observation and these backgrounds is the QCD contribution (used for an ABCD method). Some systematic uncertainties are large, such as\nCMS_res_j_2018 lnN 0.18\nCMS_scale_j_2018 lnN 0.4\nCMS_scale_met_unclustered_energy_2018 lnN 0.65\nCMS_scale_j_2017 lnN 0.7\nCMS_scale_met_unclustered_energy_2017 lnN 1.42\nCMS_scale_met_unclustered_energy_2016postVFP lnN 1.5\nAdding up the nuisances, I expect a < 600% uncertainty on this contribution at most\n>>> v = np.array([2, 1.0031, 1.0018, 1.0064, 1.01, 1.20, 0.9987, 0.9999, 1.0000, 0.9992, 1.0000, 1.0019, 1.0000, 1.0000, 1.0008, 1.0000, 1.0000, 1.0000, 1.0004, 1.0009, 1.0013, 1.0104, 1.0000, 1.0000, 1.0000, 1.0083, 1.6665, 1.0000, 0.9928, 0.9986, 0.9803, 0.1751, 1.0026, 0.9871, 0.9978, 0.6978, 0.4036, 1.5059, 1.0034, 1.4189, 0.6560, 1.0004])\n>>> v[v<1] = 1/v[v<1]\n>>> np.sum((v-1)**2)**.5\n5.172668221426832\n\nThe bin is also connected to a constrained rate parameter\n\nCMS_SUS24006_LL_lowMET\nrateParam\nA*\nLL\n1.667\n\nCMS_SUS24006_LL_lowMET\nrateParam\nC*\nLL\n1.667\n\nCMS_SUS24006_LL_lowMET\nparam\n1.667\n0.667\n\nThese are large uncertainties, but not enough to justify the uncertainty of 230.\nI wrote a script to freeze the nuisance parameters one by one and performed FitDiagnostics. I do not see a single nuisance the freezing of which eliminates this issue. The prefit uncertainties are attached as well as the datacard. Can you please help point out where the uncertainty is coming from?\nCheers,\nPeter, @mbartok, @gpasztor\ng2000chi600.csv (65.5 KB)\nnuisanceExamination.csv (6.5 KB)",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>our analysis has a validation region that is used to test the background estimation methods and validate the statistical model. This VR has a corresponding, disjunct bin for every single bin used in the normal analysis, and is used unblinded for this testing.</p>\n<p>When running <code>combine -M FitDiagnostics</code> I am surprised by the apparent large uncertainty (230 events) seen in one of the bins, <code>C_16</code>for the lost lepton (LL) process, a MC-based estimate. (Bin 13 in the figure attached)<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/0/0770d8f44acb1a84080df6d9fd321e003ff3f8e8.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/0770d8f44acb1a84080df6d9fd321e003ff3f8e8\" title=\"grafik\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0770d8f44acb1a84080df6d9fd321e003ff3f8e8_2_361x375.png\" alt=\"grafik\" data-base62-sha1=\"13P7fmgKurQrCMyLuylwjhi53hC\" width=\"361\" height=\"375\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0770d8f44acb1a84080df6d9fd321e003ff3f8e8_2_361x375.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0770d8f44acb1a84080df6d9fd321e003ff3f8e8_2_541x562.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0770d8f44acb1a84080df6d9fd321e003ff3f8e8_2_722x750.png 2x\" data-dominant-color=\"E2DCDA\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">grafik</span><span class=\"informations\">1294\u00d71340 93.4 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>In this bin the observation is 8, the LL MC yield is 0.7138+/-0.7113 from 396 events, modelled as an <code>lnN 2</code> uncertainty. Other backgrounds (Znunu, Egamma) are essentially zero, the difference between the observation and these backgrounds is the QCD contribution (used for an ABCD method). Some systematic uncertainties are large, such as<br>\nCMS_res_j_2018 lnN 0.18<br>\nCMS_scale_j_2018 lnN 0.4<br>\nCMS_scale_met_unclustered_energy_2018 lnN 0.65<br>\nCMS_scale_j_2017 lnN 0.7<br>\nCMS_scale_met_unclustered_energy_2017 lnN 1.42<br>\nCMS_scale_met_unclustered_energy_2016postVFP lnN 1.5<br>\nAdding up the nuisances, I expect a &lt; 600% uncertainty on this contribution at most</p>\n<pre data-code-wrap=\"py\"><code class=\"lang-py\">&gt;&gt;&gt; v = np.array([2, 1.0031, 1.0018, 1.0064, 1.01, 1.20, 0.9987, 0.9999, 1.0000, 0.9992, 1.0000, 1.0019, 1.0000, 1.0000, 1.0008, 1.0000, 1.0000, 1.0000, 1.0004, 1.0009, 1.0013, 1.0104, 1.0000, 1.0000, 1.0000, 1.0083, 1.6665, 1.0000, 0.9928, 0.9986, 0.9803, 0.1751, 1.0026, 0.9871, 0.9978, 0.6978, 0.4036, 1.5059, 1.0034, 1.4189, 0.6560, 1.0004])\n&gt;&gt;&gt; v[v&lt;1] = 1/v[v&lt;1]\n&gt;&gt;&gt; np.sum((v-1)**2)**.5\n5.172668221426832\n</code></pre>\n<p>The bin is also connected to a constrained rate parameter</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th>CMS_SUS24006_LL_lowMET</th>\n<th>rateParam</th>\n<th>A*</th>\n<th>LL</th>\n<th>1.667</th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td>CMS_SUS24006_LL_lowMET</td>\n<td>rateParam</td>\n<td>C*</td>\n<td>LL</td>\n<td>1.667</td>\n</tr>\n<tr>\n<td>CMS_SUS24006_LL_lowMET</td>\n<td>param</td>\n<td>1.667</td>\n<td>0.667</td>\n<td></td>\n</tr>\n</tbody>\n</table>\n</div><p>These are large uncertainties, but not enough to justify the uncertainty of 230.<br>\nI wrote a script to freeze the nuisance parameters one by one and performed FitDiagnostics. I do not see a single nuisance the freezing of which eliminates this issue. The prefit uncertainties are attached as well as the datacard. Can you please help point out where the uncertainty is coming from?</p>\n<p>Cheers,<br>\nPeter, <a class=\"mention\" href=\"/u/mbartok\">@mbartok</a>, <a class=\"mention\" href=\"/u/gpasztor\">@gpasztor</a></p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/lbD3tVOWnVWvSKCigbSmRswxaox.csv\">g2000chi600.csv</a> (65.5 KB)</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/pqO96m4W2NYpjuW1iagooYX2lWZ.csv\">nuisanceExamination.csv</a> (6.5 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "jowulff",
+      "name": "Johan Wilfried Wulff",
+      "created_at": "2026-03-25T12:55:50.708Z",
+      "updated_at": "2026-03-25T12:55:50.708Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Peter,\nsorry \u2013 this topic has already been sitting here a while. From my experience I would expect these overly large prefit uncertainties to come from autoMCStats. You could check if that\u2019s the issue by just commenting out your * autoMCStats <threshold> line in the datacard. If this is indeed the issue, its likely due to the autoMCStats handling of bins with effective unweighted events below the threshold.",
+      "cooked_html": "<p>Hi Peter,</p>\n<p>sorry \u2013 this topic has already been sitting here a while. From my experience I would expect these overly large prefit uncertainties to come from <code>autoMCStats</code>. You could check if that\u2019s the issue by just commenting out your <code>* autoMCStats &lt;threshold&gt; </code>line in the datacard. If this is indeed the issue, its likely due to the <code>autoMCStats</code> handling of bins with effective unweighted events below the threshold.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2026-03-25T13:23:24.991Z",
+      "updated_at": "2026-03-25T13:23:24.991Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Johan Wilfried Wulff:\n\nhis topic has already been sitting here a while. From my experience I would expect these overly large prefit uncertainties to come from autoMCStats. You could check if that\u2019s the issue by just commenting out your * autoMCStats <threshold> line in the datacard. If this is indeed the issue, its likely due to the autoMCStats\n\nHi Johan,\nthank you for the reply. Our datacard is a counting card with separate nuisance parameters modeling the statistical uncertainties. We do not use autoMCStats.",
+      "cooked_html": "<aside class=\"quote no-group\" data-username=\"jowulff\" data-post=\"2\" data-topic=\"142151\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/j/7993a0/48.png\" class=\"avatar\"> Johan Wilfried Wulff:</div>\n<blockquote>\n<p>his topic has already been sitting here a while. From my experience I would expect these overly large prefit uncertainties to come from <code>autoMCStats</code>. You could check if that\u2019s the issue by just commenting out your <code>* autoMCStats &lt;threshold&gt; </code>line in the datacard. If this is indeed the issue, its likely due to the <code>autoMCStats</code></p>\n</blockquote>\n</aside>\n<p>Hi Johan,<br>\nthank you for the reply. Our datacard is a counting card with separate nuisance parameters modeling the statistical uncertainties. We do not use <code>autoMCStats</code>.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "jowulff",
+      "name": "Johan Wilfried Wulff",
+      "created_at": "2026-03-25T13:42:11.607Z",
+      "updated_at": "2026-03-25T13:42:11.607Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Peter,\nsorry - I should have checked your datacard before posting. Unfortunately I don\u2019t have a good suggestion for you then.",
+      "cooked_html": "<p>Hi Peter,</p>\n<p>sorry - I should have checked your datacard before posting. Unfortunately I don\u2019t have a good suggestion for you then.</p>"
+    }
+  ]
+}

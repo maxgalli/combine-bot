@@ -1,0 +1,279 @@
+TOPIC: Question about using 2D model in Combine tool
+URL: https://cms-talk.web.cern.ch/t/28775
+DATE: 2023-08-24T07:24:54.180Z
+SOLVED: no
+============================================================
+
+QUESTION (by chouy @ 2023-08-24T07:24:54.452Z):
+Dear Experts,
+We are working on the 2D modeling(two variables but the POI is 1) and try to input it to the Combine tool.
+We stored the 2D RooDataHist and 2D PDF in workspaces and run the Combine tool by the command:
+
+combine -M Significance datacard.txt -m 125  -t -1 --expectSignal=1
+
+combine -M AsymptoticLimits datacard.txt -m 125 --cminDefaultMinimizerStrategy 0
+
+The results are 0 for expected significance and really high values for expected limit.
+Here are few quetions I would like to ask:
+
+how to interpret the Combine results with 2D things?
+As I get 0 for expected significance, is there any possible way that I can print more decimal places(like 0.00001)?
+There are two variables in 2D workspace and how the Combine tool defines two mass values through “-m” command?
+
+Many thanks in advance.
+Best regards,
+Yu-Hsuan
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-08-24T13:29:43.794Z):
+Hi Yu-Hsuan,
+I am not entirely sure what you mean by “two variables but the POI is 1”. Usually the POI refers to the parameter of the model that you are trying to measure, but here it sounds like you are referring to it as one of the variables being used in the fit? Maybe I’ve misunderstood you.
+I think maybe your first question is related to this first point, but if you are simply talking about multidimensional fits with a single POI, then the interpretation of Significance values and of Limits is the same as for 1 dimensional fits.
+
+If combine is printing 0 as the significance then I believe that this is really the calculated value. I don’t think there is any way to print more digits, I believe that 6 significant figures should normally be printed, and you can check the precise value in the output root file by checking the value of the limit branch of the output tree. But, I believe that if 0 is printed it means that is really the value returned by the calculation.
+
+Stepping back for a second from the exact question, I would in any case be hesitant about both the utility and the reliability of the 6th digit of the significance calculation. If all you’d like to do is understand how much you would need to scale up the signal by in order to start seeing something significant, you can pass different values to the --expectSignal argument, and it will use the value you pass it as the POI value. E.g. doing --expectSignal 10 would run with a POI=10 instead of POI=1.
+
+I am not sure I’ve fully understood the question about two masses. There is only a single mass value defined by the -m argument, but note that if you need other similar keywords for your analysis, you can also define custom keywords to be used in the datacard and then specified on the command line, as mentioned in the documentation [1]. This will also modify the output from combine to keep track of the keyword’s value that was used, as explained here [2].
+
+I hope that helps. If you have followup questions it may also help to provide a working setup (or minimal version thereof) to refer to.
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#binned-shape-analysis
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#output-from-combine
+----------------------------------------
+
+REPLY 3 (by gortona @ 2023-08-24T13:32:52.000Z):
+Dear Yu-Hsuan,
+Please find some very quick answers. Others may correct me or integrate what I say.
+
+From my understanding, given that you are always only dealing with a single POI, nothing is different between 1D, 2D, or ND in the results provided in combine.
+Nevertheless, since you are using RooFit objects, a bit of extra caution should be used. For example, you need to make sure to be using a consistent binning and ranges for the 2 axes and that the dependencies between PDFs ↔ RooRealVars are properly set for all PDFs you are using.
+
+You can open the output .root file, and in the limit tree you will get the result with a float precision. But my feeling is that you are getting exactly 0. Do you get any errors/warning when running the fit?
+
+“-m” sets the initial value of the parameter called “MH” in the workspace (if it exists). Is not meant to identify neither POIs nor the variables used. It is mostly there for bookkeeping. For all other parameters, the proper way to set their initial values is via “setParameters”.
+Combine will work out the x and y axis based on the RooDataSet you provide: the RooDataSet is dependent on 2 variables (since it is a 2D analysis) and combine will pick those 2 as the 2 axis.
+
+On 24 Aug 2023, at 09:26, Yu-Hsuan Chou via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Yu-Hsuan Chou chouyAugust 24
+
+Dear Experts,
+We are working on the 2D modeling(two variables but the POI is 1) and try to input it to the Combine tool.
+We stored the 2D RooDataHist and 2D PDF in workspaces and run the Combine tool by the command:
+
+combine -M Significance datacard.txt -m 125 -t -1 --expectSignal=1
+
+combine -M AsymptoticLimits datacard.txt -m 125 --cminDefaultMinimizerStrategy 0
+
+The results are 0 for expected significance and really high values for expected limit.
+Here are few quetions I would like to ask:
+
+how to interpret the Combine results with 2D things?
+As I get 0 for expected significance, is there any possible way that I can print more decimal places(like 0.00001)?
+There are two variables in 2D workspace and how the Combine tool defines two mass values through “-m” command?
+
+Many thanks in advance.
+Best regards,
+Yu-Hsuan
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by chouy @ 2023-08-30T15:13:29.364Z):
+Dear Kyle,
+Thank you so much for your reply.
+For the content I quoted here:
+
+Kyle Cormier:
+
+I think maybe your first question is related to this first point, but if you are simply talking about multidimensional fits with a single POI, then the interpretation of Significance values and of Limits is the same as for 1 dimensional fits.
+
+Yes we meant the multidimensional fits with a single POI. Sorry for the confusion.
+Just to make it clear, by “two variables but the POI is 1”, we meant that the data and the fit model is 2-dimensional but as POI we still just want to calculate the signal strength (r or mu).
+Here are the workspaces(the version: CMSSW_10_2_13) and datacard we used. Not sure why we still got exactly 0 for significance.
+datacard.txt (1.1 KB)
+workspace_data.root (1.2 MB)
+workspace_signal.root (718.8 KB)
+Best regards,
+Yu-Hsuan
+----------------------------------------
+
+REPLY 5 (by chouy @ 2023-08-30T15:16:49.187Z):
+Dear Giacomo,
+Thank you for your replies. I would like to ask few follow-up questions.
+
+The consistent binning means using the same binning between signal and background right?
+You also mentioned the issue of the dependencies between PDFs and RooRealVars. Could you explain more about this for me? I am not sure I got your point.
+
+Giacomo Ortona:
+
+you need to make sure to be using a consistent binning and ranges for the 2 axes and that the dependencies between PDFs ↔ RooRealVars are properly set for all PDFs you are using.
+
+For the questions whether we get the error/warning:
+
+Giacomo Ortona:
+
+You can open the output .root file, and in the limit tree you will get the result with a float precision. But my feeling is that you are getting exactly 0. Do you get any errors/warning when running the fit?
+
+there is no error for the significance case. But for the limit, I saw some overflow warning when running the combine tool:
+
+WARNING: underflow in total event yield for pdf_bincat302_obsOnly, expected yield = -1.2 (observed: 0)
+
+Best regards,
+Yu-Hsuan
+----------------------------------------
+
+REPLY 6 (by kcormier @ 2023-08-31T12:38:59.057Z):
+Hi Yu-Hsuan,
+I think this is happening because you haven’t provided combine with the necessary information on the pdf normalizations.
+You can see some instructions on the online documentatoin, here [1]. It may also be helpful to take a look at the tutorial on parametric shape analysis here [2]. In particular,  you may want to look at Part 1 of that tutorial up to and including the section “Extension: signal normalization object”, as some details of a couple of ways of providing process normalization are explained there.
+In your datacard, on the rate line for the processes, you have -1, which for TH1s  and RooDataHists instructs combine to use the integral of the corresponding histogram, but for pdfs in parametric analyses this doesn’t work. In this case, it just treats -1 as any other number and assumes that the process normalization is -1 when building the workspace; which I don’t think is what you intended here. You’ll have to set the values to the intended normalization for your signal and background processes.
+I hope that helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rates-for-shape-analysis
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/
+----------------------------------------
+
+REPLY 7 (by gortona @ 2023-08-31T13:34:54.000Z):
+Dear Yu-Hsuan,
+What I meant is that in your roofit implementation you have the binning imposed by the histograms used to build the roodatahist, eventually a binning on the pdfs (if they are roohistpdf for example) and a binning associated to each roorealvar, which definesthe x and y axes binning actually seen by roofit.
+In principle, all these binnings should be consistent.
+Sometimes roofit manages to automatically ensure they are, but you should always check whether it is really the case.
+Best,
+Giacomo
+
+···
+Il 30 Ago 2023 17:18, Yu-Hsuan Chou via CMS talk noreply@cms-talk.web.cern.ch ha scritto:
+
+Yu-Hsuan Chou chouyAugust 30
+
+Dear Giacomo,
+Thank you for your replies. I would like to ask few follow-up questions.
+
+The consistent binning means using the same binning between signal and background right?
+You also mentioned the issue of the dependencies between PDFs and RooRealVars. Could you explain more about this for me? I am not sure I got your point.
+
+Giacomo Ortona:
+you need to make sure to be using a consistent binning and ranges for the 2 axes and that the dependencies between PDFs ↔ RooRealVars are properly set for all PDFs you are using.
+
+For the questions whether we get the error/warning:
+
+Giacomo Ortona:
+You can open the output .root file, and in the limit tree you will get the result with a float precision. But my feeling is that you are getting exactly 0. Do you get any errors/warning when running the fit?
+
+there is no error for the significance case. But for the limit, I saw some overflow warning when running the combine tool:
+
+WARNING: underflow in total event yield for pdf_bincat302_obsOnly, expected yield = -1.2 (observed: 0)
+
+Best regards,
+Yu-Hsuan
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Yu-Hsuan Chou chouyAugust 30
+
+Dear Kyle,
+Thank you so much for your reply.
+For the content I quoted here:
+
+Kyle Cormier:
+I think maybe your first question is related to this first point, but if you are simply talking about multidimensional fits with a single POI, then the interpretation of Significance values and of Limits is the same as for 1 dimensional fits.
+
+Yes we meant the multidimensional fits with a single POI. Sorry for the confusion.
+Just to make it clear, by “two variables but the POI is 1”, we meant that the data and the fit model is 2-dimensional but as POI we still just want to calculate the signal strength (r or mu).
+Here are the workspaces(the version: CMSSW_10_2_13) and datacard we used. Not sure why we still got exactly 0 for significance.
+datacard.txt (1.1 KB)
+workspace_data.root (1.2 MB)
+workspace_signal.root (718.8 KB)
+Best regards,
+Yu-Hsuan
+
+Giacomo Ortona gortonaAugust 24
+
+Dear Yu-Hsuan,
+Please find some very quick answers. Others may correct me or integrate what I say.
+
+From my understanding, given that you are always only dealing with a single POI, nothing is different between 1D, 2D, or ND in the results provided in combine.
+Nevertheless, since you are using RooFit objects, a bit of extra caution should be used. For example, you need to make sure to be using a consistent binning and ranges for the 2 axes and that the dependencies between PDFs ↔ RooRealVars are properly set for all PDFs you are using.
+
+You can open the output .root file, and in the limit tree you will get the result with a float precision. But my feeling is that you are getting exactly 0. Do you get any errors/warning when running the fit?
+
+“-m” sets the initial value of the parameter called “MH” in the workspace (if it exists). Is not meant to identify neither POIs nor the variables used. It is mostly there for bookkeeping. For all other parameters, the proper way to set their initial values is via “setParameters”.
+Combine will work out the x and y axis based on the RooDataSet you provide: the RooDataSet is dependent on 2 variables (since it is a 2D analysis) and combine will pick those 2 as the 2 axis.
+
+On 24 Aug 2023, at 09:26, Yu-Hsuan Chou via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Yu-Hsuan Chou chouyAugust 24
+
+Dear Experts,
+We are working on the 2D modeling(two variables but the POI is 1) and try to input it to the Combine tool.
+We stored the 2D RooDataHist and 2D PDF in workspaces and run the Combine tool by the command:
+
+combine -M Significance datacard.txt -m 125 -t -1 --expectSignal=1
+
+combine -M AsymptoticLimits datacard.txt -m 125 --cminDefaultMinimizerStrategy 0
+
+The results are 0 for expected significance and really high values for expected limit.
+Here are few quetions I would like to ask:
+
+how to interpret the Combine results with 2D things?
+As I get 0 for expected significance, is there any possible way that I can print more decimal places(like 0.00001)?
+There are two variables in 2D workspace and how the Combine tool defines two mass values through “-m” command?
+
+Many thanks in advance.
+Best regards,
+Yu-Hsuan
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Kyle Cormier kcormierAugust 24
+
+Hi Yu-Hsuan,
+I am not entirely sure what you mean by “two variables but the POI is 1”. Usually the POI refers to the parameter of the model that you are trying to measure, but here it sounds like you are referring to it as one of the variables being used in the fit? Maybe I’ve misunderstood you.
+I think maybe your first question is related to this first point, but if you are simply talking about multidimensional fits with a single POI, then the interpretation of Significance values and of Limits is the same as for 1 dimensional fits.
+
+If combine is printing 0 as the significance then I believe that this is really the calculated value. I don’t think there is any way to print more digits, I believe that 6 significant figures should normally be printed, and you can check the precise value in the output root file by checking the value of the limit branch of the output tree. But, I believe that if 0 is printed it means that is really the value returned by the calculation.
+
+Stepping back for a second from the exact question, I would in any case be hesitant about both the utility and the reliability of the 6th digit of the significance calculation. If all you’d like to do is understand how much you would need to scale up the signal by in order to start seeing something significant, you can pass different values to the --expectSignal argument, and it will use the value you pass it as the POI value. E.g. doing --expectSignal 10 would run with a POI=10 instead of POI=1.
+
+I am not sure I’ve fully understood the question about two masses. There is only a single mass value defined by the -m argument, but note that if you need other similar keywords for your analysis, you can also define custom keywords to be used in the datacard and then specified on the command line, as mentioned in the documentation [1]. This will also modify the output from combine to keep track of the keyword’s value that was used, as explained here [2].
+
+I hope that helps. If you have followup questions it may also help to provide a working setup (or minimal version thereof) to refer to.
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#binned-shape-analysis
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#output-from-combine
+
+Yu-Hsuan Chou chouyAugust 24
+
+Dear Experts,
+We are working on the 2D modeling(two variables but the POI is 1) and try to input it to the Combine tool.
+We stored the 2D RooDataHist and 2D PDF in workspaces and run the Combine tool by the command:
+
+combine -M Significance datacard.txt -m 125 -t -1 --expectSignal=1
+
+combine -M AsymptoticLimits datacard.txt -m 125 --cminDefaultMinimizerStrategy 0
+
+The results are 0 for expected significance and really high values for expected limit.
+Here are few quetions I would like to ask:
+
+how to interpret the Combine results with 2D things?
+As I get 0 for expected significance, is there any possible way that I can print more decimal places(like 0.00001)?
+There are two variables in 2D workspace and how the Combine tool defines two mass values through “-m” command?
+
+Many thanks in advance.
+Best regards,
+Yu-Hsuan
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

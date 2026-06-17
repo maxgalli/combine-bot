@@ -1,0 +1,49 @@
+TOPIC: Bias Test with signal strength 0
+URL: https://cms-talk.web.cern.ch/t/17036
+DATE: 2022-11-02T20:25:18.730Z
+SOLVED: no
+============================================================
+
+QUESTION (by stclark @ 2022-11-02T20:25:18.965Z):
+Hello combine experts,
+I am attempting to do a bias test for our resonant multiphoton analysis. We are using a RooMultiPdf to do the background fits with 5 different functions. We are also fitting in fixed windows of the mass ratio of our objects, generating a combine datacard for each window, and combining the cards together using combineCards.py. Now, we are attempting to do both a bias test with signal strength=0 and we are getting strange output.
+The code we are using for the bias code is attached here and at [1]. This code does test with signal strength=0 and with signal strength=1. The sig strength=1 option seems to work as we expect, it is only the null signal that is giving us trouble.
+The plots below are result of this code applied to the datacard here [2]
+With signal strength=0 we get the plot below and FitDiagnostic file [3]. It seems that we always get this sharp peak at 1 which is not what we would expect:
+
+image720×555 8.17 KB
+
+Contrast this with the plot below, which is the signal strength = 1 result and FitDiagnostic file [4]. Here, we see the gaussian we would expect:
+
+image718×529 15.3 KB
+
+The key commands for the toy generation and fitting are :
+combine mycard.txt -M GenerateOnly -t 100 --saveToys --toysFrequentist --freezeParameters  gx{pdf_*} --setParameters rgx{pdf_*}=0 --expectSignal 0 --bypassFrequentistFit
+combine mycard.txt -M FitDiagnostics --cminDefaultMinimizerStrategy=0 --toysFrequentist --skipBOnlyFit -t 100 --toysFile higgsCombine.GenerateOnly.mH120.123456.root --rMin 0 --rMax 10 --saveWorkspace  --bypassFrequentistFit
+where we have tried turning with and without many of those options to no avail. Are we calling these functions incorrectly? We have also tried a few different plotting options, see attached code.
+Thanks in advance for your help, please let me know if more information or clarification is needed.
+-Steven
+[1] /afs/cern.ch/user/s/stclark/public/BiasTest/biasTestEnvelope.py
+[2] /afs/cern.ch/user/s/stclark/public/BiasTest/combineCards/X400A2_alphaAll.txt
+[3] /afs/cern.ch/user/s/stclark/public/BiasTest/fitDiagnostics_null_alphaAll_X400A2.root
+[3] /afs/cern.ch/user/s/stclark/public/BiasTest/fitDiagnostics_one_alphaAll_X400A2.root
+biasTestEnvelope.py (1.9 KB)
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-11-04T19:55:40.369Z):
+Hi Steven,
+I don’t see anything particularly wrong with your commands (though I note that I can’t remember off the top of my head whether or not you can use regular expressions with --setParameters, and you might want to let the signal strength go negative in the fit when you inject no signal).
+Either way, indeed it looks like something is going wrong with the studies with 0 injected signal. However, we can’t help on this thread unless you also share the pdfs that you are using (ideally the library so it can be loaded at runtime), as they don’t appear to be standard ones that are part of combine.
+In addition, did you discuss this with the combine contact of your PAG yet? They should be the first point of contact.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by stclark @ 2022-11-08T18:44:06.061Z):
+Hi Adinda,
+Thanks for your reply. I must have missed the notification, sorry for the late response.
+I was able to get this to run by setting rmin=-10 and by changing the Draw command to allow for fit_status >= 0, rather than just > 0. This is now running.
+You are also right that the regex was not accepted by the command so I had to change this to read the cards to determine the number of channels and send them as a comma-separated argument to the freezeParameters and setParameters options.
+We are still seeing a bit of odd behavior with the null only test, though it is likely not due to a command here.
+We had not discussed this with the combine contact- we are in the EXO group which currently has a vacancy for the combine contact.
+----------------------------------------

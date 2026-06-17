@@ -1,0 +1,35 @@
+TOPIC: How to properly interpret channel compatibility results?
+URL: https://cms-talk.web.cern.ch/t/13433
+DATE: 2022-07-29T15:29:52.524Z
+SOLVED: no
+============================================================
+
+QUESTION (by vwachira @ 2022-07-29T15:29:52.823Z):
+Dear combine experts,
+I have performed channel compatibility checks on the datacards with the following command:
+combine -M ChannelCompatibilityCheck fourtops_${WORKSPACECONFIG}.root --rMin -100 --freezeParameters scale_tttt --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy 0
+
+What I understand from this check is that combine will calculate the nominal value of signal strength across all combine channels, and then individually calculate signal strength in each combine channel. The final chi-square like test statistics is then calculated.
+What I don’t understand is how can I use the calculated test statistics and signal strengths to calculate p-value and draw conclusions in a proper way. Unfortunately the documentation is not so clear to me. Could you please explain to me how to interpret the results I obtained from combine with this method?
+I am also worried about the option --rMin -100 I have added above. I added this option to allow signal strength search to go negative in some channels, but is this also a proper option in performing this kind of tests?
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 2 (by nmangane @ 2022-07-30T22:17:58.299Z):
+As I recall the ARC request was to check the compatibility of individual decay channels with eachother, so I expect that at a minimum the --group ... command will need to be applied (since the analysis contains 4 decay channels, each using dozens or hundreds of combine-bins).
+In the past, I ran this just for the separate opposite-sign dilepton decays, using e.g. --group OSDL_2017_MuMu... --group OSDL_2018_ElMu.... A modification to grab all the OSDL combine-bins into one channel will be easy for 17+18, adding 16 is hopefully straightforward too, even with the different naming convention.
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by adewit @ 2022-08-01T13:37:33.524Z):
+Hi Vichayanun,
+The chi2-like test statistic is just 2deltaNLL between the fit with a single r floating [], and a fit with a POI per channel. You can then convert this to a p-value using, for example ROOT::Math::chisquared_cdf_c(2*dNLL,NdoF), where NdoF is the difference in number of degrees of freedom between the two fits. This is the number of POIs in case you are testing the compatibility with the SM, and nPOIs-1 if you are evaluating the mutual compatibility.
+It’s good to allow the POI range to go negative (though a minimum of -100 is possibly a bit low), as also discussed in the documentation. The point that we try to make in the documentation is that for some negative value of r, r*s+b in some bins could be negative, which will lead to errors (they will say the pdf is negative or 0, so if you see something like that in the output). This analysis has a lot of background so I think this should not generally be a problem within some reasonable range.
+Finally, Nick’s point still stands - I also think you want to group the different categories together. If it’s difficult to do this in the ChannelCompatibilityCheck code you can also make the workspace using the MultiSignalModel defining POIs for each of the channels, then using MultiDimFit with --algo fixed [**]. In that case the output file will contain the deltaNLL between the best fit and the specified fixed point, so you need to remember to multiply that by 2 before plugging it into the chisquared_cdf_c function.
+Hope this helps,
+Adinda
+[*] Unless you are using the --fixedSignalStrength option, which you should do if you want to evaluate the compatibility with the SM
+[**] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans, e.g. with --algo fixed --fixedPointPOIs r_allhad=1,r_osdl=1,r_sl=1, if those are the names of the POIs, to get the compatibility with the SM. To get the mutual compatibility you should replace 1 by the best-fit value obtained when doing a fit with a single POI, so in that case there are two steps.
+----------------------------------------

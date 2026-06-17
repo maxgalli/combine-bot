@@ -1,0 +1,62 @@
+{
+  "topic_id": 48643,
+  "title": "Bin-per-bin parametrisation in combine",
+  "url": "https://cms-talk.web.cern.ch/t/48643",
+  "category_id": 279,
+  "created_at": "2024-09-11T11:34:13.705Z",
+  "last_posted_at": "2024-09-16T08:10:16.157Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "lmarkovi",
+      "name": "Lazar Markovic",
+      "created_at": "2024-09-11T11:34:13.942Z",
+      "updated_at": "2024-09-11T11:34:13.942Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nIn triple Higgs self -coupling analysis i have a certain operator O_6 introduced (and it\u2019s Wilson coefficient c_6) into Lagrangian. I tried and was successful in building a parameterisation of the yield, which is a polynomial function.\nBut now, i need to build a parameterisation of m_4l (four lepton invariant mass) which is bin-dependent, i.e. parameterisation should be done bin by bin in the whole range of the m_4l. Here, as my knowledge on combine is limited, I\u2019m faced with a difficulty of understanding how to approach the problem from the technical point of view.\nI was hoping i can get some advice, maybe there\u2019s an example of similar parameterisation which might be useful for me?\nCheers,\nLazar",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>In triple Higgs self -coupling analysis i have a certain operator O_6 introduced (and it\u2019s Wilson coefficient c_6) into Lagrangian. I tried and was successful in building a parameterisation of the yield, which is a polynomial function.<br>\nBut now, i need to build a parameterisation of m_4l (four lepton invariant mass) which is bin-dependent, i.e. parameterisation should be done bin by bin in the whole range of the m_4l. Here, as my knowledge on combine is limited, I\u2019m faced with a difficulty of understanding how to approach the problem from the technical point of view.<br>\nI was hoping i can get some advice, maybe there\u2019s an example of similar parameterisation which might be useful for me?</p>\n<p>Cheers,<br>\nLazar</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2024-09-12T08:38:45.736Z",
+      "updated_at": "2024-09-12T08:38:45.736Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi @lmarkovi ,\nYou can build fully-parametrized histograms as RooParametricHist objects. There is currently one example in the documentation for this procedure [1] (there will be another one in the future, though this is still WIP). Maybe this will give you a good place to start. Note that there are a couple of things that you need to keep in mind when using this procedure, but this is all explained in the reference.\nLet us know if you need more help with the implementation!\nCheers,\nPhilip\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=parametric#rooparametrichist-gamman-for-shapes",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/lmarkovi\">@lmarkovi</a> ,</p>\n<p>You can build fully-parametrized histograms as <code>RooParametricHist</code> objects. There is currently one example in the documentation for this procedure [1] (there will be another one in the future, though this is still WIP). Maybe this will give you a good place to start. Note that there are a couple of things that you need to keep in mind when using this procedure, but this is all explained in the reference.</p>\n<p>Let us know if you need more help with the implementation!</p>\n<p>Cheers,<br>\nPhilip</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=parametric#rooparametrichist-gamman-for-shapes\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=parametric#rooparametrichist-gamman-for-shapes</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-09-12T08:53:52.855Z",
+      "updated_at": "2024-09-12T08:53:52.855Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Lazar, Philip,\nLet me just add, that one could also try using multi-process interference model -P HiggsAnalysis.CombinedLimit.InterferenceModels:interferenceModel as described in the docs here.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Lazar, Philip,</p>\n<p>Let me just add, that one could also try using multi-process interference model <code>-P HiggsAnalysis.CombinedLimit.InterferenceModels:interferenceModel</code> as described in the docs <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/physicsmodels/#multi-process-interference\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "lmarkovi",
+      "name": "Lazar Markovic",
+      "created_at": "2024-09-16T08:10:16.157Z",
+      "updated_at": "2024-09-16T08:10:16.157Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Philip, Aliya,\nThank you for the information, i will make sure to check it out.\nCheers,\nLazar",
+      "cooked_html": "<p>Hi Philip, Aliya,</p>\n<p>Thank you for the information, i will make sure to check it out.</p>\n<p>Cheers,<br>\nLazar</p>"
+    }
+  ]
+}

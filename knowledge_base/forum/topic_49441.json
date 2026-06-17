@@ -1,0 +1,45 @@
+{
+  "topic_id": 49441,
+  "title": "Help for systematics study on parametric function",
+  "url": "https://cms-talk.web.cern.ch/t/49441",
+  "category_id": 279,
+  "created_at": "2024-09-17T15:30:57.958Z",
+  "last_posted_at": "2024-09-17T15:59:17.316Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "santocch",
+      "name": "Attilio Santocchia",
+      "created_at": "2024-09-17T15:30:58.104Z",
+      "updated_at": "2024-09-17T15:30:58.104Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nI\u2019m using combine for a search analysis and I was able to write a datacard with a parametric expression for the background (smooth background searching for a gaussian signal). The first step was to choose a function, fit it to the background and use the fitted parameters (with their errors) to calculate the significance of the signal as explained in the combine web page and everything is ok.\nSpeaking with few colleagues I realize that combine should be able to deal also with the function systematic choice. At the moment I tried 6 different functions and all of them (more or less) give a good fit (see plot, status is 0 for all function fit and the reduced chi2 is also reported in the legend). The plot is what you get from RooFit (100 bins) but the fit is actually an unbinned fit.\nmdistribution798\u00d7575 43.5 KB\nI tried to search for any instruction where I can find how to tell combine to use all the 6 functions for estimating the systematics of the functions choice but I didn\u2019t find anything. At the moment what I can do easily is to use one of the function or the other and the result dosen\u2019t change too much.\nDo you have any idea where I can find any instruction on how to proceed?\nThanks for helping\nAttilio",
+      "cooked_html": "<p>Hello,<br>\nI\u2019m using combine for a search analysis and I was able to write a datacard with a parametric expression for the background (smooth background searching for a gaussian signal). The first step was to choose a function, fit it to the background and use the fitted parameters (with their errors) to calculate the significance of the signal as explained in the combine web page and everything is ok.</p>\n<p>Speaking with few colleagues I realize that combine should be able to deal also with the function systematic choice. At the moment I tried 6 different functions and all of them (more or less) give a good fit (see plot, status is 0 for all function fit and the reduced chi2 is also reported in the legend). The plot is what you get from RooFit (100 bins) but the fit is actually an unbinned fit.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/d/d881998d1e7d55eed28513b81f23b7f5f57bbd86.gif\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/d881998d1e7d55eed28513b81f23b7f5f57bbd86\" title=\"mdistribution\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/d881998d1e7d55eed28513b81f23b7f5f57bbd86_2_690x497.gif\" alt=\"mdistribution\" data-base62-sha1=\"uTiNAVkCFNFrj6xMYcSBTk2VOYu\" width=\"690\" height=\"497\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/d881998d1e7d55eed28513b81f23b7f5f57bbd86_2_690x497.gif, https://cms-talk.web.cern.ch/uploads/default/original/2X/d/d881998d1e7d55eed28513b81f23b7f5f57bbd86.gif 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/d/d881998d1e7d55eed28513b81f23b7f5f57bbd86.gif 2x\" data-dominant-color=\"EFF0F0\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">mdistribution</span><span class=\"informations\">798\u00d7575 43.5 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>I tried to search for any instruction where I can find how to tell combine to use all the 6 functions for estimating the systematics of the functions choice but I didn\u2019t find anything. At the moment what I can do easily is to use one of the function or the other and the result dosen\u2019t change too much.</p>\n<p>Do you have any idea where I can find any instruction on how to proceed?</p>\n<p>Thanks for helping</p>\n<p>Attilio</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-09-17T15:44:35.297Z",
+      "updated_at": "2024-09-17T15:44:35.297Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Attilio,\nYou can try the section here https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#roomultipdf-conventional-bias-studies\nIf you scroll down to the \u201cDiscrete profiling\u201d part, that is specific to a method which tries to include the choice as an uncertainty.\nBest\nNick",
+      "cooked_html": "<p>Hi Attilio,</p>\n<p>You can try the section here <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#roomultipdf-conventional-bias-studies\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#roomultipdf-conventional-bias-studies</a></p>\n<p>If you scroll down to the \u201cDiscrete profiling\u201d part, that is specific to a method which tries to include the choice as an uncertainty.</p>\n<p>Best<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "santocch",
+      "name": "Attilio Santocchia",
+      "created_at": "2024-09-17T15:59:17.316Z",
+      "updated_at": "2024-09-17T15:59:17.316Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank for the link\u2026 I\u2019ll have a look and try to implement it in my datacard (I hope it\u2019s not too complicated because I\u2019m quite new to combine)\nBest\nAttilio",
+      "cooked_html": "<p>Thank for the link\u2026 I\u2019ll have a look and try to implement it in my datacard (I hope it\u2019s not too complicated because I\u2019m quite new to combine)</p>\n<p>Best</p>\n<p>Attilio</p>"
+    }
+  ]
+}

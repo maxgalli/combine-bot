@@ -1,0 +1,45 @@
+{
+  "topic_id": 10333,
+  "title": "Toy generation for unequal binning RooDataHist",
+  "url": "https://cms-talk.web.cern.ch/t/10333",
+  "category_id": 279,
+  "created_at": "2022-05-11T11:32:40.648Z",
+  "last_posted_at": "2022-05-11T15:18:01.177Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-05-11T11:32:40.863Z",
+      "updated_at": "2023-02-07T10:57:35.074Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello experts,\nRecently I have been trying to generate toys for unequal binning RooDataHists using the combine tool method \"combine -M GenerateOnly \", but somehow when plotting the toys generated, I found something weird, as shown in the plot (blue points: data from exp function, blue curve, exp function, red points, toy generated with combine tool):\n\ntoy_52396\u00d71772 55.4 KB\n\nDo you know if this is expected?\nIf you would need some additional information, I do have a minimum working example, using a simple exponential function to generate the toy and plot it.\ngenerate_debug.zip (79.3 KB)\nThanks a lot!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Hello experts,</p>\n<p>Recently I have been trying to generate toys for unequal binning RooDataHists using the combine tool method \"combine -M GenerateOnly \", but somehow when plotting the toys generated, I found something weird, as shown in the plot (blue points: data from exp function, blue curve, exp function, red points, toy generated with combine tool):</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/936db8a304e2308b515396e1ca34b1615eccf54d.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/936db8a304e2308b515396e1ca34b1615eccf54d\" title=\"toy_5\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/936db8a304e2308b515396e1ca34b1615eccf54d_2_676x500.png\" alt=\"toy_5\" data-base62-sha1=\"l2dgpYLDLhwpaL0ERy5CpuFke2F\" width=\"676\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/936db8a304e2308b515396e1ca34b1615eccf54d_2_676x500.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/936db8a304e2308b515396e1ca34b1615eccf54d_2_1014x750.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/936db8a304e2308b515396e1ca34b1615eccf54d_2_1352x1000.png 2x\" data-dominant-color=\"FCFCFC\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">toy_5</span><span class=\"informations\">2396\u00d71772 55.4 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>\n<p>Do you know if this is expected?<br>\nIf you would need some additional information, I do have a minimum working example, using a simple exponential function to generate the toy and plot it.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/51oDrJT0ShG8Ha7wmOsKUQVpWrQ.zip\">generate_debug.zip</a> (79.3 KB)</p>\n<p>Thanks a lot!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-05-11T12:57:52.000Z",
+      "updated_at": "2022-05-11T12:58:11.524Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "You have a lot of bins at 0 for the red (induced somehow by the binning).\nThe dataset seems to be correct. Probably, you will have to clean up the plotting.\nBelow the comparison of data (blue) and a toy (red).\ntoy_1_0.png2396\u00d71772 47.4 KB\nOn Wed, May 11, 2022 at 1:35 PM Xuli Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nXuli Yan xuyanMay 11\n\nHello experts,\nRecently I have been trying to generate toys for unequal binning RooDataHists using the combine tool method \"combine -M GenerateOnly \", but somehow when plotting the toys generated, I found something weird, as shown in the plot (blue points: data from exp function, blue curve, exp function, red points, toy generated with combine tool):\n\nDo you know if this is expected?\nIf you would need some additional information, I do have a minimum working example, using a simple exponential function to generate the toy and plot it.\nGeneration_debug.zip (131.6 KB)\nThanks a lot!\nBest regards,\nSebastian\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>You have a lot of bins at 0 for the red (induced somehow by the binning).<br>\nThe dataset seems to be correct. Probably, you will have to clean up the plotting.<br>\nBelow the comparison of data (blue) and a toy (red).</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/2/2c55d6ac30bbc21e087e2186b0164d33292d2138.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/2c55d6ac30bbc21e087e2186b0164d33292d2138\" title=\"toy_1_0.png\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2c55d6ac30bbc21e087e2186b0164d33292d2138_2_578x427.png\" data-base62-sha1=\"6kcUQRh0TRKkNQ3R3PvJ6YAaO8g\" alt=\"toy_1_0.png\" width=\"578\" height=\"427\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2c55d6ac30bbc21e087e2186b0164d33292d2138_2_578x427.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2c55d6ac30bbc21e087e2186b0164d33292d2138_2_867x640.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2c55d6ac30bbc21e087e2186b0164d33292d2138_2_1156x854.png 2x\" data-dominant-color=\"FAFAFC\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">toy_1_0.png</span><span class=\"informations\">2396\u00d71772 47.4 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>On Wed, May 11, 2022 at 1:35 PM Xuli Yan via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/x/6de8d8/45.png\" title=\"xuyan\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/xuyan\">Xuli Yan</a> xuyan<br>May 11</th>\n</tr>\n</thead>\n</table>\n</div><p>Hello experts,</p>\n<p>Recently I have been trying to generate toys for unequal binning RooDataHists using the combine tool method \"combine -M GenerateOnly \", but somehow when plotting the toys generated, I found something weird, as shown in the plot (blue points: data from exp function, blue curve, exp function, red points, toy generated with combine tool):</p>\n<p><a href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/936db8a304e2308b515396e1ca34b1615eccf54d.png\"></a></p>\n<p>Do you know if this is expected?<br>\nIf you would need some additional information, I do have a minimum working example, using a simple exponential function to generate the toy and plot it.<br>\n<a href=\"https://cms-talk.web.cern.ch/uploads/short-url/ahhIhR91DJ3uhM39NzINJYpJ2qv.zip\">Generation_debug.zip</a> (131.6 KB)</p>\n<p>Thanks a lot!</p>\n<p>Best regards,<br>\nSebastian</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/toy-generation-for-unequal-binning-roodatahist/10333/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/305e42e2250e5fa8555259eaad111493b3403726826ff2de4ee027aff4d31d38\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 3,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-05-11T15:18:01.177Z",
+      "updated_at": "2022-05-11T15:18:01.177Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nAh okay! Indeed it seems we need to set the binning when plotting explicitly.\nThanks a lot for your kind help!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>Ah okay! Indeed it seems we need to set the binning when plotting explicitly.</p>\n<p>Thanks a lot for your kind help!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    }
+  ]
+}

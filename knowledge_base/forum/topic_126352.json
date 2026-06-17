@@ -1,0 +1,100 @@
+{
+  "topic_id": 126352,
+  "title": "Accuracy of expected upper limits",
+  "url": "https://cms-talk.web.cern.ch/t/126352",
+  "category_id": 279,
+  "created_at": "2025-06-25T01:40:06.059Z",
+  "last_posted_at": "2025-06-25T22:55:52.529Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2025-06-25T01:40:06.208Z",
+      "updated_at": "2025-06-25T01:40:36.897Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to calculate median expected upper limits in a low statistics regime. When I use a simple counting experiment datacard with zero background (first attachment) and execute it in Combine v10.0.2 with the following options:\ncombineTool.py -M HybridNew --LHCmode LHC-limits --rMin 0 --rMax 50 --cl 0.90 -T 10000 --expectedFromGrid 0.5 --rRelAcc=0.001\n\nI get a limit of 15.4252 (+/- 0.064595). This is expected as ln(1/0.1)/0.1495 = 15.40 for zero background.\nHowever, when I introduce uncertainties on the signal and background like in the second attachment and run it with the same options, the limit becomes better (15.0571 +/- 0.0849267). I would have expected the limit to become worse after introducing uncertainties and to get a value higher than 15.40. Is there a way to get a more accurate value for the expected upper limit using HybridNew?\n-Arun\nexample.txt (737 Bytes)\nunprojected_test.txt (1.1 KB)",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to calculate median expected upper limits in a low statistics regime. When I use a simple counting experiment datacard with zero background (first attachment) and execute it in Combine v10.0.2 with the following options:</p>\n<pre><code class=\"lang-auto\">combineTool.py -M HybridNew --LHCmode LHC-limits --rMin 0 --rMax 50 --cl 0.90 -T 10000 --expectedFromGrid 0.5 --rRelAcc=0.001\n</code></pre>\n<p>I get a limit of 15.4252 (+/- 0.064595). This is expected as ln(1/0.1)/0.1495 = 15.40 for zero background.</p>\n<p>However, when I introduce uncertainties on the signal and background like in the second attachment and run it with the same options, the limit becomes better (15.0571 +/- 0.0849267). I would have expected the limit to become worse after introducing uncertainties and to get a value higher than 15.40. Is there a way to get a more accurate value for the expected upper limit using HybridNew?</p>\n<p>-Arun</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/erLbuEg8RfiutseXFLgvLb3m2Zk.txt\">example.txt</a> (737 Bytes)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/bcQNeoy1SqFpUsq8hasVWWCUNOn.txt\">unprojected_test.txt</a> (1.1 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-06-25T08:22:05.320Z",
+      "updated_at": "2025-06-25T08:22:05.320Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi Arun,\nI think this is related to a known issue with the usual way we do limits, in that it can happen that an upper limit can improve when there is some background compared to no background (it happens due to the nature of the Poisson pdf and trying to calculate exact intervals).\nIn your case, in the first card, you have a non-zero background rate and this can be modified by the very small uncertainty.\nGenerally, our standard method for limit setting in combine is not suitable for zero or very close to zero expected background. Instead, you can use the approach described in this paper : https://www.sciencedirect.com/science/article/pii/0168900292907945?via%3Dihub (Cousins & Highland).\nIn combine, this can be achieved by following the instructions here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#computing-limits-with-toys (look for the term \u201cHybrid-Bayesian\u201d).\nCan you try with this method and see if the results look more like what you would expect?\nBest,\nNick",
+      "cooked_html": "<p>Hi Arun,</p>\n<p>I think this is related to a known issue with the usual way we do limits, in that it can happen that an upper limit can improve when there is some background compared to no background (it happens due to the nature of the Poisson pdf and trying to calculate exact intervals).</p>\n<p>In your case, in the first card, you have a non-zero background rate and this can be modified by the very small uncertainty.</p>\n<p>Generally, our standard method for limit setting in combine is not suitable for zero or very close to zero expected background. Instead, you can use the approach described in this paper : <a href=\"https://www.sciencedirect.com/science/article/pii/0168900292907945?via%3Dihub\" rel=\"noopener nofollow ugc\">https://www.sciencedirect.com/science/article/pii/0168900292907945?via%3Dihub</a> (Cousins &amp; Highland).</p>\n<p>In combine, this can be achieved by following the instructions here : <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#computing-limits-with-toys\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#computing-limits-with-toys</a> (look for the term \u201cHybrid-Bayesian\u201d).</p>\n<p>Can you try with this method and see if the results look more like what you would expect?</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2025-06-25T13:59:22.816Z",
+      "updated_at": "2025-06-25T13:59:22.816Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nThank you for the reply.\nUsing HybridBayesian ( with --generateNuisances=1 --generateExternalMeasurements=0 and removing --LHCmode LHC-limits) did give results closer to what I want. However, the upper limit while using systematic uncertainties was still better than what I expected (15.2912 +/- 0.0985729), which is still within the margin of error, relative to 15.40. The results aren\u2019t completely stable.\nI also want to do projections of these limits at higher luminosities. When (in terms of background event counts) is it recommended to stop using HybridBayesian? 5-10 events?\nRegards,\nArun",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>Thank you for the reply.</p>\n<p>Using HybridBayesian ( with <code>--generateNuisances=1 --generateExternalMeasurements=0</code> and removing <code>--LHCmode LHC-limits</code>) did give results closer to what I want. However, the upper limit while using systematic uncertainties was still better than what I expected (15.2912 +/- 0.0985729), which is still within the margin of error, relative to 15.40. The results aren\u2019t completely stable.</p>\n<p>I also want to do projections of these limits at higher luminosities. When (in terms of background event counts) is it recommended to stop using HybridBayesian? 5-10 events?</p>\n<p>Regards,<br>\nArun</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-06-25T15:18:13.234Z",
+      "updated_at": "2025-06-25T15:18:13.234Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Arun,\nI don\u2019t really have a good benchmark - ideally when they both agree, you can revert back to the \u201cLHC-limits\u201d style.\nWhat I can say is that typically its the no background as opposed to no data that causes this difference. Indeed, once you get to O(10), expected background, I don\u2019t think you would see a difference between the two approaches (though it depends how big the uncertainties are too)\nIf you intend to scale to higher lumis, how do you intend on doing so? Would you also expect no background events at higher luminosities or does the 0 expected come from some estimate that is currently statistically limited?\nBest,\nNick",
+      "cooked_html": "<p>Hi Arun,</p>\n<p>I don\u2019t really have a good benchmark - ideally when they both agree, you can revert back to the \u201cLHC-limits\u201d style.</p>\n<p>What I can say is that typically its the <em>no background</em> as opposed to no data that causes this difference. Indeed, once you get to O(10), expected background, I don\u2019t think you would see a difference between the two approaches (though it depends how big the uncertainties are too)</p>\n<p>If you intend to scale to higher lumis, how do you intend on doing so? Would you also expect no background events at higher luminosities or does the 0 expected come from some estimate that is currently statistically limited?</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2025-06-25T15:30:50.257Z",
+      "updated_at": "2025-06-25T15:30:50.257Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nI would not expect zero background at higher luminosities (the 0 background comes from an estimate that is currently statistically limited). I have a method for relaxing BDT cuts and estimating backgrounds at higher luminosities, which can give expected backgrounds > 10 in some case.\nRegards,\nArun",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>I would not expect zero background at higher luminosities (the 0 background comes from an estimate that is currently statistically limited). I have a method for relaxing BDT cuts and estimating backgrounds at higher luminosities, which can give expected backgrounds &gt; 10 in some case.</p>\n<p>Regards,<br>\nArun</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2025-06-25T19:29:19.960Z",
+      "updated_at": "2025-06-25T19:29:19.960Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nI do have one additional question. Why is this issue not seen with the AsymptoticLimits method, which is also a \u201cclassical\u201d way of computing limits? With the AsymptoticLimits method, the limits do get worse as the signal uncertainty gets worse (unlike HybridNew with LHC-limits).\nRegards,\nArun",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>I do have one additional question. Why is this issue not seen with the AsymptoticLimits method, which is also a \u201cclassical\u201d way of computing limits? With the AsymptoticLimits method, the limits do get worse as the signal uncertainty gets worse (unlike HybridNew with <code>LHC-limits</code>).</p>\n<p>Regards,<br>\nArun</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-06-25T22:51:23.000Z",
+      "updated_at": "2025-06-25T22:51:44.135Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Arun,\nGood question - essentially the asymptotic calculation already assumes we\u2019re in the high statistics regime and in this regime things behave as expected. These calculations are wrong in your case so I would say the conclusions drawn are also wrong and I wouldn\u2019t ascribe too much meaning to those asymptotic results here\nBest\nNick\n\n| Arun Madhu mmadhuJune 25 |\n\n| - |\n\nHi Nick,\nI do have one additional question. Why is this issue not seen with the AsymptoticLimits method, which is also a \u201cclassical\u201d way of computing limits? With the AsymptoticLimits method, the limits do get worse as the signal uncertainty gets worse (unlike HybridNew with LHC-limits).\nRegards,\nArun\n\n\u00b7\u00b7\u00b7\nOn 25 Jun 2025 20:30, Arun Madhu via CMS talk noreply-cms-talk@cern.ch wrote:",
+      "cooked_html": "<p>Hi Arun,</p>\n<p>Good question - essentially the asymptotic calculation already assumes we\u2019re in the high statistics regime and in this regime things behave as expected. These calculations are wrong in your case so I would say the conclusions drawn are also wrong and I wouldn\u2019t ascribe too much meaning to those asymptotic results here</p>\n<p>Best<br>\nNick</p>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/m/e0b2c6/45.png\" title=\"mmadhu\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/mmadhu\">Arun Madhu</a> mmadhu<br>June 25 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p>Hi Nick,</p>\n<p>I do have one additional question. Why is this issue not seen with the AsymptoticLimits method, which is also a \u201cclassical\u201d way of computing limits? With the AsymptoticLimits method, the limits do get worse as the signal uncertainty gets worse (unlike HybridNew with <code>LHC-limits</code>).</p>\n<p>Regards,<br>\nArun</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>On 25 Jun 2025 20:30, Arun Madhu via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n</details>"
+    },
+    {
+      "post_number": 8,
+      "username": "mmadhu",
+      "name": "Arun Madhu",
+      "created_at": "2025-06-25T22:55:52.529Z",
+      "updated_at": "2025-06-25T22:55:52.529Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Okay, thank you for answering.\nRegards,\nArun",
+      "cooked_html": "<p>Okay, thank you for answering.</p>\n<p>Regards,<br>\nArun</p>"
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "topic_id": 8514,
+  "title": "MultiDimFit with \"-t -1\" option to fit to the Asimov dataset",
+  "url": "https://cms-talk.web.cern.ch/t/8514",
+  "category_id": 279,
+  "created_at": "2022-03-22T22:33:17.019Z",
+  "last_posted_at": "2022-03-25T08:26:56.321Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fuyan",
+      "name": "Furong Yan",
+      "created_at": "2022-03-22T22:33:17.379Z",
+      "updated_at": "2023-02-07T11:03:26.017Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI\u2019m working on topEFT analysis with multiple Wilson coefficients (WCs) being the POIs. I\u2019ve been using the MultiDimFit method with -t -1 option, which is supposed to fit to the Asimov dataset. The command I\u2019m using is:\ncombine wps_lj0pt_nonuis.root -M MultiDimFit --saveFitResult --redefineSignalPOI cpt\nThe fit results[1] of the WCs are non-zero. However, the Asimov dataset corresponds to the SM case where all the WCs are zero. Thus fitting to the Asimov data would give all 0 for the postfit values of the WCs. Besides that, I expect the prefit values of the parameters should be the default values pulled from the workspace[2], which are all 0. But it\u2019s not the case. I\u2019m loading floatParsInit() as the prefit values and floatParsFinal() as the postfit values.\nI\u2019m wondering if there is something I\u2019ve been missing when doing the fitting, or maybe I\u2019m looking at the incorrect set of the prefit and postfit results?\nAttached is the fit results[1], the workspace[2] and the datacard[3].\n[1] /afs/cern.ch/user/f/fuyan/public/TopEFT/multidimfit.root\n[2] /afs/cern.ch/user/f/fuyan/public/TopEFT/wps_lj0pt_nonuis.root\n[3] /afs/cern.ch/user/f/fuyan/public/TopEFT/combinedcard.txt",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I\u2019m working on topEFT analysis with multiple Wilson coefficients (WCs) being the POIs. I\u2019ve been using the <code>MultiDimFit</code> method with <code>-t -1</code> option, which is supposed to fit to the Asimov dataset. The command I\u2019m using is:<br>\n<code>combine wps_lj0pt_nonuis.root -M MultiDimFit --saveFitResult --redefineSignalPOI cpt</code></p>\n<p>The fit results[1] of the WCs are non-zero. However, the Asimov dataset corresponds to the SM case where all the WCs are zero. Thus fitting to the Asimov data would give all 0 for the postfit values of the WCs. Besides that, I expect the prefit values of the parameters should be the default values pulled from the workspace[2], which are all 0. But it\u2019s not the case. I\u2019m loading <code>floatParsInit()</code> as the prefit values and <code>floatParsFinal()</code> as the postfit values.</p>\n<p>I\u2019m wondering if there is something I\u2019ve been missing when doing the fitting, or maybe I\u2019m looking at the incorrect set of the prefit and postfit results?</p>\n<p>Attached is the fit results[1], the workspace[2] and the datacard[3].</p>\n<p>[1] /afs/cern.ch/user/f/fuyan/public/TopEFT/multidimfit.root<br>\n[2] /afs/cern.ch/user/f/fuyan/public/TopEFT/wps_lj0pt_nonuis.root<br>\n[3] /afs/cern.ch/user/f/fuyan/public/TopEFT/combinedcard.txt</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-03-23T08:09:08.000Z",
+      "updated_at": "2022-03-23T08:09:50.868Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "You can use --setParameters to set the default values of the POIs that will also be used to generate the Asimov Dataset.\n-Andrea\nOn Tue, Mar 22, 2022 at 11:37 PM Furong Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nFurong Yan fuyanMarch 22\n\nDear Experts,\nI\u2019m working on topEFT analysis with multiple Wilson coefficients (WCs) being the POIs. I\u2019ve been using the MultiDimFit method with -t -1 option, which is supposed to fit to the Asimov dataset. The command I\u2019m using is:\ncombine wps_lj0pt_nonuis.root -M MultiDimFit --saveFitResult --redefineSignalPOI cpt\nThe fit results[1] of the WCs are non-zero. However, the Asimov dataset corresponds to the SM case where all the WCs are zero. Thus fitting to the Asimov data would give all 0 for the postfit values of the WCs. Besides that, I expect the prefit values of the parameters should be the default values pulled from the workspace[2], which are all 0. But it\u2019s not the case. I\u2019m loading floatParsInit() as the prefit values and floatParsFinal() as the postfit values.\nI\u2019m wondering if there is something I\u2019ve been missing when doing the fitting, or maybe I\u2019m looking at the incorrect set of the prefit and postfit results?\nAttached is the fit results[1], the workspace[2] and the datacard[3].\n[1] /afs/cern.ch/user/f/fuyan/public/TopEFT/multidimfit.root\n[2] /afs/cern.ch/user/f/fuyan/public/TopEFT/wps_lj0pt_nonuis.root\n[3] /afs/cern.ch/user/f/fuyan/public/TopEFT/combinedcard.txt\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>You can use --setParameters to set the default values of the POIs that will also be used to generate the Asimov Dataset.</p>\n<p>-Andrea</p>\n<p>On Tue, Mar 22, 2022 at 11:37 PM Furong Yan via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/f/e19b73/45.png\" title=\"fuyan\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/fuyan\">Furong Yan</a> fuyan<br>March 22</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Experts,</p>\n<p>I\u2019m working on topEFT analysis with multiple Wilson coefficients (WCs) being the POIs. I\u2019ve been using the <code>MultiDimFit</code> method with <code>-t -1</code> option, which is supposed to fit to the Asimov dataset. The command I\u2019m using is:<br>\n<code>combine wps_lj0pt_nonuis.root -M MultiDimFit --saveFitResult --redefineSignalPOI cpt</code></p>\n<p>The fit results[1] of the WCs are non-zero. However, the Asimov dataset corresponds to the SM case where all the WCs are zero. Thus fitting to the Asimov data would give all 0 for the postfit values of the WCs. Besides that, I expect the prefit values of the parameters should be the default values pulled from the workspace[2], which are all 0. But it\u2019s not the case. I\u2019m loading <code>floatParsInit()</code> as the prefit values and <code>floatParsFinal()</code> as the postfit values.</p>\n<p>I\u2019m wondering if there is something I\u2019ve been missing when doing the fitting, or maybe I\u2019m looking at the incorrect set of the prefit and postfit results?</p>\n<p>Attached is the fit results[1], the workspace[2] and the datacard[3].</p>\n<p>[1] /afs/<a href=\"http://cern.ch/user/f/fuyan/public/TopEFT/multidimfit.root\" rel=\"noopener nofollow ugc\">cern.ch/user/f/fuyan/public/TopEFT/multidimfit.root</a><br>\n[2] /afs/<a href=\"http://cern.ch/user/f/fuyan/public/TopEFT/wps_lj0pt_nonuis.root\" rel=\"noopener nofollow ugc\">cern.ch/user/f/fuyan/public/TopEFT/wps_lj0pt_nonuis.root</a><br>\n[3] /afs/<a href=\"http://cern.ch/user/f/fuyan/public/TopEFT/combinedcard.txt\" rel=\"noopener nofollow ugc\">cern.ch/user/f/fuyan/public/TopEFT/combinedcard.txt</a></p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/multidimfit-with-t-1-option-to-fit-to-the-asimov-dataset/8514/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/248fec6e71aa5f9a9ed221ec5c946a92d3cc128f8e247218d77a27596c1e8c39\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 3,
+      "username": "adavid",
+      "name": "Andre Tinoco",
+      "created_at": "2022-03-23T21:57:56.716Z",
+      "updated_at": "2022-03-23T21:57:56.716Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Just to note that what @amarini replied (--setParameters) is described in the documentation\u2026",
+      "cooked_html": "<p>Just to note that what <a class=\"mention\" href=\"/u/amarini\">@amarini</a> replied (<code>--setParameters</code>) is described in the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation\" rel=\"noopener nofollow ugc\">documentation</a>\u2026</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "fuyan",
+      "name": "Furong Yan",
+      "created_at": "2022-03-23T23:09:27.197Z",
+      "updated_at": "2022-03-23T23:09:27.197Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Thanks for replaying. The fitting failed when I set the parameters of all POIs to 0. I\u2019ve been trying fitting option like --cminDefaultMinimizerStrategy 0 and other fitting algorithms but didn\u2019t manage to make it work. Could you share some insights on this?",
+      "cooked_html": "<p>Thanks for replaying. The fitting failed when I set the parameters of all POIs to 0. I\u2019ve been trying fitting option like <code>--cminDefaultMinimizerStrategy 0</code> and other fitting algorithms but didn\u2019t manage to make it work. Could you share some insights on this?</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-03-24T07:47:18.197Z",
+      "updated_at": "2022-03-24T07:47:18.197Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Furong,\nThere are a lot of POIs in your model - are you sure there aren\u2019t strong correlations between them? This could lead to problems in the minimization. I think it would be useful to first restrict the number of POIs, and understand the model in these simplified configurations, before tackling the full fit.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Furong,</p>\n<p>There are a lot of POIs in your model - are you sure there aren\u2019t strong correlations between them? This could lead to problems in the minimization. I think it would be useful to first restrict the number of POIs, and understand the model in these simplified configurations, before tackling the full fit.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "awightma",
+      "name": "Andrew Wightman",
+      "created_at": "2022-03-24T17:30:52.817Z",
+      "updated_at": "2022-03-24T17:30:52.817Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I think right now we are more confused by why the prefit values for the parameters don\u2019t correspond to what we expect. In our model, the prefit scenario should correspond to all WCs being equal to 0, but this is not what we see in the fit result returned from combine. We wanted to understand whether or not it is expected that combine is setting the prefit values to non-zero values when we don\u2019t specify any sort of --setParameters options.\nAdditionally, we expected that the Asimov dataset should correspond to this same scenario where all POIs=0, meaning that by construction the best fit values should all still be 0. Or is that an incorrect understanding of the Asimov dataset and/or how combine behaves with the -t -1 option?",
+      "cooked_html": "<p>I think right now we are more confused by why the prefit values for the parameters don\u2019t correspond to what we expect. In our model, the prefit scenario should correspond to all WCs being equal to 0, but this is not what we see in the fit result returned from combine. We wanted to understand whether or not it is expected that combine is setting the prefit values to non-zero values when we don\u2019t specify any sort of <code>--setParameters</code> options.</p>\n<p>Additionally, we expected that the Asimov dataset should correspond to this same scenario where all POIs=0, meaning that by construction the best fit values should all still be 0. Or is that an incorrect understanding of the Asimov dataset and/or how combine behaves with the <code>-t -1</code> option?</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-03-25T08:20:39.907Z",
+      "updated_at": "2022-03-25T08:20:39.907Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI think there are a few things going on:\n\nThe floatParsInit values are not the real pre-fit values in this case. The analytic minimisation of autoMCStats parameters is enabled by default (i.e. they are frozen so as not to be seen by Minuit), but since you requested the RooFitResult, we run a 2nd fit after the initial fit with the autoMCStats parameters re-floated, so that they appear in the Hessian matrix. This means the initial values for this 2nd fit are the outcome of the 1st main fit. So there\u2019s no problem here.\nThe problem of the non-zero fitted values is that the Asimov data set is being generated from the background-only model by default. So excluding whichever processes in the datacard you marked as signal. Combine should be warning you about this, I get the message: Warning! -- You haven't picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the 'B-only' ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model\n\nWhen --setParameters is used, the fit does recover the correct pre-fit values, but indeed as Adinda said, it seems there are problems calculating an accurate covariance matrix. This suggests you have some strong degeneracy in the set of parameters you are trying to fit.\n\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi,</p>\n<p>I think there are a few things going on:</p>\n<ul>\n<li>The <code>floatParsInit</code> values are not the real pre-fit values in this case. The analytic minimisation of autoMCStats parameters is enabled by default (i.e. they are frozen so as not to be seen by Minuit), but since you requested the RooFitResult, we run a 2nd fit after the initial fit with the autoMCStats parameters re-floated, so that they appear in the Hessian matrix. This means the initial values for this 2nd fit are the outcome of the 1st main fit. So there\u2019s no problem here.</li>\n<li>The problem of the non-zero fitted values is that the Asimov data set is being generated from the background-only model by default. So excluding whichever processes in the datacard you marked as signal. Combine should be warning you about this, I get the message: <code>Warning! -- You haven't picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the 'B-only' ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model</code>\n</li>\n<li>When <code>--setParameters</code> is used, the fit does recover the correct pre-fit values, but indeed as Adinda said, it seems there are problems calculating an accurate covariance matrix. This suggests you have some strong degeneracy in the set of parameters you are trying to fit.</li>\n</ul>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-03-25T08:26:56.321Z",
+      "updated_at": "2022-03-25T08:26:56.321Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nJust to add - when running your fit with the parameter ranges for the POIs restricted ( using --setParameterRanges) to -5,5 the fit does converge (with some issues), so for your further investigations you might want to restrict the range to something considerably smaller than the current default of -200,200 as well.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi,</p>\n<p>Just to add - when running your fit with the parameter ranges for the POIs restricted ( using <code>--setParameterRanges</code>) to -5,5 the fit does converge (with some issues), so for your further investigations you might want to restrict the range to something considerably smaller than the current default of -200,200 as well.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

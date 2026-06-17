@@ -1,0 +1,73 @@
+{
+  "topic_id": 41362,
+  "title": "Understanding toy datasets generation and fitting",
+  "url": "https://cms-talk.web.cern.ch/t/41362",
+  "category_id": 279,
+  "created_at": "2024-05-20T16:34:22.868Z",
+  "last_posted_at": "2024-05-20T21:01:28.669Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2024-05-20T16:34:23.326Z",
+      "updated_at": "2024-05-20T16:34:23.326Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI am working with a standard H(\u03b3\u03b3) datacard, where both signal and background are modeled with parametric shapes and the background is described with the envelope method. While making some experiments with the generation of toy datasets, and their fitting, I am seeing some behaviors I don\u2019t understand conceptually. Let me try to summarize what I am doing.\n\nFirst of all, I want to obtain the best choice of the background PDFs from the observed data, while keeping the signal strenght blinded. So, I perform a frequentist fit to the data and throw an Asimov dataset from it, with r set to 1:\n\ncombine myDatacard.root -m 125 -M MultiDimFit -P r --toysFrequentist --saveWorkspace -t -1 --setParameters r=1.0  -n initialSnapshot --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2\n\nThen, I throw a toy, using the background PDFs that were chosen in step 1. As far as I understand, giving -s -1 ensures this is a randomly-generated toy:\n\ncombine higgsCombine_initialSnapshot.MultiDimFit.mH125.root --snapshotName MultiDimFit -m 125 -M GenerateOnly --saveWorkspace --toysFrequentist --bypassFrequentistFit -t 1 --setParameters r=1.0 -s -1 -n gen_1\n\nFinally, I want to fit this randomly-generated toy. Since I thought no more \u201crandomness\u201d is needed from now on, as a random toy is generated in the previous step, I just tried a MultiDimFit:\n\ncombine gen_1.root -m 125 -M MultiDimFit -P r --saveWorkspace --toysFrequentist --bypassFrequentistFit --setParameters r=1.0 -n fit_1 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2\n\nNow, even though I thought this is the most natural and correct thing to do, this gives unexpected results. In particular, I tried to repeat steps 1. and 2. 100 times, and checked what is the distribution of r that I get. The values of r that are fitted after step 2. are consistently greater than r=1.0, while I expected them to be centered at 1 with a Gaussian distribution.\nSo, I tried to modify the command in step 3. in the following way:\n\nSame command as 3., but adding -s -1. I get no visible difference as the values of r are consistently greater than r=1.0.\nSame command as 3., but adding -t 1. All 100 repetitions give the same value of r.\nSame command as 3, but adding -s -1 -t 1. In this case, I get what I expect, that is, r can also take values below 1. So it seems that combining two options that do not work by themselves, gives a meaningful result.\n\nI find this very confusing and it leaves me with a few questions:\n\nWhat is the meaning of -s -1 and -t 1 during a MultiDimFit?\nWhy would one need to throw a toy with -t 1 (isn\u2019t this just a fitting step?!?) and in addition give a random seed (what is this seed for?!? Why do I need randomness?!?) in order to get the expected distribution of r?\n\nI hope I manage to explain the problem properly.\nThanks a lot for your time, all the best,\nFabio.",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I am working with a standard H(\u03b3\u03b3) datacard, where both signal and background are modeled with parametric shapes and the background is described with the envelope method. While making some experiments with the generation of toy datasets, and their fitting, I am seeing some behaviors I don\u2019t understand conceptually. Let me try to summarize what I am doing.</p>\n<ol>\n<li>First of all, I want to obtain the best choice of the background PDFs from the observed data, while keeping the signal strenght blinded. So, I perform a frequentist fit to the data and throw an Asimov dataset from it, with r set to 1:</li>\n</ol>\n<pre><code class=\"lang-auto\">combine myDatacard.root -m 125 -M MultiDimFit -P r --toysFrequentist --saveWorkspace -t -1 --setParameters r=1.0  -n initialSnapshot --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2\n</code></pre>\n<ol start=\"2\">\n<li>Then, I throw a toy, using the background PDFs that were chosen in step 1. As far as I understand, giving <code>-s -1</code> ensures this is a randomly-generated toy:</li>\n</ol>\n<pre><code class=\"lang-auto\">combine higgsCombine_initialSnapshot.MultiDimFit.mH125.root --snapshotName MultiDimFit -m 125 -M GenerateOnly --saveWorkspace --toysFrequentist --bypassFrequentistFit -t 1 --setParameters r=1.0 -s -1 -n gen_1\n</code></pre>\n<ol start=\"3\">\n<li>Finally, I want to fit this randomly-generated toy. Since I thought no more \u201crandomness\u201d is needed from now on, as a random toy is generated in the previous step, I just tried a <code>MultiDimFit</code>:</li>\n</ol>\n<pre><code class=\"lang-auto\">combine gen_1.root -m 125 -M MultiDimFit -P r --saveWorkspace --toysFrequentist --bypassFrequentistFit --setParameters r=1.0 -n fit_1 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2\n</code></pre>\n<p>Now, even though I thought this is the most natural and correct thing to do, this gives unexpected results. In particular, I tried to repeat steps 1. and 2. 100 times, and checked what is the distribution of <code>r</code> that I get. The values of <code>r</code> that are fitted after step 2. are consistently greater than <code>r=1.0</code>, while I expected them to be centered at 1 with a Gaussian distribution.<br>\nSo, I tried to modify the command in step 3. in the following way:</p>\n<ol start=\"4\">\n<li>Same command as 3., but adding <code>-s -1</code>. I get no visible difference as the values of <code>r</code> are consistently greater than <code>r=1.0</code>.</li>\n<li>Same command as 3., but adding <code>-t 1</code>. All 100 repetitions give the same value of <code>r</code>.</li>\n<li>Same command as 3, but adding <code>-s -1 -t 1</code>. In this case, I get what I expect, that is, <code>r</code> can also take values below 1. So it seems that combining two options that do not work by themselves, gives a meaningful result.</li>\n</ol>\n<p>I find this very confusing and it leaves me with a few questions:</p>\n<ul>\n<li>What is the meaning of <code>-s -1</code> and <code>-t 1</code> during a <code>MultiDimFit</code>?</li>\n<li>Why would one need to throw a toy with <code>-t 1</code> (isn\u2019t this just a fitting step?!?) and in addition give a random seed (what is this seed for?!? Why do I need randomness?!?) in order to get the expected distribution of <code>r</code>?</li>\n</ul>\n<p>I hope I manage to explain the problem properly.<br>\nThanks a lot for your time, all the best,</p>\n<p>Fabio.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-05-20T17:08:15.762Z",
+      "updated_at": "2024-05-20T17:08:15.762Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Fabio,\nI didn\u2019t try to repeat the commands but in your 3rd step, if you want combine to use a toy previously generated , you need to include the -t 1 to say you are running on a toy and not the data_obs in the workspace. Now in order to read the toy, you should be including somewhere a --toysFile option in your final step, but I don\u2019t see this anywhere so I suspect you\u2019re just reading in the data instead when you don\u2019t add -t 1 and generating a new toy (from the default seed if not adding -s -1) when you do add it\nSee here for some instructions on reading in toy datasets : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#generate-only\nBest,\nNick",
+      "cooked_html": "<p>Hi Fabio,</p>\n<p>I didn\u2019t try to repeat the commands but in your 3rd step, if you want combine to use a toy previously generated , you need to include the -t 1 to say you are running on a toy and not the data_obs in the workspace. Now in order to read the toy, you should be including somewhere a <code>--toysFile</code> option in your final step, but I don\u2019t see this anywhere so I suspect you\u2019re just reading in the data instead when you don\u2019t add -t 1 and generating a new toy (from the default seed if not adding -s -1) when you do add it</p>\n<p>See here for some instructions on reading in toy datasets : <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#generate-only\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#generate-only</a></p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2024-05-20T18:35:45.919Z",
+      "updated_at": "2024-05-20T18:35:45.919Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nthanks for your prompt reply. This is very interesting, and indeed it might be that I am doing it wrong. But I don\u2019t think this is fully clear to me yet. In step 3., I do combine gen_1.root -M MultiDimFit, where gen_1.root is the output of the toy generation. So, isn\u2019t this enough to load and fit the toy? If not, in case I add the --toysFile option, why do I need to load gen_1.root? What is it for?\nThank you very much!\nF.",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>thanks for your prompt reply. This is very interesting, and indeed it might be that I am doing it wrong. But I don\u2019t think this is fully clear to me yet. In step 3., I do <code>combine gen_1.root -M MultiDimFit</code>, where <code>gen_1.root</code> is the output of the toy generation. So, isn\u2019t this enough to load and fit the toy? If not, in case I add the <code>--toysFile</code> option, why do I need to load <code>gen_1.root</code>? What is it for?</p>\n<p>Thank you very much!<br>\nF.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-05-20T19:31:57.000Z",
+      "updated_at": "2024-05-20T19:36:06.838Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Fabio,\nYou still need to load a file that contains the workspace to do the fitting. You can use the output from step 1 for this. Instead for the toy, you are just telling combine where to find the data (see the docs) - in any step you need the workspace (the main file) and a dataset (either the one in the main file, ones being generated or ones generated and living in another file which is the case here)\nBest\nNick",
+      "cooked_html": "<p>Hi Fabio,</p>\n<p>You still need to load a file that contains the workspace to do the fitting. You can use the output from step 1 for this. Instead for the toy, you are just telling combine where to find the data (see the docs) - in any step you need the workspace (the main file) and a dataset (either the one in the main file, ones being generated or ones generated and living in another file which is the case here)</p>\n<p>Best<br>\nNick</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2024-05-20T21:01:28.669Z",
+      "updated_at": "2024-05-20T21:01:28.669Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nalright, what you say makes much sense, I understand now.\nThank you and best,\nFabio.",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>alright, what you say makes much sense, I understand now.<br>\nThank you and best,</p>\n<p>Fabio.</p>"
+    }
+  ]
+}

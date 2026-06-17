@@ -1,0 +1,80 @@
+TOPIC: Clarification on two issues - HybridNew and autoMCStats
+URL: https://cms-talk.web.cern.ch/t/37193
+DATE: 2024-03-20T13:05:23.417Z
+SOLVED: no
+============================================================
+
+QUESTION (by gdecastr @ 2024-03-20T13:05:23.613Z):
+Hello combine experts,
+I’ve encountered two issues when running the datacards with my analysis that I would appreciate some insight on. For reference, I’ve included the datacards I am using in a cernbox link to replicate my results, in addition to the results I’ve derived that I am questioning. https://cernbox.cern.ch/s/kQFtfeL9V68ugUD
+For additional context in the datacard, we are using the extended ABCD method where the SR is our signal enriched sideband, while B1,B2,C1,C2,D1,D2,E1 and E2 are the signal depleted sidebands.The extended ABCD method is purely data-driven, so our background estimation comes from data and the only source of MC we have in the cards is our signals.
+HybridNew:
+I used HybridNew to calculate the observed significance in my datacard and have obtained a ~-3 sigma significance.Given that the B-only toys thrown by HybridNew have the test-statistic manually set to 0 if the best-fit is calculated to be < 0, this result this does not make much sense to me. It implies that 95% of the B-only toys are fitting a positive signal strength.
+To cite this claim - https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys
+“The test statistic is defined using the ratio of likelihoods q0=−2ln[L(μ=0,νhathat(0))/L(μhat,νhat)], in which the nuisance parameters are profiled separately for μ=^μ and μ=0. The value of the test statistic is set to 0 when μhat<0”
+We cross-checked this by running 1000 B-only toys using FitDiagnostics and got the expected result with half the toys having a post-fit signal <0, and the other half >0.
+Going in the cernbox link and running (putting the seed to replicate):
+combine --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 2000 -M HybridNew -s -568846852 -d HybridNew/RunII/CombinedCRDY_SUEP_hadronic_mS125_mD3.00_T0.75.txt
+Gives the result in HybridNew/RunII_CRDY_mD3.00_T0.75.HybridNew.-568846852.root
+A -2.6 sigma significance.
+Simply running the uncapped asymptotic significance on the same datacards gives a result within ~10^-3 of 0.
+So is this negative significance expected from using HybridNew? Or did I misconfigure something in my set-up/in the toy production?
+autoMCStats:
+When running a MultiDimFit with the signal strength manually set to 0 and tracking the nuisance parameters in the fit, it appears that the statistical uncertainty for the signal in some bins in our fit are being pulled up to 7%. This does not make sense to me as the signal strength is set to 0, so these uncertainties should also be 0 and not pulled at all. As a reminder, the extended ABCD is data-driven, so we only use autoMCStats for our signal as it is the only source of MC in our analysis.
+In the Cernbox link and run:
+combine -M MultiDimFit autoMCStats/2018/CombinedCRDY_SUEP_hadronic_mS125_mD4.00_T6.00.txt --algo fixed --saveNLL --trackParameters rgx{.*} --forceRecreateNLL --fixedPointPOIs r=0.00
+This result is in - autoMCStats/UL18_CRDY_mD4.00_T6.00_r0.MultiDimFit.root
+For example, in the limit;1 tree, the branch: trackedParam_prop_binSR_SRbin3_bin0
+Interestingly, running the same thing on the datacard in autoMCStats/RunII has pulls for the statistical uncertainty on the signal that are only up to 10^-7 (so this seems to be working correctly in this case). It only seems to pull the signal statistical uncertainty when performing MultiDimFit on a single year.
+This result is in - RunII_CRDY_mD4.00_T6.00_r0.MultiDimFit.root
+Am I misunderstanding how the statistical uncertainty in the signal strength is being handled in this case? Or is there something weird happening when we manually set r=0?
+Thank you in advance for your insight
+Best,
+Gianfranco de Castro
+Boston University
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-03-25T15:31:45.591Z):
+Hi Gianfranco,
+There are a couple of not-so-obvious things going on here.
+When the significance is calculated by HybridNew, the pvalue is calculated based on the observed test statistic and the distribution from toys. The p-value is calculated using the integral of the distribution, with the observed test statistic value as one of the limits of integration, and it is calculated using this as a closed interval. I.e. the observed test stat statitic value itself is included in the integration.  So if the observed value of the test statistic is = 0, you’re going to get a p-value of about 1/Ntoys, and a corresponding significance.
+This is a little different from whats done in the asymptotic case, where we are implicitly using an open integral for the p-value, such that an observed value of 0 gives a significance of 0, rather than -infinity.
+So I don’t think the results you are getting are inconsistent, though I understand that it’s rather confusing. You could run the asymptotics with --uncapped 1 to allow negative significances, but to do the equivalent thing with toys you’d also need to change the test statistic to remove the condition for \mu < 0.
+I also noticed quite a large number of failing fits when running the toys, which you might want to follow up on.
+Concerning the autoMCStats:
+The tracked parameter you point to is actually a gaussian constrained parameter for the entire bin, not a parameter for only the signal process. You can tell because the name contains identifying information about the bin only and nothing about the process.
+Because you’ve set the threshold value in your datacard to 0, the autoMCstats method wants to treat every bin with more than 0 effect events using a single gaussian constrained parameter which will multiply the yields of all processes [1]. So, it’s possible for this parameter to get pulled regardless of whether any signal is present or not. In order to have a single parameter defined per process you need to set the threshold high enough so that each bin is below that number of effective events. Then processes with no uncertainty are ignored, all other process will have individual nuisance parameters created for them (which may be gaussian or poisson).
+If I edit your data card accordingly, then  checking a few parameters they aren’t pulled in the r=0 case. Note, however that my out-of-the-box test of this didn’t return sensible fit results (for example, the best fit value of r hit the boundary at 20).  Also, in the datacard as you have it set up, there seem to be some pathologies. You can check how the constraints are being said when you run text2workspace.py on the datacard, and you’ll see even with your threshold at 0, some of the bins are getting poisson constraints, apparently because the effective number of events appears negative, but I haven’t followed up on exactly where this is coming from.
+I hope that helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/
+----------------------------------------
+
+REPLY 3 (by gdecastr @ 2024-03-25T16:33:20.596Z):
+Hey Kyle,
+Thanks for the explanations
+For autoMCStats:
+This behavior with the negative effective events does seem a bit concerning. I think we are just going to manually set the uncertainty in the MC signal as a gmN instead of using autoMCStats so we have clearer picture of what we expect with the uncertainties.
+For HybridNew:
+We are having some trouble interpreting this large negative significance. Is this large negative significance an effect of most of our toys being thrown having positive best-fit signal strengths? Or is this just an effect from toys with negative best-fit signal strengths being manually set to u=0? How would we be able to differentiate between the two? Is there a way to save the signal strength for each toy before it is manually set to 0 for mu < 0?
+Thanks in advance for your help!
+All the best,
+Gianfranco de Castro
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2024-03-25T21:45:00.269Z):
+Hi Gianfranco,
+Indeed, for your case using GammaN is probably just as easy, or easier than using autoMCstats in this somewhat unusual way. It might be worth following up on the negative events in any case, I worry that there was something strange going on in the model, that was just showing up in that spot and was not that the autoMCstats was the problem – but I didn’t follow up to find the cause, so I could be mistaken.
+For the Hybrid New:
+It doesn’t necessarily mean that the toys have positive best-fit signal strength.  If all you want to do is remove the condition on setting the test statistic to 0 if the best fit is negative, you can just use the profile likelihood test statistic directly, rather than the modified one which is normally used with --testStat Profile.
+If you want to check the distribution of the test statistic values (to see e.g. if many of them are 0) you can plot the distribution with the script test/plotTestStatCLs.py. e.g.
+python test/plotTestStatCLs.py --input higgsCombineTest.HybridNew.mH120.-568846852.root --poi r --val all --mass 120 --signif
+
+on the output file from HybridNew, that will create a root file with a plot of the test statistic distribution, which you can check.
+But I don’t think that’s your issue. Consider the case of performing the p-value calculation using the closed interval  [ q_{obs}, \infty].  If q_{obs} is equal to the lower limit of the domain of your test statistic, this will be 1, and your significance will be given by the corresponding inverse quantile function of a normal distribution, so -\infty.
+In the asymptotic case, for the LHC-significance test statistic the expected distribution is a mixture of \delta(0) and the positive side of a gaussian. if q_{obs} is 0 and you do the closed interval integral, the significance would be -\infty. But, when you run the -M Significance method, it implicitly uses an open interval and so the p-value is 0.5 (because \delta(0) is excluded) rather than 1 and the significance is 0. You can also see this if you run with --pvalue when running your asymptotic signfiicance command.
+In other words, this is a bit of a funny case only because it depends on where you include the value of q_{obs} in your integral or not, which happens because there is a finite probability density in an infinitesimal volume for these expected distributions. And HybridNew and the asymptotic case use different conventions for this.
+But you can run --uncapped for the asymptotic calculation and --testStat Profile for the HybridNew calculation to check the p-value under the normal Profile Likelihood test statistic, where this kind of subtelty shouldn’t occur.
+Best,
+Kyle
+----------------------------------------

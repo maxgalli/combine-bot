@@ -1,0 +1,132 @@
+TOPIC: One-sided impact
+URL: https://cms-talk.web.cern.ch/t/34816
+DATE: 2024-02-15T11:26:18.108Z
+SOLVED: no
+============================================================
+
+QUESTION (by jinw @ 2024-02-15T11:26:18.316Z):
+Dear experts,
+I’m investigating the impacts of the systematic uncertainties on my fit to the signal rate parameter in the range [0,20], and saw at the 1sigma and -1sigma impacts of most of the systematic sources are on the same side (impact plot here http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100.pdf). This indicates that the change of the nuisances on both sides will shift the signal rate to the same side. I wonder if the impacts make sense and if there are potential issues in the fit.
+Further debugging:
+In the likelihood scan of the signal rate r, I have seen the minimum at a negative value. Since a negative signal is not physical in the analysis, we constrained it to be larger than 0 in the fits of asymptotic limit, FitDiagnostics and MultiDimFit. All these fits converged if r>0. The NLL plots from FastScan are here http://submit08.mit.edu/~jinw65/impacts/nll.pdf.
+Thanks for your help!
+Weijie
+----------------------------------------
+
+REPLY 2 (by sqian @ 2024-02-15T11:31:43.790Z):
+Did you check whether the one sided issue could be resolved by allowing r to be negative? Like ‘ — rMin -20’
+----------------------------------------
+
+REPLY 3 (by gortona @ 2024-02-15T12:06:39.000Z):
+Dear Weijie,
+I think the impacts make sense given that you fit a value very close to the boundary.
+In these conditions one thing you can do to check your impacts is to inject an artificial signal (r=1 for example) and see how the expected (—expectSignal=1 -t -1) impacts behave. If they are still one-sided than something is fishy,
+Cheers,
+Giacomo
+
+On 15 Feb 2024, at 12:27, Weijie Jin via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Weijie Jin jinwFebruary 15
+
+Dear experts,
+I’m investigating the impacts of the systematic uncertainties on my fit to the signal rate parameter in the range [0,20], and saw at the 1sigma and -1sigma impacts of most of the systematic sources are on the same side (impact plot here http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100.pdf). This indicates that the change of the nuisances on both sides will shift the signal rate to the same side. I wonder if the impacts make sense and if there are potential issues in the fit.
+Further debugging:
+In the likelihood scan of the signal rate r, I have seen the minimum at a negative value. Since a negative signal is not physical in the analysis, we constrained it to be larger than 0 in the fits of asymptotic limit, FitDiagnostics and MultiDimFit. All these fits converged if r>0. The NLL plots from FastScan are here http://submit08.mit.edu/~jinw65/impacts/nll.pdf.
+Thanks for your help!
+Weijie
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by jinw @ 2024-02-15T14:19:27.681Z):
+Giacomo Ortona:
+
+—expectSignal=1 -t -1
+
+Hi Sitian,
+When I allow the signal rate to be negative, the MultiDimFit failed for many systematic sources, and I got an impact plot like this http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100_negativesig.pdf for the systematics that did not fail. I guess the likelihood versus the nuisance parameter might not be convex in that region. Would it still be a problem for the fit if we are not looking at the negative signal rate region?
+Best regards,
+Weijie
+----------------------------------------
+
+REPLY 5 (by jinw @ 2024-02-15T14:33:41.381Z):
+Dear Giacomo,
+I find the MultiDimFit failed with Asimov data and expectsignal=1, and have to increase the cminDefaultMinimizerTolerance to get the plot. The fit to some of the systematics still failed, but for the others the impacts became two-sided (http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100_asimovsign1.pdf). Is this compatible with your guess?
+With regard to the failed MultiDimFit to asimov data with signal, would it indicate a problem in our fit to observed data, and do you suggest to dig deeper into it?
+Best regards,
+Weijie
+----------------------------------------
+
+REPLY 6 (by gortona @ 2024-02-18T21:28:37.000Z):
+Dear Weijie,
+When you say you had to increase the cminDefaultMinimizerTolerance, you mean that you set values larger than 0.1? In any case there’s nothing magical on the default value of this setting. It’s a value that we find works in most cases, but it can well be that in your case you need to change some of the minimiser options, in principle that’s not a red flag, although it does point to some potential instability in the fit. You might want to check the likelihood shape you get from -M MultiDimFit —algo=grid to see if the likelihood shape is regular.
+I would say most of the nuisance are well behaved. I would check if it makes sense that cms_trk_kill is one-sided, and I see there are a few bin-by-bin uncertainties one-sided as well. This would make sense if the corresponding bins have total yields close to 0 (since they could only fluctuate upwards). But overall imho I don’t see anything too worrisome.
+Best regards,
+Giacomo
+
+On 15 Feb 2024, at 15:35, Weijie Jin via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Weijie Jin jinwFebruary 15
+
+Dear Giacomo,
+I find the MultiDimFit failed with Asimov data and expectsignal=1, and have to increase the cminDefaultMinimizerTolerance to get the plot. The fit to some of the systematics still failed, but for the others the impacts became two-sided (http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100_asimovsign1.pdf). Is this compatible with your guess?
+With regard to the failed MultiDimFit to asimov data with signal, would it indicate a problem in our fit to observed data, and do you suggest to dig deeper into it?
+Best regards,
+Weijie
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Weijie Jin jinwFebruary 15
+
+Giacomo Ortona:
+—expectSignal=1 -t -1
+
+Hi Sitian,
+When I allow the signal rate to be negative, the MultiDimFit failed for many systematic sources, and I got an impact plot like this http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100_negativesig.pdf for the systematics that did not fail. I guess the likelihood versus the nuisance parameter might not be convex in that region. Would it still be a problem for the fit if we are not looking at the negative signal rate region?
+Best regards,
+Weijie
+
+Giacomo Ortona gortonaFebruary 15
+
+Dear Weijie,
+I think the impacts make sense given that you fit a value very close to the boundary.
+In these conditions one thing you can do to check your impacts is to inject an artificial signal (r=1 for example) and see how the expected (—expectSignal=1 -t -1) impacts behave. If they are still one-sided than something is fishy,
+Cheers,
+Giacomo
+
+On 15 Feb 2024, at 12:27, Weijie Jin via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Weijie Jin jinwFebruary 15
+
+Dear experts,
+I’m investigating the impacts of the systematic uncertainties on my fit to the signal rate parameter in the range [0,20], and saw at the 1sigma and -1sigma impacts of most of the systematic sources are on the same side (impact plot here http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100.pdf). This indicates that the change of the nuisances on both sides will shift the signal rate to the same side. I wonder if the impacts make sense and if there are potential issues in the fit.
+Further debugging:
+In the likelihood scan of the signal rate r, I have seen the minimum at a negative value. Since a negative signal is not physical in the analysis, we constrained it to be larger than 0 in the fits of asymptotic limit, FitDiagnostics and MultiDimFit. All these fits converged if r>0. The NLL plots from FastScan are here http://submit08.mit.edu/~jinw65/impacts/nll.pdf.
+Thanks for your help!
+Weijie
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Sitian Qian sqianFebruary 15
+
+Did you check whether the one sided issue could be resolved by allowing r to be negative? Like ‘ — rMin -20’
+
+Weijie Jin jinwFebruary 15
+
+Dear experts,
+I’m investigating the impacts of the systematic uncertainties on my fit to the signal rate parameter in the range [0,20], and saw at the 1sigma and -1sigma impacts of most of the systematic sources are on the same side (impact plot here http://submit08.mit.edu/~jinw65/impacts/impacts_scaledownsig100.pdf). This indicates that the change of the nuisances on both sides will shift the signal rate to the same side. I wonder if the impacts make sense and if there are potential issues in the fit.
+Further debugging:
+In the likelihood scan of the signal rate r, I have seen the minimum at a negative value. Since a negative signal is not physical in the analysis, we constrained it to be larger than 0 in the fits of asymptotic limit, FitDiagnostics and MultiDimFit. All these fits converged if r>0. The NLL plots from FastScan are here http://submit08.mit.edu/~jinw65/impacts/nll.pdf.
+Thanks for your help!
+Weijie
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

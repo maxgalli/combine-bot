@@ -1,0 +1,78 @@
+{
+  "topic_id": 145358,
+  "title": "Post-fit distributions: histogram normalization",
+  "url": "https://cms-talk.web.cern.ch/t/145358",
+  "category_id": 279,
+  "created_at": "2026-05-26T08:46:19.050Z",
+  "last_posted_at": "2026-05-26T13:04:10.176Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "santocch",
+      "name": "Attilio Santocchia",
+      "created_at": "2026-05-26T08:46:19.336Z",
+      "updated_at": "2026-05-26T08:46:19.336Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nI just like to double-check that I\u2019m doing the right thing. When I write my combine datacard for EXO-25-002, I use as signal rate 1 because I don\u2019t have a model to calculate the expected signal rate. Then I\u2019d like to extract the number of signal events (and also background) from the integral of the shape calculated by the FitDiagnostics post-fit procedure. The numbers I get however are not correct and it looks to me that to get the correct numbers, I have to scale all histogram I find in the FitDiagnostics output by the r parameter calculated by FitDiagnostics. Is this the correct procedure?\nThanks for helping\nAttilio",
+      "cooked_html": "<p>Hello,</p>\n<p>I just like to double-check that I\u2019m doing the right thing. When I write my combine datacard for EXO-25-002, I use as signal rate 1 because I don\u2019t have a model to calculate the expected signal rate. Then I\u2019d like to extract the number of signal events (and also background) from the integral of the shape calculated by the FitDiagnostics post-fit procedure. The numbers I get however are not correct and it looks to me that to get the correct numbers, I have to scale all histogram I find in the FitDiagnostics output by the r parameter calculated by FitDiagnostics. Is this the correct procedure?</p>\n<p>Thanks for helping</p>\n<p>Attilio</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2026-05-26T10:43:39.169Z",
+      "updated_at": "2026-05-26T10:43:39.169Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Ciao Attilio,\nWhat are you using to extract the post-fit signal rate? mlfitNormsToText.py? It\u2019s a while I don\u2019t use it, by if I remember correctly the value returned by script should already include the effect of the signal strength, so no further scaling is needed\nBest,\nGiacomo",
+      "cooked_html": "<p>Ciao Attilio,</p>\n<p>What are you using to extract the post-fit signal rate? <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/mlfitNormsToText.py\" rel=\"noopener nofollow ugc\">mlfitNormsToText.py</a>? It\u2019s a while I don\u2019t use it, by if I remember correctly the value returned by script should already include the effect of the signal strength, so no further scaling is needed</p>\n<p>Best,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "santocch",
+      "name": "Attilio Santocchia",
+      "created_at": "2026-05-26T11:00:16.333Z",
+      "updated_at": "2026-05-26T11:00:16.333Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo\nI don\u2019t use any specific procedure\u2026 I just plot the histogram I find in the file produced by FitDiagnostics when I add\n\u2013saveShapes --saveWithUncertainties\nand then I calculate the integral of the histogram. If I don\u2019t scale all histograms then I get:\nsignal     1.35 +/ 0.15\nbackground 0.54 +- 0.02\n\nwhile if I scale all histogram by 19.3631 (the r value reported by FitDiagnostics) I get:\nsignal     26 +- 3\nbackground 10.5 +- 0.5\n\nwhich are the numbers I expect looking at the number of events in the golden region (excess \u00b1 2 sigma)\nAttilio",
+      "cooked_html": "<p>Hi Giacomo<br>\nI don\u2019t use any specific procedure\u2026 I just plot the histogram I find in the file produced by FitDiagnostics when I add</p>\n<p>\u2013saveShapes --saveWithUncertainties</p>\n<p>and then I calculate the integral of the histogram. If I don\u2019t scale all histograms then I get:</p>\n<pre><code class=\"lang-auto\">signal     1.35 +/ 0.15\nbackground 0.54 +- 0.02\n</code></pre>\n<p>while if I scale all histogram by 19.3631 (the r value reported by FitDiagnostics) I get:</p>\n<pre><code class=\"lang-auto\">signal     26 +- 3\nbackground 10.5 +- 0.5\n</code></pre>\n<p>which are the numbers I expect looking at the number of events in the golden region (excess \u00b1 2 sigma)</p>\n<p>Attilio</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "santocch",
+      "name": "Attilio Santocchia",
+      "created_at": "2026-05-26T11:23:06.261Z",
+      "updated_at": "2026-05-26T11:23:06.261Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I run the mlfitNormsToText.py script and this is what I get:\nChannel                                  Process                                Pre-fit              S+B Fit           B-Only Fit\n---------------------------------------------------------------------------------------------------------------------------------\nTag0                                     signal                                   1.000               19.363                0.000\nTag0                                     multipdf_Tag0                     94458961.000             9864.637             9883.987\nTag0                                     total                             94458962.000             9884.000             9883.987\nTag0                                     total_signal                             1.000               19.363                0.000\nTag0                                     total_background                  94458961.000             9864.637             9883.987\n\nand this is the plot I refer to:\nScreenshot 2026-05-26 alle 13.14.18747\u00d7748 64.2 KB\nIf you count the events in the 3 bin where you see the excess there are 29 entries. The blue line below (just adding the value of the background function) should be around 9. My guess is then I have ~ 20 events for the signal and 9 for the background.\nFrom these numbers I would like to extract the expected number of background events in the 3 bin below the excess\u2026 and here is why I tried to calculate the integral from the shape histogram in the FitDiagnostics file\u2026 but muliply by r is not correct. So what is the correct procedure to get the correct number?\nThanks\nAttilio",
+      "cooked_html": "<p>I run the mlfitNormsToText.py script and this is what I get:</p>\n<pre><code class=\"lang-auto\">Channel                                  Process                                Pre-fit              S+B Fit           B-Only Fit\n---------------------------------------------------------------------------------------------------------------------------------\nTag0                                     signal                                   1.000               19.363                0.000\nTag0                                     multipdf_Tag0                     94458961.000             9864.637             9883.987\nTag0                                     total                             94458962.000             9884.000             9883.987\nTag0                                     total_signal                             1.000               19.363                0.000\nTag0                                     total_background                  94458961.000             9864.637             9883.987\n</code></pre>\n<p>and this is the plot I refer to:</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/0/095a106314d13a9fed3fde4726e0e0c76f5df8b8.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/095a106314d13a9fed3fde4726e0e0c76f5df8b8\" title=\"Screenshot 2026-05-26 alle 13.14.18\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/095a106314d13a9fed3fde4726e0e0c76f5df8b8_2_499x500.png\" alt=\"Screenshot 2026-05-26 alle 13.14.18\" data-base62-sha1=\"1kJg1Di5gt9tnz36RwdJKI9LfbW\" width=\"499\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/095a106314d13a9fed3fde4726e0e0c76f5df8b8_2_499x500.png, https://cms-talk.web.cern.ch/uploads/default/original/2X/0/095a106314d13a9fed3fde4726e0e0c76f5df8b8.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/0/095a106314d13a9fed3fde4726e0e0c76f5df8b8.png 2x\" data-dominant-color=\"F4F2F3\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot 2026-05-26 alle 13.14.18</span><span class=\"informations\">747\u00d7748 64.2 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>If you count the events in the 3 bin where you see the excess there are 29 entries. The blue line below (just adding the value of the background function) should be around 9. My guess is then I have ~ 20 events for the signal and 9 for the background.</p>\n<p>From these numbers I would like to extract the expected number of background events in the 3 bin below the excess\u2026 and here is why I tried to calculate the integral from the shape histogram in the FitDiagnostics file\u2026 but muliply by r is not correct. So what is the correct procedure to get the correct number?</p>\n<p>Thanks</p>\n<p>Attilio</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2026-05-26T12:24:21.188Z",
+      "updated_at": "2026-05-26T12:24:21.188Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Attilio,\nFor your integral approach, can I just check if you are accounting for the bin widths? As in the docs :\n\"For datacards whose inputs are RooAbsPdf/RooDataHists, the x-axis will correspond to the observable and the bin content will be the PDF density / events divided by the bin width. This means the absolute number of events in a given bin, i, can be obtained from h.GetBinContent(i)*h.GetBinWidth(i)\"\nIn your case, i\u2019m pretty sure you are using the RooAbsPdfs / Hists since you have the parametric background. IIRC ROOT\u2019s default ::Integral() only counts the contents, not the integral. This might be the difference you are seeing between the normalisations printed in the mlfitNormsToText.py script vs calling Integral on the post-fit shapes.\nBest,\nNick",
+      "cooked_html": "<p>Hi Attilio,</p>\n<p>For your integral approach, can I just check if you are accounting for the bin widths? As in the docs :</p>\n<p>\"For datacards whose inputs are <code>RooAbsPdf</code>/<code>RooDataHist</code>s, the x-axis will correspond to the observable and the bin content will be the PDF density / events divided by the bin width. This means the absolute number of events in a given bin, i, can be obtained from <code>h.GetBinContent(i)*h.GetBinWidth(i)\"</code></p>\n<p>In your case, i\u2019m pretty sure you are using the RooAbsPdfs / Hists since you have the parametric background. IIRC ROOT\u2019s default <code>::Integral()</code> only counts the contents, not the integral. This might be the difference you are seeing between the normalisations printed in the mlfitNormsToText.py script vs calling Integral on the post-fit shapes.</p>\n<p>Best,</p>\n<p>Nick</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "santocch",
+      "name": "Attilio Santocchia",
+      "created_at": "2026-05-26T13:04:10.176Z",
+      "updated_at": "2026-05-26T13:04:10.176Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Nicholas,\nthanks for the solution! Now everything is ok.\nCiao\nAttilio",
+      "cooked_html": "<p>Hi Nicholas,<br>\nthanks for the solution! Now everything is ok.</p>\n<p>Ciao</p>\n<p>Attilio</p>"
+    }
+  ]
+}

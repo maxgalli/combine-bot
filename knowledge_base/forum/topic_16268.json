@@ -1,0 +1,45 @@
+{
+  "topic_id": 16268,
+  "title": "toysFrequentist and toysFile options",
+  "url": "https://cms-talk.web.cern.ch/t/16268",
+  "category_id": 279,
+  "created_at": "2022-10-14T09:13:55.639Z",
+  "last_posted_at": "2022-10-14T09:23:52.725Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-10-14T09:13:55.891Z",
+      "updated_at": "2023-02-07T10:52:59.406Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi experts,\nI am thinking of making some resource/time savings in the toy-heavy parts of an analysis, and one approach that comes to mind is to share the background-only toys between signal points. To this end I prepared a toys file using the GenerateOnly option, and then in later steps read this file using the --toysFile option.\nSince the toys are made using the --toysFrequentist option, I wonder about the difference between having or not this option again in later analysis steps. I\u2019m asking because I see a ~10% difference in memory/runtime of these steps, and if not having --toysFrequentist in the later steps is also correct, then clearly I would love to benefit from the savings.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi experts,</p>\n<p>I am thinking of making some resource/time savings in the toy-heavy parts of an analysis, and one approach that comes to mind is to share the background-only toys between signal points. To this end I prepared a toys file using the GenerateOnly option, and then in later steps read this file using the --toysFile option.</p>\n<p>Since the toys are made using the --toysFrequentist option, I wonder about the difference between having or not this option again in later analysis steps. I\u2019m asking because I see a ~10% difference in memory/runtime of these steps, and if not having --toysFrequentist in the later steps is also correct, then clearly I would love to benefit from the savings.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-10-14T09:16:41.036Z",
+      "updated_at": "2022-10-14T09:16:41.036Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nIn short, you need to keep the --toysFrequentist option in all steps, otherwise the treatment of the toys is inconsistent (the flag instructs combine to load the sampled global observables for each toy).\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>In short, you need to keep the <code>--toysFrequentist</code> option in all steps, otherwise the treatment of the toys is inconsistent (the flag instructs combine to load the sampled global observables for each toy).</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-10-14T09:23:52.725Z",
+      "updated_at": "2022-10-14T09:23:52.725Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThanks for confirming. I will do so, then.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Thanks for confirming. I will do so, then.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    }
+  ]
+}

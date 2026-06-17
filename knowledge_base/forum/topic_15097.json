@@ -1,0 +1,56 @@
+{
+  "topic_id": 15097,
+  "title": "Parameter aliases",
+  "url": "https://cms-talk.web.cern.ch/t/15097",
+  "category_id": 279,
+  "created_at": "2022-09-16T14:12:13.095Z",
+  "last_posted_at": "2022-09-26T10:25:58.669Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-09-16T14:12:13.329Z",
+      "updated_at": "2023-02-07T10:53:08.702Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi combine experts,\nI am wondering if it is possible to put parameter aliases when using combine i.e. having parameters pA, pB, \u2026 and I want them to be called as p1, p2, \u2026 during the course of the run e.g. --setParameters \u2018p1=1,p2=1,\u2026\u2019 and the like, and have them to be named such in any file combine outputs. The use case I have in mind is to maximize sharing e.g. bkg toys are the same regardless of the exact signal point, while it would be really nice to retain the ability to call my POIs with their point-specific names, instead of just generic p1 and p2 for example.\nHow can I do this? While my specific use case at the moment is POI aliasing, it\u2019s useful to also know how to do this for nuisances.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi combine experts,</p>\n<p>I am wondering if it is possible to put parameter aliases when using combine i.e. having parameters pA, pB, \u2026 and I want them to be called as p1, p2, \u2026 during the course of the run e.g. --setParameters \u2018p1=1,p2=1,\u2026\u2019 and the like, and have them to be named such in any file combine outputs. The use case I have in mind is to maximize sharing e.g. bkg toys are the same regardless of the exact signal point, while it would be really nice to retain the ability to call my POIs with their point-specific names, instead of just generic p1 and p2 for example.</p>\n<p>How can I do this? While my specific use case at the moment is POI aliasing, it\u2019s useful to also know how to do this for nuisances.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-09-22T12:13:43.415Z",
+      "updated_at": "2022-09-22T12:13:43.415Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi experts,\nThis is a gentle reminder on my question above.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi experts,</p>\n<p>This is a gentle reminder on my question above.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-09-26T07:46:15.771Z",
+      "updated_at": "2022-09-26T07:46:15.771Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nI don\u2019t believe this is possible. While I imagine such functionality could be developed, it would probably involve modifying code in a lot of places (since there are several combine command line options which take parameter names).\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>I don\u2019t believe this is possible. While I imagine such functionality could be developed, it would probably involve modifying code in a lot of places (since there are several combine command line options which take parameter names).</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-09-26T10:25:58.669Z",
+      "updated_at": "2022-09-26T10:25:58.669Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nAlright. I had a feeling that this isn\u2019t already available, thanks for confirming this.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Alright. I had a feeling that this isn\u2019t already available, thanks for confirming this.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    }
+  ]
+}

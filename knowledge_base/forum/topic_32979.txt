@@ -1,0 +1,47 @@
+TOPIC: Error while compiling combine v9 in lxplus
+URL: https://cms-talk.web.cern.ch/t/32979
+DATE: 2023-12-29T19:59:41.029Z
+SOLVED: no
+============================================================
+
+QUESTION (by abasnet @ 2023-12-29T19:59:41.411Z):
+Dear experts,
+I have been following the instructions in [1] to install combine v9 in lxplus. I also checked out the recommended tag and did a clean build as recommended. However, during compilation, I am getting lots of error messages, including an eventual segfault, that I have pasted in the cernbox link in [2].
+Is this a known issue? I would appreciate any help in fixing this.
+[1]https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version
+[2]https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8
+----------------------------------------
+
+REPLY 2 (by nckw @ 2023-12-29T20:55:25.000Z):
+Hi,
+This may have something to do with the lxplus machines moving over to el9.
+We have an open PR for updates to the docs to get around this but for now can you try the following?
+cmssw-el7
+cmsrel CMSSW_11_3_4
+cd CMSSW_11_3_4/src
+cmsenv
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+Best
+Nick
+
+| Aashwin Basnet abasnetDecember 29 |
+
+| - |
+
+Dear experts,
+I have been following the instructions in [1] to install combine v9 in lxplus. I also checked out the recommended tag and did a clean build as recommended. However, during compilation, I am getting lots of error messages, including an eventual segfault, that I have pasted in the cernbox link in [2].
+Is this a known issue? I would appreciate any help in fixing this.
+[1]https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version
+[2]https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8
+
+···
+On 29 Dec 2023 20:01, Aashwin Basnet via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------
+
+REPLY 3 (by abasnet @ 2023-12-31T17:48:40.819Z):
+Hi Nick,
+Thank you for your help. I can confirm that this seems to be resolving the issue for now. I am now able to set up and compile the repo.
+Sincerely,
+Aashwin
+----------------------------------------

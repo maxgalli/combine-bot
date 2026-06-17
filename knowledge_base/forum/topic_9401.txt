@@ -1,0 +1,32 @@
+TOPIC: Excluding a background process from autoMCstats
+URL: https://cms-talk.web.cern.ch/t/9401
+DATE: 2022-04-18T14:07:35.454Z
+SOLVED: no
+============================================================
+
+QUESTION (by gcumming @ 2022-04-18T14:07:35.636Z):
+Dear Experts:
+I would like to add statistical uncertainties to my datacard, and for two out of three of my background processes, I would like to use the autoMCstats functionality. Is there a way to exclude the third process, “DY”, from autoMCstats?
+My datacard and root file are attached. An example of the command I am running is:
+combine -M FitDiagnostics Run2_2017_2018_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_newhists_nosysts_autoMCstats0limi.txt  --saveShapes
+In the example output shown here [1], it looks like several processes are excluded, though it is unclear to me if they were flagged as signal, since the datacard used to produce the output was not included.
+​Please let me know if there is a way to exclude a background process within the same channel from autoMCStats, and if not, if it is appropriate to include the statistical uncertainties as additional shape uncertainties, provided explicitly with additional up/down histograms.
+Thanks and regards,
+Grace Cummings
+[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-04-20T10:35:09.022Z):
+Dear Grace,
+To add bin-by-bin uncertainties via autoMCStats, not taking into account the third process, you should manually set the bin errors of the histograms that you provide for “DY” to 0. We do not have options for this in the autoMCStats syntax to avoid accidentally turning this off for some processes, in this case you have to very consciously disable the uncertainties.
+Best,
+Adinda
+PS: Let me point out that in the example output, where you see “process excluded”, this refers to the exclusion of that process for deciding whether to use per-process uncertainties for that bin or to use a single Gaussian - the uncertainty is always applied to all processes, even if they are excluded for this determination.
+----------------------------------------
+
+REPLY 3 (by gcumming @ 2022-05-06T11:21:50.844Z):
+Dear Adinda,
+I never thanked you for this! It implemented the “0” uncertainties, and that seems to have worked.
+Best,
+Grace
+----------------------------------------

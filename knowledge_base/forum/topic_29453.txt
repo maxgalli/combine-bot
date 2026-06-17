@@ -1,0 +1,23 @@
+TOPIC: Feldman-Cousins
+URL: https://cms-talk.web.cern.ch/t/29453
+DATE: 2023-09-13T01:57:15.021Z
+SOLVED: no
+============================================================
+
+QUESTION (by chenguan @ 2023-09-13T01:57:15.250Z):
+Dear experts,
+We are currently in the process of HIG-21-019, specifically focusing on the Higgs width measurement using on-shell production. To facilitate this measurement, we have implemented the Feldman-Cousins method. The datacards, workspaces and command lines can be accessed here .
+In which we set the options -LHCmode LHC-feldman-cousins and --redefineSignalPOIs HiggsDecayWidth. So, the NPs, r and mH are fixed at their post-fit values in toys generation and profiled in evaluating test statistic.
+We kindly request your expertise in reviewing these materials and our understanding to ensure their accuracy. Thank you in advance for your help.
+Best regards,
+Chenguang for the analysers
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-09-20T08:29:44.216Z):
+Hi Chenguang,
+Sorry that we missed responding to this earlier. I haven’t looked directly at the datacards or workspaces, so please do not consider this a proper review. The review should come as part of the PAG review (from the combine/CAT-STATS contacts) as well as from the statistics committee (through the questionnaire and later CWR review).
+That being said, we are more than happy to take a look if you have any specific questions about implementation, issues that have arisen, etc…
+Since there was some discussion of the methods you are using with the statistics commitee at the meeting on monday, I don’t have the impression that you still have outstanding questions for us? But if you do, please follow up.
+Best,
+Kyle
+----------------------------------------

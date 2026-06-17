@@ -1,0 +1,39 @@
+TOPIC: Difference in expected limits with and without using -t -1
+URL: https://cms-talk.web.cern.ch/t/48290
+DATE: 2024-09-09T06:29:31.719Z
+SOLVED: no
+============================================================
+
+QUESTION (by shachary @ 2024-09-09T06:29:31.859Z):
+Dear all
+We are doing the unblinding of monophoton analysis, and while checking the limits, we saw change in expected limits with and without using -t -1.
+Here is the output which we are getting when we are using -t -1
+combine -M AsymptoticLimits cards_NLO_Pt/comb_card_DM_NLO_Vector_Mx-1_Mv-1000_pta130.txt -t -1
+Observed Limit: r < 0.6083
+Expected 2.5%: r < 0.3428
+Expected 16.0%: r < 0.4469
+Expected 50.0%: r < 0.6094
+Expected 84.0%: r < 0.8328
+Expected 97.5%: r < 1.0998
+while without -t -1 in our combine command
+combine -M AsymptoticLimits cards_NLO_Pt/comb_card_DM_NLO_Vector_Mx-1_Mv-1000_pta130.txt
+we are getting
+Observed Limit: r < 0.7912
+Expected 2.5%: r < 0.3846
+Expected 16.0%: r < 0.5052
+Expected 50.0%: r < 0.6934
+Expected 84.0%: r < 0.9504
+Expected 97.5%: r < 1.2535
+As you can see, expected limits are changing from 0.6069 to 0.6934, with and without -t -1, whereas I expect expected limits to not change. And for some other models, its changing even more. Please suggest what to do in this case. Also, please find the datacard in this link: Datacards and input files
+Thank you
+Regards
+Shriniketan
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-09-09T07:44:46.488Z):
+Hi Shriniketan,
+When you run the limits with -t -1 (note that --run blind would be better), the asimov data set that is used for calculating the expected limits is built from the pre-fit expectation, ie with all nuisance parameters at their nominal values. Without -t -1, a fit to data is performed (with the signal strength at 0) and the asimov dataset is constructed assuming the values of the fitted parameters. It is thus not unexpected that the expected limits can change between the two configurations.
+If you haven’t done so yet, you might also want to have a look at previous Combine tutorials (e.g. the exercises here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part5/longexercise/ or the longer tutorials linked from here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part4/usefullinks/), where your can learn a bit more about what happens in the limit setting procedure and what the functions of the different options are.
+Best,
+Adinda
+----------------------------------------

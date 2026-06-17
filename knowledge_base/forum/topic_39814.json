@@ -1,0 +1,34 @@
+{
+  "topic_id": 39814,
+  "title": "Interpreting Systematic Uncertainties in Shape Analysis",
+  "url": "https://cms-talk.web.cern.ch/t/39814",
+  "category_id": 279,
+  "created_at": "2024-04-24T23:28:09.132Z",
+  "last_posted_at": "2024-04-25T06:40:25.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "acotarod",
+      "name": "Antonio Cota Rodriguez",
+      "created_at": "2024-04-24T23:28:09.374Z",
+      "updated_at": "2024-04-24T23:28:09.374Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts\nI am conducting a binned shape analysis using datacards with the following systematic parameters:\n\njec_FlavorPureBottom\njec_FlavorPureGluon\njec_FlavorPureQuark\njec_RelativeFSR\njer\nlumi\n\nI have executed the following commands using combineTool.py:\n\ncombineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doInitialFit -t -1 --expectSignal 1\ncombineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doFits --parallel 5 -t -1 --expectSignal 1\ncombineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --output impacts.json -t -1 --expectSignal 1\n\nHowever, I am receiving impact parameters of the type:\n\nprop_binch1_bin0\nprop_binch2_bin26\nprop_binch1_bin1\n\nCould you help me understand what these impact parameters signify and how they relate to the systematics listed in my datacards?\nThank you!",
+      "cooked_html": "<p>Dear Experts</p>\n<p>I am conducting a binned shape analysis using datacards with the following systematic parameters:</p>\n<ul>\n<li>jec_FlavorPureBottom</li>\n<li>jec_FlavorPureGluon</li>\n<li>jec_FlavorPureQuark</li>\n<li>jec_RelativeFSR</li>\n<li>jer</li>\n<li>lumi</li>\n</ul>\n<p>I have executed the following commands using <code>combineTool.py</code>:</p>\n<ol>\n<li><code>combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doInitialFit -t -1 --expectSignal 1</code></li>\n<li><code>combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doFits --parallel 5 -t -1 --expectSignal 1</code></li>\n<li><code>combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --output impacts.json -t -1 --expectSignal 1</code></li>\n</ol>\n<p>However, I am receiving impact parameters of the type:</p>\n<ul>\n<li>prop_binch1_bin0</li>\n<li>prop_binch2_bin26</li>\n<li>prop_binch1_bin1</li>\n</ul>\n<p>Could you help me understand what these impact parameters signify and how they relate to the systematics listed in my datacards?</p>\n<p>Thank you!</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2024-04-25T06:40:25.000Z",
+      "updated_at": "2024-04-25T06:41:12.372Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Dear Antonio,\nyou have in your data card a line like \u201cautoMCStats\u2026\u201d, right?\nThat line defines for you a nuisance parameter per channel per bin, corresponding to joining together the uncertainties due to the finite amount of Monte Carlo events of the various processes. You used to have to create one template per bin per channel by yourself and them sum them up according to the Barlow\u2013Beeston procedure, and put all these templates and list all these nuisance parameters in the data cards, but nowadays combine does that for you.\nIt\u2019s documented in\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/bin-wise-stats/\nCheers,\nPietro",
+      "cooked_html": "<p>Dear Antonio,</p>\n<p>you have in your data card a line like \u201cautoMCStats\u2026\u201d, right?</p>\n<p>That line defines for you a nuisance parameter per channel per bin, corresponding to joining together the uncertainties due to the finite amount of Monte Carlo events of the various processes. You used to have to create one template per bin per channel by yourself and them sum them up according to the Barlow\u2013Beeston procedure, and put all these templates and list all these nuisance parameters in the data cards, but nowadays combine does that for you.<br>\nIt\u2019s documented in<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/bin-wise-stats/\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/bin-wise-stats/</a></p>\n<p>Cheers,<br>\nPietro</p>"
+    }
+  ]
+}

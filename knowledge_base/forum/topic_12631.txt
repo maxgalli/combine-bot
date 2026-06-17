@@ -1,0 +1,74 @@
+TOPIC: Discrete profiling method does not pick the PDF that gives the maximum likelihood
+URL: https://cms-talk.web.cern.ch/t/12631
+DATE: 2022-07-08T07:29:32.970Z
+SOLVED: no
+============================================================
+
+QUESTION (by xuyan @ 2022-07-08T07:29:33.114Z):
+Hello Combine experts,
+I am writing as I have a question regarding an issue I encountered when trying to implement the discrete profiling method into my analysis.
+For some reasons, this method does not pick the best PDF that gives the maximum likelihood over all candidate functions inside of the RooMultiPdf, as shown in the figure below:
+
+image641×502 43.4 KB
+
+Sometimes it also creates its own curve like this one:
+
+image628×523 44.7 KB
+
+The commands I used are:
+combine datacard_asymptotic_${i}.txt -M GenerateOnly --setParameters pdf_index_${year}=2 --freezeParameters pdf_index_${year} --toysNoSystematics -t 1 --expectSignal 0 --saveToys
+
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameters pdf_index_${year}=-1 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 -n Envelope_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 --freezeParameters pdf_index_${year} --setParameters pdf_index_${year}=0 -n fixed_pdf_0_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 --freezeParameters pdf_index_${year} --setParameters pdf_index_${year}=1 -n fixed_pdf_1_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 --freezeParameters pdf_index_${year} --setParameters pdf_index_${year}=2 -n fixed_pdf_2_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+
+I saw a similar post here: Regarding the consideration of background function parameters in combine for envelop method - #10 by agilbert but unfortunately, my case already has the systematic uncertainties declared in the datacard
+Do you have some insights into this problem?
+Here you can find the RooWorkspace and datacard I am using: https://cernbox.cern.ch/index.php/s/MnhpV54X6PiwfdR
+Thanks a lot for your kind help!
+Best regards,
+Sebastian
+----------------------------------------
+
+REPLY 2 (by nckw @ 2022-07-08T08:13:30.000Z):
+Hi,
+Just a question - - why are you using —fastScan ? that will not also profile the shape parameters of the background functions …?
+Nick
+
+On 8 Jul 2022, at 08:30, Xuli Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Xuli Yan xuyanJuly 8
+
+Hello Combine experts,
+I am writing as I have a question regarding an issue I encountered when trying to implement the discrete profiling method into my analysis.
+For some reasons, this method does not pick the best PDF that gives the maximum likelihood over all candidate functions inside of the RooMultiPdf, as shown in the figure below:
+
+Sometimes it also creates its own curve like this one:
+
+The commands I used are:
+combine datacard_asymptotic_${i}.txt -M GenerateOnly --setParameters pdf_index_${year}=2 --freezeParameters pdf_index_${year} --toysNoSystematics -t 1 --expectSignal 0 --saveToys
+
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameters pdf_index_${year}=-1 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 -n Envelope_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 --freezeParameters pdf_index_${year} --setParameters pdf_index_${year}=0 -n fixed_pdf_0_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 --freezeParameters pdf_index_${year} --setParameters pdf_index_${year}=1 -n fixed_pdf_1_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+combine datacard_asymptotic_${i}.txt -M MultiDimFit --algo grid --points 50 --setParameterRanges r=-1,2 -m 1 --fastScan --saveNLL --cminDefaultMinimizerStrategy 0 --freezeParameters pdf_index_${year} --setParameters pdf_index_${year}=2 -n fixed_pdf_2_${year}_${i} --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --toysFile=higgsCombineTest.GenerateOnly.mH120.123456.root -t 1
+
+I saw a similar post here: Regarding the consideration of background function parameters in combine for envelop method - #10 by agilbert but unfortunately, my case already has the systematic uncertainties declared in the datacard
+Do you have some insights into this problem?
+Here you can find the RooWorkspace and datacard I am using: https://cernbox.cern.ch/index.php/s/MnhpV54X6PiwfdR
+Thanks a lot for your kind help!
+Best regards,
+Sebastian
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by xuyan @ 2022-07-08T11:30:45.165Z):
+Dear Nick,
+Nice catch! I think it is the cause. I must have left it unintended. Now things seem to be working as expected.
+Thanks a lot!
+Best regards,
+Sebastian
+----------------------------------------

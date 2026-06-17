@@ -1,0 +1,42 @@
+TOPIC: Interpreting Systematic Uncertainties in Shape Analysis
+URL: https://cms-talk.web.cern.ch/t/39814
+DATE: 2024-04-24T23:28:09.132Z
+SOLVED: no
+============================================================
+
+QUESTION (by acotarod @ 2024-04-24T23:28:09.374Z):
+Dear Experts
+I am conducting a binned shape analysis using datacards with the following systematic parameters:
+
+jec_FlavorPureBottom
+jec_FlavorPureGluon
+jec_FlavorPureQuark
+jec_RelativeFSR
+jer
+lumi
+
+I have executed the following commands using combineTool.py:
+
+combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doInitialFit -t -1 --expectSignal 1
+combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doFits --parallel 5 -t -1 --expectSignal 1
+combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --output impacts.json -t -1 --expectSignal 1
+
+However, I am receiving impact parameters of the type:
+
+prop_binch1_bin0
+prop_binch2_bin26
+prop_binch1_bin1
+
+Could you help me understand what these impact parameters signify and how they relate to the systematics listed in my datacards?
+Thank you!
+----------------------------------------
+
+REPLY 2 (by vischia @ 2024-04-25T06:40:25.000Z):
+Dear Antonio,
+you have in your data card a line like “autoMCStats…”, right?
+That line defines for you a nuisance parameter per channel per bin, corresponding to joining together the uncertainties due to the finite amount of Monte Carlo events of the various processes. You used to have to create one template per bin per channel by yourself and them sum them up according to the Barlow–Beeston procedure, and put all these templates and list all these nuisance parameters in the data cards, but nowadays combine does that for you.
+It’s documented in
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/bin-wise-stats/
+Cheers,
+Pietro
+----------------------------------------

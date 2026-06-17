@@ -1,0 +1,62 @@
+TOPIC: Fixing a value of r for FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/27650
+DATE: 2023-07-27T15:23:43.137Z
+SOLVED: no
+============================================================
+
+QUESTION (by mcmaster @ 2023-07-27T15:23:43.431Z):
+Dear Experts,
+I have been trying to explore and debug some unusual fitting behavior around certain values of r for my analysis. I’d like to use a utility such as test/diffnuisances.py to plot the nuisance parameters at specific values of r.
+Historically I’ve used diffnuisances on outputs from FitDiagnostics, but while I can find a command to fix r to some parameter range using --setParameterRanges, I can’t find any to just force r to one specific value for the module’s fit to work around. I’ve tried things like --expectSignal, --setParameters, and --setSignal, but they don’t seem to actually fix r in place.
+I’ve been assured this functionality exists in Combine, though I haven’t been able to find it in the online documentation or in --help. Do any of you know how this can be done?
+Thanks in advance,
+Brooks C. McMaster.
+----------------------------------------
+
+REPLY 2 (by nckw @ 2023-07-27T15:51:51.075Z):
+Hi Brooks,
+It might help to let us know a bit more about what it is you’re trying to achieve but based on the fact you say you want to “plot the nuisance parameters at specific values of r”, i’ll assume what you want to know is what the fitted nuisance parameter values are for a range of r values.
+Now, the simplest way to do this in combine is to instead use the -M MultiDimFit method with the --algo scan option. This produces a TTree in the output which is a scan of the negative log-likelihood as a function of the fixed parameter of interest (in this case r). You can include the option --saveSpecifiedNuis=all to get combine to also store the values of the fitted constrained nuisance parameters (i.e not flatParams) in the output TTree. From this you could make the plot you want I think. If you also want to include flatParams, rateParams etc, you can add another option --trackParameters x,y,z... so that combine also includes them in the TTree with the name trackedParam_x,y,z....
+I hope this is helpful and what you were looking for,
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by mcmaster @ 2023-07-27T19:49:00.692Z):
+Hey Nick, thanks for the advice.
+I may wind up doing something like that as an alternative if I can’t get FitDiagnostics to fix r, but I think that would require some rewriting of diffnuisances or the creation of an alternative to get all the nuisance parameters displayed neatly in one place.
+From my limited experience, the layout of a MultiDimFit output and a FitDiagnostics output are pretty different, so I don’t expect diffnuisances to be able to easily handle a switch of modules. The most convenient solution would be if I could do this from FitDiagnostics, but if the module just doesn’t have this capability, that would be good to know so I can explore alternatives like MultiDimFit.
+----------------------------------------
+
+REPLY 4 (by nckw @ 2023-07-27T20:22:45.040Z):
+Hi Brooks,
+If you prefer to use FitDiagnostics, you could try using the options --customStartingPoint --setParameters r=specific_value. FitDiagnostics performs two fits, one with the signal strength floating and another with it fixed by default to 0. This option will override the default value of 0 in the latter fit and then the nuisance parameter values in your output “b-only” results will in fact be the result of the fit with r fixed to your specific value. Would this work for your setup?
+Best,
+Nick
+----------------------------------------
+
+REPLY 5 (by mcmaster @ 2023-07-27T21:40:15.606Z):
+Hey Nick,
+I gave that method a try, but it looks like using those arguments removes the background fit (fit_b) from the output and thus causes diffnuisances to fail. Ideally I’d want the two fits the module does to be one with the signal strength fixed where I want it to be, and the other the usual background fit it normally does.
+If that’s not possible it would be good to know that as well.
+----------------------------------------
+
+REPLY 6 (by nckw @ 2023-07-28T08:44:12.326Z):
+Hi Brooks,
+Those options do not remove the background only fit. I just tried the following
+combine data/tutorials/shapes/simple-shapes-TH1.txt -M FitDiagnostics --customStartingPoint --setParameters r=3
+
+python test/diffNuisances.py fitDiagnosticsTest.root
+
+which gives the output
+name                                              b-only fit            s+b fit         rho  approx impact
+alpha                                            -1.50, 0.66        -0.16, 0.49     !-0.54!      -0.134
+bgnorm                                           -0.73, 0.45     ! -0.54, 0.42!     !-0.22!      -0.046
+lumi                                             -0.97, 0.94        -0.00, 1.00       -0.03      -0.017
+sigma                                            +1.35, 0.80        -0.01, 1.00       +0.02      +0.008
+
+It may be that for your particular value, the fit failed and that could mean the fit_b result is not produced.
+There is one more way I can think you could try which is to redefine the list of parameters of interest to be one of your nuisance parameters that is rather negligible (in fact you could create one in the datacard that essentially does next to nothing for this purpose) with --redefineSignalPOI nuis. Now the two fits will be one in which that nuisance parameter is floating and one in which it is fixed to 0 but in both cases you can use --freezeParameters r --setParameters r=some_value to fix the (now no longer POI) r to whatever you want in both fits. Beyond this i’m out of ideas as its already not really the purpose of FitDiagnostics, and even with this suggestion, i’d say we’re in square-peg round-hole territory. The other experts may have other ideas of course,
+Best,
+Nick
+----------------------------------------

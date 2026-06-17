@@ -1,0 +1,30 @@
+TOPIC: pyROOT compatibility with comebine
+URL: https://cms-talk.web.cern.ch/t/42641
+DATE: 2024-06-22T01:11:47.795Z
+SOLVED: no
+============================================================
+
+QUESTION (by hyeonseo @ 2024-06-22T01:11:48.575Z):
+Hello, I have quick question for pyROOT and combine compatibility. I am mainly doing my analysis workflow via python + conda env at Purdue Analysis Facility, and I am trying to implement ROOT.MultiPdf as shown on this combine tool tutorial, but in a pyROOT environment. However, when I try to initialize an instance of ROOT.MultiPdf , I get a multiple library issues, one example being Error in <TCling::LoadPCM>: ROOT PCM /depot/cms/kernels/coffea2024/lib/libTree_rdict.pcm file does not exist  (full error log can be found attached).
+The pyROOT version I am using is 6.28 , which is technically not compliant with latest stable combine release, which supports ROOT 6.30/07 onwards. However, when I install comebine within a conda env with ROOT 6.30/04 installed (that was the latest conda version I could get), I get this error the moment I import ROOT: cling (LLVM option parsing): for the --optimize-regalloc option: may only occur zero or one times!
+Is the pyROOT requirement very strict on combine, or is there some other known issue on combine that prevents me from properly using it on a python environment? Thank you in advance!
+multipdf_err.log (99.0 KB)
+----------------------------------------
+
+REPLY 2 (by hyeonseo @ 2024-07-01T01:26:30.209Z):
+Fortunately, I found a solution that worked for me.
+Huge thanks to @dkondrat, who got it working on Purdue Analysis Facility. Basically, conda package for ROOT 6.32.0 became available few days ago , and we found out that recently a ROOT 6.32 compatible branch of combine github has been merged to the main branch. So we made a new conda env with ROOT v6.32.0 and we installed combine from the main branch on github. Now ROOT.RooMultiPdf works in both root terminal and python:
+
+(/depot/cms/kernels/root632) [yun79@purdue-af-42 copperheadV2]$ root
+------------------------------------------------------------------
+| Welcome to ROOT 6.32.00                        https://root.cern |
+| (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |
+| Built for linuxx8664gcc on Jun 22 2024, 23:00:50                 |
+| From heads/v6-32-patches@tags/v6-32-00                           |
+| With                                                             |
+| Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |
+------------------------------------------------------------------
+
+root [0] auto pdf = RooMultiPdf()
+(RooMultiPdf &) An instance of RooMultiPdf.
+----------------------------------------

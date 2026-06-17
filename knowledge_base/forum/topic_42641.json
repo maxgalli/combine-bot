@@ -1,0 +1,45 @@
+{
+  "topic_id": 42641,
+  "title": "pyROOT compatibility with comebine",
+  "url": "https://cms-talk.web.cern.ch/t/42641",
+  "category_id": 279,
+  "created_at": "2024-06-22T01:11:47.795Z",
+  "last_posted_at": "2024-07-01T01:26:30.209Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    },
+    {
+      "id": 165,
+      "name": "root",
+      "slug": "root"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-06-22T01:11:48.575Z",
+      "updated_at": "2024-06-22T07:47:38.868Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello, I have quick question for pyROOT and combine compatibility. I am mainly doing my analysis workflow via python + conda env at Purdue Analysis Facility, and I am trying to implement ROOT.MultiPdf as shown on this combine tool tutorial, but in a pyROOT environment. However, when I try to initialize an instance of ROOT.MultiPdf , I get a multiple library issues, one example being Error in <TCling::LoadPCM>: ROOT PCM /depot/cms/kernels/coffea2024/lib/libTree_rdict.pcm file does not exist  (full error log can be found attached).\nThe pyROOT version I am using is 6.28 , which is technically not compliant with latest stable combine release, which supports ROOT 6.30/07 onwards. However, when I install comebine within a conda env with ROOT 6.30/04 installed (that was the latest conda version I could get), I get this error the moment I import ROOT: cling (LLVM option parsing): for the --optimize-regalloc option: may only occur zero or one times!\nIs the pyROOT requirement very strict on combine, or is there some other known issue on combine that prevents me from properly using it on a python environment? Thank you in advance!\nmultipdf_err.log (99.0 KB)",
+      "cooked_html": "<p>Hello, I have quick question for pyROOT and combine compatibility. I am mainly doing my analysis workflow via python + conda env at Purdue Analysis Facility, and I am trying to implement <code>ROOT.MultiPdf</code> as shown on this combine tool <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#roomultipdf-conventional-bias-studies\" rel=\"noopener nofollow ugc\">tutorial</a>, but in a pyROOT environment. However, when I try to initialize an instance of <code>ROOT.MultiPdf</code> , I get a multiple library issues, one example being <code>Error in &lt;TCling::LoadPCM&gt;: ROOT PCM /depot/cms/kernels/coffea2024/lib/libTree_rdict.pcm file does not exist</code>  (full error log can be found attached).</p>\n<p>The pyROOT version I am using is 6.28 , which is technically not compliant with latest stable combine release, which supports <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/releases\" rel=\"noopener nofollow ugc\">ROOT 6.30/07 onwards</a>. However, when I install comebine within a conda env with ROOT 6.30/04 installed (that was the latest conda version I could get), I get this error the moment I import ROOT: <code>cling (LLVM option parsing): for the --optimize-regalloc option: may only occur zero or one times!</code></p>\n<p>Is the pyROOT requirement very strict on combine, or is there some other known issue on combine that prevents me from properly using it on a python environment? Thank you in advance!<br>\n<a class=\"attachment\" href=\"/uploads/short-url/cB0Godj71LER3yvFIzquts5Yn5Y.log\">multipdf_err.log</a> (99.0 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-07-01T01:26:30.209Z",
+      "updated_at": "2024-07-01T01:26:30.209Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Fortunately, I found a solution that worked for me.\nHuge thanks to @dkondrat, who got it working on Purdue Analysis Facility. Basically, conda package for ROOT 6.32.0 became available few days ago , and we found out that recently a ROOT 6.32 compatible branch of combine github has been merged to the main branch. So we made a new conda env with ROOT v6.32.0 and we installed combine from the main branch on github. Now ROOT.RooMultiPdf works in both root terminal and python:\n\n(/depot/cms/kernels/root632) [yun79@purdue-af-42 copperheadV2]$ root\n------------------------------------------------------------------\n| Welcome to ROOT 6.32.00                        https://root.cern |\n| (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |\n| Built for linuxx8664gcc on Jun 22 2024, 23:00:50                 |\n| From heads/v6-32-patches@tags/v6-32-00                           |\n| With                                                             |\n| Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |\n------------------------------------------------------------------\n\nroot [0] auto pdf = RooMultiPdf()\n(RooMultiPdf &) An instance of RooMultiPdf.",
+      "cooked_html": "<p>Fortunately, I found a solution that worked for me.<br>\nHuge thanks to <a class=\"mention\" href=\"/u/dkondrat\">@dkondrat</a>, who got it working on Purdue Analysis Facility. Basically, conda package for ROOT 6.32.0 became available<a href=\"https://anaconda.org/conda-forge/root/\" rel=\"noopener nofollow ugc\"> few days ago </a>, and we found out that recently a ROOT 6.32 compatible branch of combine github has been <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/977\" rel=\"noopener nofollow ugc\">merged to the main branch</a>. So we made a new conda env with ROOT v6.32.0 and we installed combine from the main branch on github. Now <code>ROOT.RooMultiPdf</code> works in both root terminal and python:</p>\n<pre><code class=\"lang-auto\">\n(/depot/cms/kernels/root632) [yun79@purdue-af-42 copperheadV2]$ root\n   ------------------------------------------------------------------\n  | Welcome to ROOT 6.32.00                        https://root.cern |\n  | (c) 1995-2024, The ROOT Team; conception: R. Brun, F. Rademakers |\n  | Built for linuxx8664gcc on Jun 22 2024, 23:00:50                 |\n  | From heads/v6-32-patches@tags/v6-32-00                           |\n  | With                                                             |\n  | Try '.help'/'.?', '.demo', '.license', '.credits', '.quit'/'.q'  |\n   ------------------------------------------------------------------\n\nroot [0] auto pdf = RooMultiPdf()\n(RooMultiPdf &amp;) An instance of RooMultiPdf.\n</code></pre>"
+    }
+  ]
+}

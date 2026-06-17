@@ -1,0 +1,89 @@
+{
+  "topic_id": 116756,
+  "title": "GoF saturated - are rateParams varied when generating toys",
+  "url": "https://cms-talk.web.cern.ch/t/116756",
+  "category_id": 279,
+  "created_at": "2025-02-25T14:29:18.850Z",
+  "last_posted_at": "2025-02-26T09:39:36.736Z",
+  "tags": [],
+  "accepted_answer_post_number": 5,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anovak",
+      "name": "Andrzej Novak",
+      "created_at": "2025-02-25T14:29:18.968Z",
+      "updated_at": "2025-02-25T14:29:18.968Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I have a workspace failing a GoF test (saturated). On inspection the data fit looks perfectly reasonable with no 3-sigma residuals and such. The chi2 in different categories looks likewise sensible.\nNevertheless, inspecting some of the generated toys, the do have correspondingly better model/toy agreement than model/data.\nI am wondering if the issue is that the generated toys don\u2019t take into account the full range that the model is able to cover  -  the model has a fairly high number of rateParams and it\u2019s not clear to me that they are being varied when generating the toys. The documentation discusses custom settings for flatParams, but not rateParams\nCheers,\nAndrzej",
+      "cooked_html": "<p>I have a workspace failing a GoF test (saturated). On inspection the data fit looks perfectly reasonable with no 3-sigma residuals and such. The chi2 in different categories looks likewise sensible.</p>\n<p>Nevertheless, inspecting some of the generated toys, the do have correspondingly better model/toy agreement than model/data.</p>\n<p>I am wondering if the issue is that the generated toys don\u2019t take into account the full range that the model is able to cover  -  the model has a fairly high number of rateParams and it\u2019s not clear to me that they are being varied when generating the toys. The documentation discusses custom settings for flatParams, but not rateParams</p>\n<p>Cheers,<br>\nAndrzej</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "ineuteli",
+      "name": "Izaak Neutelings",
+      "created_at": "2025-02-25T15:08:36.820Z",
+      "updated_at": "2025-02-25T15:08:36.820Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrzej,\nApologies to jump in here, but we are also investigation failing GoF tests in CRs with rate parameters, so we happen to have a similar question for our analysis.\nWe are generating the toys in our GoF test with --toysFrequentist, and so we are wondering if in that case the rate parameters are indeed fixed to their postfit value from the fit to data without randomization for toy generation? This is my interpretation from the Combine manual:\n\n--toysFrequentist the nuisance parameters in each toy are set to their nominal values which are obtained after first fitting to the observed data, with the POIs fixed, before generating the toy data sets. For evaluating likelihoods, the constraint terms are instead randomized within their PDFs around the post-fit nuisance parameter values.\n\n@anovak, are you using --toysFrequentist?\nCheers,\nIzaak",
+      "cooked_html": "<p>Hi Andrzej,</p>\n<p>Apologies to jump in here, but we are also investigation failing GoF tests in CRs with rate parameters, so we happen to have a similar question for our analysis.</p>\n<p>We are generating the toys in our GoF test with <code>--toysFrequentist</code>, and so we are wondering if in that case the rate parameters are indeed fixed to their postfit value from the fit to data without randomization for toy generation? This is my interpretation from the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/?h=frequentist#nuisance-parameter-generation\" rel=\"noopener nofollow ugc\">Combine manual</a>:</p>\n<blockquote>\n<ul>\n<li><code>--toysFrequentist</code> the nuisance parameters in each toy are set to their nominal values which are obtained <em>after first fitting to the observed data</em>, with the POIs fixed, before generating the toy data sets. For evaluating likelihoods, the constraint terms are instead randomized within their PDFs around the post-fit nuisance parameter values.</li>\n</ul>\n</blockquote>\n<p><a class=\"mention\" href=\"/u/anovak\">@anovak</a>, are you using <code>--toysFrequentist</code>?</p>\n<p>Cheers,<br>\nIzaak</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anovak",
+      "name": "Andrzej Novak",
+      "created_at": "2025-02-25T15:43:42.204Z",
+      "updated_at": "2025-02-25T15:44:16.734Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Izaak,\nI was seeing this issue with regular toys, but actually I just checked and see the same behaviour with --toysFrequentist\nHowever, it appears that if I run the toys (within FitDiag) with  --setParameters and  --setParameterRanges for the rateParam\u2019s in my fit, I actually observe these varied in the fit result. Sadly this behaviour doesn\u2019t seem to be documented anywhere.\nAlas when I pass the same options to GoodnessOfFit toys, the gof values I observe don\u2019t seem to be affected much, but I haven\u2019t been able to investigate this better yet.\nCheers,\nAndrzej",
+      "cooked_html": "<p>Hi Izaak,</p>\n<p>I was seeing this issue with regular toys, but actually I just checked and see the same behaviour with <code>--toysFrequentist</code></p>\n<p>However, it appears that if I run the toys (within FitDiag) with <code> --setParameters</code> and <code> --setParameterRanges</code> for the <code>rateParam</code>\u2019s in my fit, I actually observe these varied in the fit result. Sadly this behaviour doesn\u2019t seem to be documented anywhere.</p>\n<p>Alas when I pass the same options to GoodnessOfFit toys, the gof values I observe don\u2019t seem to be affected much, but I haven\u2019t been able to investigate this better yet.</p>\n<p>Cheers,<br>\nAndrzej</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "ineuteli",
+      "name": "Izaak Neutelings",
+      "created_at": "2025-02-25T16:04:47.375Z",
+      "updated_at": "2025-02-25T16:04:47.375Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Andrzej,\nThanks for the info.\n\nAndrzej Novak:\n\nHowever, it appears that if I run the toys (within FitDiag) with  --setParameters and  --setParameterRanges for the rateParam\u2019s in my fit, I actually observe these varied in the fit result. Sadly this behaviour doesn\u2019t seem to be documented anywhere.\n\nAre you trying to manually fix the rate parameters in toy generation with  --setParameters in FitDiagnostic? If so, did you run with --toysFrequentist  and them with --freezeParameters?\nI do not know if this behavior is to be expected, but if there\u2019s indeed a difference between the toys generated in the FitDiagnostic and GoodnessOfFit methods, perhaps you could try generation the toys separately with the GenerateOnly method, and if it gives you the result you are looking for, pass that to GoodnessOfFit?\nHopefully, the experts can comment better what\u2019s going on here.\nCheers,\nIzaak",
+      "cooked_html": "<p>Hi Andrzej,</p>\n<p>Thanks for the info.</p>\n<aside class=\"quote no-group\" data-username=\"anovak\" data-post=\"3\" data-topic=\"116756\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/f04885/48.png\" class=\"avatar\"> Andrzej Novak:</div>\n<blockquote>\n<p>However, it appears that if I run the toys (within FitDiag) with <code> --setParameters</code> and <code> --setParameterRanges</code> for the <code>rateParam</code>\u2019s in my fit, I actually observe these varied in the fit result. Sadly this behaviour doesn\u2019t seem to be documented anywhere.</p>\n</blockquote>\n</aside>\n<p>Are you trying to manually fix the rate parameters in toy generation with <code> --setParameters</code> in <code>FitDiagnostic</code>? If so, did you run with <code>--toysFrequentist </code> and them with <code>--freezeParameters</code>?</p>\n<p>I do not know if this behavior is to be expected, but if there\u2019s indeed a difference between the toys generated in the <code>FitDiagnostic</code> and <code>GoodnessOfFit</code> methods, perhaps you could try generation the toys separately with the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/?h=generateonly#generate-only\" rel=\"noopener nofollow ugc\"><code>GenerateOnly</code> method</a>, and if it gives you the result you are looking for, pass that to <code>GoodnessOfFit</code>?</p>\n<p>Hopefully, the experts can comment better what\u2019s going on here. <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/stuck_out_tongue.png?v=12\" title=\":stuck_out_tongue:\" class=\"emoji\" alt=\":stuck_out_tongue:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>Cheers,<br>\nIzaak</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2025-02-25T17:39:00.657Z",
+      "updated_at": "2025-02-25T17:39:00.657Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi,\nTo clarify, normal rateParams are not varied in the standard toy generation (without --toysFrequentist) because they have no associated constraint PDF, nor with --toysFrequentist, as there is no associated global observable parameter (but the value of the rateParams used for the toy generation will be adjusted by the initial fit to data).\nWhen you come to fit each toy (with whichever method in combine you are using), the rateParam parameters are still floating in the fit, so we would expect to see some variation in their fitted values looking at the ensemble of toys.\nThe influence of --setParameters: this changes the values of the rateParams before the toy generation begins, thus you will see changes in the toys. This shouldn\u2019t have any real effect with --toysFrequentist since the rateParams are going to be adjusted in the fit to data.\nFor --setParameterRanges this will only influence the allowed ranges during the fits to the toy data sets.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi,</p>\n<p>To clarify, normal rateParams are not varied in the standard toy generation (without <code>--toysFrequentist</code>) because they have no associated constraint PDF, nor with <code>--toysFrequentist</code>, as there is no associated global observable parameter (but the value of the rateParams used for the toy generation will be adjusted by the initial fit to data).</p>\n<p>When you come to fit each toy (with whichever method in combine you are using), the rateParam parameters are still floating in the fit, so we would expect to see some variation in their fitted values looking at the ensemble of toys.</p>\n<p>The influence of <code>--setParameters</code>: this changes the values of the rateParams before the toy generation begins, thus you will see changes in the toys. This shouldn\u2019t have any real effect with <code>--toysFrequentist</code> since the rateParams are going to be adjusted in the fit to data.</p>\n<p>For <code>--setParameterRanges</code> this will only influence the allowed ranges during the fits to the toy data sets.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anovak",
+      "name": "Andrzej Novak",
+      "created_at": "2025-02-25T17:56:22.231Z",
+      "updated_at": "2025-02-25T17:56:22.231Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nthanks for the clarification. To explain a bit better on what I was seeing with the setParameters/setParameterRanges.\nFor these I ran a normal fit to data, extracted the vals/errs for the rateParams and set the parameters to val\u00b1err. Now if the toy doesn\u2019t take these settings into account, I would not expect that refitting them would lead to substantially different values - at least within precision.",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>thanks for the clarification. To explain a bit better on what I was seeing with the <code>setParameters</code>/<code>setParameterRanges</code>.</p>\n<p>For these I ran a normal fit to data, extracted the vals/errs for the rateParams and set the parameters to val\u00b1err. Now if the toy doesn\u2019t take these settings into account, I would not expect that refitting them would lead to substantially different values - at least within precision.</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2025-02-26T09:39:36.736Z",
+      "updated_at": "2025-02-26T09:39:36.736Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrzej,\nIt\u2019s not guaranteed that fluctuations on the fitted values of the rateParams will be small. For example, if there are large systematics affecting background normalisations in CRs, that are then varying a lot in the toys, you could see a larger spread on the rateParams to accommodate this.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Andrzej,</p>\n<p>It\u2019s not guaranteed that fluctuations on the fitted values of the rateParams will be small. For example, if there are large systematics affecting background normalisations in CRs, that are then varying a lot in the toys, you could see a larger spread on the rateParams to accommodate this.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

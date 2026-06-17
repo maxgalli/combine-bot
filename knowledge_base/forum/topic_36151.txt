@@ -1,0 +1,111 @@
+TOPIC: How to have a nuisance affecting both normalization and shape in the parameterized model?
+URL: https://cms-talk.web.cern.ch/t/36151
+DATE: 2024-02-29T09:52:43.422Z
+SOLVED: no
+============================================================
+
+QUESTION (by geliu @ 2024-02-29T09:52:43.527Z):
+Dear experts,
+I am doing an analysis with the parameterized model (model with pre-defined RooFit PDFs as inputs to build the workspace). I’m encountered with a situation where a nuisance parameter should affect both the shape and normalization of ONE process. I know for models with histograms as inputs, it will be automatically considered, but I’m not sure how to do it for the parameterized model, since all PDFs are by definition normalized to 1. The option I tried is to define two nuisances, one is lnN, the other shape, and give them the same name:
+unc_name lnN - - - - - - - - - - 0.9740/1.0260 - -
+unc_name shape - - - - - - - - - - 1.0000 - -
+
+But combine doesn’t allow me to do so:
+RuntimeError: Error reading line xx of file datacard.txt: Cannot have shape and lnN in same datacard for systematic unc_name. Use 'shape?'
+
+Another option is to give different names, like with one unc_name_norm, the other unc_name_shape, but then I am wondering if there is a way to manually correlate these two nuisances?
+Thanks very much!
+Yours Sincerely,
+Geliang
+----------------------------------------
+
+REPLY 2 (by jmhogan @ 2024-02-29T13:35:50.949Z):
+Hi Geliang,
+I believe what Combine wants is for you to enter “shape?” Where you currently have “shape”. Then it will accept the matching names.
+(Disclaimer: I’m a user who has this setting often when combining channels, not a Combine expert)
+Regards,
+Julie Hogan
+----------------------------------------
+
+REPLY 3 (by geliu @ 2024-02-29T13:44:11.573Z):
+Dear Julie,
+Thanks for your reply. Yes this option allows a nuisance to affect the shape of one process and the normalization of the other process. But here I want to have a nuisance which affects both the shape and normalization of one single process. Do you know if “shape?” also works in this case?
+Yours Sincerely,
+Geliang
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-02-29T13:52:14.902Z):
+Hi,
+I think we need a bit more information on what you want to do here. Since you’re using a parameterized model, it seems odd that you’re using “shape” in the first place. If you have pdfs for each of your processes, then the way you include systematic uncertainties is through uncertainties on the parameters of the pdf (take a look at the example we have in the docs here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analyses).
+Now if you also want that parameter to affect the yield, then you can include a lnN line as you already have in addition to the line “param”. Combine will “re-use” that parameter for the lnN. One thing to bear in mind is that since the idea is that the effects are correlated, they need to have the same constraint term (pdf for the auxiliary observable) and so for this to work, you must put an uncertainty of 1 in the param line. You can of course modify your pdf so that the the uncertainty on the parameter is 1 (eg by re-scaling the value of the parameter before it is used in the pdf).
+Hope that is clear enough,
+all the best,
+Nick
+----------------------------------------
+
+REPLY 5 (by anigamov @ 2024-02-29T14:09:06.649Z):
+FYI: Moved this discussion to Statistical Tools category
+----------------------------------------
+
+REPLY 6 (by gortona @ 2024-03-01T12:11:26.712Z):
+Dear Geliang,
+If you are using or you can use a binned analysis, then defining the alternative templates as RooDataHist and then using a shape uncertainty should work out of the box. This is probably the easiest and quickest solution.
+If you are not, or if you must use some other RooPDF class, it is a bit more trickier but it can be done. You have a quite old example here:
+
+https://github.com/HZZ4l/CreateWidthDatacards/blob/development/width_datacardClass2DNew.py
+
+As basic ingredients, you will need a list with the 3 shapes (Up, down, nominal) and an object of class Asympow that changes the normalization between the Up/Down normalization values depending on the value of your actual normalization uncertaintiy, as done here:
+
+github.com
+
+HZZ4l/CreateWidthDatacards/blob/development/width_datacardClass2DNew.py#L795-L812
+
+CMS_zz4l_APscale_syst = w.factory("QCDscale_ggH[-7,7]")
+morphVarListggZZ = ROOT.RooArgList()
+morphVarListggZZ.add(CMS_zz4l_APscale_syst)
+MorphList_ggZZ = ROOT.RooArgList()
+MorphList_ggZZ.add(ggZZpdf_Nominal)
+MorphList_ggZZ.add(ggZZpdf_Up)
+MorphList_ggZZ.add(ggZZpdf_Down)
+
+asympowname = "kappalow_ggZZ_QCD_{0:.0f}_{1:.0f}".format(self.channel,self.sqrts)
+#kappalow = ROOT.RooRealVar(asympowname,asympowname,totalRateDown/totalRate_ggzz)#kappalow = ROOT.RooRealVar(asympowname,asympowname,rateSignal_Down+rateBkg_Down-rateInterf_Down)
+kappalow = ROOT.RooFormulaVar(asympowname,"@0/@1",ROOT.RooArgList(ggZZQCDDown_norm,ggZZNominal_norm))
+asympowname = "kappahigh_ggZZ_QCD_{0:.0f}_{1:.0f}".format(self.channel,self.sqrts)
+#kappahigh = ROOT.RooRealVar(asympowname,asympowname,totalRateUp/totalRate_ggzz)#kappahigh = ROOT.RooRealVar(asympowname,asympowname,rateSignal_Up+rateBkg_Up-rateInterf_Up)
+kappahigh = ROOT.RooFormulaVar(asympowname,"@0/@1",ROOT.RooArgList(ggZZQCDUp_norm,ggZZNominal_norm))
+asympowname = "Asympow_ggZZ_QCD_{0:.0f}_{1:.0f}".format(self.channel,self.sqrts)
+#--K-factor and alphaS have non-linear behavior
+thetaSyst_ggZZ = AsymPow(asympowname,asympowname,kappalow,kappahigh,CMS_zz4l_APscale_syst)
+
+Then you need to recreate your PDF as a Vertical interpolation between the up and down shapes, like this:
+
+github.com
+
+HZZ4l/CreateWidthDatacards/blob/development/width_datacardClass2DNew.py#L905-L906
+
+ggZZpdf = ROOT.VerticalInterpPdf("ggzz","ggzz",MorphList_ggZZ,morphVarListggZZ)
+
+(you need to be careful with the naming of the objects: the PDF must be called as the process name in the card, otherwise combine will not find it)
+Finally, the Asympow object has to be added to the pdf normalization, like here:
+
+github.com
+
+HZZ4l/CreateWidthDatacards/blob/development/width_datacardClass2DNew.py#L1667-L1669
+
+ggzzpdf_normarglist = ROOT.RooArgList(sigRates,interfRates,bkgRates,x,mu,kbkg,thetaSyst_ggZZ,muF,thetaSyst_ggZZ_pdf)
+ggzzpdf_normarglist.add(Kframework)
+ggZZpdf_norm = ROOT.RooFormulaVar(ggZZpdfNormName,"(@0*@3*@9*@7*@4-@1*sqrt(@3*@9*@7*@4)*sign(@5)*sqrt(abs(@5))+@2*@5)*@6*@8",ggzzpdf_normarglist)
+
+Again, be careful with the names: this must be called pdf_norm (where pdf is your PDF’s name).
+Basically this way you are recreating the shape and normalization variations used in combine, in order to have them controlled by the same parameter. As you can see, this is quite an old implementation, so it might be that someone has deveoped some easier way to do it (like Nick did with RooDataHists).
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 7 (by geliu @ 2024-03-01T12:41:28.551Z):
+Dear Nicholas, Giacomo,
+Thanks so much for the information. I will read carefully and try to figure out. I’ll let you know if I manage it.
+Yours Sincerely,
+Geliang
+----------------------------------------

@@ -1,0 +1,34 @@
+{
+  "topic_id": 15564,
+  "title": "Shape Systematic Uncertainties in Unbinned Parametric Fit Model",
+  "url": "https://cms-talk.web.cern.ch/t/15564",
+  "category_id": 279,
+  "created_at": "2022-09-28T08:26:07.879Z",
+  "last_posted_at": "2022-09-29T08:33:47.216Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "shigginb",
+      "name": "Sam Higginbotham",
+      "created_at": "2022-09-28T08:26:08.467Z",
+      "updated_at": "2023-02-07T10:52:56.507Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Combine Experts,\nIn my unbinned parametric shape analysis I\u2019ve been requested to include shapes directly as systematics. I don\u2019t know how to do this technically\u2026 and no documentation on github to describe this type of systematic inclusion with an unbinned model. Even the Higgs gammagamma 2014 tutorial doesn\u2019t cover this case afaik.\nCurrently I can include the parameters of the shape, the normalization, and log normal effects as systematic uncertainties.\nHowever, I\u2019ve been requested to include directly shape uncertainties. This boils down to two types of shape uncertainties I want to include:\n\nSystematic background shape as a nth order RooBernstein polynomial\nSystematic shape for RooFormulaVar (I use a spline function for signal in the form of a RooVoigtian)\n\nI would love to have a datacard work like the one below (marked as NEW for the shape uncertainty)[1].\nSo to further clarify:\nBkg_mmmt would be the nominal bernstein and something like scale_m_etalt1p22018_Bkg_mmmt would be the PDF-also a bernstein-that is slightly different for the systematic variation and both saved to my workspace. I also want to do this for the spline function.\nIs this possible? Or do I have to do something different? Or consider a different statistical inference model?\nThanks so much for your time!\nSam\n[1]\nimax 1\njmax 1\nkmax *\n---------------\nshapes * bin1 HToAAWorkspace_full_2018_mmmt.root w:$PROCESS\n---------------\nbin         bin1\nobservation   -1\n------------------------------\nbin                     bin1  bin1\nprocess                 signal_mmmt               Bkg_mmmt\nprocess                0 1\nrate                   1 1\n------------------------------\nlumi     lnN              1.01     1.01\n(NEW) scale_m_etalt1p22018_Bkg_mmmt       shape    0  1\n(NEW) scale_m_etalt1p22018_signal_mmmt    shape    1  0\nc0_Bkg_Nominal_2018_mmmt  param 0.808309   0.411798\nc1_Bkg_Nominal_2018_mmmt  param 3.046414   1.888231\nc2_Bkg_Nominal_2018_mmmt  param 0.475983   0.277631\nintMean  param 39.947472   0.039947\nintAlpha  param 0.270000   0.054000\nintSigma  param 0.280000   0.056000",
+      "cooked_html": "<p>Hello Combine Experts,</p>\n<p>In my unbinned parametric shape analysis I\u2019ve been requested to include shapes directly as systematics. I don\u2019t know how to do this technically\u2026 and no documentation on github to describe this type of systematic inclusion with an unbinned model. Even the Higgs gammagamma 2014 tutorial doesn\u2019t cover this case afaik.</p>\n<p>Currently I can include the parameters of the shape, the normalization, and log normal effects as systematic uncertainties.<br>\nHowever, I\u2019ve been requested to include directly shape uncertainties. This boils down to two types of shape uncertainties I want to include:</p>\n<ol>\n<li>Systematic background shape as a nth order RooBernstein polynomial</li>\n<li>Systematic shape for RooFormulaVar (I use a spline function for signal in the form of a RooVoigtian)</li>\n</ol>\n<p>I would love to have a datacard work like the one below (marked as NEW for the shape uncertainty)[1].<br>\nSo to further clarify:<br>\nBkg_mmmt would be the nominal bernstein and something like scale_m_etalt1p22018_Bkg_mmmt would be the PDF-also a bernstein-that is slightly different for the systematic variation and both saved to my workspace. I also want to do this for the spline function.</p>\n<p>Is this possible? Or do I have to do something different? Or consider a different statistical inference model?</p>\n<p>Thanks so much for your time!<br>\nSam</p>\n<pre><code class=\"lang-auto\">[1]\nimax 1\njmax 1\nkmax *\n---------------\nshapes * bin1 HToAAWorkspace_full_2018_mmmt.root w:$PROCESS\n---------------\nbin         bin1   \nobservation   -1 \n------------------------------\nbin                     bin1  bin1 \nprocess                 signal_mmmt               Bkg_mmmt\nprocess                0 1 \nrate                   1 1  \n------------------------------\nlumi     lnN              1.01     1.01   \n(NEW) scale_m_etalt1p22018_Bkg_mmmt       shape    0  1\n(NEW) scale_m_etalt1p22018_signal_mmmt    shape    1  0\nc0_Bkg_Nominal_2018_mmmt  param 0.808309   0.411798\nc1_Bkg_Nominal_2018_mmmt  param 3.046414   1.888231\nc2_Bkg_Nominal_2018_mmmt  param 0.475983   0.277631\nintMean  param 39.947472   0.039947\nintAlpha  param 0.270000   0.054000\nintSigma  param 0.280000   0.056000\n\n</code></pre>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-09-29T08:33:47.216Z",
+      "updated_at": "2022-09-29T08:33:47.216Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sam,\nIs there a reason you cannot parameterise these uncertainties as uncertainties on the parameters of the functional form, which is how this would usually be handled?\nDepending on exactly how your pdfs behave you may be able to include shape uncertainties this way, but it is indeed nonstandard and I\u2019m not sure if it\u2019s possible to give generic advice on how to achieve this. Perhaps others have something in mind already.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Sam,</p>\n<p>Is there a reason you cannot parameterise these uncertainties as uncertainties on the parameters of the functional form, which is how this would usually be handled?</p>\n<p>Depending on exactly how your pdfs behave you may be able to include shape uncertainties this way, but it is indeed nonstandard and I\u2019m not sure if it\u2019s possible to give generic advice on how to achieve this. Perhaps others have something in mind already.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

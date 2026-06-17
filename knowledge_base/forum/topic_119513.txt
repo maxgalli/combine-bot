@@ -1,0 +1,58 @@
+TOPIC: An over-constrained luminosity uncertainty
+URL: https://cms-talk.web.cern.ch/t/119513
+DATE: 2025-03-21T03:13:03.920Z
+SOLVED: no
+============================================================
+
+QUESTION (by bko @ 2025-03-21T03:13:04.176Z):
+Hi experts,
+I’m working on a measurement of the forward-backward asymmetry of a certain angular distribution in the single top quark t-channel process (TOP-24-013 [1], AN-2020/227 [2]), and I have a circumstance out of my understanding of the luminosity uncertainty.
+I performed a diagnostic introduced in the HiggsPAGPreapprovalChecks twiki page [3] with my combined datacard across all channels (Run2016-2018, all lepton channels) [4], and it gives that a luminosity uncertainty is over-constrained. Here is a part of the diagnostic output. (I rearranged it to show only the over-constraint.)
+name                     r=0, b-only    r=0, s+b       r=1, b-only    r=1, s+b
+lumiAlone_2016           0.84           0.85           0.87           0.85
+lumiAlone_2017           0.53           0.54           0.59           0.54
+lumiAlone_2018           0.78           0.73           0.86           0.77
+lumiCorrAll              0.79           0.73           0.77           0.76
+lumiCorrPart_2017_2018   0.96           0.97           0.96           0.97
+
+Here, five luminosity uncertainty sources are employed, following the LumiRecommendationsRun2 twiki page [5]. The order of rows in the above table also follows that in the ‘Minimal correlations (RECOMMENDED) for 2016−2018’ table on the twiki page. The numbers in the columns are “the ratio between the uncertainty after the fit and the one in the model” from the diffNuisances.py output (see [3]). The HiggsPAGPreapprovalChecks twiki page suggests running the diagnostic with r=0 and r=1, and the columns have all of their output.
+You can notice that the values of “lumiAlone_2017” for “Uncorrelated 2017” uncertainty are less than 0.60, which means that the uncorrelated 2017 luminosity uncertainty is over-constrained in this stage.
+I’m discussing it with Beatriz, the Top Combine contact person [6], and got some suggestions for the investigation. I tried re-running the diagnostic with a simple rebinning and the diagnostic without one of other dominant uncertainty sources. Unfortunately, these trials still give a similar over-constraint.
+Now I wonder if there is anyone who suffered from this circumstance. Is this a known issue?
+Best regards,
+Byeonghak Ko
+[1] https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=TOP-24-013
+[2] https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2020/227
+[3] https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/HiggsPAGPreapprovalChecks
+[4] https://gitlab.cern.ch/bko/Datacards
+[5] https://twiki.cern.ch/twiki/bin/view/CMS/LumiRecommendationsRun2#Combination_and_correlations
+[6] https://twiki.cern.ch/twiki/bin/view/CMS/TopCombine
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-03-21T10:27:59.070Z):
+Dear Byeonghak,
+Indeed an overconstrained luminosity is something that should not happen. Do you observe the same behaviour when you fit each year individually?
+one thing you could check is if there is any parameter in your model with a very strong correlation with the luminosity parameters, for example with MultiDimFit --robustHesse=1 --robustHesseSave rh.root
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by bko @ 2025-03-25T00:11:51.972Z):
+Hi Giacomo,
+Thanks for your advice. I ran each era individually, and no such over-constraint was observed. The over-constraint appears only when all eras are combined.
+I also checked correlations with the luminosity parameters. From a fit with the option you gave, I’ve obtained the covariance matrix and listed the highest correlated uncertainty sources to lumiAlone_2017 . As expected, the other luminosity uncertainty sources and the overall scale of the signal (it is set to be a nuisance parameter), with the absolute values of the correlations larger than 0.3.
+And then what should I do? I have no idea for this, so I ran the diagnostics again with the highly correlated uncertainty sources turned off, except for the overall scale of the signal parameter, and the result got weirder; the lumiAlone_2017  got more over-constrained. How can I interpret it? And is there any other trial I have to do?
+Best regards,
+Byeonghak Ko
+----------------------------------------
+
+REPLY 4 (by adewit @ 2025-03-28T13:57:55.235Z):
+Dear Byeonghak,
+Not sure if your issue was resolved in the meantime, but if not, a few thoughts: in principle you expect the total normalization of your signal+background yields to be constrained to sqrt(number of data events). If the total pre-fit uncertainty is larger than sqrt(number of data events), the uncertainty will thus be constrained in the fit. This does not necessarily mean that nuisance parameters need to be constrained, nuisance parameters becoming anti-correlated in the fit will also lead to the overall normalization being constrained.
+This means that if you removed nuisance parameters that were strongly anti-correlated with the luminosity uncertainty, the effect that you describe is not so surprising: by removing a lever for constraining the total rate uncertainty (ie the anticorrelations), in the fit the nuisance parameters would simply be constrained further.
+To give an even more extreme example, if the luminosity uncertainty was the only uncertainty that was applied, it would very likely be constrained, such that the overall rate would be constrained to the appropriate level in the fit.
+This does not answer the question of what should be done, of course. Is the overall scale of the signal a freely floating parameter (rateParam), or is it implemented as a log-normal constraint? If it’s not a freely floating parameter, I would expect that making it freely floating would reduce the constraint that you see.
+Apart from this, it is worth seeing if there may be any nuisance parameters missing from your uncertainty model - we don’t normally expect to constrain the luminosity uncertainty, partly because there are usually other parameters that affect only the total rate of the processes, which would introduce a (partial) anticorrelation with this parameter. So, if the model has “too few” parameters, I think you could run into the effect that you are seeing.
+Hope this helps a bit,
+Adinda
+----------------------------------------

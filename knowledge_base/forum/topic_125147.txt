@@ -1,0 +1,50 @@
+TOPIC: Issues with combine-standalone
+URL: https://cms-talk.web.cern.ch/t/125147
+DATE: 2025-05-23T22:22:37.528Z
+SOLVED: no
+============================================================
+
+QUESTION (by wtford @ 2025-05-23T22:22:37.981Z):
+Hi,
+I’d like to point out a couple issues with the standalone version of combine.
+The first is that there isn’t any binary distribution for the recommended v10.2.0.
+The second is that that the tagged version, v9.2.1, doesn’t work for me. I’m running on a Macbook Pro with the Apple M2 Max chip, and currently in MacOS Sequoia 15.5.
+The use case is that I chose to work outside of CMSSW with the standalone container image pulled to my laptop when developing the public datacards for SUS-20-004 2, in the spirit that this is the case that would apply to the consumers of the public release of the datacards.
+For that project, I had no problem when I created the container with the command
+$ podman run  gitlab-registry.cern.ch/cms-cloud/combine-standalone /bin/bash
+But a couple of months later when following the instructions in the documentation 1 I instead used
+$ podman run  gitlab-registry.cern.ch/cms-cloud/combine-standalone:v9.2.1 /bin/bash
+That is, specifying the version, then running text2workspace on one of the datacards in 2 results in a segv crash. From setting a high verbosity level, this appears to occur late in the process. I was able to run combne successfully on a much simpler datacard.
+After much confusion, I finally realized that omitting the version specification in the podman run command (the successful case) pulls the default version tagged “latest”. This version of combine identifies itself also as v9.2.1.
+From the container registry 3 I find the following details for these two releases:
+Tag “latest”:
+Published to the cms-cloud/combine-standalone image repository on April 14, 2024 at 3:24:58 PM MDT
+Manifest digest: sha256:749216ba411e4b08c7046856b9b24f5bd3c0a5060c4bb792be0c8d9a707413ed
+Configuration digest: sha256:15e3ad79706e12698538064c18b97dbde9199db3984fcc0f85b4d0701fc52519
+Tag v9.2.1:
+Published to the cms-cloud/combine-standalone image repository on April 14, 2024 at 3:01:05 PM MDT
+Manifest digest: sha256:5da96967107b141708fd7c53a8565ce7844ae82bfd21b36e3c070f65f9d48020
+Configuration digest: sha256:c7e29810e55de82e8a965cddcce12f21c776a87c9c90876c1d6d3c3a9b804b9d
+The “latest” tag appears to have been posted slightly later than “v9.2.1”. Podman desktop identifies these by their “Configuration digest” hash.
+One question I have is, if at some later time the tag “latest” gets moved to some future version, and the current “latest” is untagged, how would I get back to it?
+Beyond that, I just invite the experts team to consider making some fix either to the documentation or to the registry to prevent this issue from biting someone else.
+Bill
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-05-30T14:01:24.266Z):
+Dear Bill,
+Thank you very much for pointing out this inconsistency in the docs, we’ve updated the documentation [1]. The two versions as you pointed out correspond to the same Combine tag: v9.2.1, and the latest container is build with slightly different settings. I think if you run ulimit -s unlimited in the container where you’ve seen segv crash, it should not be an issue anymore.
+About the containers for combine v10, we have not yet released it as we’ve had some issues building it with the latest ROOT releases. We have it in the development, but it has not been tested fully, you can try it with docker run --name combine-v10 -it gitlab-registry.cern.ch/cms-cloud/combine-standalone:8374836f.
+Best,
+Aliya
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#oustide-of-cmssw-recommended-for-non-cms-users
+----------------------------------------
+
+REPLY 3 (by wtford @ 2025-06-01T03:53:27.920Z):
+Hi Aliya,
+Thanks for the helpful reply, and updated documentation.  My observations are:
+With the standalone v9.2.1, setting `ulimit -s unlimited’, I still get the segv in text2workspace that I reported earlier.
+With the v10 tag you suggested, 8374836f (which identifies itself as Combine v10.1.0), text2workspace succeeds, as does ‘combine -M AsymptoticLimits’ run on the workspace root file.  However, the latter (combine) command takes about 1.6 minutes compared with 0.11 minutes for v9.2.1-slim.
+I don’t have any problem (that I know of) just running with v9.2.1-slim.  But maybe you’ll find my observations useful.
+Bill
+----------------------------------------

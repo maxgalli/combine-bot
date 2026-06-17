@@ -1,0 +1,35 @@
+TOPIC: Order of magnitude increase in runtime for Simultaneous fit
+URL: https://cms-talk.web.cern.ch/t/44242
+DATE: 2024-07-24T15:18:59.173Z
+SOLVED: no
+============================================================
+
+QUESTION (by hyeonseo @ 2024-07-24T15:18:59.512Z):
+Dear Combine Experts,
+Sorry for another question, but I am having an issue regarding simultaneous fit. I have followed this tutorial, and tried to implement it for my own use case. The issue is that my simultaneous fit takes a very long time. If I keep everything the same, but have only one category, it takes about 2.4 seconds. However, the moment I have two categories, the runtime jumps up an order of magnitude to 75 seconds. I have also tried simultaneous fitting with three categories and that also jumps the runtime to 161 seconds.
+Here’s my question: Is this significant increase in runtime just a normal feature of simultaneous fit? Or am I doing something wrong with my setup? Thank you in advance!
+Please find attached the python script and the dataset I used to run my fitting:
+processed_events_data.parquet (9.1 MB)
+quick_simultanFitting_v2.py (5.7 KB)
+To rerun the script just run python quick_simultanFitting_v2.py
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-07-24T16:06:39.857Z):
+Dear @hyeonseo,
+I think you are timing the full script (starting on line 28), not just the fitting (line 161).
+So I think in this case runtime largely depends on your for loops, not the RooFit minimization. I would suggest to check the runtime for the fit itself, and I don’t expect such a difference.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by hyeonseo @ 2024-07-24T16:25:30.284Z):
+Dear @anigamov ,
+Thank you for the prompt response. I have updated my code such that the timer start just before the fitting begins, and timer ends right after fitting. Sadly, the new results are worse: 73.6 seconds for categories 0 and 1, and 0.395 seconds for category  0 only.
+I have attached the updated python script here:
+quick_simultanFitting_v2_updated.py (5.7 KB)
+----------------------------------------
+
+REPLY 4 (by hyeonseo @ 2024-07-25T00:41:43.191Z):
+As a quick update, I have started from scratch by modifying from the tutorial and making incremental tests, and now this issue seems to be gone for now. Now fitting three categories takes less than a second.
+I am still quite unsure what exactly I was doing wrong that was causing this, but it seems to have been solved for now, though I may follow up if I come across more issues once I have scaled up my code further with more categories.
+----------------------------------------

@@ -1,0 +1,89 @@
+{
+  "topic_id": 144631,
+  "title": "Question about discrete profiling: NLL for background",
+  "url": "https://cms-talk.web.cern.ch/t/144631",
+  "category_id": 279,
+  "created_at": "2026-05-03T09:52:28.528Z",
+  "last_posted_at": "2026-05-05T10:59:40.606Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2026-05-03T09:52:29.003Z",
+      "updated_at": "2026-05-03T09:52:29.003Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nreading IC paper I learned that for S+B fits the envelope of all NLLs is taken.\nWhat I do not understand what is taken as NLL for B only fits ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>reading IC paper I learned that for S+B fits the envelope of all NLLs is taken.</p>\n<p>What I do not understand what is taken as NLL for B only fits ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2026-05-03T09:57:31.633Z",
+      "updated_at": "2026-05-03T09:57:31.633Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nfor the B-only fit, you still take the envelope. The model is the same between the S+B and the B-only fit, in the latter the signal strength r is just set to 0.\n-A",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>for the B-only fit, you still take the envelope. The model is the same between the S+B and the B-only fit, in the latter the signal strength <code>r</code> is just set to <code>0</code>.</p>\n<p>-A</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2026-05-04T15:50:05.645Z",
+      "updated_at": "2026-05-04T15:50:05.645Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nThanks !  Still I do not understand.\nSuppose we have 4 functions \u00e2nd B only fit.  Thus, we have 4 NLL for B only fit. What NLL we take to calculate\nNLL(S+B) - NLL(B)\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>Thanks !  Still I do not understand.</p>\n<p>Suppose we have 4 functions \u00e2nd B only fit.  Thus, we have 4 NLL for B only fit. What NLL we take to calculate</p>\n<p>NLL(S+B) - NLL(B)</p>\n<p>Cheers, Sasha.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2026-05-04T17:47:46.010Z",
+      "updated_at": "2026-05-04T17:47:46.010Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nfor any value of r, the fit evaluates the nll for all the functional forms and takes the minimum of all of them (w/ eventually the penalization terms for the different deegrees of freedom).\nThe -\\Delta \\log\\mathcal{L}  is now taken as difference in the two points.\nNote that the minimum NLL at a fixed r (e.g., r=10) can have a different background function wrt the one computed at any other value of r (e.g. r=0). Thus, what you are doing, is \u201cenlarging\u201d the deltaNLL profile, and indeed accounting for the choice as a systematic [*].\nCheers,\n-Andrea\n[*] provided that the envelope set is chosen appropriately.",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>for any value of <code>r</code>, the fit evaluates the nll for all the functional forms and takes the minimum of all of them (w/ eventually the penalization terms for the different deegrees of freedom).</p>\n<p>The <span class=\"math\">-\\Delta \\log\\mathcal{L} </span> is now taken as difference in the two points.<br>\nNote that the minimum NLL at a fixed <code>r</code> (e.g., r=10) can have a different background function wrt the one computed at any other value of <code>r</code> (e.g. r=0). Thus, what you are doing, is \u201cenlarging\u201d the deltaNLL profile, and indeed accounting for the choice as a systematic [*].</p>\n<p>Cheers,<br>\n-Andrea<br>\n[*] provided that the envelope set is chosen appropriately.</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2026-05-05T10:18:01.038Z",
+      "updated_at": "2026-05-05T10:18:01.038Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nthanks !\nCan you check if I understood it right in my words.\nWe take the minimum of the envelop from S+B fits, NLL(S+B). This minimum corresponds to a certain bkg. function i.  When we do  deltaNLL we take NLL(B) of function i for B only fit.\nIs it correct understanding ?\nThanks, Sasha.",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>thanks !</p>\n<p>Can you check if I understood it right in my words.</p>\n<p>We take the minimum of the envelop from S+B fits, NLL(S+B). This minimum corresponds to a certain bkg. function i.  When we do  deltaNLL we take NLL(B) of function i for B only fit.</p>\n<p>Is it correct understanding ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2026-05-05T10:43:10.006Z",
+      "updated_at": "2026-05-05T10:43:10.006Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nWhen you compute the NLL of the background only fit you take the minimum of the envelope for r=0. This select a background function \u201cj\u201d that in principle is not the same background function \u201ci\u201d you selected for S+B.\nCheers,\nGiacomo",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>When you compute the NLL of the background only fit you take the minimum of the envelope for r=0. This select a background function \u201cj\u201d that in principle is not the same background function \u201ci\u201d you selected for S+B.</p>\n<p>Cheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2026-05-05T10:59:40.606Z",
+      "updated_at": "2026-05-05T10:59:40.606Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nah, I understand now. It make a sence.\nMany thanks !\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>ah, I understand now. It make a sence.</p>\n<p>Many thanks !</p>\n<p>Cheers, Sasha.</p>"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "topic_id": 118047,
+  "title": "Observed limit much higher than expected with AsymptoticLimits",
+  "url": "https://cms-talk.web.cern.ch/t/118047",
+  "category_id": 279,
+  "created_at": "2025-03-11T17:24:16.632Z",
+  "last_posted_at": "2025-03-11T19:35:12.569Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "slomte",
+      "name": "Shivani Sanjay Lomte",
+      "created_at": "2025-03-11T17:24:16.761Z",
+      "updated_at": "2025-03-11T17:24:16.761Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nFor some mass points, the observed limit is coming out to be much higher than expected for a certain event category (Resolved Higgs candidate in my case). I was wondering if you have any suggestions for me to test.\nExample command as follows:\ncombine -M AsymptoticLimits -m 1 -d workspacePartialRun2_resolved_ggCaseI_mA600_ma400.root -n .limit_ggCaseI_mA600_ma400_Resolved_PartialRun2_Unblinded\n<<< Combine >>>\n<<< v10.0.2 >>>\n\nRandom number generator seed is 123456\nMethod used is AsymptoticLimits\n\n-- AsymptoticLimits ( CLs ) --\nObserved Limit: r < 4611.3400\nExpected  2.5%: r < 17.6997\nExpected 16.0%: r < 23.9619\nExpected 50.0%: r < 35.1250\nExpected 84.0%: r < 56.1265\nExpected 97.5%: r < 96.1189\n\nDone in 3.09 min (cpu), 3.09 min (real)\n\nUpon using options --cminPreScan --cminPreFit 1 --rAbsAcc 0 --rRelAcc 0.0005 the observed limit value changed to,\n-- AsymptoticLimits ( CLs ) --\nObserved Limit: r < 723.4932\nExpected  2.5%: r < 17.6997\nExpected 16.0%: r < 23.9619\nExpected 50.0%: r < 35.1250\nExpected 84.0%: r < 55.9865\nExpected 97.5%: r < 96.2879\n\nHappy to provide further details, and would appreciate any help!\nThanks,\nShivani",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>For some mass points, the observed limit is coming out to be much higher than expected for a certain event category (Resolved Higgs candidate in my case). I was wondering if you have any suggestions for me to test.</p>\n<p>Example command as follows:</p>\n<pre><code class=\"lang-auto\">combine -M AsymptoticLimits -m 1 -d workspacePartialRun2_resolved_ggCaseI_mA600_ma400.root -n .limit_ggCaseI_mA600_ma400_Resolved_PartialRun2_Unblinded\n&lt;&lt;&lt; Combine &gt;&gt;&gt; \n&lt;&lt;&lt; v10.0.2 &gt;&gt;&gt;\n\nRandom number generator seed is 123456\nMethod used is AsymptoticLimits\n\n -- AsymptoticLimits ( CLs ) --\nObserved Limit: r &lt; 4611.3400\nExpected  2.5%: r &lt; 17.6997\nExpected 16.0%: r &lt; 23.9619\nExpected 50.0%: r &lt; 35.1250\nExpected 84.0%: r &lt; 56.1265\nExpected 97.5%: r &lt; 96.1189\n\nDone in 3.09 min (cpu), 3.09 min (real)\n</code></pre>\n<p>Upon using options <code>--cminPreScan --cminPreFit 1 --rAbsAcc 0 --rRelAcc 0.0005</code> the observed limit value changed to,</p>\n<pre><code class=\"lang-auto\"> -- AsymptoticLimits ( CLs ) --\nObserved Limit: r &lt; 723.4932\nExpected  2.5%: r &lt; 17.6997\nExpected 16.0%: r &lt; 23.9619\nExpected 50.0%: r &lt; 35.1250\nExpected 84.0%: r &lt; 55.9865\nExpected 97.5%: r &lt; 96.2879\n</code></pre>\n<p>Happy to provide further details, and would appreciate any help!</p>\n<p>Thanks,<br>\nShivani</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2025-03-11T19:35:12.569Z",
+      "updated_at": "2025-03-11T19:35:12.569Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI would probably run a unblinded likelihood ratio scan, to see what\u2019s going on,\nand, assuming no excess is observed, after that try to understand why asymptotic is failing.\nThus, possible solution may include to set the rmin-max ranges to help convergence or run the grid points manually and check if there are failure before extracting the limits.\nCheers,\n-A",
+      "cooked_html": "<p>Hi,</p>\n<p>I would probably run a unblinded likelihood ratio scan, to see what\u2019s going on,<br>\nand, <strong>assuming no excess is observed</strong>, after that try to understand why asymptotic is failing.</p>\n<p>Thus, possible solution may include to set the rmin-max ranges to help convergence or run the grid points manually and check if there are failure before extracting the limits.</p>\n<p>Cheers,<br>\n-A</p>"
+    }
+  ]
+}

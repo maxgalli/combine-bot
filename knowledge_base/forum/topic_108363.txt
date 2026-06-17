@@ -1,0 +1,44 @@
+TOPIC: Post-fit error bands from PostFitShapesFromWorkspace
+URL: https://cms-talk.web.cern.ch/t/108363
+DATE: 2025-02-03T18:57:27.895Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by mpresill @ 2025-02-03T18:57:27.999Z):
+Dear experts,
+I am seeking feedback on what to plot for the error bands of some post-fit distributions using PostFitShapesFromWorkspace.
+I execute the following command:
+PostFitShapesFromWorkspace \
+-w datacard_to_PLOT.root \
+-d datacard_to_PLOT.txt \
+--output output.root \
+--postfit --sampling \
+--total-shapes \
+-f fitDiagnosticsTest.root:fit_s
+
+Here datacard_to_PLOT.txt combines the Run 2 datacards of the variables I wish to plot, all included in the ML fit of my analysis, and fitDiagnosticsTest.root is obtained with the options --saveNormalizations --saveWithUncertainties from the datacards combined across all control and signal regions of the analysis.
+Since the resulting output.root file has the following structure:
+KEY: TDirectoryFile	prefit;1	prefit
+KEY: TDirectoryFile	year2016_prefit;1	year2016_prefit
+KEY: TDirectoryFile	year2017_prefit;1	year2017_prefit
+KEY: TDirectoryFile	year2018_prefit;1	year2018_prefit
+KEY: TDirectoryFile	postfit;1	postfit
+KEY: TDirectoryFile	year2016_postfit;1	year2016_postfit
+KEY: TDirectoryFile	year2017_postfit;1	year2017_postfit
+KEY: TDirectoryFile	year2018_postfit;1	year2018_postfit
+
+is it correct to use bin errors from postfit/TotalBkg for the post-fit error bands of the total background contribution?
+Or should I sum in quadrature the bin errors from the different years year2016_postfit/TotalBkg, year2017_postfit/TotalBkg, and year2018_postfit/TotalBkg? My understanding is that using bin errors from postfit/TotalBkg should be the best option as correctly accounts for nuisances correlation across the years.
+Best regards,
+Matteo
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by pkeicher @ 2025-02-04T08:21:50.777Z):
+Hi Matteo,
+yes, using the postfit/TotalBkg to obtain the post-fit uncertainties should work nicely if you want to compare the data to the background modeling. Depending on the analysis and the message you want to give, you might want to compare the post-fit agreement of your complete model (i.e. with signal) and the data. In this case, you should probably use the complete sum of the processes, I think that should be postfit/TotalProcs.
+All of this is true provided that you have chosen the binning between your eras to be the same - otherwise, the initial sum over the histograms does not work correctly.
+Let us know if you have more questions.
+Cheers,
+Philip
+Side note: You don’t need to run --saveNormalizations --saveWithUncertainties if you use PostfitShapesFromWorkspace anyhow - both sample the covariance matrix you obtain in the fit and evaluate the post-fit shapes. So running without the two options should greatly speed up your fitting step.
+----------------------------------------

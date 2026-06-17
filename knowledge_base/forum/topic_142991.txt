@@ -1,0 +1,34 @@
+TOPIC: Is it possible to use RooParametricHist for one process and still use autoMCStats for the others
+URL: https://cms-talk.web.cern.ch/t/142991
+DATE: 2026-03-13T14:06:02.108Z
+SOLVED: no
+============================================================
+
+QUESTION (by klin @ 2026-03-13T14:06:02.312Z):
+Dear Combine experts,
+I am using RooParametricHist to account for the QCD multi-jet background. However, I found that I couldn’t use TH1 as input for other MC-estimated backgrounds and signals so I have to convert them into RooDataHist. Then FitDiagnostics worked. But then it seemed that autoMCStats requires TH1 input. Does it imply that I wouldn’t be able to use autoMCStats for the MC-based backgrounds?
+If so, do you think we can make it work by allowing CMSHistSum to create CMSHistPropagator object from RooDataHist? The idea is to do Barlow-Beeston-lite for the MC-based backgrounds. Or I should implement CMS_th1x in the RooParametricHist so that I can stick to TH1 input?
+I found in this CMS talk thread suggests to use shape uncertainty for statistical uncertainties. Does it mean I should convert my MC-based background histograms into RooParametricHist as well? If so, then I probably can declare their bin-content parameters as gmN variable to account for the bin-by-bin nature of the MC-stat errrors. Since I don’t have that many bins, the fit speed might be tolerable. But if modifying Combine isn’t so hard, then probably that is a better long-term solution for combinations and toy-generations.
+Best regards,
+Kuan
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2026-03-13T15:03:23.308Z):
+Dear Kuan,
+There’s unfortunately no easy way to get autoMCStats and RooParametricHist working nicely together. This request has come up a few times in the past, but it would require writing essentially an entirely new version of CMSHistErrorPropagator that can take arbitrary binned RooFit pdfs as input (which carries quite a few complications).
+Solutions are:
+
+stick with a mixture of RooParametericHist and RooHistPdf, implement MC stat uncertainties manually as shape variations per bin and per (relevant) process
+stay with TH1 input - instead of using RooParametricHist it may be possible to split your QCD template up into N separate datacard processes (where N = number of histogram bins). Then your can apply formulae for each bin yield via rateParams, and keep using autoMCStats.
+
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by klin @ 2026-03-13T15:59:41.960Z):
+Dear @agilbert,
+Thanks for your prompt response.
+For the first solution, does it requires one shape version per bin to keep the per-bin autoMCStats right? But since the shape variations offered by Combine factors out normalisation variation from the the shape variations, the interpolation or extrapolation could be quite different from the per-bin variation done by CMSHistErrorPropagator. On the other hand, the Gaussian constraint plus the power-correction of the normalisation (log-normal together) also differs from the Poisson constraints adopted in CMSHistErrorPropagator. Do you think my proposal of using gmN wouldn’t work?
+Best,
+Kuan
+----------------------------------------

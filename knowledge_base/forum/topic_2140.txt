@@ -1,0 +1,28 @@
+TOPIC: Acquiring postfit nuisance templates to compare to prefit
+URL: https://cms-talk.web.cern.ch/t/2140
+DATE: 2021-08-07T10:01:18.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by nmangane @ 2021-08-07T10:01:18.000Z):
+*** Discussion title: Higgs Combination
+Dear Combine experts,
+We have a binned shape analysis that is finishing the last pre-approval
+comments. Amongst them is a request to "Please provide the pre/post-fit
+envelopes of the ISR/FSR templates." Currently I am using the
+Combine-Harvester PostFitShapesFromWorkspace to produce histograms
+(using as input a fit performed on the non-blinded analysis bins).
+Isolating a single nuisance does not appear to be an option at that step
+(I presume that the fit option --saveWithUncertainties will also only
+produce a total uncertainty template), and I have a recommendation to
+try nuisance freezing in the fit to accomplish this (
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis.html#manipulation-of-nuisance-parameters
+).
+In this case, how do I ensure the nuisances sit at the central post-fit
+value, but do not contribute to the uncertainty band calculation? If
+they're frozen, will I be able to use the Cov. Matrix, or should
+--sampling be turned off for PostFitShapesFromWorkspace? Or perhaps only
+the nuisance of interest should be frozen, and inferred from the
+uncertainties with and without it floating in the fit?
+If there are alternative approaches, suggestions are welcome.
+----------------------------------------

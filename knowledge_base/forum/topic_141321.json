@@ -1,0 +1,23 @@
+{
+  "topic_id": 141321,
+  "title": "Problem with snapshot",
+  "url": "https://cms-talk.web.cern.ch/t/141321",
+  "category_id": 279,
+  "created_at": "2026-01-25T09:38:25.035Z",
+  "last_posted_at": "2026-01-25T09:38:28.428Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2026-01-25T09:38:28.428Z",
+      "updated_at": "2026-01-25T09:38:28.428Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI need to use fiting with snapshot option. First,  I run\ncombine -M MultiDimFit -d combined_2018_toys --redefineSignalPOIs r_sig1,r_sig2,r_sig3 -v3 --setParameters mean=27.3,width=1.4 --setParameterRanges r_sig1=0.0,120.0:r_sig2=0.0,120.0:r_sig3=0.0,120.0 --freezeParameters mean,width,r --saveWorkspace -n snapshot --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1\nand got:\nnll = -6.29438 nllo = 26248.5\nas I was told I have to add two values above in order to get NLL(S+B) = 26242.2\nNow I run command where I skip first (S+B) fit and fit B only:\ncombine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs r_sig1,r_sig2,r_sig3 --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0 --setParameters mean=27.3,width=1.4,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1\nI got:\nnll = 26242,  nll0 = 26243.4,  deltaNLL = -1.37082\nI was told that nll is NLL(B).  My question is about nll0.  I was told that it is NLL(S+B) which I  obained already in the first run, NLL(S+B) = 26242.2.  As you see the values of NLL(S+B) reported from 1st and 2nd run are not the same.  I do this exercise with toys experiments where I have only background generated and no signal.  When I do it with data, where I have a clear signal all is fine, my NLL(S+B) from 1st and 2nd runs are the same.\nCan you try to explain this puzzle.\nMany thanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I need to use fiting with snapshot option. First,  I run</p>\n<p>combine -M MultiDimFit -d combined_2018_toys --redefineSignalPOIs r_sig1,r_sig2,r_sig3 -v3 --setParameters mean=27.3,width=1.4 --setParameterRanges r_sig1=0.0,120.0:r_sig2=0.0,120.0:r_sig3=0.0,120.0 --freezeParameters mean,width,r --saveWorkspace -n snapshot --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1</p>\n<p>and got:</p>\n<p>nll = -6.29438 nllo = 26248.5</p>\n<p>as I was told I have to add two values above in order to get NLL(S+B) = 26242.2</p>\n<p>Now I run command where I skip first (S+B) fit and fit B only:</p>\n<p>combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs r_sig1,r_sig2,r_sig3 --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0 --setParameters mean=27.3,width=1.4,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1</p>\n<p>I got:</p>\n<p>nll = 26242,  nll0 = 26243.4,  deltaNLL = -1.37082</p>\n<p>I was told that nll is NLL(B).  My question is about nll0.  I was told that it is NLL(S+B) which I  obained already in the first run, NLL(S+B) = 26242.2.  As you see the values of NLL(S+B) reported from 1st and 2nd run are not the same.  I do this exercise with toys experiments where I have only background generated and no signal.  When I do it with data, where I have a clear signal all is fine, my NLL(S+B) from 1st and 2nd runs are the same.</p>\n<p>Can you try to explain this puzzle.</p>\n<p>Many thanks, Sasha.</p>"
+    }
+  ]
+}

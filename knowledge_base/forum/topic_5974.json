@@ -1,0 +1,45 @@
+{
+  "topic_id": 5974,
+  "title": "Nuisance renaming",
+  "url": "https://cms-talk.web.cern.ch/t/5974",
+  "category_id": 279,
+  "created_at": "2022-02-08T11:59:41.947Z",
+  "last_posted_at": "2022-02-11T15:06:53.224Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "svanputt",
+      "name": "Senne Van Putte",
+      "created_at": "2022-02-08T11:59:42.174Z",
+      "updated_at": "2023-02-07T10:58:07.934Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am trying to combine two different run 2 channels, one semi-leptonic decay and one full-leptonic decay.\nIn order to decouple the trigger nuisance, I was trying to rename it using the\nnuisance edit rename process channel oldname newname [options]\n\nstrategy, when I came across some unexpected behaviour.\nI combine the 2016 samples for the full-leptonic case in datacard_2016_full_lep_1.txt with combineCards.py and append the line\nnuisance edit rename * * CMS_eff_hwwtrigger_2016 CMS_eff_2l2nu_trigger_2016 ifexists\n\nNext I recombine it to a new card\ncombineCards.py datacard_2016_full_lep_1.txt > datacard_2016_full_lep_2.txt\n\nThe combine code altered the rename command with the explicit coding\nnuisance edit  rename (DH_mhs_160_mx_100_mZp_500|ggWW|WWewk|Higgs|VVV|top|DY|WW|Vg|Fake|VZ|VgS) ch1_(Year2016_TCR|Year2016_DCR|Year2016_WCR|Year2016_SR1|Year2016_SR2) CMS_eff_hwwtrigger_2016 CMS_eff_2l2nu_trigger_2016 ifexists\n\nWhich looks fine to me. Except when I now fit the model with FitDiagnostics I receive fit values for both CMS_eff_hwwtrigger_2016 and CMS_eff_2l2nu_trigger_2016.\nI tried to do a similar thing with the semi-leptonic datacards, renaming CMS_eff_hwwtrigger_2016 to CMS_eff_lnujj_trigger_2016.\nBut there the behaviour is as expected and I only get fit values for CMS_eff_lnujj_trigger_2016.\nSo it sounds like there would be something misaligned in the full-leptonic datacards, except everything looks normal and the full-leptonic and semi-leptonic datacards have been made with the same framework.\nCan you help me locate the issue?\nI put the examples in /afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/ to have a better overview of the exact commands that have been used.\nCheers,\nSenne",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am trying to combine two different run 2 channels, one semi-leptonic decay and one full-leptonic decay.<br>\nIn order to decouple the trigger nuisance, I was trying to rename it using the</p>\n<pre><code class=\"lang-auto\">nuisance edit rename process channel oldname newname [options]\n</code></pre>\n<p>strategy, when I came across some unexpected behaviour.</p>\n<p>I combine the 2016 samples for the full-leptonic case in <code>datacard_2016_full_lep_1.txt</code> with <code>combineCards.py</code> and append the line</p>\n<pre><code class=\"lang-auto\">nuisance edit rename * * CMS_eff_hwwtrigger_2016 CMS_eff_2l2nu_trigger_2016 ifexists\n</code></pre>\n<p>Next I recombine it to a new card</p>\n<pre><code class=\"lang-auto\">combineCards.py datacard_2016_full_lep_1.txt &gt; datacard_2016_full_lep_2.txt\n</code></pre>\n<p>The combine code altered the rename command with the explicit coding</p>\n<pre><code class=\"lang-auto\">nuisance edit  rename (DH_mhs_160_mx_100_mZp_500|ggWW|WWewk|Higgs|VVV|top|DY|WW|Vg|Fake|VZ|VgS) ch1_(Year2016_TCR|Year2016_DCR|Year2016_WCR|Year2016_SR1|Year2016_SR2) CMS_eff_hwwtrigger_2016 CMS_eff_2l2nu_trigger_2016 ifexists\n</code></pre>\n<p>Which looks fine to me. Except when I now fit the model with <code>FitDiagnostics</code> I receive fit values for both <code>CMS_eff_hwwtrigger_2016</code> and <code>CMS_eff_2l2nu_trigger_2016</code>.</p>\n<p>I tried to do a similar thing with the semi-leptonic datacards, renaming <code>CMS_eff_hwwtrigger_2016</code> to <code>CMS_eff_lnujj_trigger_2016</code>.<br>\nBut there the behaviour is as expected and I only get fit values for <code>CMS_eff_lnujj_trigger_2016</code>.</p>\n<p>So it sounds like there would be something misaligned in the full-leptonic datacards, except everything looks normal and the full-leptonic and semi-leptonic datacards have been made with the same framework.</p>\n<p>Can you help me locate the issue?<br>\nI put the examples in <code>/afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/</code> to have a better overview of the exact commands that have been used.</p>\n<p>Cheers,<br>\nSenne</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-02-11T13:10:44.880Z",
+      "updated_at": "2022-02-11T13:10:44.880Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Senne,\nIt looks like the rename does not happen for the VgS process because the regex match for\nnuisance edit  rename (DH_mhs_160_mx_100_mZp_500|ggWW|WWewk|Higgs|VVV|top|DY|WW|Vg|Fake|VZ|VgS) ch1_(Year2016_TCR|Year2016_DCR|Year2016_WCR|Year2016_SR1|Year2016_SR2) CMS_eff_hwwtrigger_2016 CMS_eff_2l2nu_trigger_2016 ifexists\nFinds a match with Vg first -  and does then not check for a match with VgS anymore. Since we only accept full matches the regexp match with Vg is not of the correct length, and so the command does nothing for VgS. This is obviously not intentional! In any case, the simplest thing you can do is manually re-order the command so that VgS comes before Vg. Or you can edit it to use the asterisks like in your original card. Both should have the same effect.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Senne,</p>\n<p>It looks like the rename does not happen for the <code>VgS</code> process because the regex match for<br>\nnuisance edit  rename (DH_mhs_160_mx_100_mZp_500|ggWW|WWewk|Higgs|VVV|top|DY|WW|Vg|Fake|VZ|VgS) ch1_(Year2016_TCR|Year2016_DCR|Year2016_WCR|Year2016_SR1|Year2016_SR2) CMS_eff_hwwtrigger_2016 CMS_eff_2l2nu_trigger_2016 ifexists</p>\n<p>Finds a match with <code>Vg</code> first -  and does then not check for a match with <code>VgS</code> anymore. Since we only accept full matches the regexp match with <code>Vg</code> is not of the correct length, and so the command does nothing for <code>VgS</code>. This is obviously not intentional! In any case, the simplest thing you can do is manually re-order the command so that <code>VgS</code> comes before <code>Vg</code>. Or you can edit it to use the asterisks like in your original card. Both should have the same effect.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "svanputt",
+      "name": "Senne Van Putte",
+      "created_at": "2022-02-11T15:06:53.224Z",
+      "updated_at": "2022-02-11T15:06:53.224Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nAh I see, I knew I could make it work with the asterisks but I was afraid something was wrong in the datacard itself since it did not happen on the semi-lep side where by chance the processes are ordered slightly differently.\nI will move to smarter asterisks expressions in the combined cards.\nThanks a lot for investigating!\nCheers,\nSenne",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Ah I see, I knew I could make it work with the asterisks but I was afraid something was wrong in the datacard itself since it did not happen on the semi-lep side where by chance the processes are ordered slightly differently.<br>\nI will move to smarter asterisks expressions in the combined cards.</p>\n<p>Thanks a lot for investigating!</p>\n<p>Cheers,<br>\nSenne</p>"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "topic_id": 37070,
+  "title": "Question about FitDiagnostics and scan for resonance width",
+  "url": "https://cms-talk.web.cern.ch/t/37070",
+  "category_id": 279,
+  "created_at": "2024-03-19T07:52:19.296Z",
+  "last_posted_at": "2024-03-19T07:52:19.452Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-19T07:52:19.452Z",
+      "updated_at": "2024-03-19T07:52:19.452Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nin my signal model I have as parameters signal strength (r), width and mass.\nI would like to evaluate width and its uncertainties using FitDiagnostics since\nerrors are assymetrical for sure. I use\ncombine -M FitDiagnostics 2017UL_dimuon_SR1.txt --robustFit=1 --rMin 0 --rMax 100 --redefineSignalPOIs width\nquestion is - should I still used rMin and rMax in above command and if yes, what will be the meaning - range of width or range of signal strenght ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>in my signal model I have as parameters signal strength (r), width and mass.<br>\nI would like to evaluate width and its uncertainties using FitDiagnostics since<br>\nerrors are assymetrical for sure. I use</p>\n<p>combine -M FitDiagnostics 2017UL_dimuon_SR1.txt --robustFit=1 --rMin 0 --rMax 100 --redefineSignalPOIs width</p>\n<p>question is - should I still used rMin and rMax in above command and if yes, what will be the meaning - range of width or range of signal strenght ?</p>\n<p>Thanks, Sasha.</p>"
+    }
+  ]
+}

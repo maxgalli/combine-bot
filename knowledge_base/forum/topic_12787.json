@@ -1,0 +1,67 @@
+{
+  "topic_id": 12787,
+  "title": "One-sidede uncertianty and impact of the background function parameters when using discrete profiling method",
+  "url": "https://cms-talk.web.cern.ch/t/12787",
+  "category_id": 279,
+  "created_at": "2022-07-12T12:37:27.531Z",
+  "last_posted_at": "2022-07-12T20:46:45.079Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-07-12T12:37:27.705Z",
+      "updated_at": "2023-02-07T10:54:22.416Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello experts, I got a question regarding the nuisance impact plot. I am doing a parametric bump hunt search, and the background is described by a smooth function. But for some reason, the free parameters of the background function always give one-sided error and impact.\n\nimage940\u00d7769 87.1 KB\n\nI tried to do likelihood scans by replacing --algo impact with --algo grid, and the NLL looks good. Here is an example for the parameter Dijet_p1_2016\n\nDo you have some ideas about it?\nThanks a lot!\nSebastian",
+      "cooked_html": "<p>Hello experts, I got a question regarding the nuisance impact plot. I am doing a parametric bump hunt search, and the background is described by a smooth function. But for some reason, the free parameters of the background function always give one-sided error and impact.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/d/dd47ab1770bb9904704db4cd5620e0ae927c05d5.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/dd47ab1770bb9904704db4cd5620e0ae927c05d5\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dd47ab1770bb9904704db4cd5620e0ae927c05d5_2_611x499.jpeg\" alt=\"image\" data-base62-sha1=\"vzx4jJEiMuDbE9Y1taEVrUrGnbL\" width=\"611\" height=\"499\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dd47ab1770bb9904704db4cd5620e0ae927c05d5_2_611x499.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dd47ab1770bb9904704db4cd5620e0ae927c05d5_2_916x748.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/d/dd47ab1770bb9904704db4cd5620e0ae927c05d5.jpeg 2x\" data-dominant-color=\"E8E3E5\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">940\u00d7769 87.1 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>\n<p>I tried to do likelihood scans by replacing --algo impact with --algo grid, and the NLL looks good. Here is an example for the parameter Dijet_p1_2016</p>\n<p><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/c/c5e8a0a223d41f922c68b08a09ad1703a5e2b542.png\" alt=\"image\" data-base62-sha1=\"seMsKCWPnjYfJVXvXrU2kXljPto\" width=\"656\" height=\"309\"></p>\n<p>Do you have some ideas about it?</p>\n<p>Thanks a lot!<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2022-07-12T12:51:33.000Z",
+      "updated_at": "2022-07-12T12:54:23.714Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Dear Sebastian,\nfor more detailed answers more information would be needed, I guess, but in general if you have a large background and hunt for a small signal, you can think of the background normalization as something that will dramatically impact on your signal strength if it fluctuates down (because you leave lots of space for the very small signal) but will have no impact on the signal strength if it fluctuates up (because once it has \u201ceaten up\u201d the signal, the signal strength will not have any reason to vary, because it has been already saturated. In such a case, you may find changes if you allow the xsec for the signal to go negative in the fit)\nI hope this helps.\nCheers,\nPietro\n\n\u00b7\u00b7\u00b7\nDr. Pietro Vischia\nFNRS Fellow\nhttp://cp3.irmp.ucl.ac.be/Members/pvischia\nmobile: 0034 666 986 616 (ES)\noffice: +32 10 473205\nmail: pietro.vischia@cern.ch pietro.vischia@gmail.com\nskype: rambling_hadron",
+      "cooked_html": "<p>Dear Sebastian,</p>\n<p>for more detailed answers more information would be needed, I guess, but in general if you have a large background and hunt for a small signal, you can think of the background normalization as something that will dramatically impact on your signal strength if it fluctuates down (because you leave lots of space for the very small signal) but will have no impact on the signal strength if it fluctuates up (because once it has \u201ceaten up\u201d the signal, the signal strength will not have any reason to vary, because it has been already saturated. In such a case, you may find changes if you allow the xsec for the signal to go negative in the fit)</p>\n<p>I hope this helps.</p>\n<p>Cheers,<br>\nPietro</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>Dr. Pietro Vischia</p>\n<p>FNRS Fellow</p>\n<p><a href=\"http://cp3.irmp.ucl.ac.be/Members/pvischia\" rel=\"noopener nofollow ugc\">http://cp3.irmp.ucl.ac.be/Members/pvischia</a><br>\nmobile: 0034 666 986 616 (ES)<br>\noffice: +32 10 473205<br>\nmail: <a href=\"mailto:pietro.vischia@cern.ch\">pietro.vischia@cern.ch</a> <a href=\"mailto:pietro.vischia@gmail.com\">pietro.vischia@gmail.com</a><br>\nskype: rambling_hadron</p>\n</details>"
+    },
+    {
+      "post_number": 3,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-07-12T13:50:10.718Z",
+      "updated_at": "2022-07-12T13:50:10.718Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Pietro,\nThanks a lot for your quick reply!\nI just tried a few things, and realize that the NLL scan I did earlier actually did not show the full picture. If I just scan it in a border range, I got this:\n\nYou can see that when the parameter goes out of some specific range (that I did not define) the deltaNLL suddenly changes to an almost flat shape. I linked this behavior to the discrete profiling (http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling) method I am currently using, and I tried following things\n1: freeze the pdf_index and run the impact\ncombine -M MultiDimFit -n POIScan --algo impact --redefineSignalPOIs r -P Dijet_p1_2016 --floatOtherPOIs 1 --saveInactivePOI 1 -t -1 --expectSignal 1 --rMin 0 --cminDefaultMinimizerStrategy=0 -m 1 -d datacard.root --saveNLL --robustFit 1 --setParameters pdf_index_2016=0 --freezeParameters pdf_index_2016\n\n\u2013>> got reasonable two-side uncertainty and impact\n2: do not freeze the pdf_index\ncombine -M MultiDimFit -n POIScan --algo impact --redefineSignalPOIs r -P Dijet_p1_2016 --floatOtherPOIs 1 --saveInactivePOI 1 -t -1 --expectSignal 1 --rMin 0 --cminDefaultMinimizerStrategy=0 --X-rtd MINIMIZER_freezeDisassociatedParams -m 1 -d datacard.root --saveNLL --robustFit 1\n\nGot one-sided uncertainty and impact, and also got an error message: Error: closed range without finding crossing. (or )\nI suspect that combine might be confused by the discrete parameter that is used to do the discrete profiling. Do you think so?\nAlthough this is a warning message in the combine manual saying that one can not trust the uncertainty returned by MINOS, but it says uncertainties from scans and limits will correctly account for these nuisances. So I am a bit surprised to find this is not the case in my example.\nWhat should I do?\nThanks a lot for your kind help!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Dear Pietro,</p>\n<p>Thanks a lot for your quick reply!</p>\n<p>I just tried a few things, and realize that the NLL scan I did earlier actually did not show the full picture. If I just scan it in a border range, I got this:</p>\n<p><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/5/53d2a236d27506b2e95147c1b46657d0a821074a.png\" alt=\"image\" data-base62-sha1=\"bXwUsbHTjsroFzqbJWfXq9GfCI2\" width=\"670\" height=\"309\"></p>\n<p>You can see that when the parameter goes out of some specific range (that I did not define) the deltaNLL suddenly changes to an almost flat shape. I linked this behavior to the discrete profiling (<a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling</a>) method I am currently using, and I tried following things</p>\n<p>1: freeze the pdf_index and run the impact</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit -n POIScan --algo impact --redefineSignalPOIs r -P Dijet_p1_2016 --floatOtherPOIs 1 --saveInactivePOI 1 -t -1 --expectSignal 1 --rMin 0 --cminDefaultMinimizerStrategy=0 -m 1 -d datacard.root --saveNLL --robustFit 1 --setParameters pdf_index_2016=0 --freezeParameters pdf_index_2016\n</code></pre>\n<p>\u2013&gt;&gt; got reasonable two-side uncertainty and impact</p>\n<p>2: do not freeze the pdf_index</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit -n POIScan --algo impact --redefineSignalPOIs r -P Dijet_p1_2016 --floatOtherPOIs 1 --saveInactivePOI 1 -t -1 --expectSignal 1 --rMin 0 --cminDefaultMinimizerStrategy=0 --X-rtd MINIMIZER_freezeDisassociatedParams -m 1 -d datacard.root --saveNLL --robustFit 1\n</code></pre>\n<p>Got one-sided uncertainty and impact, and also got an error message: Error: closed range without finding crossing. (or )</p>\n<p>I suspect that combine might be confused by the discrete parameter that is used to do the discrete profiling. Do you think so?</p>\n<p>Although this is a warning message in the combine manual saying that one can not trust the uncertainty returned by MINOS, but it says uncertainties from scans and limits will correctly account for these nuisances. So I am a bit surprised to find this is not the case in my example.</p>\n<p>What should I do?</p>\n<p>Thanks a lot for your kind help!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-07-12T13:55:53.502Z",
+      "updated_at": "2022-07-12T13:55:53.502Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "And here is a working example. It would be really nice if you would have some time to have a look:)\nhttps://cernbox.cern.ch/index.php/s/ZJMeYvumee0DaVB\nBest regards,\nSebastian",
+      "cooked_html": "<p>And here is a working example. It would be really nice if you would have some time to have a look:)</p>\n<p><a href=\"https://cernbox.cern.ch/index.php/s/ZJMeYvumee0DaVB\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cernbox.cern.ch/index.php/s/ZJMeYvumee0DaVB</a></p>\n<p>Best regards,<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-07-12T20:46:45.079Z",
+      "updated_at": "2022-07-12T20:46:45.079Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sebastian,\nI think it would be best if you can try running the impacts with an appropriate range for these Dijet_p1_201X parameters (you can use e.g. --setParameterRanges Dijet_p1_2016=6,7). The error message you\u2019re seeing means the interval on this parameter could not be determined, which can often happen when the minimizer takes too large a step in this parameter, and adjusting the range helps the minimizer determine a more appropriate step size.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Sebastian,</p>\n<p>I think it would be best if you can try running the impacts with an appropriate range for these <code>Dijet_p1_201X</code> parameters (you can use e.g. <code>--setParameterRanges Dijet_p1_2016=6,7</code>). The error message you\u2019re seeing means the interval on this parameter could not be determined, which can often happen when the minimizer takes too large a step in this parameter, and adjusting the range helps the minimizer determine a more appropriate step size.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

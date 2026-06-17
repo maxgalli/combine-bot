@@ -1,0 +1,103 @@
+TOPIC: Two Variable Combine Fit
+URL: https://cms-talk.web.cern.ch/t/26626
+DATE: 2023-07-10T23:20:50.137Z
+SOLVED: no
+============================================================
+
+QUESTION (by jeharris @ 2023-07-10T23:20:50.344Z):
+Dear Experts,
+I am analyzing a Higgs decay and find two nearly uncorrelated observables of comparable significance. Individually, they result in about the same upper limit at 95% CL using the HybridNew method in the Higgs combiner. To test this, I use a toy sample generated from pdfs that I obtained from sidebands. My parameterization is close to the Higgs-> gamma gamma example. I am setup in CMSSW 11.3.4 at CERN and use the Higgs combiner version 9.1.0.
+To understand the behavior of the combiner upper limit calculation with two equally significant variables, I designed a simple test: I generated the one variable distribution, a 4-muon invariant mass, twice (independently) to represent a fake two-variable data set. The mass distribution background is described with a simple exponential function (one slope parameter floats), and the signal is the sum of a Gaussian (~80%) and a Crystal Ball function (~20%) as obtained from a fit to a simulated sample. The signal parameters are frozen. My likelihood is an extended one according to the example in the combiner tutorial. I generate 209 background events, twice, and evaluate the two samples first individually. Commands to obtain the expected 95% CL upper limit (50% quantile):
+
+combine -d fourMuonCard.txt -M GenerateOnly --expectSignal 0 -t -1 --saveToys -m 125
+
+combine -d fourMuonCard.txt -M HybridNew -T 1000 --expectedFromGrid=0.5 --LHCmode LHC-limits --toysFile higgsCombineTest.GenerateOnly.mH125.123456.root -t -1 --expectSignal 0
+
+I obtain for the two expected POIs   r = 14.3 (+/-0.1) and r = 14.5 (+/- 0.1).
+My datacard for both the individual fits is attached here:  fourMuonCardOneVariable.txt
+fourMuonCardOneVariable.txt (1.7 KB)
+Then I combine these two observable sets into one (variables x and y), and modify the datacard accordingly – attached here as:  fourMuonCardTwoVariables.txt
+fourMuonCardTwoVariables.txt (2.2 KB)
+I also ran the fit diagnostic to show you the projections of the observables in the 2-variable fit:
+
+combine -M FitDiagnostics fourMuonCard.txt --plots
+
+The x and y observables are shown in the attached plots image1.png and image2.png.
+image1845×566 43.9 KB
+image2840×570 44 KB
+Running the same sequence of commands as above, I obtain an expected r-value of:  r = 6.87 (+/- 0.06).
+This directly translates into a reduction of the upper limit by a factor of two.
+Please help me to understand this.
+Thank you all very much,
+Jesse Harris
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-07-11T15:10:48.316Z):
+Dear Jesse Harris,
+Could you please clarify how you combined the observables exactly? Since you assume them to be independent I imagine that you would like to perform simultaneous fit of two categories, but I can see only one bin1 in the datacards attached to your post.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by jeharris @ 2023-07-11T16:16:11.413Z):
+Dear Aliya
+Thank you very much for your reply!
+I do not use the combiner card to combine the observables. In the workspace I define the 2D pdf for each, the signal and background category, as the product of pdfs for the individual observables. Then I add signal and background pdfs with their yields to define my model.
+Indeed, since I assume that the two observables are truly independent, I also treated them as independent measurement channels and combined the individual cards using combineCards.py.
+In this case the card looks like this:
+cardCombined.txt (2.3 KB)
+It has extra bins now. I run the fit as before. It yields an r-value of r = 10.0 (+/- 0.1), which is about the individual r divided by sqrt(2).
+I assumed that I could setup the model pdf as function of the two variables.
+Please let me know if this is the only way.
+Jesse
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2023-07-12T14:43:32.077Z):
+Dear Jesse,
+Thank you for the explanations.
+In combine, the total PDF is constructed using ROOT.RooSimultaneous, and the total likelihood is roughly a product of PDFs from independent channels. So I think there is no need to define a custom pdf in your case, since it looks like the simultaneous fit does exactly what you’d like to do. Hope that addresses your concerns!
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by jeharris @ 2023-07-12T19:48:14.277Z):
+Dear Aliya,
+Thank you very much for your help! I can go ahead and move forward now.
+I am still surprised that I was able to read in the two-dimensional pdfs with my two observables without receiving any errors.  Could it be a question of how the normalization is done in this case?
+By the way I learned a lot from the Combine tutorials, and they are very well written. I noticed that here: http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#advanced-exercises-to-be-added it is mentioned that two-dimensional parametric models are to be added in the future.  I would be happy to help add this example to the combine website.
+Best,
+Jesse
+----------------------------------------
+
+REPLY 6 (by anigamov @ 2023-07-13T10:34:38.090Z):
+Dear Jesse,
+It was brought to my attention that perhaps I misunderstood your problem. Even though you generated independent set of events for this exercise, this is actually not going to be the case in your analysis, right? Meaning that the observables are independent but the event sample would be the same. Could you please confirm if it is the case? If it is treating these observables as separate combine categories would not be correct and a 2D pdf should be implemented.
+It is great to hear that you are willing to document the implementation of 2D parametric models. Let’s move the discussion to combine gitHub with a PR/issue and where we can discuss the details with other combine experts as well.
+Thanks a lot!
+Best,
+Aliya
+----------------------------------------
+
+REPLY 7 (by jeharris @ 2023-07-13T12:35:25.505Z):
+Dear Aliya
+Thank you very much for following up.
+“It was brought to my attention that perhaps I misunderstood your problem. Even though you generated independent set of events for this exercise, this is actually not going to be the case in your analysis, right? “  → This is correct.
+I confirm: the observables are independent but the event sample would be the same.
+I only went through the exercise as I described it as it mocks this case well, and the naïve expectation is that the upper limit changes with sqrt(2).
+Please send me the link to your posting in combine GitHub.
+----------------------------------------
+
+REPLY 8 (by kcormier @ 2023-07-18T11:32:45.440Z):
+Hi Jesse,
+I just wanted to clarify one point.
+The naive expectation of sqrt(2) you are referring to is the naive expectation for combining two independent measurements of the same quantity where the two combinations have the same statistics, and assuming the measurements are statistically limited.  But by “independent” here, what is meant is that the events contributing to each analysis are independent.
+This is not the expectation for making a joint measurement of two independently distributed observables. Where here, “independently distributed” means that the distributions of each observable factorizes. i.e. p(x,y) = p(x)*p(y). I believe that this is the situation you were trying to test, but note that there is no simple sqrt(2) naive expectation in this case, it depends on the distributions.
+Consider a toy example:
+100 background events, uniformly distributed in some observable O1, which is split into ten bins, such that the expectation in each bin is 10 events. Assume the signal expectation is entirely concentrated in one bin of the distribution.
+What happens if you do a joint measurement of this observable with another independent observable, O2, whose expectations are the same? Instead of a your signal being in a single bin with 10 expected background events, those ten background events are evenly distributed across the second observable, and you expect only a single background event, whereas your signal in that bin is not diluted at all.
+From this toy example, I hope you can see that the expected sensitivity that comes from a join measurement of two independently distributed observables does not follow a simple sqrt(2) scaling, which is for a rather different situation of two independent measurement of the same quantity with the same total statistical power. In general, the improvement will depend on the distributions you are considering.
+The github is this one: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/tree/main , which Aliya posted. Feel free to ask any follow up questions if something there isn’t clear however.
+Hope that helps,
+Cheers,
+Kyle
+----------------------------------------

@@ -1,0 +1,17 @@
+TOPIC: Negative saturated GoF with toysF
+URL: https://cms-talk.web.cern.ch/t/116755
+DATE: 2025-02-25T14:16:35.268Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by anovak @ 2025-02-25T14:16:35.513Z):
+I have a workspace which is yielding negative saturated GoF values for some toys when running with --toysFr (unfortunately I don’t have an easy reproducer, since I don’t know what’s causing the issue). Are there any pointers to how that could happen? I was under the impression that there’s no way for saturated to be negative
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by anigamov @ 2025-02-26T10:27:44.413Z):
+Hi Andrzej,
+Do you observe it for majority of the toys or just a few of them?
+The saturated test statistics values are not restricted to be positive, and I think it can happen that they go negative if the fits are failing for example. I think you should see some error messages already for those cases, but you can try to  increase verbosity adding -v 3.
+Best,
+Aliya
+----------------------------------------

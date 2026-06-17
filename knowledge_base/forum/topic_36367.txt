@@ -1,0 +1,61 @@
+TOPIC: MultiDimFit vs FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/36367
+DATE: 2024-03-05T14:22:36.775Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-05T14:22:36.950Z):
+Dear experts,
+I evaluate the Breight-Wigner width of the dimuon excess at 28 GeV in SR1, 2017 data
+with command
+combine -M MultiDimFit 2017UL_dimuon_SR1ptj20.txt --robustFit=1 -v 3 --rMin -200 --rMax 200
+I got
+width     = 5.12504e-11  +/-  0.423057  (limited)
+while with
+combine -M FitDiagnostics 2017UL_dimuon_SR1ptj20.txt --robustFit=1 --rMin -200 --rMax 200 --redefineSignalPOIs width
+I got
+Best fit width: 5.26073e-06  -5.26073e-06/+1.10829  (68% CL)
+So, what command (value) should I use for the paper ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-03-05T16:56:19.057Z):
+Dear Sasha,
+I think the differences in the uncertainty you observe are not related to MultiDim vs. FitDiagnostics, but rather are caused by the --redefineSignalPOIs width option used in the FitDiagnostics command which triggers the MINOS error calculation for specified POIs, while in the MultiDimFit command you provided the uncertainty on width is estimated from covariance matrix.
+The Minos error are more accurate, and you can also run minos for all parameters if you add --minos all option to MultiDimFit command. I would also check the covariance matrix quality considering the results are so different.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-03-06T12:15:54.000Z):
+Hi Aliya,
+it tells me
+[anikiten@lxplus811 test]$ combine -M MultiDimFit 2017UL_dimuon_SR1ptj20.txt --robustFit=1 --minos all -v 3 --rMin -100 --rMax 100
+Invalid options: unrecognised option ‘–minos’
+Invalid options: unrecognised option ‘–minos’
+Cheers, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, March 5, 2024 17:57
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] MultiDimFit vs FitDiagnostics
+
+Aliya Nigamova anigamovMarch 5
+
+Dear Sasha,
+I think the differences in the uncertainty you observe are not related to MultiDim vs. FitDiagnostics, but rather are caused by the --redefineSignalPOIs width option used in the FitDiagnostics command which triggers the MINOS error calculation for specified POIs, while in the MultiDimFit command you provided the uncertainty on width is estimated from covariance matrix.
+The Minos error are more accurate, and you can also run minos for all parameters if you add --minos all option to MultiDimFit command. I would also check the covariance matrix quality considering the results are so different.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-03-06T12:30:13.813Z):
+Hi Sasha,
+Apologies, my mistake, the --minos all is for the FitDiagnostics method.
+Best,
+Aliya
+----------------------------------------

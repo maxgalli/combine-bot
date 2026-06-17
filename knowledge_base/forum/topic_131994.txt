@@ -1,0 +1,259 @@
+TOPIC: High failing rate for global significance calculation
+URL: https://cms-talk.web.cern.ch/t/131994
+DATE: 2025-09-17T08:05:33.905Z
+SOLVED: no
+============================================================
+
+QUESTION (by tihsu @ 2025-09-17T08:05:34.532Z):
+Dear expert,  Our analysis is H+ → tb (1L + jets) in g2HDM (B2G-24-008) and we are currently just finished the CWR stage. According to the unblinding results, we observe a local significance of 2.4σ at 600 GeV, while the global significance is substantially lower at 0.1σ. Several discussions and cross-checks have been carried out; however, we are still uncertain whether this large difference in global and local significance is reasonable and how best to interpret it. This issue has been raised by the PC before approval, and it would be very good to understand before submission. We would like to ask for your guidance on this. Specifically, we are looking for explanations or if there is any suggestions for further cross-checks that could help clarify the origin of the observed difference between the local to global significance.
+We have already contacted our B2G-combine contact, Kuan-Yu, and he raised the concern about the failing fits and possible lack of statistics (For the later one, we increased number of toys and get the same conclusion). He pointed us to ask for the suggestion from experts here.
+A detailed summary of our findings is provided in slides [1]. Datacards are in [2]. Our code is provided [3]. And also perform an independent cross check code [4]. All our workspace and toys are saved in [5].
+Best regards,
+Ting-Hsiang for the team
+[1] https://cernbox.cern.ch/s/nMFGm2R24KRwHAn
+[2] /eos/cms/store/group/phys_b2g/ExYukawa/bHplus/datacards-after-approval/datacards_g2HDM_separate/run2/CGToBHpm_a_{MASS for DNN}_rtt06_rtc04/CGToBHpm_a_{MASS FOR SIGNAL TEMPLATE}_rtt06_rtc04_run2*.txt
+[3] https://github.com/gourangakole/Combine_code_B2G-24-008/blob/main/Tool_For_SignalExtraction.py#L129-L265
+[4] https://github.com/gourangakole/Combine_code_B2G-24-008/blob/main/getGlobalPvalue.py
+[5] /eos/cms/store/group/phys_b2g/ExYukawa/bHplus/for-global-significance/
+----------------------------------------
+
+REPLY 2 (by tihsu @ 2025-09-18T08:39:00.796Z):
+Dear expert,
+We have identified the source of the high failure rates and it appears not to be related to the combine. We apologize for the earlier confusion. We have now re-run the analysis with 1,200 toys using template[4], and there were no failed fits. The results are shown below, and they remain quite similar to our previous findings (now with global significance of 0.22 standard deviation). We are also running with higher number of toys to make sure statistical fluctuations are not the source.
+To report robust results in the paper, we would like your perspective: are these results likely just due to statistical fluctuations, or do you see any indication that something might be going obviously wrong?
+Thank you,
+Ting-Hsiang for the team
+image1392×964 103 KB
+----------------------------------------
+
+REPLY 3 (by klin @ 2025-09-18T09:19:45.533Z):
+Hi,
+May I confirm that local significance remains around 2\sigma with these 1200 toys too?
+Best regards,
+Kuan-Yu
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2025-09-18T09:40:57.487Z):
+Hi @tihsu,
+I would not say that the difference in global and local significance values is surprising considering you see excesses for several mass points. However, such behaviors can point to the background mismodelling. Have you tried checking GOF in CRs, and with b-only fit?
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by amarini @ 2025-09-18T09:43:08.821Z):
+Hi,
+it is unlikely to be correct. It doesn’t seem that you have ~60 bins in your search (trial factor). Looking at slide 2 (with 5m, so I may be wrong), you need to generate the toys for all the dnns using a proper correlation extracted from MC accordingly to the Bonly distribution, and fit the toy with all the signal points and take the maximum excess.
+While, IIUC, you generate a lot more toy neglecting correlations, which artificially increase the number of trials.
+-Andrea
+----------------------------------------
+
+REPLY 6 (by efe @ 2025-09-18T10:55:36.000Z):
+Hi Kuan,
+Local significance calculation, by definition, do not change.
+Cheers,
+Efe
+
+···
+Le 18.09.25 à 11:20, Kuan-Yu Lin via CMS talk a écrit :
+
+Kuan-Yu Lin klinSeptember 18
+
+Hi,
+May I confirm that local significance remains around 2\sigma with these 1200 toys too?
+Best regards,
+Kuan-Yu
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Ting-Hsiang Hsu tihsuSeptember 18
+
+Dear expert, We have identified the source of the high failure rates and it appears not to be related to the combine. We apologize for the earlier confusion. We have now re-run the analysis with 1,200 toys using template[4], and there were no failed fits. The results are shown below, and they remai…
+Previous Replies
+
+Ting-Hsiang Hsu tihsuSeptember 18
+
+Dear expert,
+We have identified the source of the high failure rates and it appears not to be related to the combine. We apologize for the earlier confusion. We have now re-run the analysis with 1,200 toys using template[4], and there were no failed fits. The results are shown below, and they remain quite similar to our previous findings (now with global significance of 0.22 standard deviation). We are also running with higher number of toys to make sure statistical fluctuations are not the source.
+To report robust results in the paper, we would like your perspective: are these results likely just due to statistical fluctuations, or do you see any indication that something might be going obviously wrong?
+Thank you,
+Ting-Hsiang for the team
+
+Ting-Hsiang Hsu tihsuSeptember 17
+
+Dear expert, Our analysis is H+ → tb (1L + jets) in g2HDM (B2G-24-008) and we are currently just finished the CWR stage. According to the unblinding results, we observe a local significance of 2.4σ at 600 GeV, while the global significance is substantially lower at 0.1σ. Several discussions and cross-checks have been carried out; however, we are still uncertain whether this large difference in global and local significance is reasonable and how best to interpret it. This issue has been raised by the PC before approval, and it would be very good to understand before submission. We would like to ask for your guidance on this. Specifically, we are looking for explanations or if there is any suggestions for further cross-checks that could help clarify the origin of the observed difference between the local to global significance.
+We have already contacted our B2G-combine contact, Kuan-Yu, and he raised the concern about the failing fits and possible lack of statistics (For the later one, we increased number of toys and get the same conclusion). He pointed us to ask for the suggestion from experts here.
+A detailed summary of our findings is provided in slides [1]. Datacards are in [2]. Our code is provided [3]. And also perform an independent cross check code [4]. All our workspace and toys are saved in [5].
+Best regards,
+Ting-Hsiang for the team
+[1] https://cernbox.cern.ch/s/nMFGm2R24KRwHAn
+[2] /eos/cms/store/group/phys_b2g/ExYukawa/bHplus/datacards-after-approval/datacards_g2HDM_separate/run2/CGToBHpm_a_{MASS for DNN}rtt06_rtc04/CGToBHpm_a{MASS FOR SIGNAL TEMPLATE}_rtt06_rtc04_run2*.txt
+[3] https://github.com/gourangakole/Combine_code_B2G-24-008/blob/main/Tool_For_SignalExtraction.py#L129-L265
+[4] https://github.com/gourangakole/Combine_code_B2G-24-008/blob/main/getGlobalPvalue.py
+[5] /eos/cms/store/group/phys_b2g/ExYukawa/bHplus/for-global-significance/
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+--
+Efe Yazgan
+National Taiwan University, CMS Experiment
+CERN EP-UCM Bat 653/1-005 C00210,
+1 Esplanade des Particules, 1211 Geneva 23, Switzerland.
+Tel: +41 22 766 6195
+[https://efe.web.cern.ch](https://efe.web.cern.ch)
+----------------------------------------
+
+REPLY 7 (by efe @ 2025-09-18T11:02:43.423Z):
+Hi Andrea,
+Thanks for your response.
+I didn’t understand what part of our procedure (described in slide 3) differs from what you described. Could you please explain?
+Thanks a lot,
+Efe
+----------------------------------------
+
+REPLY 8 (by klin @ 2025-09-18T11:45:10.967Z):
+Hi @efe,
+Does this mean that you computed the local significance by the asymptotic method? E.g.  combine -M Significance datacard.txt Otherwise, if you calculated it using toys with HybridNew, then the values can change due to different number of toys generated. Then the issue could be that the local significance’s toy distribution has a much higher mean than the asymptotic ones so that the local significance’s p-value was overestimated.
+Best,
+Kuan-Yu
+----------------------------------------
+
+REPLY 9 (by klin @ 2025-09-18T11:47:15.587Z):
+Sorry I meant significance overestimated and p-value underestimated. I passed the time allowed for editing posts to correct my typos.
+----------------------------------------
+
+REPLY 10 (by efe @ 2025-09-18T11:53:30.000Z):
+Hi Kuan,
+Gouranga confirmed that it is the former that was used, i.e. combine -M Significance datacard.txt
+Cheers,
+Efe
+
+···
+Le 18.09.25 à 13:48, Kuan-Yu Lin via CMS talk a écrit :
+
+Kuan-Yu Lin klinSeptember 18
+
+Sorry I meant significance overestimated and p-value underestimated. I passed the time allowed for editing posts to correct my typos.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Kuan-Yu Lin klinSeptember 18
+
+Hi @efe,
+Does this mean that you computed the local significance by the asymptotic method? E.g. combine -M Significance datacard.txt Otherwise, if you calculated it using toys with HybridNew, then the values can change due to different number of toys generated. Then the issue could be that the local significance’s toy distribution has a much higher mean than the asymptotic ones so that the local significance’s p-value was overestimated.
+Best,
+Kuan-Yu
+
+Efe Yazgan efeSeptember 18
+
+Hi Andrea,
+Thanks for your response.
+I didn’t understand what part of our procedure (described in slide 3) differs from what you described. Could you please explain?
+Thanks a lot,
+Efe
+
+Efe Yazgan efeSeptember 18
+
+Hi Kuan,
+Local significance calculation, by definition, do not change.
+Cheers,
+Efe
+··· (click for more details)
+
+Andrea Carlo Marini amariniSeptember 18
+
+Hi,
+it is unlikely to be correct. It doesn’t seem that you have ~60 bins in your search (trial factor). Looking at slide 2 (with 5m, so I may be wrong), you need to generate the toys for all the dnns using a proper correlation extracted from MC accordingly to the Bonly distribution, and fit the toy with all the signal points and take the maximum excess.
+While, IIUC, you generate a lot more toy neglecting correlations, which artificially increase the number of trials.
+-Andrea
+
+Aliya Nigamova anigamovSeptember 18
+
+Hi @tihsu,
+I would not say that the difference in global and local significance values is surprising considering you see excesses for several mass points. However, such behaviors can point to the background mismodelling. Have you tried checking GOF in CRs, and with b-only fit?
+Best,
+Aliya
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+--
+Efe Yazgan
+National Taiwan University, CMS Experiment
+CERN EP-UCM Bat 653/1-005 C00210,
+1 Esplanade des Particules, 1211 Geneva 23, Switzerland.
+Tel: +41 22 766 6195
+[https://efe.web.cern.ch](https://efe.web.cern.ch)
+----------------------------------------
+
+REPLY 11 (by tihsu @ 2025-09-18T16:30:50.506Z):
+Hi Aliya,
+Thank you for pointing this out. We have faced low GoF issues before and have a long discussion before our results approved [1]. The approved GoF (S+B fit) has shown in slide 29 in the appendix [2]. This contains all the regions in the final fit, including the signal sensitive regions (SR2b2j, SR3b3j) and other background enriched regions (SR2b3j, SR2b4j SR3b4j) and also the final combined one (C). More details including b only GoF could be found in our report [3].
+Best regards,
+Ting-Hsiang for the team
+[1] https://cms-pub-talk.web.cern.ch/t/please-unblind/33596/42
+[2] https://cernbox.cern.ch/s/nMFGm2R24KRwHAn
+[3] https://twiki.cern.ch/twiki/pub/CMS/B2G24008Review/UnblindStage3_Report_27_May_2025.pdf
+----------------------------------------
+
+REPLY 12 (by tihsu @ 2025-09-18T16:37:09.613Z):
+Hi Andrea,
+Sorry if our slide was unclear. Just as a follow-up and to clarify our approach: our results are based on DNNs optimized for different mass points. When calculating the global significance, we use only the DNN corresponding to the mass point of interest (e.g. 600 GeV here). The toys are generated under a background-only hypothesis using -- saveToys --expectSignal=0 —toysFrequentist.
+To extract the maximum significance across different mass points, we prepared the signal template by applying the 600 GeV DNN to all mass points (i.e. taking inputs from signal sample directly, applying all the correction and feed into the network.) This ensures that the mathematical treatment is consistent across the scan, and that nuisance effects are handled in the same way. We think the correlation should be taken care in this treatment.
+The fit is performed simultaneously across all our signal regions (as shown in slides 4–7), which leads to about O(50) bins in the final fit.
+Please let us know if any part remains unclear, or if you have suggestions for improvement. Thank you.
+Best,
+Ting-Hsiang for the team
+----------------------------------------
+
+REPLY 13 (by amarini @ 2025-09-18T16:37:36.874Z):
+Hi Efe,
+nowhere in your procedure you describe how a toy should be correlated in the different dnns.
+You may also have effects induced by systematic constraints, but the procedure should be more or less fine in that regard, if standard checks are performed. You are testing 9 mass points, so your global pvalue, should be bounded between (plocal=2.4s)
+1.46 < p_{global} < 2.4 \sigma
+(9 bins independent vs 9 bins fully correlated). If I have to guess, you are likely around 1.8-2.0s.
+Differences with respect to what you described
+For instance, if you have a fluctuations in dnn bin6 of the 200 GeV model, it should be highly correlated with a hypothetical dnn bin6 of a 201 GeV model, modestly correlated with a 300 or 400 GeV model (depending on the resolution of the signal), and negligibly correlated with a 1 TeV model.
+Simple Example
+If you think to have a simple continuum invariant mass specturm binned in 1GeV from 100 GeV to 1 TeV, you generate a single toy for the full spectrum, and the fit will take to account for the fluctuations (through the signal resolution). I.e. if your experimental+theory resolution is 1 GeV, the model 100GeV will be significantly correlated with 101, but negligibly with >110 GeV. If your resolution is 100 GeV, you will have that the 200 GeV point is still influenced by a 100 GeV fluctuation. Now, (in this trivial example) a dnn will just shuffle the bins, accordingly to their likelihood (prop to S/B), given the specific signal model. (with more or less flat background), this means that you are more or less counting in number of (resolutions) sigmas around the nominal value. In this case, you would still generate the toy as above, but when reshuffling and rebinning, you will observe upward fluctuations in high score bins of close by models, and negligible ones (~0) for very distant (in mass vs resolution) models.
+Realistic case
+Your dnn is probably more complex than what I described above, but fundamentals are the same.
+Let me start saying that no magic wand exists. I need to think a bit more to what we do w/ postfit nuisance, because the resampling there is likely different.
+What I would try to assess would be the following:
+
+Create a vector (histogram) of unrolled dnn bins [dnn200-bin1, -bin2 … dnn900-bin6] … (i.e. all possible observations).
+Derive from MC the covariance matrix of it, possibly with resampling techniques (like JN, resampling w/ or w/o reinsertion, ecc…).
+[ need to think about it], Probably fit one distribution b-only and use it to generate postfit toys (gaussian) with the covariance matrix above. I would also generate the global observables in this case.
+Chunk the toy in each dnn, and fit with that model (with the global observables as usual for the postfit toys).
+Take the maximum significance for each toy.
+Use this to report the global significance.
+
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 14 (by klin @ 2025-09-22T14:26:18.893Z):
+Hi @amarini,
+I think the analysers used the same observable – the PNN with signal mass set to 600 GeV – for all signal mass hypotheses from 200 to 900 GeV. And I think your concern is that the signal hypotheses with different masses are not mutually independent in this observable, right? Like if we want to describe the look-elsewhere effect, it should be the probability for the background-only hypothesis to observe high significance in different independent region of the observable. So perhaps we should check if their signals with different masses concentrate in the same bin of the PNN?
+Another question I have is the distribution of significance (-2*\log(\mathcal{L}(r=0)/\mathcal{L}(\hat{r}))). I generated the background-only toys using their workspaces (--expectSignal=0) and found that the mean value of the significance was almost at 0 for some signal mass hypothesis (e.g. 300 GeV), while there was one signal seeing high mean value around 2.4 (500 GeV). I thought that the significance should go asymptotically as \chi^2 with 1 d.o.f., so the mean should be around 1. But this was only the case for their 600 GeV signal, with the same mass as the PNN. I wonder if this is normal or there could be some minimisation problem?
+And to the analysers: I had tried to calculate the local significance with the 600 GeV workspace using toys via HybridNew. It is close to the asymptotic values. So the problem seems to be why the background-only toy data have such a high probability to see high significance. I don’t have a good guess now.
+Best,
+Kuan-Yu
+----------------------------------------
+
+REPLY 15 (by tihsu @ 2025-09-22T14:53:26.101Z):
+Hi Kuan-Yu and Andrea,
+Yes, we are using the same observables for all signal mass hypotheses. We have attached the correlation matrix between the different signal templates (across all the bins). As you can see, the mass resolution should likely be taken as 200 GeV (instead of 100 GeV of our original approach) for the LEE calculation.
+With mass points at 200, 400, 600, 800, and 1000 GeV included, the global significance increases to about 1.0 σ. However, this is still lower than the estimate from assuming five independent trials (~1.7 σ).
+Thank you as well for checking and pointing out the potential issues with the workspaces. We will carry out more detailed checks of the templates and related aspects, and will follow up here.
+Best,
+Ting-Hsiang for the team
+image660×584 86.1 KB
+image556×536 41.4 KB
+----------------------------------------

@@ -1,0 +1,89 @@
+{
+  "topic_id": 46655,
+  "title": "Question for multiSignalModel with QuadraticScaling",
+  "url": "https://cms-talk.web.cern.ch/t/46655",
+  "category_id": 279,
+  "created_at": "2024-08-25T20:00:37.270Z",
+  "last_posted_at": "2024-08-31T17:06:01.864Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "milee",
+      "name": "Ming-Yan Lee",
+      "created_at": "2024-08-25T20:00:37.573Z",
+      "updated_at": "2024-08-25T20:00:37.573Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nWe are trying to extract the fit to kappa using the quadratic scaling to our analysis. I would like to evaluate the kappa_c using the MultiDimFit.\nIn our analysis, we try to extract the result in 1POI (only treat H+c as signal) and 2POI( treat both H+c(r_hc) and other Higgs(r_higgs) production as signal) in our analysis. And only the H+c term will change the kc(kappa_c) term in the model.\nIn 1POI case, where we only have 1 signal component from H+c using the following commands to create the workspace, and then perform MultiDimFit to extract kc term\ntext2workspace.py card.txt -P HiggsAnalysis.CombinedLimit.QuadraticScaling:quad -m 125 -o card_kc.root  --PO coefficient=kc --PO process=hc\ncombineTool.py -M MultiDimFit -d card.root  --there -m 125 --cminDefaultMinimizerStrategy 0   --setParameters kc=1  --robustFit 1 --algo grid -n kc1.scan --squareDistPoiStep --setParameterRanges kc=-100,100:r=-1000,1000 --points 30\n\nIn the 2POI case, I can manage to create the  workspace with the following commands\ntext2workspace.py card.txt  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel   --PO  'map=.*/.*_hww:r_higgs[1,0,10]' --PO  'map=.*/.*_htautau:r_higgs[1,0,10]' --PO 'map=.*/hc:r_hc[1,0,10]'  -P HiggsAnalysis.CombinedLimit.QuadraticScaling:quad  -m 125 -o card_twoPOI_kc.root--PO coefficient=kc  --PO process=hc\ncombineTool.py -M MultiDimFit -d card_twoPOI_kc.root  --there -m 125 --cminDefaultMinimizerStrategy 0   --setParameters kc=1  --robustFit 1 --algo grid -n kc1.scan --squareDistPoiStep --setParameterRanges kc=-100,100:r=-1000,1000 --points 30\n\n, but I did not see r_higgs appear in the resulting workspace.\nI also checked with -v 3 when doing t2w but I only see r_hc has been modifed with kc but not relevant to r_higgs.\n[#1] INFO:ObjectHandling -- RooWorkspace::import(w) using existing copy of RooFormulaVar::r_hc_kc for import of RooSimultaneousOpt::model_s\nTherefore in the MultiDimFit step , it produced exactly same result as 1POI case since there no floating parameter to fit r_higgs.\nCould you please provide some suggestions on how to treat this situation correctly in 2POI case?\nThank you very much in advance!",
+      "cooked_html": "<p>Dear experts,</p>\n<p>We are trying to extract the fit to kappa using the quadratic scaling to our analysis. I would like to evaluate the kappa_c using the MultiDimFit.</p>\n<p>In our analysis, we try to extract the result in 1POI (only treat H+c as signal) and 2POI( treat both H+c(<code>r_hc</code>) and other Higgs(<code>r_higgs</code>) production as signal) in our analysis. And only the H+c term will change the <code>kc</code>(kappa_c) term in the model.</p>\n<p>In 1POI case, where we only have 1 signal component from H+c using the following commands to create the workspace, and then perform <code>MultiDimFit</code> to extract <code>kc</code> term</p>\n<pre><code class=\"lang-auto\">text2workspace.py card.txt -P HiggsAnalysis.CombinedLimit.QuadraticScaling:quad -m 125 -o card_kc.root  --PO coefficient=kc --PO process=hc\ncombineTool.py -M MultiDimFit -d card.root  --there -m 125 --cminDefaultMinimizerStrategy 0   --setParameters kc=1  --robustFit 1 --algo grid -n kc1.scan --squareDistPoiStep --setParameterRanges kc=-100,100:r=-1000,1000 --points 30\n</code></pre>\n<p>In the 2POI case, I can manage to create the  workspace with the following commands</p>\n<pre><code class=\"lang-auto\">text2workspace.py card.txt  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel   --PO  'map=.*/.*_hww:r_higgs[1,0,10]' --PO  'map=.*/.*_htautau:r_higgs[1,0,10]' --PO 'map=.*/hc:r_hc[1,0,10]'  -P HiggsAnalysis.CombinedLimit.QuadraticScaling:quad  -m 125 -o card_twoPOI_kc.root--PO coefficient=kc  --PO process=hc  \ncombineTool.py -M MultiDimFit -d card_twoPOI_kc.root  --there -m 125 --cminDefaultMinimizerStrategy 0   --setParameters kc=1  --robustFit 1 --algo grid -n kc1.scan --squareDistPoiStep --setParameterRanges kc=-100,100:r=-1000,1000 --points 30\n</code></pre>\n<p>, but I did not see <code>r_higgs</code> appear in the resulting workspace.<br>\nI also checked with <code>-v 3</code> when doing <code>t2w</code> but I only see r_hc has been modifed with kc but not relevant to r_higgs.</p>\n<p><code>[#1] INFO:ObjectHandling -- RooWorkspace::import(w) using existing copy of RooFormulaVar::r_hc_kc for import of RooSimultaneousOpt::model_s</code><br>\nTherefore in the <code>MultiDimFit</code> step , it produced exactly same result as 1POI case since there no floating parameter to fit <code>r_higgs</code>.</p>\n<p>Could you please provide some suggestions on how to treat this situation correctly in 2POI case?</p>\n<p>Thank you very much in advance!</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-08-26T12:59:15.813Z",
+      "updated_at": "2024-08-26T12:59:15.813Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Ming-Yan Lee,\nTo use the QuadraticScaling model one should specify the equations for the signal strength scaling as it is mentioned here, otherwise this model does not do anything.\nFor the second point if I understood correctly you are intending to scale non H+c Higgs processes linearly with the signal strength, and H+c with a quadratic equation depending on k_c. Perhaps I\u2019m missing something, but I don\u2019t think that it is a valid approach.\nAnyway, if you could point to some material (slides or AN) describing the model you would like to use it would be easier to help you with the setup.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Ming-Yan Lee,</p>\n<p>To use the <code>QuadraticScaling</code> model one should specify the equations for the signal strength scaling as it is mentioned <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/QuadraticScaling.py#L14\" rel=\"noopener nofollow ugc\">here</a>, otherwise this model does not do anything.</p>\n<p>For the second point if I understood correctly you are intending to scale non H+c Higgs processes linearly with the signal strength, and H+c with a quadratic equation depending on k_c. Perhaps I\u2019m missing something, but I don\u2019t think that it is a valid approach.</p>\n<p>Anyway, if you could point to some material (slides or AN) describing the model you would like to use it would be easier to help you with the setup.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "milee",
+      "name": "Ming-Yan Lee",
+      "created_at": "2024-08-26T14:21:56.799Z",
+      "updated_at": "2024-08-26T14:21:56.799Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThank you for your reply! Indeed for the 1POI case, we manage to scale the signal strength quadratically according to kc where the model is modified according to changes of signal strength of r_H+c.\nFor the second point, I think you get our idea correctly. The H+c term scale with quadratic equation on k_c while non H+c term scale linearly with signal strength. If I understand correctly, the k_c is determined by the fit of r_H+c and re-interpret as the coefficient. Could you please elaborate a bit more why this is not valid?\nThis is our AN L590 we described our 1POI and 2POI fit, but we haven\u2019t considered the kappa_c interpretation using flat approximation before.\nPreviously we only performed the 2POI fit to extract the signal strength of r_H+c and r_Higgs(non H+c component).\nThank you very much !\nBest regards,\nMing-Yan",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Thank you for your reply! Indeed for the 1POI case, we manage to scale the signal strength quadratically according to kc where the model is modified according to changes of signal strength of r_H+c.</p>\n<p>For the second point, I think you get our idea correctly. The H+c term scale with quadratic equation on k_c while non H+c term scale linearly with signal strength. If I understand correctly, the k_c is determined by the fit of r_H+c and re-interpret as the coefficient. Could you please elaborate a bit more why this is not valid?</p>\n<p>This is our <a href=\"https://icms.cern.ch/tools-api/restplus/relay/piggyback/notes/AN/2023/102/files/8/download\" rel=\"noopener nofollow ugc\">AN</a> L590 we described our 1POI and 2POI fit, but we haven\u2019t considered the kappa_c interpretation using flat approximation before.<br>\nPreviously we only performed the 2POI fit to extract the signal strength of r_H+c and r_Higgs(non H+c component).</p>\n<p>Thank you very much !</p>\n<p>Best regards,<br>\nMing-Yan</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-08-27T09:59:09.063Z",
+      "updated_at": "2024-08-27T09:59:09.063Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Ming-Yan,\nAlright, I think whether you can assume that k_c does not affect other Higgs production processes should be discussed in the HIG PAG.\nOn the technical side, for the case when you also want to float bkg-H component in the fit together with k_c I would just assume that bkg-H is a background process (by setting process identifier > 0 as discussed here), and use a rateParam to scale the bkg-H component. Then you can use the same QuadraticScaling signal model as in the 1POI case.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Ming-Yan,</p>\n<p>Alright, I think whether you can assume that k_c does not affect other Higgs production processes should be discussed in the HIG PAG.<br>\nOn the technical side, for the case when you also want to float <code>bkg-H</code> component in the fit together with k_c I would just assume that <code>bkg-H</code> is a background process (by setting process identifier &gt; 0 as discussed <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#a-simple-counting-experiment\" rel=\"noopener nofollow ugc\">here</a>), and use a <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#rate-parameters\" rel=\"noopener nofollow ugc\"><code>rateParam</code></a> to scale the <code>bkg-H</code> component. Then you can use the same <code>QuadraticScaling</code> signal model as in the 1POI case.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "milee",
+      "name": "Ming-Yan Lee",
+      "created_at": "2024-08-27T14:26:45.343Z",
+      "updated_at": "2024-08-27T14:26:45.343Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThank you for the suggestion, we will discuss how we should treat non-H+c component and how to do it technically in the combine.\nFollowing up on the techincal implementation considering bkg-H with rateParam. I assume we can get similar outcome compared to 2POI case, but seems I could not get the same limit with replacing rate parameter have similar range when I performed the fit.\nI have my datacard put in git[1] where I use\nhc_2POI_m125_13TeV_kc.txt with rateParam with following command to extract limit\ncombine -M AsymptoticLimits --run blind  --cminDefaultMinimizerStrategy 0 hc_2POI_m125_13TeV_kc.txt\n\nAnd for 2POI I use\ntext2workspace.py hc_2POI_m125_13TeV.txt  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO  'map=.*/.*_hww_c:r_higgs[1,0,10]' --PO  'map=.*/.*_htautau_c:r_higgs[1,0,10]' --PO 'map=.*/hc:r_hc[1,0,10]' -m 125 -o hc_2POI_m125_13TeV.root\ncombine -M AsymptoticLimits --run blind  --cminDefaultMinimizerStrategy 0 hc_2POI_m125_13TeV.root --redefineSignalPOIs=r_hc\n\nIs the change expected or I am doing something incorrect?\nThank you very much for your help!\nBest regards,\nMing-Yan\n[1] https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/tree/master/input?ref_type=heads",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Thank you for the suggestion, we will discuss how we should treat non-H+c component and how to do it technically in the combine.</p>\n<p>Following up on the techincal implementation considering bkg-H with <code>rateParam</code>. I assume we can get similar outcome compared to 2POI case, but seems I could not get the same limit with replacing <a href=\"https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/blob/master/input/hc_2POI_m125_13TeV_kc.txt?ref_type=heads#L144-159\" rel=\"noopener nofollow ugc\">rate parameter</a> have similar range when I performed the fit.</p>\n<p>I have my datacard put in git[1] where I use<br>\n<a href=\"https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/blob/master/input/hc_2POI_m125_13TeV_kc.txt\" rel=\"noopener nofollow ugc\">hc_2POI_m125_13TeV_kc.txt</a> with <code>rateParam</code> with following command to extract limit</p>\n<pre><code class=\"lang-auto\">combine -M AsymptoticLimits --run blind  --cminDefaultMinimizerStrategy 0 hc_2POI_m125_13TeV_kc.txt \n</code></pre>\n<p>And for 2POI I use</p>\n<pre><code class=\"lang-auto\">text2workspace.py hc_2POI_m125_13TeV.txt  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO  'map=.*/.*_hww_c:r_higgs[1,0,10]' --PO  'map=.*/.*_htautau_c:r_higgs[1,0,10]' --PO 'map=.*/hc:r_hc[1,0,10]' -m 125 -o hc_2POI_m125_13TeV.root\ncombine -M AsymptoticLimits --run blind  --cminDefaultMinimizerStrategy 0 hc_2POI_m125_13TeV.root --redefineSignalPOIs=r_hc\n</code></pre>\n<p>Is the change expected or I am doing something incorrect?</p>\n<p>Thank you very much for your help!<br>\nBest regards,<br>\nMing-Yan</p>\n<p>[1] <a href=\"https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/tree/master/input?ref_type=heads\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/tree/master/input?ref_type=heads</a></p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-08-28T16:17:21.803Z",
+      "updated_at": "2024-08-28T16:17:21.803Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Dear Ming-Yan,\nFirst of all the ranges that you set to the corresponding rate parameters in the hc_2POI_m125_13TeV_kc.txt  are different from those you defined with the multiSignalModel e.g. \u2018map=./._hww_c:r_higgs[1,0,10]\u2019.\nAlso I run a couple of fits and it looks like they are too narrow in both datacards. So I would suggest to extend them on both sides and try debugging with -M MultiDimFit method, you can use -t -1 option to avoid unblinding.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Ming-Yan,</p>\n<p>First of all the ranges that you set to the corresponding rate parameters in the <a href=\"https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/blob/master/input/hc_2POI_m125_13TeV_kc.txt\" rel=\"noopener nofollow ugc\">hc_2POI_m125_13TeV_kc.txt</a>  are different from those you defined with the <code>multiSignalModel</code> e.g. \u2018map=.<em>/.</em>_hww_c:r_higgs[1,0,10]\u2019.</p>\n<p>Also I run a couple of fits and it looks like they are too narrow in both datacards. So I would suggest to extend them on both sides and try debugging with <code>-M MultiDimFit</code> method, you can use <code>-t -1</code> option to avoid unblinding.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "milee",
+      "name": "Ming-Yan Lee",
+      "created_at": "2024-08-31T17:06:01.864Z",
+      "updated_at": "2024-08-31T17:06:01.864Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThank you very much for the suggestion!\nAs you suggested, we checked the MultiDimFit and increase the range of r_higgs. We are able to reproduce the same result with the different configuration.\nIndeed we did not change the r_higgs when fitting to r_hc which results different limit obtained in both case.\nThank you and best regards,\nMing-Yan",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Thank you very much for the suggestion!<br>\nAs you suggested, we checked the <code>MultiDimFit</code> and increase the range of <code>r_higgs</code>. We are able to reproduce the same result with the different configuration.<br>\nIndeed we did not change the <code>r_higgs</code> when fitting to <code>r_hc</code> which results different limit obtained in both case.</p>\n<p>Thank you and best regards,<br>\nMing-Yan</p>"
+    }
+  ]
+}

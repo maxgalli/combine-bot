@@ -1,0 +1,35 @@
+TOPIC: Help to debug a zero pull
+URL: https://cms-talk.web.cern.ch/t/105372
+DATE: 2025-01-29T17:01:40.681Z
+SOLVED: no
+============================================================
+
+QUESTION (by jiyoo @ 2025-01-29T17:01:45.438Z):
+Dear stats & combine experts,
+Hello. I am looking for advice on what looks like a zero pull for some NPs.
+Here is the directory:
+https://gitlab.cern.ch/cms-analysis/hig/hig-24-008/datacards/-/tree/master/VH?ref_type=heads
+These are the commands I ran:
+combineCards.py SR1pass2016APV=SR1pass2016APV.txt SR1fail2016APV=SR1fail2016APV.txt  TopCRpass2016APV=TopCRpass2016APV.txt SR1pass2016=SR1pass2016.txt SR1fail2016=SR1fail2016.txt TopCRpass2016=TopCRpass2016.txt SR1pass2017=SR1pass2017.txt SR1fail2017=SR1fail2017.txt  TopCRpass2017=TopCRpass2017.txt SR1pass2018=SR1pass2018.txt SR1fail2018=SR1fail2018.txt  TopCRpass2018=TopCRpass2018.txt > model_combined.txt
+text2workspace.py model_combined.txt -o workspace.root
+combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r --rMin -20 --rMax 20 --robustFit 1 -m 200 -d workspace.root --setParameters r=1 -t -1 --cminDefaultMinimizerStrategy 1
+combineTool.py -M Impacts -d workspace.root -m 200 --rMin -20 --rMax 20 --robustFit 1 --doFits -t -1 --cminDefaultMinimizerStrategy 1
+combineTool.py -M Impacts -d workspace.root -m 200 --rMin -20 --rMax 20 --robustFit 1 --output impacts.json -t -1
+For an individual year, e.g.,
+combineCards.py SR1pass2017=SR1pass2017.txt SR1fail2017=SR1fail2017.txt TopCRpass2017=TopCRpass2017.txt > model_combined.txt
+there is no error message given at all when running with the above commands.
+And, the same issue (zero pulls for impacts low in the ranking) happens with just one year as well as with multiple years. In the past, I tried cminDefaultMinimizerStrategy 0, but that led to a failure to find crossings. Also I tried robustHesse but that led to an error message about inability to compute pulls. I tried to change rMin and rMax as well but that didn’t seem to fix the issue
+cminDefaultMinimizerStrategy 1 seems to work without an error message printed to the screen, but gives the possibly? strange behavior about zero pulls.
+From the datacard it seems there should be a lnN uncertainty on signal only, which should show up in the pulls. I attach a sample impact plot as well. Is the fit failing (silently?) for some reason? Or how do I interpret the zero pulls?
+2017.pdf (36.9 KB)
+Thanks for any suggestions.
+Sincerely,
+Jieun
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-01-29T17:23:49.927Z):
+Hi,
+this is the Asimov dataset.
+Though in some analysis where (constrained) nuisances are only on the signal this may also happen on the observed dataset.
+-A
+----------------------------------------

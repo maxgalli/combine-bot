@@ -1,0 +1,45 @@
+{
+  "topic_id": 8561,
+  "title": "Plotting the fit error band within the Combine tool",
+  "url": "https://cms-talk.web.cern.ch/t/8561",
+  "category_id": 279,
+  "created_at": "2022-03-23T22:00:36.389Z",
+  "last_posted_at": "2022-03-24T09:20:58.846Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-03-23T22:00:36.541Z",
+      "updated_at": "2023-02-07T11:03:26.244Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello experts,\nI am writing to see if there is a way to access the fitted error band within the combine tool, with combine -M FitDiagnostics? In the bare RooFit, one can fit the data, get the RooFitResult and plot the fitted model with VisualizeError(). However, combine -M FitDiagnostics only gives the fits as TH1F histograms and data as TGraphAsymmErrors. I am not very sure how to add the fitting error band on top of them\u2026\nDo you have some suggestions?\nThanks a lot!\nSebastian",
+      "cooked_html": "<p>Hello experts,</p>\n<p>I am writing to see if there is a way to access the fitted error band within the combine tool, with combine -M FitDiagnostics? In the bare RooFit, one can fit the data, get the RooFitResult and plot the fitted model with VisualizeError(). However, combine -M FitDiagnostics only gives the fits as TH1F histograms and data as TGraphAsymmErrors. I am not very sure how to add the fitting error band on top of them\u2026</p>\n<p>Do you have some suggestions?</p>\n<p>Thanks a lot!<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-03-23T23:01:47.000Z",
+      "updated_at": "2022-03-23T23:02:41.234Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "\u2013saveWithUncertainties\n--saveWithUncertainties Save also pre/post-fit uncertainties on\nthe shapes and normalizations (from\nresampling the covariance matrix)\n\n-Andrea\nOn Wed, Mar 23, 2022 at 11:05 PM Xuli Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nXuli Yan xuyanMarch 23\n\nHello experts,\nI am writing to see if there is a way to access the fitted error band within the combine tool, with combine -M FitDiagnostics? In the bare RooFit, one can fit the data, get the RooFitResult and plot the fitted model with VisualizeError(). However, combine -M FitDiagnostics only gives the fits as TH1F histograms and data as TGraphAsymmErrors. I am not very sure how to add the fitting error band on top of them\u2026\nDo you have some suggestions?\nThanks a lot!\nSebastian\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>\u2013saveWithUncertainties</p>\n<pre><code class=\"lang-auto\">--saveWithUncertainties Save also pre/post-fit uncertainties on\nthe shapes and normalizations (from\nresampling the covariance matrix)\n</code></pre>\n<p>-Andrea</p>\n<p>On Wed, Mar 23, 2022 at 11:05 PM Xuli Yan via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/x/6de8d8/45.png\" title=\"xuyan\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/xuyan\">Xuli Yan</a> xuyan<br>March 23</th>\n</tr>\n</thead>\n</table>\n</div><p>Hello experts,</p>\n<p>I am writing to see if there is a way to access the fitted error band within the combine tool, with combine -M FitDiagnostics? In the bare RooFit, one can fit the data, get the RooFitResult and plot the fitted model with VisualizeError(). However, combine -M FitDiagnostics only gives the fits as TH1F histograms and data as TGraphAsymmErrors. I am not very sure how to add the fitting error band on top of them\u2026</p>\n<p>Do you have some suggestions?</p>\n<p>Thanks a lot!<br>\nSebastian</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/plotting-the-fit-error-band-within-the-combine-tool/8561/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/f4537bc9b28ec1a895f0fc48fa353e7786f5703c966a0010836b789d7a0883b2\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 3,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-03-24T09:20:58.846Z",
+      "updated_at": "2022-03-24T09:20:58.846Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nThanks for your quick reply!\nOkay, I tried --saveWithUncertainties and it worked, but I am wondering how to get the errors corresponding to 2 sigma? I guess the error associated now is only 1 sigma, right?\nThanks!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>Thanks for your quick reply!</p>\n<p>Okay, I tried --saveWithUncertainties and it worked, but I am wondering how to get the errors corresponding to 2 sigma? I guess the error associated now is only 1 sigma, right?</p>\n<p>Thanks!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    }
+  ]
+}

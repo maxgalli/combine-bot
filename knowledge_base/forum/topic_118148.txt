@@ -1,0 +1,198 @@
+TOPIC: Fit failure in impact plots doInitialFit step
+URL: https://cms-talk.web.cern.ch/t/118148
+DATE: 2025-03-12T16:02:27.987Z
+SOLVED: no
+============================================================
+
+QUESTION (by eipearso @ 2025-03-12T16:02:28.185Z):
+Dear combine experts,
+We are experiencing a strange problem while trying to produce impact plots for our analysis. We are conducting a search where we consider many different signal mass hypotheses in 100 GeV increments, and where our expected background yields are quite small at higher masses (~0.5 events). We need to produce impact plots fitting against data to study the effects of our nuisance parameters against the data, but without looking at the data itself since we are still blinded. The problem is that the fit fails for our impact plot for signal mass 1600 GeV in the --doInitialFit step, while those for the nearby masses all succeed. The expected background yields and systematics are similar for these masses, although the signal yields do change somewhat (~12 for 1500 GeV, ~7 for 1600 GeV and ~4 for 1700 GeV). Additionally, when we fit to Asimov toys instead of data we see that the impact plots for mass 1600 GeV come out fine. We have been unable to determine what it is about 1600 that causes it to fail while the others succeed, so do you have any suggestions on how to continue to troubleshoot this?
+Very important note: We are still blinded, so we should not be looking at the data yields yet. Our question is whether or not this is a technical problem which we can continue to debug without looking at the data.
+We are running like:
+1500:
+combineTool.py -v3 -M Impacts -d workspace1500.root -m 1500 --doInitialFit --robustFit 1 --rMin -1 --setParameters signalScaleParam=0.24536132812500003 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+1600:
+combineTool.py -v3 -M Impacts -d workspace1600.root -m 1600 --doInitialFit --robustFit 1 --rMin -1 --setParameters signalScaleParam=0.4266357421875 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+1700:
+combineTool.py -v3 -M Impacts -d workspace1700.root -m 1700 --doInitialFit --robustFit 1 --rMin -1 --setParameters signalScaleParam=0.6884765625 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+A note about the signalScaleParam: the purpose of this is to rescale the signal yields such that our median expected limits will be set around r=1 where combine is most stable. We apply the same scale factors here.
+Here is the link to a cernBox folder with datacards for masses 1500, 1600 and 1700 GeV:
+https://cernbox.cern.ch/s/QEeVypj1saPCIkB
+Also in the folder are likelihood scan plots generated with MultiDimFit --algo grid like:
+combine -M MultiDimFit [workspace].root -v2 --setParameters signalScaleParam=[scale factor] --trackParameters signalScaleParam --freezeParameters signalScaleParam --algo grid --saveFitResult --rMin -1 --points=1000 --mass [mass]
+The 1500 and 1700 GeV results were plotted with combine’s plot1DScan.py , while the 1600 GeV result was plotted in a script that I wrote myself, as plot1DScan does not draw the plot if it can’t find a best fit for r.
+Thank you,
+Emma Pearson
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2025-03-13T09:35:59.245Z):
+Hi Emma,
+it’s known that the fit to data can bring its own challenges, which might also be different depending on the exact details of the observables you use in the fit and the analysis itself. So it is possible for a fit to not converge for one point even though it works fine for others (although this is unfortunate of course).
+The doInitialFit step is essentially a MultiDimFit that you perform to data. If the fit does not converge, you might need to try out different minimizer options to stabilize the fit, see e.g. the docs on generic minimizer options and fit options. For example, you could try out different minimizer tolerances and strategies, and/or try a larger range for the signal strength parameter. Note that if you find a combination of options that works, it might be worthwhile to study the effect of these options on fits in mass points that already work - ideally, the results shouldn’t depend on these settings too much. It’s generally advisable to use a set of options that is as similar as possible for all the fits you perform to ensure good comparability.
+Thank you for sharing the NLL scans. Just as a side note, since you stressed that you are still blinded - looking at these plots will probably also give an idea about your final result (assuming that the target of the measurement is the signal strength), so it might be wise to scrutinize these further when you’re fully unblinded.
+Cheers,
+Philip
+P.S.: Not really a problem, but why do you track (i.e. save in the final TTre on disc) a parameter that you freeze? The value will always be constant, right?
+----------------------------------------
+
+REPLY 3 (by eipearso @ 2025-03-27T08:13:55.688Z):
+Hi Philip,
+Thank you for your reply, sorry for the long delay in our response.
+We have tried many different combinations of --cminDefaultMinimizer[Type/Algo/Tolerance/Strategy] and different ranges for r as you suggested, but no combination seems to work. Some configurations of settings will have the doInitialFit step succeed, but then most or all of the fits in the doFits step seem to fail. By this I mean that the impact of every nuisance parameter is reported as 0 and the resulting plot looks like the one attached. Additionally, we have tried making changes to our datacard to smooth out the large fluctuations in our single top background, but all this did was cause more masses to fail to produce reasonable plots (1500 and 1700 fail in this case as well). I have attached a copy of the new datacard in case you would like to see how it differs from the previous one. Our biggest concern at the moment is that whatever is causing the problem with the impact plots will also cause problems with the calculation of our observed limits once we are ready to unblind, so we would like to figure out what’s going wrong before we get to that point.
+Do you have any suggestions regarding other things we could look at to try to narrow down the problem while remaining blinded?
+Thank you,
+Emma
+impacts.m1600.pdf (22.9 KB)
+datacard_fittedST.txt (705.1 KB)
+----------------------------------------
+
+REPLY 4 (by eipearso @ 2025-03-28T13:30:10.429Z):
+Hi Philip,
+We have another update to the previous post.
+We notice many messages like:
+WARNING: underflow to inf in pdf_binyear2017_obsOnly for bin 0, weight 1e-10
+FASTEXIT from pdf_binyear2017_obsOnly
+in the output of some of our fits. Some of them say -nan instead of inf, but they are all for pdf_bin[year]_obsOnly. Because of this, we decided to try restricting r to positive or 0 values, and we have discovered that this makes our fits much more stable. If we do not allow negative values of r then we are able to find a combination of other settings which converges. However, this comes with a different problem. As you can see in the attached plot, which is for mass 1600 GeV, the impacts are almost completely in the same direction.
+Several months ago, we changed our procedure for producing these plots to use --rMin -1  because we were concerned about our impact plots having exactly this feature. In the time since then, we have made several changes to the analysis which significantly reduced our background yields without having much effect on the signal yields. It seems that now allowing r to be at all negative (even using a number as small as -0.001) causes our fits to fail. Is it a problem to have one-sided impact plots like this? And if so, is there something we can do to fix them?
+Thanks,
+Emma
+impacts.m1600-2.pdf (24.1 KB)
+----------------------------------------
+
+REPLY 5 (by eipearso @ 2025-04-07T11:30:25.271Z):
+Another update:
+Based on advice we received from an in-person meeting with a couple of experts, I did a study using MultiDimFit with background-only toys which is detailed in the attached slides [1]. From this I gather that in the case of 0 observed events fitting is very unstable, and the choice of --rMin seems to have a large impact on whether or not the fit succeeds. I found that --rMin -0.175 (or more positive) and the default rMax of 20 had a 100% success rate for 100,000 toys.
+I then attempted to use the same settings to fit to data and make the impact plot, and found that they do not work. However, by reducing the r range to --rMin -0.14 --rMax 2 (or possible observed data yields from 0 to 6 events, as noted in the slides) I do get the fits to succeed and produce the attached impact plot [2]. However, we are a bit uncertain as to whether or not this is a reasonable result. We observe that it is one-sided, but we also notice that the impacts are in the opposite direction to what we obtained when we set --rMin to 0 (see previous update), and we are not sure what to make of this.
+Right now I have only studied this for our 1600 GeV mass point. The datacard [3] and workspace [4] are attached.
+Thanks,
+Emma
+Exact commands I am running to do the impact plot fits:
+combineTool.py -v3 -M Impacts -d datacard1600.root -m 1600 --doInitialFit --robustFit 1 --rMin -0.14 --rMax 2 --setParameters signalScaleParam=0.4266357421875 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+combineTool.py -v3 -M Impacts -d datacard1600.root -m 1600 --doFits --robustFit 1 --rMin -0.14 --rMax 2 --setParameters signalScaleParam=0.4266357421875 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+[1] multiDimFitStudy.pdf (161.7 KB)
+[2] impacts.m1600-3.pdf (18.0 KB)
+[3] datacard1600.txt (24.3 KB)
+[4] datacard1600.root (42.6 KB)
+----------------------------------------
+
+REPLY 6 (by gortona @ 2025-04-11T13:53:51.000Z):
+Dear Emma,
+Sorry for the late reply, and sorry or missing the in person chat last week.
+Can I ask you a couple of more informations on your setup?
+
+Is your observation 0 because that’s what you actually observe or because you are still blind? If you are blind, can you try to replace the observed data with one built from the signal+background expectation?
+How did you decide for the signal scaling factor? I suspect the problem is that above a certain threshold your S+B total becomes negative in part of the phase space and thus the fit failing. Is reducing the signal expectation (let’s say a factor 10, by using signalScaleParam=0.04266) a viable option?
+
+Thank you,
+Best regards,
+Giacomo
+
+On 7 Apr 2025, at 13:31, Emma Irene Pearson via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Emma Irene Pearson eipearsoApril 7
+
+Another update:
+Based on advice we received from an in-person meeting with a couple of experts, I did a study using MultiDimFit with background-only toys which is detailed in the attached slides [1]. From this I gather that in the case of 0 observed events fitting is very unstable, and the choice of --rMin seems to have a large impact on whether or not the fit succeeds. I found that --rMin -0.175 (or more positive) and the default rMax of 20 had a 100% success rate for 100,000 toys.
+I then attempted to use the same settings to fit to data and make the impact plot, and found that they do not work. However, by reducing the r range to --rMin -0.14 --rMax 2 (or possible observed data yields from 0 to 6 events, as noted in the slides) I do get the fits to succeed and produce the attached impact plot [2]. However, we are a bit uncertain as to whether or not this is a reasonable result. We observe that it is one-sided, but we also notice that the impacts are in the opposite direction to what we obtained when we set --rMin to 0 (see previous update), and we are not sure what to make of this.
+Right now I have only studied this for our 1600 GeV mass point. The datacard [3] and workspace [4] are attached.
+Thanks,
+Emma
+Exact commands I am running to do the impact plot fits:
+combineTool.py -v3 -M Impacts -d datacard1600.root -m 1600 --doInitialFit --robustFit 1 --rMin -0.14 --rMax 2 --setParameters signalScaleParam=0.4266357421875 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+combineTool.py -v3 -M Impacts -d datacard1600.root -m 1600 --doFits --robustFit 1 --rMin -0.14 --rMax 2 --setParameters signalScaleParam=0.4266357421875 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+[1] multiDimFitStudy.pdf (161.7 KB)
+[2] impacts.m1600-3.pdf (18.0 KB)
+[3] datacard1600.txt (24.3 KB)
+[4] datacard1600.root (42.6 KB)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Emma Irene Pearson eipearsoMarch 28
+
+Hi Philip,
+We have another update to the previous post.
+We notice many messages like:
+WARNING: underflow to inf in pdf_binyear2017_obsOnly for bin 0, weight 1e-10
+FASTEXIT from pdf_binyear2017_obsOnly
+in the output of some of our fits. Some of them say -nan instead of inf, but they are all for pdf_bin[year]_obsOnly. Because of this, we decided to try restricting r to positive or 0 values, and we have discovered that this makes our fits much more stable. If we do not allow negative values of r then we are able to find a combination of other settings which converges. However, this comes with a different problem. As you can see in the attached plot, which is for mass 1600 GeV, the impacts are almost completely in the same direction.
+Several months ago, we changed our procedure for producing these plots to use --rMin -1 because we were concerned about our impact plots having exactly this feature. In the time since then, we have made several changes to the analysis which significantly reduced our background yields without having much effect on the signal yields. It seems that now allowing r to be at all negative (even using a number as small as -0.001) causes our fits to fail. Is it a problem to have one-sided impact plots like this? And if so, is there something we can do to fix them?
+Thanks,
+Emma
+impacts.m1600-2.pdf (24.1 KB)
+
+Emma Irene Pearson eipearsoMarch 27
+
+Hi Philip,
+Thank you for your reply, sorry for the long delay in our response.
+We have tried many different combinations of --cminDefaultMinimizer[Type/Algo/Tolerance/Strategy] and different ranges for r as you suggested, but no combination seems to work. Some configurations of settings will have the doInitialFit step succeed, but then most or all of the fits in the doFits step seem to fail. By this I mean that the impact of every nuisance parameter is reported as 0 and the resulting plot looks like the one attached. Additionally, we have tried making changes to our datacard to smooth out the large fluctuations in our single top background, but all this did was cause more masses to fail to produce reasonable plots (1500 and 1700 fail in this case as well). I have attached a copy of the new datacard in case you would like to see how it differs from the previous one. Our biggest concern at the moment is that whatever is causing the problem with the impact plots will also cause problems with the calculation of our observed limits once we are ready to unblind, so we would like to figure out what’s going wrong before we get to that point.
+Do you have any suggestions regarding other things we could look at to try to narrow down the problem while remaining blinded?
+Thank you,
+Emma
+impacts.m1600.pdf (22.9 KB)
+datacard_fittedST.txt (705.1 KB)
+
+Philip Keicher pkeicherMarch 13
+
+Hi Emma,
+it’s known that the fit to data can bring its own challenges, which might also be different depending on the exact details of the observables you use in the fit and the analysis itself. So it is possible for a fit to not converge for one point even though it works fine for others (although this is unfortunate of course).
+The doInitialFit step is essentially a MultiDimFit that you perform to data. If the fit does not converge, you might need to try out different minimizer options to stabilize the fit, see e.g. the docs on generic minimizer options and fit options. For example, you could try out different minimizer tolerances and strategies, and/or try a larger range for the signal strength parameter. Note that if you find a combination of options that works, it might be worthwhile to study the effect of these options on fits in mass points that already work - ideally, the results shouldn’t depend on these settings too much. It’s generally advisable to use a set of options that is as similar as possible for all the fits you perform to ensure good comparability.
+Thank you for sharing the NLL scans. Just as a side note, since you stressed that you are still blinded - looking at these plots will probably also give an idea about your final result (assuming that the target of the measurement is the signal strength), so it might be wise to scrutinize these further when you’re fully unblinded.
+Cheers,
+Philip
+P.S.: Not really a problem, but why do you track (i.e. save in the final TTre on disc) a parameter that you freeze? The value will always be constant, right?
+
+Emma Irene Pearson eipearsoMarch 12
+
+Dear combine experts,
+We are experiencing a strange problem while trying to produce impact plots for our analysis. We are conducting a search where we consider many different signal mass hypotheses in 100 GeV increments, and where our expected background yields are quite small at higher masses (~0.5 events). We need to produce impact plots fitting against data to study the effects of our nuisance parameters against the data, but without looking at the data itself since we are still blinded. The problem is that the fit fails for our impact plot for signal mass 1600 GeV in the --doInitialFit step, while those for the nearby masses all succeed. The expected background yields and systematics are similar for these masses, although the signal yields do change somewhat (~12 for 1500 GeV, ~7 for 1600 GeV and ~4 for 1700 GeV). Additionally, when we fit to Asimov toys instead of data we see that the impact plots for mass 1600 GeV come out fine. We have been unable to determine what it is about 1600 that causes it to fail while the others succeed, so do you have any suggestions on how to continue to troubleshoot this?
+Very important note: We are still blinded, so we should not be looking at the data yields yet. Our question is whether or not this is a technical problem which we can continue to debug without looking at the data.
+We are running like:
+1500:
+combineTool.py -v3 -M Impacts -d workspace1500.root -m 1500 --doInitialFit --robustFit 1 --rMin -1 --setParameters signalScaleParam=0.24536132812500003 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+1600:
+combineTool.py -v3 -M Impacts -d workspace1600.root -m 1600 --doInitialFit --robustFit 1 --rMin -1 --setParameters signalScaleParam=0.4266357421875 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+1700:
+combineTool.py -v3 -M Impacts -d workspace1700.root -m 1700 --doInitialFit --robustFit 1 --rMin -1 --setParameters signalScaleParam=0.6884765625 --freezeParameters signalScaleParam --trackParameters signalScaleParam
+A note about the signalScaleParam: the purpose of this is to rescale the signal yields such that our median expected limits will be set around r=1 where combine is most stable. We apply the same scale factors here.
+Here is the link to a cernBox folder with datacards for masses 1500, 1600 and 1700 GeV:
+https://cernbox.cern.ch/s/QEeVypj1saPCIkB
+Also in the folder are likelihood scan plots generated with MultiDimFit --algo grid like:
+combine -M MultiDimFit [workspace].root -v2 --setParameters signalScaleParam=[scale factor] --trackParameters signalScaleParam --freezeParameters signalScaleParam --algo grid --saveFitResult --rMin -1 --points=1000 --mass [mass]
+The 1500 and 1700 GeV results were plotted with combine’s plot1DScan.py , while the 1600 GeV result was plotted in a script that I wrote myself, as plot1DScan does not draw the plot if it can’t find a best fit for r.
+Thank you,
+Emma Pearson
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2025-04-11T13:58:13.857Z):
+Dear Emma,
+could you please also put the root files used as input to the datacard somewhere publicly accessible?
+Best,
+Kyle
+----------------------------------------
+
+REPLY 8 (by eipearso @ 2025-04-11T14:38:15.375Z):
+Hi Kyle,
+The are here:
+shapeHistos_2016postVFP.root (220.9 KB)
+shapeHistos_2016preVFP.root (220.8 KB)
+shapeHistos_2017.root (221.3 KB)
+shapeHistos_2018.root (221.2 KB)
+Emma
+----------------------------------------
+
+REPLY 9 (by kcormier @ 2025-04-13T10:24:56.940Z):
+Hi Emma,
+Given that you expect <1 event, it makes sense that you start to see fit problems when you allow negative signal strengths. Negative expected yields break the Poisson model, and cause various fit failures.
+While it usually makes sense to run impacts allowing negative signal strength, I don’t think that is the case here, as you are running into regions of you model which are not just “unphysical” but outside of the mathematical definition of the model.
+Although things like one-sided impacts or 0 impacts are often signs of problems with the model, if best fit values are at their boundary then they can only be one sided. And in some cases (e.g. positive-definite signal and background expectations and  0 observed events) it is also impossible for the background expectation to change the best fit value and therefore there will be no impacts whatsoever.
+Its ultimately a physics decision, and not mine to make, but I don’t personally think there is sense in worrying about these impacts.
+NOTE: Everything I say above is with regards to you 1600 GeV mass point, as from what I understand your background model is significantly different for different mass points; I have not looked at any others.
+Best,
+Kyle
+----------------------------------------

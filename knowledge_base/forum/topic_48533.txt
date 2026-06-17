@@ -1,0 +1,40 @@
+TOPIC: Segmentation violation with FastScan, pull with combination of cards
+URL: https://cms-talk.web.cern.ch/t/48533
+DATE: 2024-09-10T16:31:11.111Z
+SOLVED: no
+============================================================
+
+QUESTION (by jihunk @ 2024-09-10T16:31:11.197Z):
+Dear Combine experts,
+While studying the impact of nuisance parameters in our analysis, we had several questions regarding the script side, and also the interpretation side.
+1… When running the FastScan method, we encountered segmentation violation error.
+Can you please take a look what happened here and give any hints to resolve the problem? An example input root file, datacard, workspace, a script making the workspace, and the error log are attached below:
+https://cernbox.cern.ch/s/qTx4fEmsr2YKSue
+The datacard is way simpler than what we use (no shape uncertainties, no autoMCStats, no rateParam, etc.) but we still observe the same error.
+The error log was obtained by running
+combineTool.py -M FastScan -w card.root:w
+
+in the latest main branch (6cf6c026).
+Are we somehow misunderstanding the usage of this feature?
+2… While checking the impact of nuisances, we found that the pulls are slightly different when combining multiple datacards and doing it one-go.
+To be specific, we are using binned shape approach, and there are three search regions, each of which has several bins, i.e. 6 bins for SR1, 3 bins for SR2, 17 bins for SR3.
+Now what we see is that the expected pull is a little bit different when we compare the results from (1) combination of SR1+SR2+SR3 datacards by running combineCards.py, to from (2) a datacard containing an SR histogram having all 27 search bins in itself. (Control regions, inversion of some selection cuts of search bins, were also added in a similar way.)
+So the pull plot from (1) looks like:
+pull_separate969×793 81.2 KB
+and from (2):
+pull_combined973×792 81 KB
+Here, for example, the second impact of (2) is now one-sided, or the impact of ‘CF’ (a data-driven background) has been dratically changed (also the level of constraint).
+The autoMCstats calculates its impact just bin-by-bin in any case, and currently we’re assigning the same nuisance names and uncertainty values for all datacards (i.e. full correlated across the SRs) so we don’t understand what would make this change.
+Is this behavior expected or are we treating the things wrongly somehow?
+Best regards,
+Jihun.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-09-13T08:43:57.718Z):
+Dear Jihun,
+I cannot reproduce your problem in the most recent combine version (notice that it’s recommended to check out a specific version, not the main branch - although in this case neither lead to a crash in FastScan).
+However, when I look at your log file I see references to SLC7. The latest version of Combine is meant to be built under EL9, not SLC7. Make sure to also use CMSSW_14_1_0_pre4 as recommended in the documentation (assuming you are running within CMSSW)
+For the impacts, in principle I wouldn’t expect there to be a difference between the two approaches that you describe. However if you make one single histogram with all three signal regions concatenated, in case there are normalization uncertainties that have different sizes in the different regions, this is not as easy to take into account (they have to be passed as shape uncertainties too in that case). Did you make those modifications, and did you check that the shape uncertainties make sense? For the 2nd plot, with the impact that you say is one-sided, this looks like there was a fit failure (ie the uncertainty on the positive side was not found, and therefore the impact was not calculated). You could try to scan just that parameter, modifying the fit range slightly, to see if that helps it converge. I think the bigger problem however is the fact that CF is constrained in the first case, but not in the second. You may want to compare the implementations of this parameter between your two fit configurations, to see if you can spot a difference.
+Best,
+Adinda
+----------------------------------------

@@ -1,0 +1,67 @@
+{
+  "topic_id": 42793,
+  "title": "0 impact on POI / Negative bin issue",
+  "url": "https://cms-talk.web.cern.ch/t/42793",
+  "category_id": 279,
+  "created_at": "2024-06-26T13:21:37.673Z",
+  "last_posted_at": "2024-06-26T15:05:37.462Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2024-06-26T13:21:37.795Z",
+      "updated_at": "2024-06-26T13:21:37.795Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nWe encountered several issues with the statistical part of our analysis.\n1\u2026 We are currently checking Asimov nuisance impacts on POI of our analysis\u2019 model,\nand found the impacts are one-sided, with 0 on the opposite side.\nTo be more specific, our physics model have two signal processes\nwith cross sections that differently depend on the POI r.\nThe xsec of one signal (\u2018DYVBF\u2019 in our jargon) scales with r itself,\nand the other (\u2018SSWW\u2019) scales with r^2.\nThis dependency is reflected in our physics model. [1]\nNow, when we examined the expected impacts, as seen below,\n2018_EE_M1000_Inclusive.pdf (36.1 KB)\nthere doesn\u2019t seem to be any major issue.\nBut when we checked the impact only with the SSWW signal process,\nby changing \u2018rate\u2019 of the DYVBF signal process from -1 (hist integral) to 0 (no entry), we observed a different plot.\n2018_EE_M1000_SSWWonly.pdf (35.9 KB)\nIt\u2019s quite hard for us to understand why\n(1) impact shows a value in one direction and then 0 in the other direction of nuisance change with major uncertainties, and why\n(2) there are exact 0 impacts from minor uncertainty sources.\nCould you give us any hints on where we should start to diagnose this issue?\nWe attach the input histograms [2], datacards [3], and command lines [4] for reproduction purposes, in case.\n2\u2026 Could you let us know if there is any recommendation for handling negative bins?\nWe are using the shape method and some bins contain negative numbers of backgrounds mainly due to negatively weighted MC events.\nWould it be best to modify the signal region definition to secure more stats?\n\u2026\nAny help would be really appreciated.\nThank you in advance,\nJihun.\n[1] /afs/cern.ch/user/j/jihunk/Combine/HNDilepModel.py\n[2] /afs/cern.ch/user/j/jihunk/Combine/Inputs\n[3] /afs/cern.ch/user/j/jihunk/Combine/card_2018_EE_M1000_Inclusive.txt,\n/afs/cern.ch/user/j/jihunk/Combine/card_2018_EE_M1000_SSWWonly.txt\n[4] /afs/cern.ch/user/j/jihunk/Combine/MakeWorkspace.sh,\n/afs/cern.ch/user/j/jihunk/Combine/CheckNuisance.sh",
+      "cooked_html": "<p>Dear experts,</p>\n<p>We encountered several issues with the statistical part of our analysis.</p>\n<p>1\u2026 We are currently checking Asimov nuisance impacts on POI of our analysis\u2019 model,<br>\nand found the impacts are one-sided, with 0 on the opposite side.</p>\n<p>To be more specific, our physics model have two signal processes<br>\nwith cross sections that differently depend on the POI r.<br>\nThe xsec of one signal (\u2018DYVBF\u2019 in our jargon) scales with r itself,<br>\nand the other (\u2018SSWW\u2019) scales with r^2.<br>\nThis dependency is reflected in our physics model. [1]</p>\n<p>Now, when we examined the expected impacts, as seen below,<br>\n<a class=\"attachment\" href=\"/uploads/short-url/mLLaHfU3BTTtfjNAezTH4fgu214.pdf\">2018_EE_M1000_Inclusive.pdf</a> (36.1 KB)<br>\nthere doesn\u2019t seem to be any major issue.</p>\n<p>But when we checked the impact only with the SSWW signal process,<br>\nby changing \u2018rate\u2019 of the DYVBF signal process from -1 (hist integral) to 0 (no entry), we observed a different plot.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/iBDY9Wfh871WgqgNsiF1SNKMSho.pdf\">2018_EE_M1000_SSWWonly.pdf</a> (35.9 KB)</p>\n<p>It\u2019s quite hard for us to understand why<br>\n(1) impact shows a value in one direction and then 0 in the other direction of nuisance change with major uncertainties, and why<br>\n(2) there are exact 0 impacts from minor uncertainty sources.</p>\n<p>Could you give us any hints on where we should start to diagnose this issue?<br>\nWe attach the input histograms [2], datacards [3], and command lines [4] for reproduction purposes, in case.</p>\n<p>2\u2026 Could you let us know if there is any recommendation for handling negative bins?<br>\nWe are using the shape method and some bins contain negative numbers of backgrounds mainly due to negatively weighted MC events.</p>\n<p>Would it be best to modify the signal region definition to secure more stats?</p>\n<p>\u2026<br>\nAny help would be really appreciated.</p>\n<p>Thank you in advance,<br>\nJihun.</p>\n<p>[1] /afs/cern.ch/user/j/jihunk/Combine/HNDilepModel.py<br>\n[2] /afs/cern.ch/user/j/jihunk/Combine/Inputs<br>\n[3] /afs/cern.ch/user/j/jihunk/Combine/card_2018_EE_M1000_Inclusive.txt,<br>\n/afs/cern.ch/user/j/jihunk/Combine/card_2018_EE_M1000_SSWWonly.txt<br>\n[4] /afs/cern.ch/user/j/jihunk/Combine/MakeWorkspace.sh,<br>\n/afs/cern.ch/user/j/jihunk/Combine/CheckNuisance.sh</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-06-26T13:38:10.872Z",
+      "updated_at": "2024-06-26T13:38:10.872Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jihun,\nIf in the 2nd case the only signal process you have scales with r^2 then the plot that you obtain for the impacts is consistent, right? That is, whether r is above 0 or below 0, in both cases it increases the signal yield wrt mu=0 (from 0 to something positive). It can never compensate for the effect of varying a systematic uncertainty that is moved in such a way that it increases the background rate (such that the nominal yield in the asimov dataset is below the value you would get for that bkg uncertainty). In such a case you would then end up with a one-sided impact.\nNote that I\u2019m not commenting here on whether it makes sense to have a signal scaled by r^2 - this depends on the details of your analysis, which I did not look into. I\u2019m purely commenting on what you get given this model construction.\nRegarding bins with negative contents: I would suggest rebinning to ensure the bin contents are not negative. If you have minor backgrounds which have small negative bin contents, you could also consider setting those to 0. Or you could try to generate a larger MC sample, if this is possible. In short, there are several ways to address the issue, which one is the best depends on your situation.\nHope that helps,\nAdinda",
+      "cooked_html": "<p>Dear Jihun,</p>\n<p>If in the 2nd case the only signal process you have scales with r^2 then the plot that you obtain for the impacts is consistent, right? That is, whether r is above 0 or below 0, in both cases it increases the signal yield wrt mu=0 (from 0 to something positive). It can never compensate for the effect of varying a systematic uncertainty that is moved in such a way that it increases the background rate (such that the nominal yield in the asimov dataset is below the value you would get for that bkg uncertainty). In such a case you would then end up with a one-sided impact.</p>\n<p>Note that I\u2019m not commenting here on whether it makes sense to have a signal scaled by r^2 - this depends on the details of your analysis, which I did not look into. I\u2019m purely commenting on what you get given this model construction.</p>\n<p>Regarding bins with negative contents: I would suggest rebinning to ensure the bin contents are not negative. If you have minor backgrounds which have small negative bin contents, you could also consider setting those to 0. Or you could try to generate a larger MC sample, if this is possible. In short, there are several ways to address the issue, which one is the best depends on your situation.</p>\n<p>Hope that helps,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2024-06-26T14:29:08.615Z",
+      "updated_at": "2024-06-26T14:29:08.615Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nThanks for the prompt reply!\n1\u2026 Yes, I see the point.\nThen I think it might be better to just use r instead of r^2 when I want to see the response of only the latter(SSWW) process.\nI have one more question: if the likelihood reaches its maximum in the direction of increasing signal, r can be either negative or positive.\nBut in the second plot only one direction is shown.\nShould I interpret this as one of the two equally possible minima being selected during minimization?\n2\u2026 Thanks for the advice. Indeed it\u2019s very small, the order of -0.1.\nI have another question with the case where I set it to 0.\nI could imagine setting all the systematic variations to 0, as well as the nominal value.\nWould this seriously affect our fitting procedure, or just acceptable because the contribution is so small?\nMany thanks again,\nJihun.",
+      "cooked_html": "<p>Dear Adinda,<br>\nThanks for the prompt reply!</p>\n<p>1\u2026 Yes, I see the point.<br>\nThen I think it might be better to just use r instead of r^2 when I want to see the response of only the latter(SSWW) process.</p>\n<p>I have one more question: if the likelihood reaches its maximum in the direction of increasing signal, r can be either negative or positive.<br>\nBut in the second plot only one direction is shown.<br>\nShould I interpret this as one of the two equally possible minima being selected during minimization?</p>\n<p>2\u2026 Thanks for the advice. Indeed it\u2019s very small, the order of -0.1.<br>\nI have another question with the case where I set it to 0.<br>\nI could imagine setting all the systematic variations to 0, as well as the nominal value.<br>\nWould this seriously affect our fitting procedure, or just acceptable because the contribution is so small?</p>\n<p>Many thanks again,<br>\nJihun.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-06-26T14:59:19.507Z",
+      "updated_at": "2024-06-26T14:59:19.507Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jihun,\nOn 1: This is also my interpretation, yes - the minimizer makes a first step in r and keeps going in the same direction, so depending on what that first step is it picks positive or negative r\nOn the 2nd point: If you decide to ignore some minor contributions I would also remove the systematic variations. Note that you should only remove minor contributions if they are minor with respect to the other backgrounds in that bin - not just \u2018small with respect to 0\u2019. If there are very few other backgrounds then it would be better to simply rebin.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Jihun,</p>\n<p>On 1: This is also my interpretation, yes - the minimizer makes a first step in r and keeps going in the same direction, so depending on what that first step is it picks positive or negative r</p>\n<p>On the 2nd point: If you decide to ignore some minor contributions I would also remove the systematic variations. Note that you should only remove minor contributions if they are minor with respect to the other backgrounds in that bin - not just \u2018small with respect to 0\u2019. If there are very few other backgrounds then it would be better to simply rebin.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2024-06-26T15:05:37.462Z",
+      "updated_at": "2024-06-26T15:05:37.462Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank you Adinda,\nIt helped a lot!\nBest,\nJihun.",
+      "cooked_html": "<p>Thank you Adinda,<br>\nIt helped a lot!</p>\n<p>Best,<br>\nJihun.</p>"
+    }
+  ]
+}

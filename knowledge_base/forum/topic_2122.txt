@@ -1,0 +1,110 @@
+TOPIC: Goodness-of-fit in more detail in Combine for studying agreement between control regions
+URL: https://cms-talk.web.cern.ch/t/2122
+DATE: 2021-07-16T09:12:19.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Robert_Stephen_White @ 2021-07-16T09:12:19.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+We're looking at the level of agreement between our single e and single
+mu control regions, and want to investigate the contributions to the
+test statistic in the goodnesses-of-fit in more detail. I believe this
+was done in the Higgs->WW analysis and wondered if the steps to do this
+are documented anywhere, e.g. a verbose option of the minimisation
+performed, the pulls on individual systs during this?
+Kind regards, Rob on behalf of the analysers
+----------------------------------------
+
+REPLY 2 (by Robert_Stephen_White @ 2021-07-20T10:10:52.000Z):
+*** Discussion title: Higgs Combination
+Hi, so we've progressed a bit further with this by looking at
+MultiDimFits to the systs that lead to the largest pulls in a single e +
+single mu fit, but this is telling a similar story to running fit
+diagnostics with all regions but the single e + single mu control
+regions masked: the result lists the pulls (with an uncertainty of 0.00,
+which we can't explain given this uncertainty is non-zero as soon as one
+of the other control regions (with a rate parameter not shared with
+single e + single mu) is added back in / left unmasked). Any advice
+related to why this might be the case, or related to the method from the
+H->WW analysis would be appreciated!
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2021-07-20T11:23:59.000Z):
+Hi Rob,
+Sorry for the slow reply.
+I think there might be a few different issues here.
+Going back to your first question about the saturated GoF per category. This isn't available in the current combine release, but you can try using the code below (*). This will put extra branches in the output tree, one for each category, and one called "constraints", for the constraint pdfs. Note that this is not well validated yet, and not recommended for general usage - you should check carefully that the sum over categories equals the total.
+For the checks below - I'm not entirely sure why you get uncertainties of 0.00 coming out - probably something failed in the uncertainty calculation but it's hard to guess without more info. It would be helpful to know all the combine commands you are using, and which output you extract these uncertainty numbers from. If you also make your datacards/workspace available then we can try to check it.
+cheers,
+Andrew
+(*)
+https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/tree/saturated-per-channel
+----------------------------------------
+
+REPLY 4 (by Robert_Stephen_White @ 2021-07-22T11:17:13.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrew,
+Thanks for your response. We will start looking into the repo you've
+provided, but for you to get an idea of what our approach(es) are: we
+use the following GoF command for a single e+ single mu-only fit:
+masks_total=SR,dilepton,photon masks
+combine -M GoodnessOfFit all_datacards.root --algo=saturated -m 125
+--setParameters "$masks_total" combineTool.py -M GoodnessOfFit
+all_datacards.root --setParameters "$masks_total" --algo=saturated -t
+300 -s 12 -n Toys -m 125 --toysFreq
+And we've also tried first creating a workspace with the relevant
+regions masked and freezing their rate parameters (without freezing the
+rate parameters the MultiDimFit stage fails. These rate parameters are
+shared by the dilepton and photon control regions, while the single
+lepton control regions share their own rate parameters, which are of
+course not frozen here). Command is
+freezeparams=dilepton,photon rate parameters
+combine .all_datacards.root -M MultiDimFit --saveWorkspace
+--setParameters "${masks_total}r=0" --freezeParameters
+"${freezeparams}r" -n _MLECRData -m 125
+This outputs a higgsCombine_MLECRData.MultiDimFit.mH125.root file which
+we then feed into the goodness of fit command instead of
+all_datacards.root
+(and to study these goodnesses of fit, we run on the output:
+combineTool.py -M CollectGoodnessOfFit --input
+higgsCombineTest.GoodnessOfFit.mH125.root
+higgsCombineToys.GoodnessOfFit.mH125.12.root -m 125.0 -o
+goodnessOfFitCROnly.json plotGof.py goodnessOfFitCROnly.json --statistic
+saturated --mass 125.0 -o goodnessOfFitCROnlyPlot
+which gives us the GoF plots)
+The difference between these two sets of commands only seems to affect
+the toy distribution, but marginally: the p-value only changes within
+~0.1%
+----------------------------------------
+
+REPLY 5 (by maglowac @ 2021-07-26T13:27:48.000Z):
+*** Discussion title: Higgs Combination
+Hey,
+with regards to the repo that was linked, is the functionality the same
+as before? I.e, we don't need to make changes to the build process or
+pass any additional flags when running? Seems to run fine for me but not
+seeing any extra branches in the output ROOT files, also not seeing this
+print statement which makes me a little suspicious:
+https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241
+Thanks!
+----------------------------------------
+
+REPLY 6 (by maglowac @ 2021-07-26T13:27:50.000Z):
+*** Discussion title: Higgs Combination
+Hey,
+with regards to the repo that was linked, is the functionality the same
+as before? I.e, we don't need to make changes to the build process or
+pass any additional flags when running? Seems to run fine for me but not
+seeing any extra branches in the output ROOT files, also not seeing this
+print statement which makes me a little suspicious:
+https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241
+Thanks!
+----------------------------------------
+
+REPLY 7 (by agilbert @ 2021-07-26T15:37:07.000Z):
+Hi Maciej,
+I think it should be enough to checkout that branch and recompile with scram. If it's still not working then perhaps you will have to put some more printouts to understand why the code doesn't reach the line linked below.
+cheers,
+Andrew
+----------------------------------------

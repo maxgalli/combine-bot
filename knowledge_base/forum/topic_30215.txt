@@ -1,0 +1,99 @@
+TOPIC: Large profile-likelihood uncertainties
+URL: https://cms-talk.web.cern.ch/t/30215
+DATE: 2023-10-03T19:37:31.476Z
+SOLVED: no
+============================================================
+
+QUESTION (by amkaur @ 2023-10-03T19:37:31.684Z):
+Dear Experts,
+I am performing profile-likelihood fit to estimate the lepton flavor ratio using the combine tool. I have shape-based cards (a sample is attached below) which include different parameters and systematic uncertainties. However, for some reason, the uncertainty in POI (r, flavor ratio) is very large and seems to be not converging. The shape root files can be found in the following folder at CERNBOX (https://cernbox.cern.ch/s/zHgenZ2wKw42JHp).
+I am using the following fit parameters for this:
+combine -M MultiDimFit datacard_M1200.txt -m 1200 --algo=singles --robustFit 1 --setRobustFitAlgo Minuit --setParameterRanges r=-10,10 --do95=1 --X-rtd MINIMIZER_analytic
+The result is as follows:
+
+Error: closed range without finding crossing.
+— MultiDimFit —
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error (for 95
+datacard_M1200.txt (6.4 KB)
+%) found, will report difference to maximum of range for : r
+r :    +0.840   -0.658/+5.412 (68%)    +0.841/-9.160 (95%)
+
+Would you please help me understand this large uncertainty and how can I fix this.
+Thanks and regards,
+Amandeep Kaur
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-10-03T20:50:51.764Z):
+Hi Amandeep,
+A few things to check:
+
+we recommend against changing settings like --setRobustFitAlgo Minuit. Do you get the same problem using the default?
+What happens if you freeze the flavor ratio parameter and repeat --algo singles for r?
+Did you try to make an explicit using using --algo grid? How does the NLL curve look?
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by amkaur @ 2023-10-04T15:29:10.445Z):
+Hello Andrew,
+Thank you so much for these ideas. Here is what I found after the suggested checks:
+
+setRobutFitAlgo → to default , I see the same problem.
+
+I am unable to freeze ‘r’ with MultiDimFit method.
+
+I tried with --algo grid; the NLL curve looks as below.  For some points : Info in : Minuit2Minimizer::Minimize : Minimization did NOT converge, Edm is above max
+
+plot_1200_1dscan698×475 12.5 KB
+I realized that if I simply run with default settings for 68% CL (combine -M MultiDimFit datacard_M1200.txt -m 1200 --algo=singles --cl 0.68),  the fit is converging and gives :
+r :    +0.841   -0.660/+1.457 (68%)
+but with --do95=1, it fails badly.
+–
+Amandeep Kaur
+----------------------------------------
+
+REPLY 4 (by gortona @ 2023-10-05T08:16:11.534Z):
+Dear Amandeep,
+If I read correctly the plot you sent, it seems that r is bounded to be positive in your model. Is that correct? If so, you might try to use  --setParameterRanges r=0.00001,20 to constrain properly the allowed phase space.
+As a side note, the assumption the the likelihood ratio behaves like a chi2 distribution does not hold near the boundary. I’m not sure algo singles will give you the right 68%/95% interval there. A safer approach would be to use toys to estimate the lower intervals.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 5 (by amkaur @ 2023-10-05T14:55:50.649Z):
+Dear Giacomo,
+Thank you for these ideas. Yes, r is always positive my model. I have set the r from 1e-6 to 20 to constraint r.
+Regarding your suggestion to use toys for lower intervals. I tried that but all the fits to toys failed (not sure why).
+I used the following parameters:
+combine -M MultiDimFit datacard_M1200.txt -m 1200 --robustFit 1 --setParameterRanges r=1e-6,20 -t 10 -s -1
+–
+Even the best fit value (median) is different from the expected value.
+–
+Amandeep Kaur
+----------------------------------------
+
+REPLY 6 (by agilbert @ 2023-10-06T08:20:45.891Z):
+Hi Amandeep,
+I think the answer is in the shape of the likelihood curve:
+
+Amandeep Kaur:
+
+plot_1200_1dscan698×475 12.5 KB
+plot_1200_1dscan698×475 12.5 KB
+
+The curve is flattening towards large values of r, and so at least within the range scanned (0-10) it is not crossing the threshold for the 95% CL (when 2*deltaNLL = 3.84).
+The reason for this behaviour depends on the physics model, but can happen e.g. with parameterisations involving ratios of signal rates.
+You could try extending rMax by a large amount (but it may not work if deltaNLL is asymptotically approaching a value < 3.84).
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 7 (by amkaur @ 2023-10-11T16:43:38.985Z):
+Thanks Andrew. Yes, I tried with rMax = 20, still the curve is approaching delNLL value < 3.84. I am not sure what could be the solution for this behavior with the given signal rates.
+Is there any solution to this kind of problem.
+Thanks again,
+Regards,
+Amandeep Kaur
+----------------------------------------

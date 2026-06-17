@@ -1,0 +1,165 @@
+TOPIC: Issues with unbinned shape analysis using discrete profiling
+URL: https://cms-talk.web.cern.ch/t/14241
+DATE: 2022-08-23T19:19:21.577Z
+SOLVED: no
+============================================================
+
+QUESTION (by mmasciov @ 2022-08-23T19:19:21.765Z):
+Dear experts,
+We are reaching out as we are having a few issues we are unable to understand and thus solve, and we hope you may help.
+We are performing an unbinned shape analysis where signal is modeled with a double Crystal Ball plus a Gaussian PDF, while background is modeled using a RooMultiPDF consisting of exponential, power-law and Bernstein polynomial functions (discrete profiling).
+This is done in two different channels (“ch1” and “ch2”), as well for their combination.
+In addition, we also define a third channel (“ch0”) that equals the sum of “ch1” and “ch2”.
+We believe we were able to correctly build our datacards.
+We copied example datacards obtained using a toy MC RooDataSet, together with the corresponding workspaces, at:
+/afs/cern.ch/user/m/mmasciov/public/cards_forTest/
+No warning is printed when the datacards are validated using combineTool, and we can’t identify anything suspicious when inspecting the corresponding workspaces either.
+However, when we attempt to use any combine method (AsymptoticLimits, FitDiagnostics, MultiDimFit, etc.) the job is killed for no apparent reason (even when verbosity is increased no information about the reason why the jobs has been killed is printed).
+We have also tried different combine options as suggested in the documentation (among others: --cminDefaultMinimizerStrategy 0, and/or --X-rtd MINIMIZER_freezeDisassociatedParams), with no success.
+On the other hand, when using/importing in the workspace individual background PDFs rather than a RooMultiPDF object consisting of multiple PDFs, at least a subset of the methods appear to succeed.
+Still, it is unclear to us what is wrong (if any) with our model and/or with our datacards, and we are unable to understand what the underlying issue may be .
+Any suggestion would be welcome and much appreciated!
+Many thanks in advance,
+Mario (for the involved analysis team)
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-08-23T19:44:38.129Z):
+Hi Mario,
+can you confirm you are typing
+ulimit -s unlimited
+
+?
+Can you change the privileges of the directory you mentioned?
+$ls /afs/cern.ch/user/m/mmasciov/public/cards_forTest/
+ls: cannot access /afs/cern.ch/user/m/mmasciov/public/cards_forTest/card_ch0_Y3_M400_allyears.root: Permission denied
+ls: cannot access /afs/cern.ch/user/m/mmasciov/public/cards_forTest/card_ch0_Y3_M400_allyears.txt: Permission denied
+
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by mmasciov @ 2022-08-23T21:25:19.303Z):
+Hi Andrea,
+Yes, ulimit -s unlimited doesn’t seem to make a difference:
+$ ulimit
+unlimited
+$ combine -M AsymptoticLimits -d card_ch0_Y3_M400_allyears.root --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams
+<<< Combine >>>
+>>> random number generator seed is 123456
+>>> method used is AsymptoticLimits
+Killed
+
+The directory (/afs/cern.ch/user/m/mmasciov/public/cards_forTest/) should now be accessible. Apoologies. If more convenient, the directory is now also available on CERNbox (https://cernbox.cern.ch/index.php/s/oUYim7TnZjvXbcz) as well as on EOS (/eos/cms/store/user/mmasciov/cards_forTest/).
+Thanks again,
+Mario
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-08-23T22:01:30.000Z):
+Hi Mario,
+The problem is in terms of resources. After ~15Gb of RAM lxplus will kill the process.
+Sometimes you could get the error:
+Caught exception std::bad_alloc
+
+The error seems to come from the RooMultiPdf, in particular,
+I think that combine remains in some loop allocating memory because the Category seems to be ill defined:
+root [3] w->cat("pdf_index_ch0")->Print()
+RooCategory::pdf_index_ch0 = NULL(idx = 0)
+
+w->cat("pdf_index_ch2")->numTypes()
+(int) 0
+
+Can you check that the RooCategories are well formed? (non empy[*], and the corresponding roo multipdf filled correctly with the pdfs)
+(Probably we should print an error in this case)
+Cheers,
+-Andrea
+[*] check python garbage collector?
+On Tue, Aug 23, 2022 at 11:27 PM Mario Masciovecchio via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Mario Masciovecchio mmasciovAugust 23
+
+Hi Andrea,
+Yes, ulimit -s unlimited doesn’t seem to make a difference:
+$ ulimit
+
+unlimited
+
+$ combine -M AsymptoticLimits -d card_ch0_Y3_M400_allyears.root --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams
+
+<<< Combine >>>
+
+>>> random number generator seed is 123456
+
+>>> method used is AsymptoticLimits
+
+Killed
+
+The directory (/afs/[cern.ch/user/m/mmasciov/public/cards_forTest/](http://cern.ch/user/m/mmasciov/public/cards_forTest/)) should now be accessible. Apoologies. If more convenient, the directory is now also available on CERNbox (https://cernbox.cern.ch/index.php/s/oUYim7TnZjvXbcz) as well as on EOS (/eos/cms/store/user/mmasciov/cards_forTest/).
+Thanks again,
+Mario
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by mmasciov @ 2022-08-24T17:59:16.562Z):
+Hi Andrea,
+Thank you.
+We fixed the issue with the RooCategory, which now appears to be correctly filled.
+The datacards on AFS and EOS have been updated.
+We also checked that all shapes in the workspace are as expected, as shown here (signal is shown in violet, all other lines represent different background PDFs, while black markers are toy MC datasets).
+The script used to produced the linked plots is also available in the same directory as the datacards (/afs/cern.ch/user/m/mmasciov/public/cards_forTest/plotCard.py).
+With these updated datacards, on the one hand the AsymptoticLimits method returns possibly meaningful upper limits (or at least some upper limits).
+On the other hand, other methods like FitDiagnostics and MultiDimFit continue to fail (with the message Fit failed), consistently and independently of additional options.
+Increasing the verbosity level, the failure seems to be due to:
+Info in <Minuit2>: VariableMetricBuilder: INVALID function minimum - edm is above tolerance
+
+and/or to:
+Info in <Minuit2>: Minuit2Minimizer::Minimize : Minimization did NOT converge, Edm is above max
+Minuit2Minimizer : Invalid Minimum - status = 3
+
+The same failure happens across channels, when treated independently.
+We have also tried to set and freeze the RooCategory determining which PDF in the RooMultiPDF is used, without success.
+This was a bit unexpected, given that the PDFs per se appear to be meaningfully constructed, as shown in the linked plots.
+Is there anything else we can check to try and understand the source of the problem?
+Thanks again in advance,
+Mario
+----------------------------------------
+
+REPLY 6 (by amarini @ 2022-08-25T09:32:50.000Z):
+Hi Mario,
+you should check that your model (signal) makes sense.
+You are floating alphaL,alphaR,mcfracL,mcfracR,nL,nR,sigma,
+that should be fixed (or constrained to some value).
+Also, you should check that all individual background pdfs converges. For instance, ch1 index 3.
+For ch2, you should probably think to use lower order poly, because with 3 or 4 events it will be difficult to constrain the background.
+Cheers,
+-Andrea
+On Wed, Aug 24, 2022 at 8:01 PM Mario Masciovecchio via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Mario Masciovecchio mmasciovAugust 24
+
+Hi Andrea,
+Thank you.
+We fixed the issue with the RooCategory, which now appears to be correctly filled.
+The datacards on AFS and EOS have been updated.
+We also checked that all shapes in the workspace are as expected, as shown here (signal is shown in violet, all other lines represent different background PDFs, while black markers are toy MC datasets).
+The script used to produced the linked plots is also available in the same directory as the datacards (/afs/[cern.ch/user/m/mmasciov/public/cards_forTest/plotCard.py](http://cern.ch/user/m/mmasciov/public/cards_forTest/plotCard.py)).
+With these updated datacards, on the one hand the AsymptoticLimits method returns possibly meaningful upper limits (or at least some upper limits).
+On the other hand, other methods like FitDiagnostics and MultiDimFit continue to fail (with the message Fit failed), consistently and independently of additional options.
+Increasing the verbosity level, the failure seems to be due to:
+Info in <Minuit2>: VariableMetricBuilder: INVALID function minimum - edm is above tolerance
+
+and/or to:
+Info in <Minuit2>: Minuit2Minimizer::Minimize : Minimization did NOT converge, Edm is above max
+Minuit2Minimizer : Invalid Minimum - status = 3
+
+The same failure happens across channels, when treated independently.
+We have also tried to set and freeze the RooCategory determining which PDF in the RooMultiPDF is used, without success.
+This was a bit unexpected, given that the PDFs per se appear to be meaningfully constructed, as shown in the linked plots.
+Is there anything else we can check to try and understand the source of the problem?
+Thanks again in advance,
+Mario
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

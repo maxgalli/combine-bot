@@ -1,0 +1,28 @@
+TOPIC: 2D binned ML fit with Combine
+URL: https://cms-talk.web.cern.ch/t/11689
+DATE: 2022-06-14T19:57:11.941Z
+SOLVED: no
+============================================================
+
+QUESTION (by dinardo @ 2022-06-14T19:57:12.197Z):
+Dear experts,
+I would like to know whether performing a 2D binned likelihood fit with Combine is possible.
+The pdf should be an analytic formula (not a histogram template)
+The 2D space is, for example, an invariant mass and a DNN score.
+Moreover, I would like to compute limits on the cross-section as a function of the invariant mass:
+basically very much like in the attached plot used just as an example.
+The limit for every mass point should be calculated using a likelihood whose pdf is defined on the aforementioned 2D space.
+Many thanks,
+
+Mauro.
+
+Screenshot 2022-06-14 at 9.49.41 PM1196×868 139 KB
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-06-14T20:14:46.168Z):
+Hi,
+yes, it is possible. You need to construct the RooDataHist over the two observables and the pdfs (over the observables) should be a function of the truth invariant mass.
+The test-statistic and the commands after the datacard is made are the usual ones.
+Cheers,
+-Andrea
+----------------------------------------

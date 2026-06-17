@@ -1,0 +1,36 @@
+TOPIC: Interplay of saturated GoF and mcstats
+URL: https://cms-talk.web.cern.ch/t/117348
+DATE: 2025-03-05T18:05:46.729Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by anovak @ 2025-03-05T18:05:47.928Z):
+This is a follow-up on GoF saturated - are rateParams varied when generating toys, but it leads me to a somewhat different questions, so I am opening a new topic.
+As part of our investigations we looked into behaviour of MC stat and I wanted to get a sanity check. We see a substantial effect on the GoF value for data fit depending on whether we turn on mcstats - this is expected. However, when generating toys, the GoF distributions seem to not be affected in a meaningful way.
+image1113×1156 93.2 KB
+Naively, I would expect adding uncertainties into the fit would lead to more varied toys with correspondingly higher GoFs on average.
+I wanted to be sure this is not due to our mcstat implementation, so I checked the same for the part3 long exercise from the combine tutorial and I see the same effect.
+image1215×1150 114 KB
+Am I misunderstanding what’s happening in the toy generation?
+Cheers,
+Andrzej
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by kcormier @ 2025-03-06T14:24:58.494Z):
+Hi Andrzej,
+tldr; I think this is expected. In general the GoF on the observed dataset will improve when you add additional constrained parameters to the fit. The expected distribution of the saturated test statistic itself is typically stable to adding constrained nuisances. Depending on which type of toys you generated:
+
+for frequentist toys additional freedom in the fit from any nuisance parameter you add is also compensated for by the randomization of the additional constraint term in each of the toys.
+for the ‘hybrid’ toys, the additional variance in the generated toy data is compensated for by the additional freedom in the fit.
+
+More detailed explanation below, hope this helps.
+Kyle
+The reason that the observed distribution decreases is the same in both cases. The data is the same, the model has more freedom, so the fit can only improve, approaching the theoretical optimal value (which is given by the saturated model). But the expected distribution is typically rather stable because both the model flexibility and the toy generation process are changed in compensating ways. As a rule of thumb, the expected distribution of the test statistic is often a reflection of the number of bins minus the number of free parameters in the fit.
+If you are generating ‘frequentist’ toys, then the data in each bin are sampled from a Poisson of the expected value; this doesn’t change when adding in new nuisance parameters. If that were all thats done then the GoF would get smaller when you add nuisance parameters as it does for the observed. However for the full frequentist toys one also needs to randomize the values of the constraints that get used in the fit (sometimes referred to as ‘global observables’), so where the toy data may have been generated with parameter values \{\theta_1, ... \theta_n\}, the constraints will be centered around \{\theta'_1, .. \theta'_n\}. The parameters used to generate the data and the values preferred by the constraints are different, so this somewhat worsens the GoF and cancels the effect of improved fit to the binned data with a somewhat worse fit to the ‘global observables’ (essentially your prior beliefs about the nuisance parameters).
+For the default hybrid toys that are run, the nuisance parameters used to generate the data are varied within their uncertainties before the Poisson sampling. So if you add more nuisance parameters, the actual variance of the toy data will be larger. But this larger variance in the toy data is compensated by the greater flexibility in the fit to accommodate the data from the added nuisance parameters.
+For many conditions, these effects do really compensate numerically (and not just qualitatively) and you get a stable expected distribution. But of course: disclaimer that they wont hold in all cases. Thats why we generate these empirical test-statistic distributions in the first place.
+----------------------------------------
+
+REPLY 3 (by anovak @ 2025-03-06T18:03:04.611Z):
+Thanks a lot Kyle, that was a super helpful explanation.
+----------------------------------------

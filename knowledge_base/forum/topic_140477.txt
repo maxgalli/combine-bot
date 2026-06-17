@@ -1,0 +1,13 @@
+TOPIC: Initial fit does not find true minimum Combine
+URL: https://cms-talk.web.cern.ch/t/140477
+DATE: 2026-01-06T18:59:53.109Z
+SOLVED: no
+============================================================
+
+QUESTION (by msrivast @ 2026-01-06T18:59:53.664Z):
+Dear Combine experts,
+Sometimes when fitting to toys, Combine doesn’t manage to find the true minimum in the initial fit, leading to negative values for \Delta NLL. I know that when scanning one can use --pointsRandProf=N to sample N random starting points when scanning, but that does not translate to the initial fit (as I understand).
+In the same spirit, is there an easy way for Combine to do the initial fit over a multidimensional space from a variety of starting points using the MultiDimFitalgorithm similar to what is described above?
+Thank you,
+Mohit Srivastav
+----------------------------------------

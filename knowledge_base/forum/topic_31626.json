@@ -1,0 +1,89 @@
+{
+  "topic_id": 31626,
+  "title": "Expected limit increases when excluding some categories",
+  "url": "https://cms-talk.web.cern.ch/t/31626",
+  "category_id": 279,
+  "created_at": "2023-11-14T08:11:13.858Z",
+  "last_posted_at": "2023-11-16T06:35:17.857Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "chenghan",
+      "name": "Cheng-Han Wu",
+      "created_at": "2023-11-14T08:11:14.014Z",
+      "updated_at": "2023-11-14T08:11:14.014Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am attempting to compare the expected limits calculated by the combine with and without including the insensitive categories. I anticipated that by including those insensitive categories, the expected limit would remain the same as when considering only sensitive categories, rather than increasing the expected limit. However, in my case, excluding those insensitive categories (labeled as Loose cats in the plot) seems to improve the performance. I am wondering if this is reasonable or if my original expectation is wrong. Do you have any idea about this?\nAny feedback and discussion are appreciated.\n\u622a\u5716 2023-11-14 \u4e0b\u53483.49.05707\u00d7683 41.6 KB\nBest,\nCheng-Han",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am attempting to compare the expected limits calculated by the combine with and without including the insensitive categories. I anticipated that by including those insensitive categories, the expected limit would remain the same as when considering only sensitive categories, rather than increasing the expected limit. However, in my case, excluding those insensitive categories (labeled as Loose cats in the plot) seems to improve the performance. I am wondering if this is reasonable or if my original expectation is wrong. Do you have any idea about this?</p>\n<p>Any feedback and discussion are appreciated.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/8/86fe5cf8fd02c2b718b63eef3b563af2a0303fe7.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/86fe5cf8fd02c2b718b63eef3b563af2a0303fe7\" title=\"\u622a\u5716 2023-11-14 \u4e0b\u53483.49.05\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/86fe5cf8fd02c2b718b63eef3b563af2a0303fe7_2_517x500.png\" alt=\"\u622a\u5716 2023-11-14 \u4e0b\u53483.49.05\" data-base62-sha1=\"jgcX03vSxZSzdy7HqTiy5E9nylN\" width=\"517\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/86fe5cf8fd02c2b718b63eef3b563af2a0303fe7_2_517x500.png, https://cms-talk.web.cern.ch/uploads/default/original/2X/8/86fe5cf8fd02c2b718b63eef3b563af2a0303fe7.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/8/86fe5cf8fd02c2b718b63eef3b563af2a0303fe7.png 2x\" data-dominant-color=\"F5F5F5\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">\u622a\u5716 2023-11-14 \u4e0b\u53483.49.05</span><span class=\"informations\">707\u00d7683 41.6 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>Best,<br>\nCheng-Han</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-11-14T09:41:45.121Z",
+      "updated_at": "2023-11-14T09:41:45.121Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Cheng-Han,\nI think your intuition is largely right - in principle adding categories should at best only improve the expected sensitivity. However, by default combine calculates the expected limit using a fit to the data, and it could be that your extra categories, via correlations with the signal region categories, increase the background normalisation there such that the sensitivity in the signal region is reduced.\nTo test this, you can run limits without fit to data first, see the instructions here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#blind-limits\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Cheng-Han,</p>\n<p>I think your intuition is largely right - in principle adding categories should at best only improve the expected sensitivity. However, by default combine calculates the expected limit using a fit to the data, and it could be that your extra categories, via correlations with the signal region categories, increase the background normalisation there such that the sensitivity in the signal region is reduced.</p>\n<p>To test this, you can run limits without fit to data first, see the instructions here: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#blind-limits\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#blind-limits</a></p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "chenghan",
+      "name": "Cheng-Han Wu",
+      "created_at": "2023-11-14T10:18:38.732Z",
+      "updated_at": "2023-11-14T10:18:38.732Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThanks for your prompt reply and explanation.\nThe strange thing is that I have requested combine to calculate the a-priori limit by adding the option --run=blind --noFitAsimov and the results are shown in the above plot.\nThe commands I use are\ncombine datacard_heeg_runII_NoLoose_comb_125.txt -M AsymptoticLimits -n _test_noloose -m 125 --run=blind --noFitAsimov\ncombine datacard_heeg_runII_comb_125.txt -M AsymptoticLimits -n _test_loose -m 125 --run=blind --noFitAsimov\n\nSo it seems that the problem is not the background normalization.\nDo you think this might be because of the statistical fluctuation or which places I can do a further check to figure out this?\nBest,\nCheng-Han",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Thanks for your prompt reply and explanation.<br>\nThe strange thing is that I have requested combine to calculate the a-priori limit by adding the option --run=blind --noFitAsimov and the results are shown in the above plot.</p>\n<p>The commands I use are</p>\n<pre><code class=\"lang-auto\">combine datacard_heeg_runII_NoLoose_comb_125.txt -M AsymptoticLimits -n _test_noloose -m 125 --run=blind --noFitAsimov\ncombine datacard_heeg_runII_comb_125.txt -M AsymptoticLimits -n _test_loose -m 125 --run=blind --noFitAsimov\n</code></pre>\n<p>So it seems that the problem is not the background normalization.<br>\nDo you think this might be because of the statistical fluctuation or which places I can do a further check to figure out this?</p>\n<p>Best,<br>\nCheng-Han</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-11-14T10:33:05.063Z",
+      "updated_at": "2023-11-14T10:33:05.063Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Cheng-Han,\nIn that case it\u2019s a bit strange. Can you share the datacards and ROOT inputs?\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Cheng-Han,</p>\n<p>In that case it\u2019s a bit strange. Can you share the datacards and ROOT inputs?</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "chenghan",
+      "name": "Cheng-Han Wu",
+      "created_at": "2023-11-14T13:26:01.946Z",
+      "updated_at": "2023-11-14T13:26:01.946Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nSure, I put the cards and the models in /afs/cern.ch/user/c/chenghan/public/Combine/cards.\nThanks for your help!\nBest,\nCheng-Han",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Sure, I put the cards and the models in /afs/cern.ch/user/c/chenghan/public/Combine/cards.<br>\nThanks for your help!</p>\n<p>Best,<br>\nCheng-Han</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-11-15T13:53:10.350Z",
+      "updated_at": "2023-11-15T13:53:10.350Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Cheng-Han,\nMy best guess: it seems some (all?) of your signal pdfs have a common set of dependent variable names, however in each input workspace these have different values. When you build the combined workspace, these parameters are merged - e.g. there is only one frac_dcb parameter - connected to all the signal pdfs, and taking essentially a random value (probably the values in the last pdf parsed by text2workspace).\nI think you probably want to name the RooRealVars so they are unique for each pdf?\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Cheng-Han,</p>\n<p>My best guess: it seems some (all?) of your signal pdfs have a common set of dependent variable names, however in each input workspace these have different values. When you build the combined workspace, these parameters are merged - e.g. there is only one <code>frac_dcb</code> parameter - connected to all the signal pdfs, and taking essentially a random value (probably the values in the last pdf parsed by text2workspace).<br>\nI think you probably want to name the RooRealVars so they are unique for each pdf?</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "chenghan",
+      "name": "Cheng-Han Wu",
+      "created_at": "2023-11-16T06:35:17.857Z",
+      "updated_at": "2023-11-16T06:35:17.857Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nYour guess is exactly correct.\nThe problem disappeared after I modified the variable names.\nI did not notice this would happen before.\nOriginally, I supposed combine would open the root input and extract the variables and pdfs independently for each category.\nIt looks like it is better to give every pdf and variable unique names now.\nThank you very much!\nBest,\nCheng-Han",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Your guess is exactly correct.<br>\nThe problem disappeared after I modified the variable names.<br>\nI did not notice this would happen before.<br>\nOriginally, I supposed combine would open the root input and extract the variables and pdfs independently for each category.<br>\nIt looks like it is better to give every pdf and variable unique names now.</p>\n<p>Thank you very much!</p>\n<p>Best,<br>\nCheng-Han</p>"
+    }
+  ]
+}

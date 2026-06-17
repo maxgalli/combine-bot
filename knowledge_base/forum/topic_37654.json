@@ -1,0 +1,56 @@
+{
+  "topic_id": 37654,
+  "title": "Combination of three Search Regions using toys and three independent signal strengths",
+  "url": "https://cms-talk.web.cern.ch/t/37654",
+  "category_id": 279,
+  "created_at": "2024-03-26T07:57:23.561Z",
+  "last_posted_at": "2024-04-20T16:09:06.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-26T07:57:23.696Z",
+      "updated_at": "2024-03-26T07:57:23.696Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nwe have been asked to evaluate combined local and global significance using toys. We have three independent signal strengths (mu1 >0m mu2>0m mu3>0)\ncorresponding to three Search Regions (SR1, SR2, SR3). The mass and width of the resonance is the same in all three Search Regions.\nFor one SR and one year data with single mu I used the following command:\ncombine -M HybridNew datacard.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 5000 -i 1 -s -1\nHow it will look like for three independent mu parameters ?\nMy combined datacards you can find in\n/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/2017UL_dimuon_SR1SR2SR3.txt\nThank you, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>we have been asked to evaluate combined local and global significance using toys. We have three independent signal strengths (mu1 &gt;0m mu2&gt;0m mu3&gt;0)<br>\ncorresponding to three Search Regions (SR1, SR2, SR3). The mass and width of the resonance is the same in all three Search Regions.</p>\n<p>For one SR and one year data with single mu I used the following command:</p>\n<p>combine -M HybridNew datacard.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 5000 -i 1 -s -1</p>\n<p>How it will look like for three independent mu parameters ?</p>\n<p>My combined datacards you can find in</p>\n<p>/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/2017UL_dimuon_SR1SR2SR3.txt</p>\n<p>Thank you, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-04-08T16:16:37.084Z",
+      "updated_at": "2024-04-08T16:16:37.084Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nYou could try Feldman-Cousins method described with instructions from Combine documentation [1], the workspace creation step can be done as discussed in the previous threads [2, 3].  Let us know if you run into issues.\nBest,\nAliya\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#feldman-cousins\n[2] Follow up question to Alyia about two years and three SR combination for dimuon excess 28 GeV\n[3] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3) - #18 by anikiten",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>You could try Feldman-Cousins method described with instructions from Combine documentation [1], the workspace creation step can be done as discussed in the previous threads [2, 3].  Let us know if you run into issues.</p>\n<p>Best,<br>\nAliya</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#feldman-cousins\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#feldman-cousins</a><br>\n[2] <a href=\"https://cms-talk.web.cern.ch/t/follow-up-question-to-alyia-about-two-years-and-three-sr-combination-for-dimuon-excess-28-gev/38251\" class=\"inline-onebox\">Follow up question to Alyia about two years and three SR combination for dimuon excess 28 GeV</a><br>\n[3] <a href=\"https://cms-talk.web.cern.ch/t/combining-2017-and-2018-data-in-three-search-regions-sr1-sr2-sr3/36823/18\" class=\"inline-onebox\">Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3) - #18 by anikiten</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-08T16:25:33.000Z",
+      "updated_at": "2024-04-08T16:25:35.344Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Thanks, Alyia !\nWe will try it out.\nCheers, Sasha.",
+      "cooked_html": "<p>Thanks, Alyia !<br>\nWe will try it out.<br>\nCheers, Sasha.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-20T16:09:06.000Z",
+      "updated_at": "2024-04-20T16:10:30.161Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nI did two runs with\ncombine 2017UL_dimuon_SR3.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint r=0 --saveToys --fullBToys --saveHybridResult -T 10000 -i 1 -s -1 --setParameters mean=27.2,width=4.9 --freezeParameters mean,width --setParameterRanges r=0.0,200.0\nthen add two output files:\nhadd input.root higgsCombineTest.HybridNew.mH120.-2006411143.root higgsCombineTest.HybridNew.mH120.-1442953344.root\nand I want to get p-value from two runs using\ncombine -M HybridNew 2017UL_dimuon_SR3.txt --LHCmode LHC-feldman-cousins --readHybridResult --grid=input.root\nit tells me\n<<< Combine >>>\n\nrandom number generator seed is 123456\nusing the Profile Likelihood test statistics not modified for upper limits (Q_Profile)\nmethod used is HybridNew\nCaught exception The grid must contain at least 2 points.\n\nwhen I used instead:\ncombine -M HybridNew 2017UL_dimuon_SR3.txt --LHCmode LHC-feldman-cousins --readHybridResult --toysFile=input.root\nit tells me:\n<<< Combine >>>\n\nrandom number generator seed is 123456\nusing the Profile Likelihood test statistics not modified for upper limits (Q_Profile)\nmethod used is HybridNew\nCaught exception When setting a limit reading results from file, a grid file must be specified with option --grid\n\nHow should I do if I run with option singlePoint and want to get p-value from merged root files ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>I did two runs with</p>\n<p><strong>combine 2017UL_dimuon_SR3.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint r=0 --saveToys --fullBToys --saveHybridResult -T 10000 -i 1 -s -1 --setParameters mean=27.2,width=4.9 --freezeParameters mean,width --setParameterRanges r=0.0,200.0</strong></p>\n<p><strong>then add two output files:</strong></p>\n<p>hadd input.root higgsCombineTest.HybridNew.mH120.-2006411143.root higgsCombineTest.HybridNew.mH120.-1442953344.root</p>\n<p>and I want to get p-value from two runs using</p>\n<p>combine -M HybridNew 2017UL_dimuon_SR3.txt --LHCmode LHC-feldman-cousins --readHybridResult --grid=input.root</p>\n<p>it tells me</p>\n<p>&lt;&lt;&lt; Combine &gt;&gt;&gt;</p>\n<blockquote>\n<blockquote>\n<blockquote>\n<p>random number generator seed is 123456<br>\nusing the Profile Likelihood test statistics not modified for upper limits (Q_Profile)<br>\nmethod used is HybridNew<br>\nCaught exception The grid must contain at least 2 points.</p>\n</blockquote>\n</blockquote>\n</blockquote>\n<p>when I used instead:</p>\n<p>combine -M HybridNew 2017UL_dimuon_SR3.txt --LHCmode LHC-feldman-cousins --readHybridResult --toysFile=input.root</p>\n<p>it tells me:</p>\n<p>&lt;&lt;&lt; Combine &gt;&gt;&gt;</p>\n<blockquote>\n<blockquote>\n<blockquote>\n<p>random number generator seed is 123456<br>\nusing the Profile Likelihood test statistics not modified for upper limits (Q_Profile)<br>\nmethod used is HybridNew<br>\nCaught exception When setting a limit reading results from file, a grid file must be specified with option --grid</p>\n</blockquote>\n</blockquote>\n</blockquote>\n<p>How should I do if I run with option singlePoint and want to get p-value from merged root files ?</p>\n<p>Thanks, Sasha.</p>"
+    }
+  ]
+}

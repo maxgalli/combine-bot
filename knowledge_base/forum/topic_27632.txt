@@ -1,0 +1,67 @@
+TOPIC: Error in <RooFormula::Compile> in FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/27632
+DATE: 2023-07-27T09:27:35.651Z
+SOLVED: no
+============================================================
+
+QUESTION (by mbonanom @ 2023-07-27T09:27:35.990Z):
+Dear all,
+I am writing here to ask for a feedback about a technical feature we just spotted while running FitDiagnostics.
+We are combining a set of cards and when doing so with combineCards.py we specify the name of the region that each card corresponds to. Our region names include some dashes (eg SR-6j-2b), so our command looks like this:
+combineCards.py SR-6j-2b_diMuon_ULRunII=ULRunII/AZH_MA-650_MH-450_2DEllipses_diMuon_SR-6j-2b.dat .... > RunII_Card.dat
+
+when running FitDiagnostics  we get the following error:
+[#0] ERROR:Eval -- RooFormula::eval(CMS_channel==CMS_channel::SR-6j-2b_diMuon_ULRunII): Formula doesn't compile: CMS_channel==CMS_channel::SR-6j-2b_diMuon_ULRunII
+
+which gets triggered by the fact that we have - in the channel names.
+This looks like more of a RooFit than a combine issue, as the name of the channels is not parsed correctly by RooFormula::eval.
+If we remove the - from the region names when combining the cards, the error above vanishes. The fit results in the two cases (ie using a combined card where the channels have a - in their name and when they don’t) are identical. However, I was wondering whether this is a known feature and it can cause troubles anywhere else in the fit (or elsewhere, in the usage of CombineHarvester for example). Is there anything that discourages the usage of - in the definition of the regions/channels ?
+Thank you very much in advance for any feedback!
+Cheers,
+Matteo
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-07-27T14:30:12.186Z):
+Hi Matteo,
+Off the top of my head, that error is probably triggered by the part of the code that generates the output for saveShapes (*), in this case for the data_obs. Did you check if this is correct in both cases? I suspect in the version with the ‘-’ this will not look correct. It’s probably not a bug as such - I guess roofit has no way of knowing where the “-” is part of a string or a minus operator.
+I don’t think there are many other parts of the code where we do this (and not in CombineHarvester). So you’re probably safe, with the caveat on the saveShapes output.
+cheers,
+Andrew
+(*)
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/934203490cd26102c1404cebe900abf0941ccb2d/src/FitDiagnostics.cc#L685
+
+std::map<std::string, TGraphAsymmErrors *> datByCh;
+if (shapeDir)
+{
+for (IT it = snm.begin(), ed = snm.end(); it != ed; ++it)
+{
+TDirectory *&sub = shapesByChannel[it->second.channel];
+if (sub == 0)
+{
+sub = shapeDir->mkdir(it->second.channel.c_str());
+RooRealVar *x = (RooRealVar *)it->second.obs.at(0);
+RooDataHist *dataCut = (RooDataHist *)data.reduce(RooFit::Cut(TString("CMS_channel==CMS_channel::" + it->second.channel)));
+TH1 *dH = dataCut->createHistogram("data", *x);
+TGraphAsymmErrors *dGraph = utils::makeDataGraph(dH, /*asDensity*/ true);
+datByCh[it->second.channel] = (TGraphAsymmErrors *)dGraph->Clone();
+datByCh[it->second.channel]->SetNameTitle("data", (it->second.process + " in " + it->second.channel).c_str());
+delete dH;
+}
+}
+}
+// now let's start with the central values
+std::vector<double> vals(snm.size(), 0.), sumx2(snm.size(), 0.);
+----------------------------------------
+
+REPLY 3 (by mbonanom @ 2023-07-28T12:04:01.951Z):
+Hi Andrew,
+Thank you for the prompt feedback and for pointing out the relevant line in the code!
+I did a check and indeed in the version with the - in the region naming scheme the data  histogram is not saved correctly when running with --saveShapes.
+For completeness I have also checked the total_background and total_signal histograms and indeed those are identical.
+Thank you very much again!
+Cheers,
+Matteo
+----------------------------------------

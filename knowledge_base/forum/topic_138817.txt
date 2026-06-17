@@ -1,0 +1,25 @@
+TOPIC: Parametrization of shape systematics vs POI
+URL: https://cms-talk.web.cern.ch/t/138817
+DATE: 2025-11-19T18:34:51.007Z
+SOLVED: no
+============================================================
+
+QUESTION (by mparanjp @ 2025-11-19T18:34:52.321Z):
+Dear statistics experts,
+I am working on a top width analysis, where the signal is the single-top process (onshell and offshell, s- and t-channel top is all included) and I have templates for different width values based on a reweighting applied at the generator level.
+The method I have been using up till now involves parametrization of the content in each bin of the histogram (for example, jet multiplicity), vs my POI, which is the top width. I have a quartic polynomial (+ square root terms included) for the fit of the nominal curve vs width in each bin. The choice of the fit function is somewhat arbitrary.
+I have only one datacard with a template from only one width value (usually the SM predicted value). For the conversion from the datacard to the workspace I have been using an interference model - https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/InterferenceModels.py. This asks for a json file with details of the fit parameters for each bin, and so far, it has worked because I have only one process and I had been using only the nominal (central) templates.
+However, I would like some help on incorporating the shapes of various systematic uncertainties (like JES, JER, etc.) I came across these two threads - https://cms-talk.web.cern.ch/t/using-higgscombine-to-measure-top-yukawa-coupling-values/22541/7 and https://cms-talk.web.cern.ch/t/parametrising-experimental-uncertainties-with-poi/24484 (especially the second one) where the questioner’s problem seems to be similar to mine.
+One of the replies here (by Andre David) has suggested two methods - a RooSplineND where N is the nominal + all the systematics, and also a fit where the interpolation over the POI is done first, followed by an interpolation over the systematic variation. However, no examples have been provided, and it would be helpful if someone could point me to an example.
+Attached are a couple of figures for bins showing the variation of up and down systematics (JES) vs nominal case for jet multiplicity, which I have been using as my fitting variable (this is the histogram mentioned earlier). Blue is for down and red is for up variation in both these plots.
+Unnormalized_Combined_JuncTotal_njet_no_btag_veto_j2plus_b1_with_qcd_shapesyst_norm_sqrt_quartic_fit_bin_0_vs_width_opp_sign_j2plus_b1_onshell_numerator_only_error_upload675×701 32.8 KBUnnormalized_Combined_JuncTotal_njet_no_btag_veto_j2plus_b1_with_qcd_shapesyst_norm_sqrt_quartic_fit_bin_1_vs_width_opp_sign_j2plus_b1_onshell_numerator_only_error_upload667×705 36.1 KB
+Regards,
+Mekhala
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-11-24T12:43:58.845Z):
+Dear Mekhala,
+Thanks for your message! Indeed, it is possible to implement it with RooSplineND for your case, but I think it would be better to have this feature in Combine centrally, since it came up couple of times already. I created an issue https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues/1185. Let’s follow up on this there.
+Best,
+Aliya
+----------------------------------------

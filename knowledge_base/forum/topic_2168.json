@@ -1,0 +1,56 @@
+{
+  "topic_id": 2168,
+  "title": "Re: Running blind with ABCD in the datacard",
+  "url": "https://cms-talk.web.cern.ch/t/2168",
+  "category_id": 279,
+  "created_at": "2021-09-20T10:48:01.000Z",
+  "last_posted_at": "2021-10-29T09:23:07.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2021-09-20T10:48:01.000Z",
+      "updated_at": "2023-02-07T10:55:44.003Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Peter,\nyou can always put into the data_obs shape the real data for the control regions and the asimov for the signal region by hand. Then you run without \u201c\u2013blind\u201d as if you were unblinded but technically you\u2019ll be running on the Asimov dataset in the SR.\nCheers,\nPietro",
+      "cooked_html": "<p>Hi Peter,</p>\n<p>you can always put into the data_obs shape the real data for the control regions and the asimov for the signal region by hand. Then you run without \u201c\u2013blind\u201d as if you were unblinded but technically you\u2019ll be running on the Asimov dataset in the SR.</p>\n<p>Cheers,</p>\n<p>Pietro</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-09-20T11:35:38.000Z",
+      "updated_at": "2021-11-17T08:39:35.616Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nif you have reasonable prefit values, you should be able to run blind for the CR parameters, you should be able to run blind, as the observations will be set as prefit.\nI think the problem raise in defining large unranged parameters, that in the minimization can be set to arbitrary values. Probably ranging them (even with large values such as -> /2. x2), will help stabilizing the minimization.\nsee in your error log:\n\nbeta_29 = -32.2956\n\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>if you have reasonable prefit values, you should be able to run blind for the CR parameters, you should be able to run blind, as the observations will be set as prefit.</p>\n<p>I think the problem raise in defining large unranged parameters, that in the minimization can be set to arbitrary values. Probably ranging them (even with large values such as -&gt; /2. x2), will help stabilizing the minimization.</p>\n<p>see in your error log:</p>\n<blockquote>\n<p>beta_29 = -32.2956</p>\n</blockquote>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "Peter_Major",
+      "name": "Peter Major",
+      "created_at": "2021-10-28T12:33:11.000Z",
+      "updated_at": "2021-11-17T08:39:35.734Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrea,\nIndeed, adding proper limits on the rateParams did fix the underflow\nerrors. However now when I am running blind my ABCD background is\nconsidered to be a constant (or at least it is missing all of the\nstatistical uncertainty).\nAccording to Pietro's recommendation, I could fix this by putting the\nsum of the background estimate in place of the observed values in the\nsearch bins (but not the ABC bins) and then running without the blind\noption. Is this the best way to go about this? Isn't there a\ncommand-line option to mask the observed values in some bins? I feel\nlike this must be a frequent use case.\nCheers, Peter",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrea,</p>\n<p>Indeed, adding proper limits on the rateParams did fix the underflow<br>\nerrors. However now when I am running blind my ABCD background is<br>\nconsidered to be a constant (or at least it is missing all of the<br>\nstatistical uncertainty).</p>\n<p>According to Pietro's recommendation, I could fix this by putting the<br>\nsum of the background estimate in place of the observed values in the<br>\nsearch bins (but not the ABC bins) and then running without the blind<br>\noption. Is this the best way to go about this? Isn't there a<br>\ncommand-line option to mask the observed values in some bins? I feel<br>\nlike this must be a frequent use case.</p>\n<p>Cheers, Peter</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-10-29T09:23:07.000Z",
+      "updated_at": "2021-11-17T08:39:35.849Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Peter,\nThere are indeed other ways to achieve this, though it is unfortunately\nnot completely straightforward. What you can do is to make use of the\nchannel masking [*], for which you will need to create a workspace with\nthis option enabled. Then, you can run a fit on this workspace, masking\nthe signal region(s) from the likelihood, and saving a snapshot of the\nfitted parameters. You'll want to freeze the signal strength to 0, so\nyou need to redefine one of your rateParams to be the POI:\ncombine -M MultiDimFit --setParameters mask_ch1=1,r=0 --freezeParameters\nr --redefineSignalPOIs <ONE_OF_YOUR_RATEPARAMS> -d ws.root\n--saveWorkspace [other options]\n(if ws.root is your workspace that you created with the --channel-masks\noption, and ch1 is the category that you want to mask)\nNow all the parameters of the CR's have been updated to their best-fit\nvalues, ignoring the SR, so the state of the model can now be used for\nproducing blind limits. You need to run on the output higgsCombine...\nfile of the previous step, which contains the workspace with snapshot of\nthe best-fit values. Remember to set mask_ch1 back to 0, otherwise the\nSR will still be masked from the likelihood in the limit setting. You\nalso need to redefine r to be the POI:\ncombine -M AsymptoticLimits -d higgsCombine.... --snapshotName\nMultiDimFit --redefineSignalPOIs r --setParameters mask_ch=0 [other\noptions]\nBest,\nAdinda\n[*]\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#channel-masking",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Peter,</p>\n<p>There are indeed other ways to achieve this, though it is unfortunately<br>\nnot completely straightforward. What you can do is to make use of the<br>\nchannel masking [*], for which you will need to create a workspace with<br>\nthis option enabled. Then, you can run a fit on this workspace, masking<br>\nthe signal region(s) from the likelihood, and saving a snapshot of the<br>\nfitted parameters. You'll want to freeze the signal strength to 0, so<br>\nyou need to redefine one of your rateParams to be the POI:</p>\n<p>combine -M MultiDimFit --setParameters mask_ch1=1,r=0 --freezeParameters<br>\nr --redefineSignalPOIs &lt;ONE_OF_YOUR_RATEPARAMS&gt; -d ws.root<br>\n--saveWorkspace [other options]</p>\n<p>(if ws.root is your workspace that you created with the --channel-masks<br>\noption, and ch1 is the category that you want to mask)</p>\n<p>Now all the parameters of the CR's have been updated to their best-fit<br>\nvalues, ignoring the SR, so the state of the model can now be used for<br>\nproducing blind limits. You need to run on the output higgsCombine...<br>\nfile of the previous step, which contains the workspace with snapshot of<br>\nthe best-fit values. Remember to set mask_ch1 back to 0, otherwise the<br>\nSR will still be masked from the likelihood in the limit setting. You<br>\nalso need to redefine r to be the POI:</p>\n<p>combine -M AsymptoticLimits -d higgsCombine.... --snapshotName<br>\nMultiDimFit --redefineSignalPOIs r --setParameters mask_ch=0 [other<br>\noptions]</p>\n<p>Best,<br>\nAdinda</p>\n<p>[*]<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#channel-masking\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#channel-masking</a></p>"
+    }
+  ]
+}

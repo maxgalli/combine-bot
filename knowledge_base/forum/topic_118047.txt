@@ -1,0 +1,49 @@
+TOPIC: Observed limit much higher than expected with AsymptoticLimits
+URL: https://cms-talk.web.cern.ch/t/118047
+DATE: 2025-03-11T17:24:16.632Z
+SOLVED: no
+============================================================
+
+QUESTION (by slomte @ 2025-03-11T17:24:16.761Z):
+Dear Combine experts,
+For some mass points, the observed limit is coming out to be much higher than expected for a certain event category (Resolved Higgs candidate in my case). I was wondering if you have any suggestions for me to test.
+Example command as follows:
+combine -M AsymptoticLimits -m 1 -d workspacePartialRun2_resolved_ggCaseI_mA600_ma400.root -n .limit_ggCaseI_mA600_ma400_Resolved_PartialRun2_Unblinded
+<<< Combine >>>
+<<< v10.0.2 >>>
+
+Random number generator seed is 123456
+Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 4611.3400
+Expected  2.5%: r < 17.6997
+Expected 16.0%: r < 23.9619
+Expected 50.0%: r < 35.1250
+Expected 84.0%: r < 56.1265
+Expected 97.5%: r < 96.1189
+
+Done in 3.09 min (cpu), 3.09 min (real)
+
+Upon using options --cminPreScan --cminPreFit 1 --rAbsAcc 0 --rRelAcc 0.0005 the observed limit value changed to,
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 723.4932
+Expected  2.5%: r < 17.6997
+Expected 16.0%: r < 23.9619
+Expected 50.0%: r < 35.1250
+Expected 84.0%: r < 55.9865
+Expected 97.5%: r < 96.2879
+
+Happy to provide further details, and would appreciate any help!
+Thanks,
+Shivani
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-03-11T19:35:12.569Z):
+Hi,
+I would probably run a unblinded likelihood ratio scan, to see what’s going on,
+and, assuming no excess is observed, after that try to understand why asymptotic is failing.
+Thus, possible solution may include to set the rmin-max ranges to help convergence or run the grid points manually and check if there are failure before extracting the limits.
+Cheers,
+-A
+----------------------------------------

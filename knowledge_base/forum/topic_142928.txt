@@ -1,0 +1,162 @@
+TOPIC: Statistical uncertainties on the MC signal, a simple question
+URL: https://cms-talk.web.cern.ch/t/142928
+DATE: 2026-03-12T09:20:34.619Z
+SOLVED: no
+============================================================
+
+QUESTION (by alcaraz @ 2026-03-12T09:20:34.785Z):
+I have a maybe trivial question: is it true that “the uncertainties on all signal processes are always included in the actual model”, even if the include-signal option for automcstats is set to zero ? I.e. is it true that the statistical uncertainties on the signal components are always included in the fit (so the include-signal option is just a matter on how they are taken incto account in the Barlow-Beeston method) ?
+Thanks,  Juan
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2026-03-12T09:32:52.251Z):
+Hi Juan,
+Yes, exactly that. The reason is to allow the user to be conservative on deciding whether a bin gets the Barlow-Beeston lite or full approach. We might be doing a search where the nominal signal entered in the datacard is large, such that it dominates the bin, and gives the impression the relative MC stat uncertainty for the total bin is small (and therefore we take Barlow-eeston lite). But, if in the fit the signal rate is pulled to zero, it may be that the relative MC stat of the remaining backgrounds is now quite large, such that the full Barlow-Beeston would have been preferable.
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by alcaraz @ 2026-03-12T16:34:19.000Z):
+Thanks Andrew,
+OK, I understand the logic behind.
+But then I see a potentially serious issue with the usual EFT fits that we have. Let me explain.
+In Combine - given the “histogramming logic” it is based on - we apply a trick to make sure that all the signal components in the fit have a positive number of entries (we move the negativeness to the coefficients of a linear sum of the histograms), following the recipe detailed in:
+https://github.com/amassiro/AnalyticAnomalousCoupling
+The problem with this approach is that all these signal histograms arenot statistically independent, and actually they can be highly statistically correlated bin to bin. For instance, in the case of a fit to just one parameter there are 3 histograms in the game, given by:
+
+|A_SM|^2
+|A_SM|^2 + W linear interference term+ W quadratic term
+W quadratic term
+
+In reality we are dealing with a small value of the parameter (we are close to the SM), so in practice the first and the second histograms 0), 1) will have large per bin values for the optimal value of the fit, while the histogram 2) will have a small weight. But histograms 0), 1) are very highly correlated: we can not statistically move one independently of the other. Note also that the histograms will be linearly added with the coefficients:
+c[0] = 1 - W ;
+c[1] = W ;
+c[2] = W^2 - W;
+If we forget for a moment about the existence of the third (quadratic) histogram, the linear combination of histograms 0), 1) will be almost “1” independently of W, because c[0] and c[1] are multiplying almost the same histogram (we are close to the SM at the end of the day).
+If we have two parameters W,Y, the situation can get worse. There are 6 histograms in the game:
+
+|A_SM|^2
+|A_SM|^2 + W linear interference term+ W quadratic term
+|A_SM|^2 + Y linear interference term+ Y quadratic term
+W quadratic term
+Y quadratic term
+|A_SM|^2 + W linear interference term+ W quadratic term + Y linear interference term+ Y quadratic term + WY cross quadratic term
+
+The histograms 0),1),2),5) will have in general many entries (close to SM), while 3),4) have few entries when W and Y are small. Those 4 large histograms are highly correlated, and it is tricky to neglect this fact. In particular - as it is our case in our analysis EXO-25-001 - W and Y can deviate a bit more from zero than expected because there is a cancellation for the sum of the linear interference terms along a given W,Y blind direction. In this 2D case the histograms get multiplied by the following coefficients in the linear sum:
+c[0] = 1 - W - Y + WY;
+c[1] = W - WY;
+c[2] = Y - WY;
+c[3] = W^2 - W;
+c[4] = Y^2 - Y;
+c[5] = WY;
+Note that, if c[0]=c[1]=c[2]=c[5], the linear sum neglecting histograms 3),4) will always the same, the SM, independently of how large W and Y are. Again, this is because the coefficient multiply the same histograms in the W,Y->0 limit (the SM). This deviation will grow as long as the contributions from histograms 3) 4) are still relatively small. But at that point those histograms are rescaled by a larger factor, and we are still wrongly assuming that they are statistically uncorrelated and they can move more “incoherently” at will (within uncertainties).
+Bottomline: we strongly suspect that the current treatment is wrong due to the absence of correlations between the histograms in the fit. I guess that this is currently affecting one way or another all EFT fits performed with Combine using the “trick” of rearranging terms to get only positive histograms in the sum, with a potentially larger effect in multiparameter fits.
+Going practical, I have a couple of questions:
+
+Is there a simple way of totally switching off the statistical MC uncertainties on the signal ? We have large statistics for the signal, so neglecting them would be better than assuming that those histograms
+are uncorrelated.
+
+What is the effect of using “* automcstats -1” ? Does it switch off all statistical uncertainties in the MC (including the background) ?
+
+Thanks and sorry for the long message, but I think it is needed, given the potential issue with this.
+Best, Juan
+
+···
+--
++-- Prof. Juan ALCARAZ MAESTRE --+
+|       CMS Experiment           |
+|   CIEMAT, CERN-EP, B32-3-C13   |
+| CH-1211 GENEVE 23, Switzerland |
++--- [Juan.Alcaraz@cern.ch](mailto:Juan.Alcaraz@cern.ch) -------+
+----------------------------------------
+
+REPLY 4 (by alcaraz @ 2026-03-13T07:36:01.000Z):
+Just a correction in the explanation. I wrongly stated c[0]=c[1]=c[2]=c[5] in the 2D-parameter coefficients example (a bit of dyslexia, sorry). I was meaning equal values of their associated histograms. The key pont is that one has to maintain the right correlation between the bins of the histograms in the sum, in order to avoid washing out the exact dependence on the two parameters W,Y in the game, which has to match the W,Y dependence of the c[i] coefficients. Keeping the right correlation is more critical than wrongly including the statistical uncertainties, also when the these uncertainties are almost negligible compared with the statistical uncertainties in data. (And if they are not, the results can be really wrong because the histograms contents will be treated as fluctuating almost randomly.)
+I guess that an artificial way to neglect the statistical uncertainties in the signal would be to impose by hand that the errors in those histograms are strictly zero, right ?
+Thanks again, Juan just
+
+···
+On 3/12/26 17:40, Juan Alcaraz Maestre wrote:
+
+Someone replied to a topic you are Watching.
+
+Juan Alcaraz Maestre alcarazMarch 12
+
+Thanks Andrew,
+OK, I understand the logic behind.
+But then I see a potentially serious issue with the usual EFT fits that we have. Let me explain.
+In Combine - given the “histogramming logic” it is based on - we apply a trick to make sure that all the signal components in the fit have a positive number of entries (we move the negativeness to the coefficients of a linear sum of the histograms), following the recipe detailed in:
+https://github.com/amassiro/AnalyticAnomalousCoupling
+The problem with this approach is that all these signal histograms arenot statistically independent, and actually they can be highly statistically correlated bin to bin. For instance, in the case of a fit to just one parameter there are 3 histograms in the game, given by:
+
+|A_SM|^2
+|A_SM|^2 + W linear interference term+ W quadratic term
+W quadratic term
+
+In reality we are dealing with a small value of the parameter (we are close to the SM), so in practice the first and the second histograms 0), 1) will have large per bin values for the optimal value of the fit, while the histogram 2) will have a small weight. But histograms 0), 1) are very highly correlated: we can not statistically move one independently of the other. Note also that the histograms will be linearly added with the coefficients:
+c[0] = 1 - W ;
+c[1] = W ;
+c[2] = W^2 - W;
+If we forget for a moment about the existence of the third (quadratic) histogram, the linear combination of histograms 0), 1) will be almost “1” independently of W, because c[0] and c[1] are multiplying almost the same histogram (we are close to the SM at the end of the day).
+If we have two parameters W,Y, the situation can get worse. There are 6 histograms in the game:
+
+|A_SM|^2
+|A_SM|^2 + W linear interference term+ W quadratic term
+|A_SM|^2 + Y linear interference term+ Y quadratic term
+W quadratic term
+Y quadratic term
+|A_SM|^2 + W linear interference term+ W quadratic term + Y linear interference term+ Y quadratic term + WY cross quadratic term
+
+The histograms 0),1),2),5) will have in general many entries (close to SM), while 3),4) have few entries when W and Y are small. Those 4 large histograms are highly correlated, and it is tricky to neglect this fact. In particular - as it is our case in our analysis EXO-25-001 - W and Y can deviate a bit more from zero than expected because there is a cancellation for the sum of the linear interference terms along a given W,Y blind direction. In this 2D case the histograms get multiplied by the following coefficients in the linear sum:
+c[0] = 1 - W - Y + WY;
+c[1] = W - WY;
+c[2] = Y - WY;
+c[3] = W^2 - W;
+c[4] = Y^2 - Y;
+c[5] = WY;
+Note that, if c[0]=c[1]=c[2]=c[5], the linear sum neglecting histograms 3),4) will always the same, the SM, independently of how large W and Y are. Again, this is because the coefficient multiply the same histograms in the W,Y->0 limit (the SM). This deviation will grow as long as the contributions from histograms 3) 4) are still relatively small. But at that point those histograms are rescaled by a larger factor, and we are still wrongly assuming that they are statistically uncorrelated and they can move more “incoherently” at will (within uncertainties).
+Bottomline: we strongly suspect that the current treatment is wrong due to the absence of correlations between the histograms in the fit. I guess that this is currently affecting one way or another all EFT fits performed with Combine using the “trick” of rearranging terms to get only positive histograms in the sum, with a potentially larger effect in multiparameter fits.
+Going practical, I have a couple of questions:
+
+Is there a simple way of totally switching off the statistical MC uncertainties on the signal ? We have large statistics for the signal, so neglecting them would be better than assuming that those histograms
+are uncorrelated.
+
+What is the effect of using “* automcstats -1” ? Does it switch off all statistical uncertainties in the MC (including the background) ?
+
+Thanks and sorry for the long message, but I think it is needed, given the potential issue with this.
+Best, Juan
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Andrew Gilbert agilbertMarch 12
+
+Hi Juan, Yes, exactly that. The reason is to allow the user to be conservative on deciding whether a bin gets the Barlow-Beeston lite or full approach. We might be doing a search where the nominal signal entered in the datacard is large, such that it dominates the bin, and gives the impression the …
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+--
++-- Prof. Juan ALCARAZ MAESTRE --+
+|       CMS Experiment           |
+|   CIEMAT, CERN-EP, B32-3-C13   |
+| CH-1211 GENEVE 23, Switzerland |
++--- [Juan.Alcaraz@cern.ch](mailto:Juan.Alcaraz@cern.ch) -------+
+----------------------------------------
+
+REPLY 5 (by agilbert @ 2026-03-13T10:41:05.785Z):
+Hi Juan,
+The issue you report is indeed important and somewhat known about (@gboldrin may be able to point you to some studies of the effect of neglecting EFT template correlations).
+Indeed, the safest option at the moment is to ensure the signal template stats are sufficient that they can be neglected in autoMCStats by manually setting all bin errors to zero in the TH1s. We don’t have an automatic way to do this in the datacard though.
+
+Juan Alcaraz Maestre:
+
+What is the effect of using “* automcstats -1” ? Does it switch off all statistical uncertainties in the MC (including the background) ?
+
+Exactly this.
+Cheers,
+Andrew
+----------------------------------------

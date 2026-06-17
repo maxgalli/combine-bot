@@ -1,0 +1,31 @@
+TOPIC: How to obtain a signal strength as combine MarkovChainMC output
+URL: https://cms-talk.web.cern.ch/t/117209
+DATE: 2025-03-04T13:33:48.986Z
+SOLVED: no
+============================================================
+
+QUESTION (by josephka @ 2025-03-04T13:33:49.504Z):
+To combine limits from Run-2 and Run-3 (changing sqrt(s)!), i want to obtain a signal strength from combine instead of the upper cross-section limit my current combine call produces. This should be possible by redefining the parameter of interest somehow, but no approach i tried has worked so far, and i would appreciate if anyone has an idea.
+Current combine call:
+"combine -M MarkovChainMC  "+datafile+" --tries 15 -t 5 -s -1 -i 10000 --noDefaultPrior=0 --rMax "+str(rmax)
+
+with datafile being the datacard.txt file for a given signal sample.
+The output looks like this:
+-- MarkovChainMC --
+Limit: r < 0.583702 +/- 0.00782115 @ 95% CL (15 tries)
+Done in 0.56 min (cpu), 0.56 min (real)
+mean   expected limit: r < 0.53316 +/- 0.033978 @ 95%CL (5 toyMC)
+median expected limit: r < 0.57051 @ 95%CL (5 toyMC)
+68% expected band : 0.44562 < r < 0.608737
+95% expected band : 0.44562 < r < 0.608737
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-03-06T10:09:52.548Z):
+Dear Joseph,
+I’m not sure I understand your question. The “r” parameter printed in the output is the signal strength, and the MarkovChain results also provide a 68/95% interval which is the value of your signal strength.
+Please notice that by definition the MarkovChain method only provides a band, and not a best fit value. If you want a value for the signal strength, you need to rely on a maximum likelihood fit, for example using the MultiDimFit method.
+If instead the question is how to combine run2 and run3 results, then you will need to build a combined datacard with proper correlations, and run your combine command on it. You can’t simply average the Run2 and Run3 results, as you would be neglecting correlations across the measurements.
+I hope it helps,
+Best regards,
+Giacomo
+----------------------------------------

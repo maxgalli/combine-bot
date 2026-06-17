@@ -1,0 +1,56 @@
+{
+  "topic_id": 33139,
+  "title": "GOF with two bumps in combination of analyses",
+  "url": "https://cms-talk.web.cern.ch/t/33139",
+  "category_id": 279,
+  "created_at": "2024-01-09T12:08:10.648Z",
+  "last_posted_at": "2024-01-12T20:54:29.786Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2024-01-09T12:08:10.844Z",
+      "updated_at": "2024-01-09T12:08:10.844Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts\nIn the context of B2G-23-005 (combination of X \u2192 HH/HY searches), we are finding a mass region where there is a double peak structure in the GOF.\nIn this analysis, we have performed statistical tests only for a couple of mX choices the X \u2192 HH case, as the X \u2192 HY case incorporates a subset of the analyses that make the X \u2192 HH case. The mX cases in which we tested the GOF were 280 GeV, 500 GeV, and 1 TeV. The only place where we found the double peak issue is in the 500 GeV case.\nThe slides attached show some tests we had made to understand the issue.\nIn special we find that:\n1 - The effect is seen in the mass range mX = 450 GeV - 550 GeV, where the HH multilepton (HIG-21-002) and bbWW (HIG-21-005) analyses are competitive (slide 3). In the HH multilepton case alone there is a hint of a double-peak structure\n2 - That is exactly an effect of the interplay between these two analyses (slide 4), but\n3 - no outstanding effect is seen in the pulls (slide 5).\n4 - The upper limit result with toys agrees with the asymptotic one.\nIt is not feasible to perform all the fits in the HibridNew method (considering the two scenarios we have more than 100 mass points)\nWe would like to consult with you if the present results are satisfactory, or if any additional test on the robustness of the Assimptotic limit result can be done\ncheers\nXanda, Chu, and Rainer for the B2G-23-005 team\nB2G-23-005_stats_follow_up_500_double_peak.pdf (2.9 MB)",
+      "cooked_html": "<p>Dear experts</p>\n<p>In the context of B2G-23-005 (combination of X \u2192 HH/HY searches), we are finding a mass region where there is a double peak structure in the GOF.</p>\n<p>In this analysis, we have performed statistical tests only for a couple of mX choices the X \u2192 HH case, as the X \u2192 HY case incorporates a subset of the analyses that make the X \u2192 HH case. The mX cases in which we tested the GOF were 280 GeV, 500 GeV, and 1 TeV. The only place where we found the double peak issue is in the 500 GeV case.</p>\n<p>The slides attached show some tests we had made to understand the issue.</p>\n<p>In special we find that:</p>\n<p>1 - The effect is seen in the mass range mX = 450 GeV - 550 GeV, where the HH multilepton (HIG-21-002) and bbWW (HIG-21-005) analyses are competitive (slide 3). In the HH multilepton case alone there is a hint of a double-peak structure</p>\n<p>2 - That is exactly an effect of the interplay between these two analyses (slide 4), but</p>\n<p>3 - no outstanding effect is seen in the pulls (slide 5).</p>\n<p>4 - The upper limit result with toys agrees with the asymptotic one.</p>\n<p>It is not feasible to perform all the fits in the HibridNew method (considering the two scenarios we have more than 100 mass points)</p>\n<p>We would like to consult with you if the present results are satisfactory, or if any additional test on the robustness of the Assimptotic limit result can be done</p>\n<p>cheers<br>\nXanda, Chu, and Rainer for the B2G-23-005 team</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/6kJyNV0RnijlNYj9uL8yobWoUU5.pdf\">B2G-23-005_stats_follow_up_500_double_peak.pdf</a> (2.9 MB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-01-09T12:48:11.652Z",
+      "updated_at": "2024-01-09T12:48:11.652Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Xanda,\nFirst, I would suggest to produce a likelihood scan for the signal strength for the combined bbWW and multi-lepton datacard, it could be that there is a double minima in the likelihood and the uncertainties are not accurate.\nThen to investigate further one could compare the impacts produced with bbWW and multi-lepton separately and with combined datacard, perhaps a difference in pulls would point to the origin of the observed tension.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Xanda,</p>\n<p>First, I would suggest to produce a likelihood scan for the signal strength for the combined bbWW and multi-lepton datacard, it could be that there is a double minima in the likelihood and the uncertainties are not accurate.<br>\nThen to investigate further one could compare the impacts produced with bbWW and multi-lepton separately and with combined datacard, perhaps a difference in pulls would point to the origin of the observed tension.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2024-01-11T13:13:57.498Z",
+      "updated_at": "2024-01-11T13:13:57.498Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya\nThank you for the suggestion.\nWe performed the likelihood scan, which is attached.\nNo double minima are observed, would you still recommend further investigation?\ncheers\nXanda, Chu, Rainer\nimage1392\u00d7824 128 KB",
+      "cooked_html": "<p>Dear Aliya</p>\n<p>Thank you for the suggestion.<br>\nWe performed the likelihood scan, which is attached.<br>\nNo double minima are observed, would you still recommend further investigation?</p>\n<p>cheers<br>\nXanda, Chu, Rainer<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/6/6c19e4dae778a6c780858585b478073560f35251.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/6c19e4dae778a6c780858585b478073560f35251\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6c19e4dae778a6c780858585b478073560f35251_2_690x408.jpeg\" alt=\"image\" data-base62-sha1=\"fqj2KzlVxSapk4CKldjYKtzngA1\" width=\"690\" height=\"408\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6c19e4dae778a6c780858585b478073560f35251_2_690x408.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6c19e4dae778a6c780858585b478073560f35251_2_1035x612.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6c19e4dae778a6c780858585b478073560f35251_2_1380x816.jpeg 2x\" data-dominant-color=\"F3F5F2\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1392\u00d7824 128 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2024-01-12T20:54:29.786Z",
+      "updated_at": "2024-01-12T20:54:29.786Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya\nWe performed further investigations and ended up finding a silly mistake in the fitting procedure: we were mistakenly injecting 100 times the expected signal strength into the fit\nOnce that mistake was corrected we found a one-bump GOF with ~ 30-60 % p-value to all tested mass points\nWe are sorry for bothering you, thank you for your support\ncheers\nXanda, Chu, Rainer, for B2G-23-005/002 team",
+      "cooked_html": "<p>Hi Aliya</p>\n<p>We performed further investigations and ended up finding a silly mistake in the fitting procedure: we were mistakenly injecting 100 times the expected signal strength into the fit</p>\n<p>Once that mistake was corrected we found a one-bump GOF with ~ 30-60 % p-value to all tested mass points</p>\n<p>We are sorry for bothering you, thank you for your support</p>\n<p>cheers<br>\nXanda, Chu, Rainer, for B2G-23-005/002 team</p>"
+    }
+  ]
+}

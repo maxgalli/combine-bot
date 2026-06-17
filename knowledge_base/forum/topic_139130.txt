@@ -1,0 +1,90 @@
+TOPIC: Review Invitation for the HIG-25-011 Hypothesis Test on the SM HZZ Polarization Fraction
+URL: https://cms-talk.web.cern.ch/t/139130
+DATE: 2025-11-23T16:29:13.006Z
+SOLVED: no
+============================================================
+
+QUESTION (by legao @ 2025-11-23T16:29:13.286Z):
+Dear Experts,
+We hope this message finds you well.
+We are the analysis team for HIG-25-011, focusing on the study of H → ZZ → 4ℓ polarization and correlations. We are writing to invite your review of our recent development of a hypothesis test for the SM HZZ polarization fraction. For background and technical details, please refer to the attached analysis note (AN_25_087.pdf).
+Briefly, our Combine model (HZZPolar:hzzPolarSS) is defined as described in Appendix A of the AN, with two freely floating POIs: r_LL (the LL-polarization fraction) and r_PO (the polarized signal strength). A third POI, r_SM (the SM signal strength), is fixed to 0 for this study and is not relevant here. Our null hypothesis corresponds to the SM polarization fraction, r_LL = 0.607.
+We first perform a likelihood scan profiling r_LL, r_PO, and all nuisance parameters. The profiled r_PO and nuisance parameters are then used to generate toys under the null hypothesis (r_LL = 0.607) for the hypothesis test. Additional details can be found around Line 421 of the AN. The procedure follows the LHC–Feldman–Cousins approach, and preliminary results (e.g., Fig. 85 of the AN) appear reasonable.
+We would greatly appreciate your systematic review of both our methodology and the full command sequence used to run Combine, listed below:
+text2workspace.py -P HZZPolar:hzzPolarSS --PO 'r_SM[0,0,0]' --PO 'r_LL[0.607,0,1]' --PO 'r_PO[1.000,0,2]' ${LABEL}.txt -o ${LABEL}_ws.root
+combine -M MultiDimFit -d ${LABEL}_ws.root --setParameters 'r_SM=0,r_LL=0.607,r_PO=1.000' --freezeParameters 'r_SM' --X-rtd FAST_VERTICAL_MORPH --algo=grid --points=50 --floatOtherPOIs=1 --redefineSignalPOIs r_LL,r_PO -P r_LL --rMin 0 --rMax 1 -n ${LABEL}_ws_r_LL --saveWorkspace
+combineTool.py -M HybridNew -d higgsCombine${LABEL}_ws_r_LL.MultiDimFit.mH120.root --snapshotName MultiDimFit --toysFrequentist --bypassFrequentistFit --redefineSignalPOIs r_LL --setParameters 'r_LL=0.607' --freezeParameters 'r_SM' --floatParameters 'r_PO' --singlePoint '0.607' --LHCmode LHC-feldman-cousins --rMin 0 --rMax 1 --saveToys --fullBToys --saveHybridResult -T 100 -i 1 --clsAcc 0 -s 1:100:1 -n ${LABEL}_ws_r_LL --verbose 1 --job-mode condor --task-name HybridNew_${LABEL}_ws_r_LL --sub-opts='+JobFlavour = "tomorrow"'
+
+Here, LABEL is an analysis-specific identifier used to distinguish different variables or selection categories. Key aspects of the setup:
+
+The profiled r_PO and nuisance parameters from the MultiDimFit step are recovered via --snapshotName MultiDimFit.
+A prefit is required but already stored in the snapshot, specified by --toysFrequentist --bypassFrequentistFit.
+Since only r_LL is relevant for the hypothesis test (and only one POI is supported), r_LL is set as the sole POI via --redefineSignalPOIs r_LL, with r_PO treated as a nuisance.
+The treatment of r_SM and r_PO is enforced with --freezeParameters 'r_SM' and --floatParameters 'r_PO'.
+The hypothesis test is performed at the specific value r_LL = 0.607 using --singlePoint '0.607'.
+The scan range for r_LL is explicitly set with --rMin 0 --rMax 1.
+A total of 10,000 toys are generated (100 toys × 100 jobs) via -T 100 -i 1 --clsAcc 0 -s 1:100:1.
+
+Best regards,
+Leyun Gao for the Analysis Team
+AN_25_087.pdf (4.1 MB)
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-11-24T09:55:27.000Z):
+Dear Leyun,
+I’m not sure this is the best forum where to ask for such a review. If you would like feedback on the strategy you are using, I think HComb for the physics and the Statistical Committee for the statistical implementation will probably more helpful than here.
+I can in any case give you my 2 cents on your technical implementation.
+It would help us to have access to the datacards. I couldn’t find them under the usual cms-analysis/hig/hig-25-011 path. Are they somewhere else in gitLab?
+Also, if you can proved us a brief description of what you plan to achieve it would help us better understand if you are using the proper commands.
+From what I can see, my first question is what happens by setting r_SM to 0. Are you suppressing the SM process in your card, or is that process not present at all?
+Second question, do I understand correctly that you wish to compute the compatibility of the SM with your observation by computing the distribution of toys, and that you can’t use the 2 hypotheses testing physics model because you want to use the HZZPolar model? At first sight the procedure seems correct to me, although I still need to dig in it a bit
+Best regards,
+Giacomo
+
+On 23 Nov 2025, at 17:30, Leyun Gao via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Leyun Gao legaoNovember 23
+
+Dear Experts,
+We hope this message finds you well.
+We are the analysis team for HIG-25-011, focusing on the study of H → ZZ → 4ℓ polarization and correlations. We are writing to invite your review of our recent development of a hypothesis test for the SM HZZ polarization fraction. For background and technical details, please refer to the attached analysis note (AN_25_087.pdf).
+Briefly, our Combine model (HZZPolar:hzzPolarSS) is defined as described in Appendix A of the AN, with two freely floating POIs: r_LL (the LL-polarization fraction) and r_PO (the polarized signal strength). A third POI, r_SM (the SM signal strength), is fixed to 0 for this study and is not relevant here. Our null hypothesis corresponds to the SM polarization fraction, r_LL = 0.607.
+We first perform a likelihood scan profiling r_LL, r_PO, and all nuisance parameters. The profiled r_PO and nuisance parameters are then used to generate toys under the null hypothesis (r_LL = 0.607) for the hypothesis test. Additional details can be found around Line 421 of the AN. The procedure follows the LHC–Feldman–Cousins approach, and preliminary results (e.g., Fig. 85 of the AN) appear reasonable.
+We would greatly appreciate your systematic review of both our methodology and the full command sequence used to run Combine, listed below:
+text2workspace.py -P HZZPolar:hzzPolarSS --PO 'r_SM[0,0,0]' --PO 'r_LL[0.607,0,1]' --PO 'r_PO[1.000,0,2]' ${LABEL}.txt -o ${LABEL}_ws.root
+combine -M MultiDimFit -d ${LABEL}_ws.root --setParameters 'r_SM=0,r_LL=0.607,r_PO=1.000' --freezeParameters 'r_SM' --X-rtd FAST_VERTICAL_MORPH --algo=grid --points=50 --floatOtherPOIs=1 --redefineSignalPOIs r_LL,r_PO -P r_LL --rMin 0 --rMax 1 -n ${LABEL}_ws_r_LL --saveWorkspace
+combineTool.py -M HybridNew -d higgsCombine${LABEL}_ws_r_LL.MultiDimFit.mH120.root --snapshotName MultiDimFit --toysFrequentist --bypassFrequentistFit --redefineSignalPOIs r_LL --setParameters 'r_LL=0.607' --freezeParameters 'r_SM' --floatParameters 'r_PO' --singlePoint '0.607' --LHCmode LHC-feldman-cousins --rMin 0 --rMax 1 --saveToys --fullBToys --saveHybridResult -T 100 -i 1 --clsAcc 0 -s 1:100:1 -n ${LABEL}_ws_r_LL --verbose 1 --job-mode condor --task-name HybridNew_${LABEL}_ws_r_LL --sub-opts='+JobFlavour = "tomorrow"'
+
+Here, LABEL is an analysis-specific identifier used to distinguish different variables or selection categories. Key aspects of the setup:
+
+The profiled r_PO and nuisance parameters from the MultiDimFit step are recovered via --snapshotName MultiDimFit.
+A prefit is required but already stored in the snapshot, specified by --toysFrequentist --bypassFrequentistFit.
+Since only r_LL is relevant for the hypothesis test (and only one POI is supported), r_LL is set as the sole POI via --redefineSignalPOIs r_LL, with r_PO treated as a nuisance.
+The treatment of r_SM and r_PO is enforced with --freezeParameters 'r_SM' and --floatParameters 'r_PO'.
+The hypothesis test is performed at the specific value r_LL = 0.607 using --singlePoint '0.607'.
+The scan range for r_LL is explicitly set with --rMin 0 --rMax 1.
+A total of 10,000 toys are generated (100 toys × 100 jobs) via -T 100 -i 1 --clsAcc 0 -s 1:100:1.
+
+Best regards,
+Leyun Gao for the Analysis Team
+AN_25_087.pdf (4.1 MB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by legao @ 2025-11-24T10:45:48.744Z):
+Dear Giacomo,
+Thank you very much for your time, and for the swift, informative, and constructive reply!
+As a first step, we would like to ensure that all technical aspects—such as the command lines—are correct, since our Combine workflow involves a customized model as well as multiple stages. That is why we raised this question here. And we will turn to HComb and Statistical Committee afterwards.
+Regarding the datacards, they are indeed stored separately at the following location:
+https://gitlab.cern.ch/cms-analysis/hig/hig-25-011/datacards_pku/-/tree/master/input?ref_type=heads
+In these datacards, the columns SM, LL, TT, and SS correspond to signal processes. “SM” refers to the Standard Model H→ZZ→4ℓ signal, which should be turned off and replaced by its polarized components: LL, TT, and SS (LL + TT + their interference). We use SS rather than the interference term directly for numerical stability.
+Our plan is to test the SM against the observed data and, as you mentioned, compute the compatibility of the SM by evaluating the distribution of toys. For this, we want to ensure that toys are generated with r_PO and the nuisances set to the best-fit values from the first MultiDimFit step, where r_LL is floated.
+Answer to the first question: Yes — it is suppressed because it is included in the datacard.
+Answer to the second question: Exactly. And indeed, we do not consider an alternative hypothesis; we only need the p-value of the SM given the observed data.
+We look forward to your further feedback.
+Thanks again, and best regards,
+Leyun Gao
+----------------------------------------

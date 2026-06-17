@@ -1,0 +1,67 @@
+{
+  "topic_id": 37754,
+  "title": "Unreasonable GoF performance",
+  "url": "https://cms-talk.web.cern.ch/t/37754",
+  "category_id": 279,
+  "created_at": "2024-03-27T10:43:16.267Z",
+  "last_posted_at": "2024-04-02T07:24:42.356Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "agapitos",
+      "name": "Antonios Agapitos",
+      "created_at": "2024-03-27T10:43:16.457Z",
+      "updated_at": "2024-03-27T10:43:16.457Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts;\nI would appreciate your help with the following:\nI get GoF fitting a binned distribution along with some uncertainties according to this datacard.\nThere is a rate unc. named \u201cTop_Rate_SR4a\u201d which has a strange behavior:\nIf the prefit rate (lnN) is set in the range ~[1.485,1.535] the observed GoF is unreasonably large.\nFor values outside this range (like for 1.48 as in the cards pointed) results are stable and reasonable as summarized here.\nDo you understand why this happens?\nIn case one wants to reproduce the results, the commands here [*] can be followed (all materials are in a public dir).\nThank you in advance, best regards,  Antonis\n[*] cd /afs/cern.ch/work/a/agapitos/public/WWW/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/investigation\ntext2workspace.py datacard_SR4a_2000_1300.txt -o workspace_SR4a_2000_1300.root;\ncombine -M FitDiagnostics workspace_SR4a_2000_1300.root;\ncombine -M GoodnessOfFit datacard_SR4a_2000_1300.txt --algo=saturated  -D data_obs --fixedSignalStrength 0 --bypassFrequentistFit -n _SR4a_2000_1300;\ncombine -M GoodnessOfFit datacard_SR4a_2000_1300.txt --algo=saturated --toysFreq   --fixedSignalStrength 0 --bypassFrequentistFit -n _SR4a_2000_1300Toy -t 500;\npython plot_GoF.py --ObsFile higgsCombine_SR4a_2000_1300.GoodnessOfFit.mH120.root --ToyFile higgsCombine_SR4a_2000_1300Toy.GoodnessOfFit.mH120.123456.root --figName GoF_SR4a_2000_1300;",
+      "cooked_html": "<p>Dear experts;</p>\n<p>I would appreciate your help with the following:<br>\nI get GoF fitting a binned distribution along with some uncertainties according to this <a href=\"https://agapitos.web.cern.ch/agapitos/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/investigation/datacard_SR4a_2000_1300.txt\" rel=\"noopener nofollow ugc\">datacard</a>.<br>\nThere is a rate unc. named \u201cTop_Rate_SR4a\u201d which has a strange behavior:<br>\nIf the prefit rate (lnN) is set in the range ~[1.485,1.535] the observed GoF is unreasonably large.<br>\nFor values outside this range (like for 1.48 as in the cards pointed) results are stable and reasonable as summarized <a href=\"https://drive.google.com/file/d/1BF9Zg67ifwbXLglM7Q7RbFAa0eIjmO4w/view?usp=sharing\" rel=\"noopener nofollow ugc\">here</a>.<br>\nDo you understand why this happens?</p>\n<p>In case one wants to reproduce the results, the commands here [*] can be followed (all materials are in a public dir).</p>\n<p>Thank you in advance, best regards,  Antonis</p>\n<p>[*] cd /afs/cern.ch/work/a/agapitos/public/WWW/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/investigation</p>\n<p>text2workspace.py datacard_SR4a_2000_1300.txt -o workspace_SR4a_2000_1300.root;<br>\ncombine -M FitDiagnostics workspace_SR4a_2000_1300.root;<br>\ncombine -M GoodnessOfFit datacard_SR4a_2000_1300.txt --algo=saturated  -D data_obs --fixedSignalStrength 0 --bypassFrequentistFit -n _SR4a_2000_1300;<br>\ncombine -M GoodnessOfFit datacard_SR4a_2000_1300.txt --algo=saturated --toysFreq   --fixedSignalStrength 0 --bypassFrequentistFit -n _SR4a_2000_1300Toy -t 500;<br>\npython plot_GoF.py --ObsFile higgsCombine_SR4a_2000_1300.GoodnessOfFit.mH120.root --ToyFile higgsCombine_SR4a_2000_1300Toy.GoodnessOfFit.mH120.123456.root --figName GoF_SR4a_2000_1300;</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-03-27T16:16:15.972Z",
+      "updated_at": "2024-03-27T16:16:15.972Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Antonis,\nI don\u2019t have a clear explanation, but it suggests that for some range of initial values, the fit is falling into a different minimum (with worse data-model agreement).\nDo you get the same effect if you remove the shape systematics from your model?\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Antonis,</p>\n<p>I don\u2019t have a clear explanation, but it suggests that for some range of initial values, the fit is falling into a different minimum (with worse data-model agreement).<br>\nDo you get the same effect if you remove the shape systematics from your model?</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "agapitos",
+      "name": "Antonios Agapitos",
+      "created_at": "2024-03-27T16:48:47.741Z",
+      "updated_at": "2024-03-27T16:48:47.741Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Andrew;\nThanks for following.\nThe \u201cverbosity 3\u201d output can be found here, where we can read:\n[WARNING] Found [Top_Rate_SR4a] at boundary.\nRooRealVar::Top_Rate_SR4a = 0 +/- 9.37646 L(-7 - 7)\n[WARNING] After the fit some parameters are at their boundary.\n[WARNING] Are you sure your model is correct?\nDoes this indicate more to you?\nI have tried so far running with options --cminApproxPreFitTolerance=xx and --X-rtd MINIMIZER_MaxCalls=xx (several values), as well as adding \u201cop_Rate_SR4a  extArg  1.0  0.00  3.00\u201d to the card without luck.\nThe issue is related to Top_Rate, not Shapes unc. Commenting out shape unc. I get another (worse and also) unreasonable GoF, while commenting out the Top_Rate GoF becomes fine.\nThanks, best regards, Antonis",
+      "cooked_html": "<p>Dear Andrew;</p>\n<p>Thanks for following.<br>\nThe \u201cverbosity 3\u201d output can be found <a href=\"https://agapitos.web.cern.ch/agapitos/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/BU_25_3_24/output_SR4a.txt\" rel=\"noopener nofollow ugc\">here</a>, where we can read:</p>\n<p>[WARNING] Found [Top_Rate_SR4a] at boundary.<br>\nRooRealVar::Top_Rate_SR4a = 0 +/- 9.37646 L(-7 - 7)<br>\n[WARNING] After the fit some parameters are at their boundary.<br>\n[WARNING] Are you sure your model is correct?</p>\n<p>Does this indicate more to you?</p>\n<p>I have tried so far running with options --cminApproxPreFitTolerance=xx and --X-rtd MINIMIZER_MaxCalls=xx (several values), as well as adding \u201cop_Rate_SR4a  extArg  1.0  0.00  3.00\u201d to the card without luck.</p>\n<p>The issue is related to Top_Rate, not Shapes unc. Commenting out shape unc. I get another (worse and also) unreasonable GoF, while commenting out the Top_Rate GoF becomes fine.</p>\n<p>Thanks, best regards, Antonis</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-03-28T20:28:03.655Z",
+      "updated_at": "2024-03-28T20:28:03.655Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Antonis,\nThe options --cminApproxPreFitTolerance=xx and --X-rtd MINIMIZER_MaxCalls=xx are not really relevant to the problem. There is some issue with the shape of the NLL function at the starting point of the fit. I suspect it\u2019s not only due to the lnN value for Top_Rate_SR4a, rather that the starting point is always on the edge of not having a pos-def Hessian, and small seemingly random changes in initial conditions are enough to make a difference.\nI still suspect there is some interplay with the shape parameters, because the unprofiled likelihood scans show some slightly odd shapes (see attached), but you may be able to fix this by moving the start point further from the true minimum (e.g. --setParameters Top_Rate_SR4a=4 seemed to help in a few points I tested).\ncheers,\nAndrew\nnll.pdf (544.1 KB)",
+      "cooked_html": "<p>Hi Antonis,</p>\n<p>The options --cminApproxPreFitTolerance=xx and --X-rtd MINIMIZER_MaxCalls=xx are not really relevant to the problem. There is some issue with the shape of the NLL function at the starting point of the fit. I suspect it\u2019s not only due to the lnN value for Top_Rate_SR4a, rather that the starting point is always on the edge of not having a pos-def Hessian, and small seemingly random changes in initial conditions are enough to make a difference.</p>\n<p>I still suspect there is some interplay with the shape parameters, because the unprofiled likelihood scans show some slightly odd shapes (see attached), but you may be able to fix this by moving the start point further from the true minimum (e.g. <code>--setParameters Top_Rate_SR4a=4</code> seemed to help in a few points I tested).</p>\n<p>cheers,<br>\nAndrew<br>\n<a class=\"attachment\" href=\"/uploads/short-url/dvp3sKeFkUEmoh4Z4qZBOoO0VG.pdf\">nll.pdf</a> (544.1 KB)</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "agapitos",
+      "name": "Antonios Agapitos",
+      "created_at": "2024-04-02T07:24:42.356Z",
+      "updated_at": "2024-04-02T07:24:42.356Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Andrew;\nThank you very much for the response and the study, I appreciated it a lot. I might come back with more questions if needed.\nBest regards, Antonis",
+      "cooked_html": "<p>Dear Andrew;</p>\n<p>Thank you very much for the response and the study, I appreciated it a lot. I might come back with more questions if needed.</p>\n<p>Best regards, Antonis</p>"
+    }
+  ]
+}

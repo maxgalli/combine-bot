@@ -1,0 +1,307 @@
+TOPIC: Questions Regarding Simultaneous Fit Scenarios in Combine
+URL: https://cms-talk.web.cern.ch/t/129214
+DATE: 2025-08-15T10:18:12.217Z
+SOLVED: no
+============================================================
+
+QUESTION (by ltsai @ 2025-08-15T10:18:12.441Z):
+Dear Experts,
+I have been working with two fitting scenarios in Combine, but the behavior I observed seems to differ from my expectations.
+This simultaneous fit involves three observables: bTag, CvsB, and CvsL, and is composed of four components: fake, l-jet, c-jet, and b-jet. The goal of this fit is to determine the yields of the l-jet, c-jet, and b-jet components. I fixed the yield of the fake component, while fitting the yields of the l-jet as numL, the c-jet as numC, and the b-jet as numB.
+I expected the simultaneous fit to yield two equations: one where the fake histogram maintains the same normalization, and another where the normalization of the sum of the fake, l-jet, c-jet, and b-jet components is equal to that of the observed data (data_obs).
+Could you please provide some insights or comments regarding these fittings? Any guidance on addressing the discrepancies I am seeing would be greatly appreciated.
+1st Scenario: Using multiSignalModel
+text2workspace.py datacard.txt -o ws_fit1st.root \
+-P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
+--PO "map=.*/Ljet:numL[150000.,0.,182632.]" \
+--PO "map=.*/Cjet:numC[24000.,0.,80000]" \
+--PO "map=.*/Bjet:numB[6000,0.,30000]"
+
+combine --saveWorkspace -M MultiDimFit -d ws_fit1st.root \
+--saveFitResult --saveNLL --robustFit on -n 1st
+
+PostFitShapesFromWorkspace -d datacard.txt \
+-w  higgsCombine1st.MultiDimFit.mH120.root \
+-m 120 -f multidimfit1st.root:fit_mdf \
+--postfit --print --output postfit1st.root
+
+The fit result modified fake normalization and the normalization of fake + l-jet + c-jet + b-jet is not the same as data_obs.
+
+Combination of cvsl=psuedofit_datacard_cvsl.txt  cvsb=psuedofit_datacard_cvsb.txt  btag=psuedofit_datacard_btag.txt
+imax 3 number of bins
+jmax 3 number of processes minus 1
+kmax 1 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *     btag  psuedofit_datacard_btag.root gjet_btag/$PROCESS
+shapes *     cvsb  psuedofit_datacard_cvsb.root gjet_cvsb/$PROCESS
+shapes *     cvsl  psuedofit_datacard_cvsl.root gjet_cvsl/$PROCESS
+----------------------------------------------------------------------------------------------------------------------------------
+bin          cvsl        cvsb        btag
+observation  200652.957  200652.957  200651.538
+----------------------------------------------------------------------------------------------------------------------------------
+bin                             cvsl        cvsl        cvsl        cvsl        cvsb        cvsb        cvsb        cvsb        btag        btag        btag        btag
+process                         Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet
+process                         -1          0           1           2           -1          0           1           2           -1          0           1           2
+rate                            1           1           18241.178   1           1           1           18241.178   1           1           1           18241.178   1
+----------------------------------------------------------------------------------------------------------------------------------
+lumi                    lnN     1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014
+
+2nd Scenario: Using rateParam
+text2workspace.py datacard.txt -o ws_fit2nd.root
+
+combine --saveWorkspace -M MultiDimFit -d ws_fit2nd.root -n 2nd \
+--saveFitResult --saveNLL --robustFit \
+--redefineSignalPOIs numC,numB
+
+PostFitShapesFromWorkspace -d datacard.txt \
+-w  higgsCombine2nd.MultiDimFit.mH120.root \
+-m 120 -f multidimfit2nd.root:fit_mdf \
+--postfit --print --output postfit2nd.root
+
+I then attempted to add a manual constraint using rateParam, aiming to ensure that the sum of numL, numC and numB follows the equation specified in the datacard. However, I noticed that the normalization of fake component was altered during the fitting process.
+Furthermore, the fitting outcomes differed significantly from the truth values.
+Combination of cvsl=psuedofit_datacard_cvsl.txt  cvsb=psuedofit_datacard_cvsb.txt  btag=psuedofit_datacard_btag.txt
+imax 3 number of bins
+jmax 3 number of processes minus 1
+kmax 1 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *     btag  psuedofit_datacard_btag.root gjet_btag/$PROCESS
+shapes *     cvsb  psuedofit_datacard_cvsb.root gjet_cvsb/$PROCESS
+shapes *     cvsl  psuedofit_datacard_cvsl.root gjet_cvsl/$PROCESS
+----------------------------------------------------------------------------------------------------------------------------------
+bin          cvsl        cvsb        btag
+observation  200652.957  200652.957  200651.538
+----------------------------------------------------------------------------------------------------------------------------------
+bin                             cvsl        cvsl        cvsl        cvsl        cvsb        cvsb        cvsb        cvsb        btag        btag        btag        btag
+process                         Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet
+process                         -1          0           1           2           -1          0           1           2           -1          0           1           2
+rate                            1           1           18241.178   1           1           1           18241.178   1           1           1           18241.178   1
+----------------------------------------------------------------------------------------------------------------------------------
+lumi                    lnN     1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014
+numB          rateParam cvsl Bjet 20065.3 [0,100326.5]
+numC          rateParam cvsl Cjet 40130.6 [0,140457.1]
+numL          rateParam cvsl Ljet (200652.957-18241.178-@0-@1) numC,numB
+numB          rateParam cvsb Bjet 20065.3 [0,100326.5]
+numC          rateParam cvsb Cjet 40130.6 [0,140457.1]
+numL          rateParam cvsb Ljet (200652.957-18241.178-@0-@1) numC,numB
+numB          rateParam btag Bjet 20065.2 [0,100325.8]
+numC          rateParam btag Cjet 40130.3 [0,140456.1]
+numL          rateParam btag Ljet (200651.538-18241.178-@0-@1) numC,numB
+
+The second question is about profiled likelihood scan, I found the central value extracted by NLL scan differs from simultaneous fit. Would you use NLL scan result or simultaneous fit result as fitted value? Here is my NLL scan commands
+combine --saveWorkspace -M MultiDimFit  \
+-d ws_fit1st.root --saveFitResult --saveNLL --robustFit on -n scan2D \
+--redefineSignalPOIs numC,numB \
+--toys=10000 --saveToys --setParameters numC=${numC_value},numB=${numB_value}
+
+Thanks for your attention!
+Cheers!
+Lian-Sheng Tsai
+Ph.D Student
+National Taiwan University
+Aug 15, 2025
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-08-17T09:43:26.000Z):
+Dear Lian-Sheng,
+The fitting procedure will determine the configuration with the best agreement between observed data and your model.
+In many cases this means that the overall normalisation will be close to the observed yield, but it does not necessarily have to match it. It will depend on the actual shapes and parameters of your fit. How far are your fit results from the observations?
+Also, please notice that combine will assume that observed yields are an integer number (we can’t actually observe 0.3 events), hence there is also a small rounding effect.
+Now on the details of your procedure, in scenario 1 you are not actually freezing the background scaling. You are not scaling it with a POI, but the process normalisation is still allowed to float according to its (expected) statistical uncertainty. So I think the fact you get a different post-fit result makes sense. To actually freeze it normalisation you should associated a POI to it, and then freeze the POI
+I didn’t look at the details of your scenario 2, but my feeling is that if everything is written down correctly it would basically be the same as not using those rateParam, as the fit would still change processes normalisation to accomodate your data.
+On your last question, when you say "NLL scan” do you mean a scan ran with MulitDimFit —algo=grid? If so, can you please post both commands you used? In principle, the best-fit results of the two commands should be the same, as long as the options used are consistent.
+Cheers,
+Giacomo
+
+On 15 Aug 2025, at 12:19, Lian-Sheng Tsai via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Lian-Sheng Tsai ltsaiAugust 15
+
+Dear Experts,
+I have been working with two fitting scenarios in Combine, but the behavior I observed seems to differ from my expectations.
+This simultaneous fit involves three observables: bTag, CvsB, and CvsL, and is composed of four components: fake, l-jet, c-jet, and b-jet. The goal of this fit is to determine the yields of the l-jet, c-jet, and b-jet components. I fixed the yield of the fake component, while fitting the yields of the l-jet as numL, the c-jet as numC, and the b-jet as numB.
+I expected the simultaneous fit to yield two equations: one where the fake histogram maintains the same normalization, and another where the normalization of the sum of the fake, l-jet, c-jet, and b-jet components is equal to that of the observed data (data_obs).
+Could you please provide some insights or comments regarding these fittings? Any guidance on addressing the discrepancies I am seeing would be greatly appreciated.
+1st Scenario: Using multiSignalModel
+text2workspace.py datacard.txt -o ws_fit1st.root \
+-P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
+--PO "map=.*/Ljet:numL[150000.,0.,182632.]" \
+--PO "map=.*/Cjet:numC[24000.,0.,80000]" \
+--PO "map=.*/Bjet:numB[6000,0.,30000]"
+
+combine --saveWorkspace -M MultiDimFit -d ws_fit1st.root \
+--saveFitResult --saveNLL --robustFit on -n 1st
+
+PostFitShapesFromWorkspace -d datacard.txt \
+-w  higgsCombine1st.MultiDimFit.mH120.root \
+-m 120 -f multidimfit1st.root:fit_mdf \
+--postfit --print --output postfit1st.root
+
+The fit result modified fake normalization and the normalization of fake + l-jet + c-jet + b-jet is not the same as data_obs.
+
+Combination of cvsl=psuedofit_datacard_cvsl.txt  cvsb=psuedofit_datacard_cvsb.txt  btag=psuedofit_datacard_btag.txt
+imax 3 number of bins
+jmax 3 number of processes minus 1
+kmax 1 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *     btag  psuedofit_datacard_btag.root gjet_btag/$PROCESS
+shapes *     cvsb  psuedofit_datacard_cvsb.root gjet_cvsb/$PROCESS
+shapes *     cvsl  psuedofit_datacard_cvsl.root gjet_cvsl/$PROCESS
+----------------------------------------------------------------------------------------------------------------------------------
+bin          cvsl        cvsb        btag
+observation  200652.957  200652.957  200651.538
+----------------------------------------------------------------------------------------------------------------------------------
+bin                             cvsl        cvsl        cvsl        cvsl        cvsb        cvsb        cvsb        cvsb        btag        btag        btag        btag
+process                         Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet
+process                         -1          0           1           2           -1          0           1           2           -1          0           1           2
+rate                            1           1           18241.178   1           1           1           18241.178   1           1           1           18241.178   1
+----------------------------------------------------------------------------------------------------------------------------------
+lumi                    lnN     1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014
+
+2nd Scenario: Using rateParam
+text2workspace.py datacard.txt -o ws_fit2nd.root
+
+combine --saveWorkspace -M MultiDimFit -d ws_fit2nd.root -n 2nd \
+--saveFitResult --saveNLL --robustFit \
+--redefineSignalPOIs numC,numB
+
+PostFitShapesFromWorkspace -d datacard.txt \
+-w  higgsCombine2nd.MultiDimFit.mH120.root \
+-m 120 -f multidimfit2nd.root:fit_mdf \
+--postfit --print --output postfit2nd.root
+
+I then attempted to add a manual constraint using rateParam, aiming to ensure that the sum of numL, numC and numB follows the equation specified in the datacard. However, I noticed that the normalization of fake component was altered during the fitting process.
+Furthermore, the fitting outcomes differed significantly from the truth values.
+Combination of cvsl=psuedofit_datacard_cvsl.txt  cvsb=psuedofit_datacard_cvsb.txt  btag=psuedofit_datacard_btag.txt
+imax 3 number of bins
+jmax 3 number of processes minus 1
+kmax 1 number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+shapes *     btag  psuedofit_datacard_btag.root gjet_btag/$PROCESS
+shapes *     cvsb  psuedofit_datacard_cvsb.root gjet_cvsb/$PROCESS
+shapes *     cvsl  psuedofit_datacard_cvsl.root gjet_cvsl/$PROCESS
+----------------------------------------------------------------------------------------------------------------------------------
+bin          cvsl        cvsb        btag
+observation  200652.957  200652.957  200651.538
+----------------------------------------------------------------------------------------------------------------------------------
+bin                             cvsl        cvsl        cvsl        cvsl        cvsb        cvsb        cvsb        cvsb        btag        btag        btag        btag
+process                         Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet        Cjet        Bjet        fake        Ljet
+process                         -1          0           1           2           -1          0           1           2           -1          0           1           2
+rate                            1           1           18241.178   1           1           1           18241.178   1           1           1           18241.178   1
+----------------------------------------------------------------------------------------------------------------------------------
+lumi                    lnN     1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014       1.014
+numB          rateParam cvsl Bjet 20065.3 [0,100326.5]
+numC          rateParam cvsl Cjet 40130.6 [0,140457.1]
+numL          rateParam cvsl Ljet (200652.957-18241.178-@0-@1) numC,numB
+numB          rateParam cvsb Bjet 20065.3 [0,100326.5]
+numC          rateParam cvsb Cjet 40130.6 [0,140457.1]
+numL          rateParam cvsb Ljet (200652.957-18241.178-@0-@1) numC,numB
+numB          rateParam btag Bjet 20065.2 [0,100325.8]
+numC          rateParam btag Cjet 40130.3 [0,140456.1]
+numL          rateParam btag Ljet (200651.538-18241.178-@0-@1) numC,numB
+
+The second question is about profiled likelihood scan, I found the central value extracted by NLL scan differs from simultaneous fit. Would you use NLL scan result or simultaneous fit result as fitted value? Here is my NLL scan commands
+combine --saveWorkspace -M MultiDimFit  \
+-d ws_fit1st.root --saveFitResult --saveNLL --robustFit on -n scan2D \
+--redefineSignalPOIs numC,numB \
+--toys=10000 --saveToys --setParameters numC=${numC_value},numB=${numB_value}
+
+Thanks for your attention!
+Cheers!
+Lian-Sheng Tsai
+Ph.D Student
+National Taiwan University
+Aug 15, 2025
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by ltsai @ 2025-08-18T10:14:27.823Z):
+Dear Giacomo,
+Thanks for your opinions, the NLL scan command is
+combine -M MultiDimFit higgsCombineConstraint.MultiDimFit.mH120.root \
+--robustFit 1 --cminDefaultMinimizerStrategy 0 --algo grid --freezeParameters r --floatOtherPOIs 1 -n Constraint.scan2D \
+--points 10000 -P numC -P numB --setParameterRanges numC=3000,5000:numB=500,2000
+
+Yes, I included mentioned option --algo grid in the 2D NLL scan. I apologize for the missing tags in the previous thread.
+In the Scenario 1 (where I assigned multiSignalModel in text2workspace.py), the 2D NLL scan yields values that are similar to the obtained from MultiDimFit.
+text2workspace.py individual.datacard.txt -o individual.ws.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel \
+--PO "map=.*/Ljet:numL[35447,10000,40552]" --PO "map=.*/Cjet:numC[4081,0,20000]" --PO "map=.*/Bjet:numB[1023,0,10000]" --PO "map=.*/fake:scaleF[1,0.99999,1.00001]"
+
+combine --saveWorkspace -M MultiDimFit -d individual.ws.root -n Individual --saveFitResult --saveNLL --robustFit 1 --redefineSignalPOIs numC,numB --freezeParameters scaleF,r
+
+######## MultiDimFit Result #############
+#  <<< Combine >>>
+#  <<< v10.1.0 >>>
+# >>> Random number generator seed is 123456
+# >>> Method used is MultiDimFit
+# ModelConfig 'ModelConfig' defines more than one parameter of interest. This is not supported in some statistical methods.
+# WARNING: cannot freeze nuisance parameter r if it doesn't exist!
+# Doing initial fit:
+#
+#  --- MultiDimFit ---
+# best fit parameter values:
+#    numC :  +4144.752
+#    numB :  +985.919
+# Done in 0.00 min (cpu), 0.02 min (real)
+######## MultiDimFit Result Ended #######
+
+numB_rangeL=500
+numB_rangeR=2000
+numC_rangeL=3000
+numC_rangeR=5000
+
+combine -M MultiDimFit higgsCombineIndividual.MultiDimFit.mH120.root \
+--robustFit 1 --cminDefaultMinimizerStrategy 0 --algo grid --freezeParameters r --floatOtherPOIs 1 -n Individual.scan2D \
+--points 10000 -P numC -P numB --setParameterRanges numC=${numC_rangeL},${numC_rangeR}:numB=${numB_rangeL},${numB_rangeR} > individual.NLL2Dscan.log
+python3 plot_2D_scan.py individual.scan2D.pdf higgsCombineIndividual.scan2D.MultiDimFit.mH120.root numC=${numC_rangeL},${numC_rangeR} numB=${numB_rangeL},${numB_rangeR}
+
+########## 2D NLL Result ################
+# numC = 4145.4 +184.6 -95.4
+# numB =  985.8 + 46.7 -43.3
+########## 2D NLL Result Ended ##########
+
+Hoever, in Scenario 2 (where I added a constraint using rateParam in datacard), the results from the 2D NLL scan show a significant discrepancy compared to those from MultiDimFit. Specifically, the fitted value from numC is 5827, while the 2D NLL scan yields a value of 4405. The deviation exceeds 5 sigma, suggesting that the result is incorrect.
+text2workspace.py constraint.datacard.txt -o constraint.ws.root
+
+combine --saveWorkspace -M MultiDimFit -d constraint.ws.root -n Constraint --saveFitResult --saveNLL --robustFit 1 --redefineSignalPOIs numC,numB
+
+######## MultiDimFit Result #############
+#  <<< Combine >>>
+#  <<< v10.1.0 >>>
+# >>> Random number generator seed is 123456
+# >>> Method used is MultiDimFit
+# Doing initial fit:
+#
+#  --- MultiDimFit ---
+# best fit parameter values:
+#    numC :  +5827.784
+#    numB :  +1386.107
+# Done in 0.00 min (cpu), 0.01 min (real)
+######## MultiDimFit Result Ended #######
+
+numB_rangeL=500
+numB_rangeR=2000
+numC_rangeL=3000
+numC_rangeR=5000
+
+combine -M MultiDimFit higgsCombineConstraint.MultiDimFit.mH120.root \
+--robustFit 1 --cminDefaultMinimizerStrategy 0 --algo grid --freezeParameters r --floatOtherPOIs 1 -n Constraint.scan2D \
+--points 10000 -P numC -P numB --setParameterRanges numC=${numC_rangeL},${numC_rangeR}:numB=${numB_rangeL},${numB_rangeR} > constraint.NLL2Dscan.log
+python3 plot_2D_scan.py constraint.scan2D.pdf higgsCombineConstraint.scan2D.MultiDimFit.mH120.root numC=${numC_rangeL},${numC_rangeR} numB=${numB_rangeL},${numB_rangeR}
+
+########## 2D NLL Result ################
+# numC = 4405.9 +184.1 -55.9
+# numB = 1035.3 + 42.2 -32.8
+########## 2D NLL Result Ended ##########
+
+Furthermore, I’ve noticed that the results from the two scenarios are inconsistent. I initially anticipated that Scenario 2 would be more problematic due to the discrepancies observed between the 2D NLL scan and MultiDimFit.
+The scripts and related files have been uploaded to CERNBOX. The executable scripts are named run.individual.sh / run.constraint.sh and the associated log files are individual.run.log and constraint.run.log.
+Cheers!
+Lian-Sheng Tsai
+Ph.D Student
+National Taiwan University
+Aug 18, 2025
+----------------------------------------

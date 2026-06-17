@@ -1,0 +1,20 @@
+TOPIC: Negative Bins in Shape Variations
+URL: https://cms-talk.web.cern.ch/t/144699
+DATE: 2026-05-04T21:00:21.227Z
+SOLVED: no
+============================================================
+
+QUESTION (by ckapsiak @ 2026-05-04T21:00:21.562Z):
+Hello Everyone,
+We are working on a 2D bump hunt using a data-driven background estimation.
+We are using Gaussian process regression for our background estimate, which outputs a MVN distribution.
+To use this MVN estimate in Combine, we treat the mean of the MVN as the background estimate, and then do an spectral decomposition of the covariance matrix to produce “eigen-variations,” which are treated as the up/down variations of the nominal background.
+One peculiarity we have encountered is that when there are smaller bin counts and/or large up/down variations, this eigen-decomposition can produce down shape variations which have negative count in some bins.
+Currently, we have been “clipping” the down variations so they cannot become negative.
+Our question is if this is the correct way to handle things.
+If the goal it to replicate the MVN and to avoid bias, it seems like we want to have the real up/down variations without clipping, to that they can “interfere” as needed to emulate the MVN.
+On the other hand, negative bin counts are obviously non-physical and we don’t want to make Combine upset.
+Please let us know if you have insights into this matter.
+Best,
+Charlie and the Single Stop Team
+----------------------------------------

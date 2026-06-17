@@ -1,0 +1,80 @@
+TOPIC: Studying fit model in categories with shared rate parameters
+URL: https://cms-talk.web.cern.ch/t/2182
+DATE: 2021-10-14T07:45:41.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by maglowac @ 2021-10-14T07:45:41.000Z):
+*** Discussion title: Higgs Combination
+Hi Combine experts,
+this is more of a general query, we're open to ideas / suggestions.
+I work on a Higgs to invisible analysis in the ttH and VH channels. Our
+analysis is binned in terms of MET and jet multiplicities, to overcome
+statistical limitations in certain bins we integrate over the number of
+jets to leave ourselves with only a MET dependent rate parameter.
+We would like to study the fit per individual category (MET & Jet mult)
+but this is proving difficult due to the shared rate parameter between
+categories.
+For example; our rate parameter is computed from the combination of
+categories: ttH5j1b, ttH5j2b, ttH6j1b, ttH6j2b (aka one rate param per
+"super-category") is it possible to now study the individual category
+(e.g. ttH5j1b) and somehow reference the shared rate parameter computed
+from the "super-category"?
+Many thanks, Maciek
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-10-15T09:56:43.000Z):
+*** Discussion title: Higgs Combination
+Dear Maciek,
+I think it depends on exactly what you want to study - if you are
+interested in the interplay of the rateParam with the other parameters
+in your category then I can't think of a good way of doing this test.
+One thing that you can do is to take the value of the shared rateParam
+from the full combined fit, and use --setParameters to set the value of
+the rateParam to that value, and --freezeParameters to freeze it, when
+you do a fit just of the ttH5j1b category. Whether this makes sense to
+do probably depends on how strongly the rateParam is constrained by the
+ttH5j1b category itself - I think if most of the constraint on the
+rateParam comes from the other 3 categories then it is not unreasonable
+to follow this procedure.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by maglowac @ 2021-10-18T14:20:55.000Z):
+*** Discussion title: Higgs Combination
+Hi Adinda,
+thank you for the suggestion, on paper sounds like this would work for
+what I'm trying to achieve - have you seen something like this in
+practice? I only have experience of using --setParameters and
+--freezeParameters when it come to masking different channels.
+Thanks, Maciek
+----------------------------------------
+
+REPLY 4 (by adewit @ 2021-10-19T09:51:33.000Z):
+*** Discussion title: Higgs Combination
+Hi Maciek,
+Yes, it's possible to set or freeze any parameter, and this is often
+done when investigating fit problems (of course with the caveats that I
+mentioned in the first message).
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by adewit @ 2021-10-21T12:59:45.000Z):
+*** Discussion title: Higgs Combination
+Dear Maciek,
+I think it depends on exactly what you want to study - if you are
+interested in the interplay of the rateParam with the other parameters
+in your category then I can't think of a good way of doing this test.
+One thing that you can do is to take the value of the shared rateParam
+from the full combined fit, and use --setParameters to set the value of
+the rateParam to that value, and --freezeParameters to freeze it, when
+you do a fit just of the ttH5j1b category. Whether this makes sense to
+do probably depends on how strongly the rateParam is constrained by the
+ttH5j1b category itself - I think if most of the constraint on the
+rateParam comes from the other 3 categories then it is not unreasonable
+to follow this procedure.
+Best,
+Adinda
+----------------------------------------

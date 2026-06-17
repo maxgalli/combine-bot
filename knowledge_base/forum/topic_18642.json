@@ -1,0 +1,45 @@
+{
+  "topic_id": 18642,
+  "title": "How to freeze constrained nuisances and PDF indices simultaneously?",
+  "url": "https://cms-talk.web.cern.ch/t/18642",
+  "category_id": 279,
+  "created_at": "2022-12-14T11:00:07.659Z",
+  "last_posted_at": "2022-12-15T14:17:39.341Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2022-12-14T11:00:08.038Z",
+      "updated_at": "2023-02-07T10:53:04.084Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nin the context of a H(\u03b3\u03b3) analysis, I would like to achieve the following:\n\nFreeze all the constrained nuisance parameters, and\nFreeze the PDF indices to some given values\n\nTo do so, I first set my indices to some given values:\n--setParameters pdfindex_UntaggedTag_0_2017_13TeV=3,pdfindex_UntaggedTag_1_2017_13TeV=4,pdfindex_UntaggedTag_2_2017_13TeV=1,pdfindex_UntaggedTag_3_2017_13TeV=1\n\nand then I try to freeze both the constrained nuisances and the indices by doing:\n--freezeParameters allConstrainedNuisances,pdfindex_UntaggedTag_0_2017_13TeV,pdfindex_UntaggedTag_1_2017_13TeV,pdfindex_UntaggedTag_2_2017_13TeV,pdfindex_UntaggedTag_3_2017_13TeV\n\nThe point is that by doing this, the constrained nuisances are actually not frozen. Interestingly, the freezing works \u201calone\u201d, namely if I only do --freezeParameters allConstrainedNuisances.\nAm I doing something wrong? What\u2019s the way to go to have both the constrained nuisances and the PDF indices frozen?\nThanks a lot for your time, my best regards,\nFabio.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>in the context of a H(\u03b3\u03b3) analysis, I would like to achieve the following:</p>\n<ol>\n<li>Freeze all the constrained nuisance parameters, and</li>\n<li>Freeze the PDF indices to some given values</li>\n</ol>\n<p>To do so, I first set my indices to some given values:</p>\n<pre><code class=\"lang-auto\">--setParameters pdfindex_UntaggedTag_0_2017_13TeV=3,pdfindex_UntaggedTag_1_2017_13TeV=4,pdfindex_UntaggedTag_2_2017_13TeV=1,pdfindex_UntaggedTag_3_2017_13TeV=1\n</code></pre>\n<p>and then I try to freeze both the constrained nuisances and the indices by doing:</p>\n<pre><code class=\"lang-auto\">--freezeParameters allConstrainedNuisances,pdfindex_UntaggedTag_0_2017_13TeV,pdfindex_UntaggedTag_1_2017_13TeV,pdfindex_UntaggedTag_2_2017_13TeV,pdfindex_UntaggedTag_3_2017_13TeV\n</code></pre>\n<p>The point is that by doing this, the constrained nuisances are actually not frozen. Interestingly, the freezing works \u201calone\u201d, namely if I only do <code>--freezeParameters allConstrainedNuisances</code>.</p>\n<p>Am I doing something wrong? What\u2019s the way to go to have both the constrained nuisances and the PDF indices frozen?</p>\n<p>Thanks a lot for your time, my best regards,</p>\n<p>Fabio.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-12-14T11:17:23.563Z",
+      "updated_at": "2022-12-14T11:17:23.563Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "IIRC,\nrgx{.*},pdfindex_...\nshould achieve what you are trying to do.\nThe regexp matching is checked on the list of nuisance parameters.\n-Andrea",
+      "cooked_html": "<p>IIRC,<br>\n<code>rgx{.*},pdfindex_...</code><br>\nshould achieve what you are trying to do.</p>\n<p>The regexp matching is checked on the list of nuisance parameters.</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2022-12-15T14:17:39.341Z",
+      "updated_at": "2022-12-15T14:17:39.341Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nindeed it works. Thanks a lot,\nbest,\nF.",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>indeed it works. Thanks a lot,</p>\n<p>best,<br>\nF.</p>"
+    }
+  ]
+}

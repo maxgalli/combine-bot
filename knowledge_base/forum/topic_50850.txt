@@ -1,0 +1,122 @@
+TOPIC: Import error while running text2workspace.py with combine tool v10
+URL: https://cms-talk.web.cern.ch/t/50850
+DATE: 2024-09-28T21:34:57.002Z
+SOLVED: no
+============================================================
+
+QUESTION (by mikumar @ 2024-09-28T21:34:57.512Z):
+Dear experts,
+I am trying to run the v10 of the Higgs combine with CMSSW_14_1_0_pre4 in lxplus9.
+I am trying to convert txt data card to workspace. while running text2workspace.py with the following command
+text2workspace.py datacard_top_shape_comb_para.txt -o workspace.root
+the script in run in the following import error.
+Can please have look and suggest a way around or let me know if I am missing something.
+Thanks in advance.
+Mintu Kumar
+------------------- Error ---------
+Traceback (most recent call last):
+File “init.pxd”, line 942, in numpy.import_array
+RuntimeError: module compiled against API version 0x10 but this version of numpy is 0xf . Check the section C-API incompatibility at the Troubleshooting ImportError section at https://numpy.org/devdocs/user/troubleshooting-importerror.html#c-api-incompatibility for indications on how to solve this problem .
+During handling of the above exception, another exception occurred:
+Traceback (most recent call last):
+File “/eos/home-m/mikumar/Higgs_Combine/CMSSW_14_1_0_pre4/bin/el9_amd64_gcc12/text2workspace.py”, line 12, in
+from HiggsAnalysis.CombinedLimit.ShapeTools import *
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/eos/home-m/mikumar/Higgs_Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py”, line 15, in
+from .DataFrameWrapper import DataFrameWrapper
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/eos/home-m/mikumar/Higgs_Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/DataFrameWrapper.py”, line 4, in
+import pandas as pd
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-pandas/2.0.1-7e0980e2f417a1fc2106b953723ea098/lib/python3.9/site-packages/pandas/init.py”, line 22, in
+from pandas.compat import is_numpy_dev as _is_numpy_dev  # pyright: ignore # noqa:F401
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-pandas/2.0.1-7e0980e2f417a1fc2106b953723ea098/lib/python3.9/site-packages/pandas/compat/init.py”, line 25, in
+from pandas.compat.numpy import (
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-pandas/2.0.1-7e0980e2f417a1fc2106b953723ea098/lib/python3.9/site-packages/pandas/compat/numpy/init.py”, line 4, in
+from pandas.util.version import Version
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-pandas/2.0.1-7e0980e2f417a1fc2106b953723ea098/lib/python3.9/site-packages/pandas/util/init.py”, line 2, in
+from pandas.util._decorators import (  # noqa:F401
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-pandas/2.0.1-7e0980e2f417a1fc2106b953723ea098/lib/python3.9/site-packages/pandas/util/_decorators.py”, line 14, in
+from pandas._libs.properties import cache_readonly
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-pandas/2.0.1-7e0980e2f417a1fc2106b953723ea098/lib/python3.9/site-packages/pandas/_libs/init.py”, line 13, in
+from pandas._libs.interval import Interval
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “pandas/_libs/interval.pyx”, line 1, in init pandas._libs.interval
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “pandas/_libs/hashtable.pyx”, line 1, in init pandas._libs.hashtable
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “pandas/_libs/missing.pyx”, line 1, in init pandas._libs.missing
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-pandas/2.0.1-7e0980e2f417a1fc2106b953723ea098/lib/python3.9/site-packages/pandas/_libs/tslibs/init.py”, line 38, in
+from pandas._libs.tslibs import dtypes
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “pandas/_libs/tslibs/dtypes.pyx”, line 1, in init pandas._libs.tslibs.dtypes
+File “/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/lib/ROOT/_facade.py”, line 154, in _importhook
+return _orig_ihook(name, *args, **kwds)
+File “pandas/_libs/tslibs/np_datetime.pyx”, line 28, in init pandas._libs.tslibs.np_datetime
+File “init.pxd”, line 944, in numpy.import_array
+ImportError: numpy.core.multiarray failed to import
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-09-29T07:08:13.971Z):
+Hi Mintu,
+it seems a problem with the import modules in python. I cannot reproduce it, but let me try to give some hints that may help to solve it.
+Most likely, there are incompatibilities between two packages (pandas and numpy?) possibly taken between two distinct areas (cmssw and .local?).
+Can you:
+
+check the version of python and numpy (if present) in your local directories (~/.local/lib/python3.9/site-packages/). Eventually verify that in python3 you get a similar error if you try to import pandas
+
+python3
+import pandas as pd
+
+Verify if running w/o them works
+
+env PYTHONNOUSERSITE=1 textworkspace.py ...
+
+Eventually, update your local packages to a consistent set (but it may have effect on other unrelated things you are doing on lxplus). python3 -m pip -U --user pandas numpy.
+
+-Andrea
+----------------------------------------
+
+REPLY 3 (by mikumar @ 2024-09-29T11:04:03.053Z):
+Andrea Carlo Marini:
+
+python3 -m pip -U --user pandas numpy
+
+Hi Andrea,
+Yes, env PYTHONNOUSERSITE=1 textworkspace.py ... works.
+Thank you very much.
+About you pont 3. If I understand this correctly, it is trying to update numpy and pandas locally. But I am getting errors while running this no such option: -U. Can you please educate me about this -U option?
+Thanks,
+Mintu Kumar
+----------------------------------------
+
+REPLY 4 (by amarini @ 2024-09-29T13:59:18.907Z):
+python 3 -m pip install -U --user pandas numpy.
+-U, --upgrade               Upgrade all specified packages to the newest available version. The handling of dependencies depends on the upgrade-
+strategy used.
+
+-A
+----------------------------------------
+
+REPLY 5 (by mikumar @ 2024-09-30T11:48:05.377Z):
+Thank you very much  Andrea
+----------------------------------------

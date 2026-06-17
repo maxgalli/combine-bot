@@ -1,0 +1,45 @@
+{
+  "topic_id": 44158,
+  "title": "Is it possible to get L(S+B) and L(B) from combine -M MultiDimFit --algo fixed",
+  "url": "https://cms-talk.web.cern.ch/t/44158",
+  "category_id": 279,
+  "created_at": "2024-07-23T14:18:28.105Z",
+  "last_posted_at": "2024-07-24T08:55:41.311Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-23T14:18:28.313Z",
+      "updated_at": "2024-07-23T14:18:28.313Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI run MultiDimFit with option --algo fixed to get DeltaNLL difference between log L(S+B) value from S+B fit and log L(B) valued from fit B only fit:\ncombine -M MultiDimFit -d combined_toy.txt --freezeParameters r --redefineSignalPOIs mean,width,mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameterRanges mean=25.0,30.0:width=0.006,5.6:mu_sr1_2017=0.0,80.0:mu_sr2_2017=0.0,50.0:mu_sr3_2017=0.0,120.0 --algo fixed --fixedPointPOIs mean=25.0,width=0.0,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3\nQuestion is:  is it possible to get values of Log L from S+B and from B only fit ?  Or there is some other way to get it separately ?\nThank you for help,\nCheers, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I run MultiDimFit with option --algo fixed to get DeltaNLL difference between log L(S+B) value from S+B fit and log L(B) valued from fit B only fit:</p>\n<p>combine -M MultiDimFit -d combined_toy.txt --freezeParameters r --redefineSignalPOIs mean,width,mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameterRanges mean=25.0,30.0:width=0.006,5.6:mu_sr1_2017=0.0,80.0:mu_sr2_2017=0.0,50.0:mu_sr3_2017=0.0,120.0 --algo fixed --fixedPointPOIs mean=25.0,width=0.0,mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3</p>\n<p>Question is:  is it possible to get values of Log L from S+B and from B only fit ?  Or there is some other way to get it separately ?</p>\n<p>Thank you for help,<br>\nCheers, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-07-24T08:05:36.706Z",
+      "updated_at": "2024-07-24T08:05:36.706Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nTL;DR no.\nWhat makes sense in statistical analysis are likelihood ratios (i.e., logL differences). Thus, combine (and roofit and other tools as well), do not compute the full likelihood but \u2018neglects\u2019 constant terms that simplify in the difference. This could be called offset sometimes and may take a large amount of resources to compute w/o particular benefit or with worsen stability performances. A typical example could be the poisson likelihood.\nGive the Poisson probability density: \\mathcal{P}(k|\\mu) = \\frac{e^{-\\mu}\\mu^k}{k!}, the likelihood function is \\mathcal{L}(\\mu|k) = \\mathcal{P}(k|\\mu). However, you can immediately see that, e.g., the k! at the denominator does not depend on \\mu and it is quite annoying to compute and quite a large number. Thus, when computing log-difference is irrelevant and it is often convenient to avoid a useless calculation at all.\nNotice that in combine stabilize the gradient descend by removing some offsets, but additional ones are directly removed by roofit depending on the technical details of the model construction.\nDepending on what you need to do there may be ways to get the information you need.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>TL;DR no.</p>\n<p>What makes sense in statistical analysis are likelihood ratios (i.e., logL differences). Thus, combine (and roofit and other tools as well), do not compute the full likelihood but \u2018neglects\u2019 constant terms that simplify in the difference. This could be called offset sometimes and may take a large amount of resources to compute w/o particular benefit or with worsen stability performances. A typical example could be the poisson likelihood.</p>\n<p>Give the Poisson probability density: <span class=\"math\">\\mathcal{P}(k|\\mu) = \\frac{e^{-\\mu}\\mu^k}{k!}</span>, the likelihood function is <span class=\"math\">\\mathcal{L}(\\mu|k) = \\mathcal{P}(k|\\mu)</span>. However, you can immediately see that, e.g., the <span class=\"math\">k!</span> at the denominator does not depend on <span class=\"math\">\\mu</span> and it is quite annoying to compute and quite a large number. Thus, when computing log-difference is irrelevant and it is often convenient to avoid a useless calculation at all.<br>\nNotice that in combine stabilize the gradient descend by removing some offsets, but additional ones are directly removed by roofit depending on the technical details of the model construction.</p>\n<p>Depending on what you need to do there may be ways to get the information you need.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-24T08:55:41.311Z",
+      "updated_at": "2024-07-24T08:55:41.311Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nthanks ! I understand the reason.\nWhen I do RooFit myself I can do it for S+B with:\nRooFitResult* r = model.fitTo(data,Range(12.0,70.0),Save());\nDouble_t ll_splusb = r->minNll();\nand for B only\nRooFitResult* rb = modelb.fitTo(data,Range(12.0,70.0),Save());\nDouble_t ll_b = rb->minNll();\nProbably I can run MultiDimFit forcing it to have only S+B fit and then next time to do only B fit.   Does these options exist ?\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>thanks ! I understand the reason.</p>\n<p>When I do RooFit myself I can do it for S+B with:</p>\n<p>RooFitResult* r = model.fitTo(data,Range(12.0,70.0),Save());<br>\nDouble_t ll_splusb = r-&gt;minNll();</p>\n<p>and for B only</p>\n<p>RooFitResult* rb = modelb.fitTo(data,Range(12.0,70.0),Save());<br>\nDouble_t ll_b = rb-&gt;minNll();</p>\n<p>Probably I can run MultiDimFit forcing it to have only S+B fit and then next time to do only B fit.   Does these options exist ?</p>\n<p>Cheers, Sasha.</p>"
+    }
+  ]
+}

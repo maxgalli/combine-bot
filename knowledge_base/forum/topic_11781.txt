@@ -1,0 +1,15 @@
+TOPIC: Background estimation via transfer factors and uncertainty correlations
+URL: https://cms-talk.web.cern.ch/t/11781
+DATE: 2022-06-16T16:14:16.870Z
+SOLVED: no
+============================================================
+
+QUESTION (by mwadud @ 2022-06-16T16:14:17.128Z):
+Dear all,
+We are performing a measurement of Z(NuNu)+gamma cross-section. The search observable is photon pT. We have two control regions for W+g (mu and e channels) in order estimate its contribution in the signal region via transfer factors estimated from MC. We followed the recipe given in [1].
+The the uncertainties on these transfer factors are correlated with the uncertainties of the other backgrounds in both the signal and control regions. For example, the photon ID scale factor uncertainty is fully correlated in all regions.
+We would like to implement this correlation in our Combine data cards and its not clear to us how to instruct Combine to enforce the correlation. If you have any suggestions, that would be most appreciated.
+Thanks.
+Mohammad
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes
+----------------------------------------

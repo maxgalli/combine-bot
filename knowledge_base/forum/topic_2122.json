@@ -1,0 +1,89 @@
+{
+  "topic_id": 2122,
+  "title": "Goodness-of-fit in more detail in Combine for studying agreement between control regions",
+  "url": "https://cms-talk.web.cern.ch/t/2122",
+  "category_id": 279,
+  "created_at": "2021-07-16T09:12:19.000Z",
+  "last_posted_at": "2021-07-26T15:37:07.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Robert_Stephen_White",
+      "name": "Robert Stephen White",
+      "created_at": "2021-07-16T09:12:19.000Z",
+      "updated_at": "2023-02-07T10:55:36.811Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nWe're looking at the level of agreement between our single e and single\nmu control regions, and want to investigate the contributions to the\ntest statistic in the goodnesses-of-fit in more detail. I believe this\nwas done in the Higgs->WW analysis and wondered if the steps to do this\nare documented anywhere, e.g. a verbose option of the minimisation\nperformed, the pulls on individual systs during this?\nKind regards, Rob on behalf of the analysers",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>We're looking at the level of agreement between our single e and single<br>\nmu control regions, and want to investigate the contributions to the<br>\ntest statistic in the goodnesses-of-fit in more detail. I believe this<br>\nwas done in the Higgs-&gt;WW analysis and wondered if the steps to do this<br>\nare documented anywhere, e.g. a verbose option of the minimisation<br>\nperformed, the pulls on individual systs during this?</p>\n<p>Kind regards, Rob on behalf of the analysers</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "Robert_Stephen_White",
+      "name": "Robert Stephen White",
+      "created_at": "2021-07-20T10:10:52.000Z",
+      "updated_at": "2021-11-17T08:36:30.175Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi, so we've progressed a bit further with this by looking at\nMultiDimFits to the systs that lead to the largest pulls in a single e +\nsingle mu fit, but this is telling a similar story to running fit\ndiagnostics with all regions but the single e + single mu control\nregions masked: the result lists the pulls (with an uncertainty of 0.00,\nwhich we can't explain given this uncertainty is non-zero as soon as one\nof the other control regions (with a rate parameter not shared with\nsingle e + single mu) is added back in / left unmasked). Any advice\nrelated to why this might be the case, or related to the method from the\nH->WW analysis would be appreciated!",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi, so we've progressed a bit further with this by looking at<br>\nMultiDimFits to the systs that lead to the largest pulls in a single e +<br>\nsingle mu fit, but this is telling a similar story to running fit<br>\ndiagnostics with all regions but the single e + single mu control<br>\nregions masked: the result lists the pulls (with an uncertainty of 0.00,<br>\nwhich we can't explain given this uncertainty is non-zero as soon as one<br>\nof the other control regions (with a rate parameter not shared with<br>\nsingle e + single mu) is added back in / left unmasked). Any advice<br>\nrelated to why this might be the case, or related to the method from the<br>\nH-&gt;WW analysis would be appreciated!</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2021-07-20T11:23:59.000Z",
+      "updated_at": "2021-11-17T08:36:30.481Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Rob,\nSorry for the slow reply.\nI think there might be a few different issues here.\nGoing back to your first question about the saturated GoF per category. This isn't available in the current combine release, but you can try using the code below (*). This will put extra branches in the output tree, one for each category, and one called \"constraints\", for the constraint pdfs. Note that this is not well validated yet, and not recommended for general usage - you should check carefully that the sum over categories equals the total.\nFor the checks below - I'm not entirely sure why you get uncertainties of 0.00 coming out - probably something failed in the uncertainty calculation but it's hard to guess without more info. It would be helpful to know all the combine commands you are using, and which output you extract these uncertainty numbers from. If you also make your datacards/workspace available then we can try to check it.\ncheers,\nAndrew\n(*)\nhttps://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/tree/saturated-per-channel",
+      "cooked_html": "<p>Hi Rob,</p>\n<p>Sorry for the slow reply.</p>\n<p>I think there might be a few different issues here.</p>\n<p>Going back to your first question about the saturated GoF per category. This isn't available in the current combine release, but you can try using the code below (*). This will put extra branches in the output tree, one for each category, and one called \"constraints\", for the constraint pdfs. Note that this is not well validated yet, and not recommended for general usage - you should check carefully that the sum over categories equals the total.</p>\n<p>For the checks below - I'm not entirely sure why you get uncertainties of 0.00 coming out - probably something failed in the uncertainty calculation but it's hard to guess without more info. It would be helpful to know all the combine commands you are using, and which output you extract these uncertainty numbers from. If you also make your datacards/workspace available then we can try to check it.</p>\n<p>cheers,<br>\nAndrew</p>\n<p>(*)<br>\n<a href=\"https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/tree/saturated-per-channel\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/tree/saturated-per-channel</a></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "Robert_Stephen_White",
+      "name": "Robert Stephen White",
+      "created_at": "2021-07-22T11:17:13.000Z",
+      "updated_at": "2021-11-17T08:36:30.808Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrew,\nThanks for your response. We will start looking into the repo you've\nprovided, but for you to get an idea of what our approach(es) are: we\nuse the following GoF command for a single e+ single mu-only fit:\nmasks_total=SR,dilepton,photon masks\ncombine -M GoodnessOfFit all_datacards.root --algo=saturated -m 125\n--setParameters \"$masks_total\" combineTool.py -M GoodnessOfFit\nall_datacards.root --setParameters \"$masks_total\" --algo=saturated -t\n300 -s 12 -n Toys -m 125 --toysFreq\nAnd we've also tried first creating a workspace with the relevant\nregions masked and freezing their rate parameters (without freezing the\nrate parameters the MultiDimFit stage fails. These rate parameters are\nshared by the dilepton and photon control regions, while the single\nlepton control regions share their own rate parameters, which are of\ncourse not frozen here). Command is\nfreezeparams=dilepton,photon rate parameters\ncombine .all_datacards.root -M MultiDimFit --saveWorkspace\n--setParameters \"${masks_total}r=0\" --freezeParameters\n\"${freezeparams}r\" -n _MLECRData -m 125\nThis outputs a higgsCombine_MLECRData.MultiDimFit.mH125.root file which\nwe then feed into the goodness of fit command instead of\nall_datacards.root\n(and to study these goodnesses of fit, we run on the output:\ncombineTool.py -M CollectGoodnessOfFit --input\nhiggsCombineTest.GoodnessOfFit.mH125.root\nhiggsCombineToys.GoodnessOfFit.mH125.12.root -m 125.0 -o\ngoodnessOfFitCROnly.json plotGof.py goodnessOfFitCROnly.json --statistic\nsaturated --mass 125.0 -o goodnessOfFitCROnlyPlot\nwhich gives us the GoF plots)\nThe difference between these two sets of commands only seems to affect\nthe toy distribution, but marginally: the p-value only changes within\n~0.1%",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrew,</p>\n<p>Thanks for your response. We will start looking into the repo you've<br>\nprovided, but for you to get an idea of what our approach(es) are: we<br>\nuse the following GoF command for a single e+ single mu-only fit:</p>\n<p>masks_total=SR,dilepton,photon masks</p>\n<p>combine -M GoodnessOfFit all_datacards.root --algo=saturated -m 125<br>\n--setParameters \"$masks_total\" combineTool.py -M GoodnessOfFit<br>\nall_datacards.root --setParameters \"$masks_total\" --algo=saturated -t<br>\n300 -s 12 -n Toys -m 125 --toysFreq</p>\n<p>And we've also tried first creating a workspace with the relevant<br>\nregions masked and freezing their rate parameters (without freezing the<br>\nrate parameters the MultiDimFit stage fails. These rate parameters are<br>\nshared by the dilepton and photon control regions, while the single<br>\nlepton control regions share their own rate parameters, which are of<br>\ncourse not frozen here). Command is</p>\n<p>freezeparams=dilepton,photon rate parameters</p>\n<p>combine .all_datacards.root -M MultiDimFit --saveWorkspace<br>\n--setParameters \"${masks_total}r=0\" --freezeParameters<br>\n\"${freezeparams}r\" -n _MLECRData -m 125</p>\n<p>This outputs a higgsCombine_MLECRData.MultiDimFit.mH125.root file which<br>\nwe then feed into the goodness of fit command instead of<br>\nall_datacards.root</p>\n<p>(and to study these goodnesses of fit, we run on the output:</p>\n<p>combineTool.py -M CollectGoodnessOfFit --input<br>\nhiggsCombineTest.GoodnessOfFit.mH125.root<br>\nhiggsCombineToys.GoodnessOfFit.mH125.12.root -m 125.0 -o<br>\ngoodnessOfFitCROnly.json plotGof.py goodnessOfFitCROnly.json --statistic<br>\nsaturated --mass 125.0 -o goodnessOfFitCROnlyPlot</p>\n<p>which gives us the GoF plots)</p>\n<p>The difference between these two sets of commands only seems to affect<br>\nthe toy distribution, but marginally: the p-value only changes within<br>\n~0.1%</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "maglowac",
+      "name": "Maciej Mikolaj Glowacki",
+      "created_at": "2021-07-26T13:27:48.000Z",
+      "updated_at": "2021-11-17T08:36:31.709Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHey,\nwith regards to the repo that was linked, is the functionality the same\nas before? I.e, we don't need to make changes to the build process or\npass any additional flags when running? Seems to run fine for me but not\nseeing any extra branches in the output ROOT files, also not seeing this\nprint statement which makes me a little suspicious:\nhttps://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241\nThanks!",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hey,</p>\n<p>with regards to the repo that was linked, is the functionality the same<br>\nas before? I.e, we don't need to make changes to the build process or<br>\npass any additional flags when running? Seems to run fine for me but not<br>\nseeing any extra branches in the output ROOT files, also not seeing this<br>\nprint statement which makes me a little suspicious:<br>\n<a href=\"https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241</a></p>\n<p>Thanks!</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "maglowac",
+      "name": "Maciej Mikolaj Glowacki",
+      "created_at": "2021-07-26T13:27:50.000Z",
+      "updated_at": "2021-11-17T08:36:32.913Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHey,\nwith regards to the repo that was linked, is the functionality the same\nas before? I.e, we don't need to make changes to the build process or\npass any additional flags when running? Seems to run fine for me but not\nseeing any extra branches in the output ROOT files, also not seeing this\nprint statement which makes me a little suspicious:\nhttps://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241\nThanks!",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hey,</p>\n<p>with regards to the repo that was linked, is the functionality the same<br>\nas before? I.e, we don't need to make changes to the build process or<br>\npass any additional flags when running? Seems to run fine for me but not<br>\nseeing any extra branches in the output ROOT files, also not seeing this<br>\nprint statement which makes me a little suspicious:<br>\n<a href=\"https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/ajgilbert/HiggsAnalysis-CombinedLimit/blob/988c7cc479df8461252ce3e1a5f482cf35495c4a/src/GoodnessOfFit.cc#L241</a></p>\n<p>Thanks!</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2021-07-26T15:37:07.000Z",
+      "updated_at": "2021-11-17T08:36:34.935Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Maciej,\nI think it should be enough to checkout that branch and recompile with scram. If it's still not working then perhaps you will have to put some more printouts to understand why the code doesn't reach the line linked below.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Maciej,</p>\n<p>I think it should be enough to checkout that branch and recompile with scram. If it's still not working then perhaps you will have to put some more printouts to understand why the code doesn't reach the line linked below.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

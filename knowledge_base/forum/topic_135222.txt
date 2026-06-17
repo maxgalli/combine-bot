@@ -1,0 +1,1081 @@
+TOPIC: Significance calculation in discrete profiling
+URL: https://cms-talk.web.cern.ch/t/135222
+DATE: 2025-10-23T10:06:27.807Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-10-23T10:06:28.029Z):
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+
+cms-analysis.github.io
+
+Advanced use cases - Combine
+
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions.  Some people say that not all input functions are used.  I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+----------------------------------------
+
+REPLY 2 (by anikiten @ 2025-10-30T08:55:53.808Z):
+Hello,
+I kindly ask you again to answer my question soon.   I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+----------------------------------------
+
+REPLY 3 (by gortona @ 2025-10-30T14:08:05.000Z):
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2025-10-30T14:40:18.000Z):
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, October 30, 2025 15:13
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance calculation in discrete profiling
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by gortona @ 2025-10-30T15:12:24.000Z):
+Hi Sasha,
+Tthe plot shows the likelihood distribution without offset for the best fit. It provides no hint whatsoever about the actual input shapes used (besides the legend).
+You can obtain the significance like you would do from a standard likelihood plot, simply subtracting the value of the likelihood ratio at the best fit point. In this case, extracting the values by hand, you have the best fit for r=0.5 at -2DeltaNLL~8512
+For r=0 you have something like q0 = 2DeltaNLL(r=0) - 2*DeltaNLL(r=0.5) ~ 0.25 and he significance should be sqrt(q0)=sqrt(0.25)= 0.5
+Best,
+Giacomo
+
+On 30 Oct 2025, at 15:43, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2025-10-30T15:59:37.000Z):
+Hi Giacomo,
+Do you say that it is an envelop (black) gives you
+2 x DeltaNLL = 2 x (NLL(r=0) - NLL(r=0.5)) ?
+I was told by some people that the function which participate
+In the envelop and has minimal delta NLL gives us the value.
+Are you sure that on the plot the likelihood distributions without offset for the best fit are shown. I see they have a different min NLL
+and penalty term, C.
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, October 30, 2025 16:13
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance calculation in discrete profiling
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+Tthe plot shows the likelihood distribution without offset for the best fit. It provides no hint whatsoever about the actual input shapes used (besides the legend).
+You can obtain the significance like you would do from a standard likelihood plot, simply subtracting the value of the likelihood ratio at the best fit point. In this case, extracting the values by hand, you have the best fit for r=0.5 at -2DeltaNLL~8512
+For r=0 you have something like q0 = 2DeltaNLL(r=0) - 2*DeltaNLL(r=0.5) ~ 0.25 and he significance should be sqrt(q0)=sqrt(0.25)= 0.5
+Best,
+Giacomo
+
+On 30 Oct 2025, at 15:43, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by gortona @ 2025-10-30T16:25:43.000Z):
+Hi Sasha,
+Yes the plot shows the likelihood distribution in absolute value with penalty term C. In principle, there’s no reason for likelihood obtain with different input functions to have the minima at the same r value, nor for them to have the same likelihood value at the minima.
+When computing the significance you would of course subtract the value of the log-likelihood function at the best fit (8215 in this case) and use the black function (the envelope) as reference.
+As you can see, by construction the black line will give you lower or equal significance than any of the individual functions (in our case is the same as the green function, but that’s by chance).
+To be more explicit: in my understanding the value of the DNLL is taken from the lowest function at any given point of the POI
+Best,
+Giacomo
+
+On 30 Oct 2025, at 17:04, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Do you say that it is an envelop (black) gives you
+2 x DeltaNLL = 2 x (NLL(r=0) - NLL(r=0.5)) ?
+I was told by some people that the function which participate
+In the envelop and has minimal delta NLL gives us the value.
+Are you sure that on the plot the likelihood distributions without offset for the best fit are shown. I see they have a different min NLL
+and penalty term, C.
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+Tthe plot shows the likelihood distribution without offset for the best fit. It provides no hint whatsoever about the actual input shapes used (besides the legend).
+You can obtain the significance like you would do from a standard likelihood plot, simply subtracting the value of the likelihood ratio at the best fit point. In this case, extracting the values by hand, you have the best fit for r=0.5 at -2DeltaNLL~8512
+For r=0 you have something like q0 = 2DeltaNLL(r=0) - 2*DeltaNLL(r=0.5) ~ 0.25 and he significance should be sqrt(q0)=sqrt(0.25)= 0.5
+Best,
+Giacomo
+
+On 30 Oct 2025, at 15:43, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2025-10-30T16:52:49.000Z):
+Thanks, Giacomo !
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, October 30, 2025 17:29
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance calculation in discrete profiling
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+Yes the plot shows the likelihood distribution in absolute value with penalty term C. In principle, there’s no reason for likelihood obtain with different input functions to have the minima at the same r value, nor for them to have the same likelihood value at the minima.
+When computing the significance you would of course subtract the value of the log-likelihood function at the best fit (8215 in this case) and use the black function (the envelope) as reference.
+As you can see, by construction the black line will give you lower or equal significance than any of the individual functions (in our case is the same as the green function, but that’s by chance).
+To be more explicit: in my understanding the value of the DNLL is taken from the lowest function at any given point of the POI
+Best,
+Giacomo
+
+On 30 Oct 2025, at 17:04, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Do you say that it is an envelop (black) gives you
+2 x DeltaNLL = 2 x (NLL(r=0) - NLL(r=0.5)) ?
+I was told by some people that the function which participate
+In the envelop and has minimal delta NLL gives us the value.
+Are you sure that on the plot the likelihood distributions without offset for the best fit are shown. I see they have a different min NLL
+and penalty term, C.
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+Tthe plot shows the likelihood distribution without offset for the best fit. It provides no hint whatsoever about the actual input shapes used (besides the legend).
+You can obtain the significance like you would do from a standard likelihood plot, simply subtracting the value of the likelihood ratio at the best fit point. In this case, extracting the values by hand, you have the best fit for r=0.5 at -2DeltaNLL~8512
+For r=0 you have something like q0 = 2DeltaNLL(r=0) - 2*DeltaNLL(r=0.5) ~ 0.25 and he significance should be sqrt(q0)=sqrt(0.25)= 0.5
+Best,
+Giacomo
+
+On 30 Oct 2025, at 15:43, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 9 (by kcormier @ 2025-10-30T17:13:11.850Z):
+gortona:
+
+As you can see, by construction the black line will give you lower or equal significance than any of the individual functions (in our case is the same as the green function, but that’s by chance).
+
+Sorry to jump in, but I think I’ve either misunderstood this statement, or its not correct. In either case I’d like to minimize any misunderstandings here.
+Consider the case, for example, where one functional form (A) is a poor best fit (high absolute NLL), but is relatively broad (the NLL changes slowly with the POI), and another form (B) has a good best fit (low absolute NLL) but is very peaked (NLL changes quickly with the POI). For the sake of argument, lets say they have thesame best fit value of the POI. The significance using discrete profiling will tend to be larger than that of (A) but smaller than that of (B).
+Just as in non-discrete-profiling case – adding uncertainties usually decreases significance, but this is not guaranteed to be the case and it can happen that it increases the significance if the uncertainty allows a better overall fit to the data. E.g. adding uncertainty on a background rate may allow that background rate to be pulled down by data in a control region and actually increase the overall significance of a signal; adding a functional form which is actually a better overall fit to the data may have the same effect.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 10 (by anikiten @ 2025-10-30T17:21:47.000Z):
+Hi Kyle,
+Thank you for your input. What I do not understand in your example
+Is why significance will be smaller than case (B), why not the same ?
+Cheers, Sasha.
+
+···
+
+From: Kyle Cormier via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, October 30, 2025 18:14
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance calculation in discrete profiling
+
+Kyle Cormier kcormierOctober 30
+
+gortona:
+As you can see, by construction the black line will give you lower or equal significance than any of the individual functions (in our case is the same as the green function, but that’s by chance).
+
+Sorry to jump in, but I think I’ve either misunderstood this statement, or its not correct. In either case I’d like to minimize any misunderstandings here.
+Consider the case, for example, where one functional form (A) is a poor best fit (high absolute NLL), but is relatively broad (the NLL changes slowly with the POI), and another form (B) has a good best fit (low absolute NLL) but is very peaked (NLL changes quickly with the POI). For the sake of argument, lets say they have thesame best fit value of the POI. The significance using discrete profiling will tend to be larger than that of (A) but smaller than that of (B).
+Just as in non-discrete-profiling case – adding uncertainties usually decreases significance, but this is not guaranteed to be the case and it can happen that it increases the significance if the uncertainty allows a better overall fit to the data. E.g. adding uncertainty on a background rate may allow that background rate to be pulled down by data in a control region and actually increase the overall significance of a signal; adding a functional form which is actually a better overall fit to the data may have the same effect.
+Best,
+Kyle
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 11 (by kcormier @ 2025-10-30T18:28:36.333Z):
+Dear Sasha,
+In some circumstances it could also be the same as B. It depends on the details. I was considering the case where e.g. that the crossing point of A and B is somewhere between the best fit value of the POI and the null-hypothesis value of the POI. So the envelope lies on B at the best fit point but on A at the null hypothesis value. But it was just one example, the point is that the significance can be lower than for some individual curves and higher than for others (or equal).
+Best,
+Kyle
+----------------------------------------
+
+REPLY 12 (by gortona @ 2025-10-30T19:36:59.000Z):
+Hi Kyle,
+You are right of course. Sorry I wanted to comment on the particular plot in the Combine documentation and it came out as a general and uncorrect statement. I should learn to avoid sending mail about statistics after 5pm
+Apologise for triggering some confusion, and thank you for correcting the records.
+Best,
+Giacomo
+
+On 30 Oct 2025, at 18:14, Kyle Cormier via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Kyle Cormier kcormierOctober 30
+
+gortona:
+As you can see, by construction the black line will give you lower or equal significance than any of the individual functions (in our case is the same as the green function, but that’s by chance).
+
+Sorry to jump in, but I think I’ve either misunderstood this statement, or its not correct. In either case I’d like to minimize any misunderstandings here.
+Consider the case, for example, where one functional form (A) is a poor best fit (high absolute NLL), but is relatively broad (the NLL changes slowly with the POI), and another form (B) has a good best fit (low absolute NLL) but is very peaked (NLL changes quickly with the POI). For the sake of argument, lets say they have thesame best fit value of the POI. The significance using discrete profiling will tend to be larger than that of (A) but smaller than that of (B).
+Just as in non-discrete-profiling case – adding uncertainties usually decreases significance, but this is not guaranteed to be the case and it can happen that it increases the significance if the uncertainty allows a better overall fit to the data. E.g. adding uncertainty on a background rate may allow that background rate to be pulled down by data in a control region and actually increase the overall significance of a signal; adding a functional form which is actually a better overall fit to the data may have the same effect.
+Best,
+Kyle
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 30
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+Yes the plot shows the likelihood distribution in absolute value with penalty term C. In principle, there’s no reason for likelihood obtain with different input functions to have the minima at the same r value, nor for them to have the same likelihood value at the minima.
+When computing the significance you would of course subtract the value of the log-likelihood function at the best fit (8215 in this case) and use the black function (the envelope) as reference.
+As you can see, by construction the black line will give you lower or equal significance than any of the individual functions (in our case is the same as the green function, but that’s by chance).
+To be more explicit: in my understanding the value of the DNLL is taken from the lowest function at any given point of the POI
+Best,
+Giacomo
+
+On 30 Oct 2025, at 17:04, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Do you say that it is an envelop (black) gives you
+2 x DeltaNLL = 2 x (NLL(r=0) - NLL(r=0.5)) ?
+I was told by some people that the function which participate
+In the envelop and has minimal delta NLL gives us the value.
+Are you sure that on the plot the likelihood distributions without offset for the best fit are shown. I see they have a different min NLL
+and penalty term, C.
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+Tthe plot shows the likelihood distribution without offset for the best fit. It provides no hint whatsoever about the actual input shapes used (besides the legend).
+You can obtain the significance like you would do from a standard likelihood plot, simply subtracting the value of the likelihood ratio at the best fit point. In this case, extracting the values by hand, you have the best fit for r=0.5 at -2DeltaNLL~8512
+For r=0 you have something like q0 = 2DeltaNLL(r=0) - 2*DeltaNLL(r=0.5) ~ 0.25 and he significance should be sqrt(q0)=sqrt(0.25)= 0.5
+Best,
+Giacomo
+
+On 30 Oct 2025, at 15:43, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Do you say that it is an envelop (black) gives you
+2 x DeltaNLL = 2 x (NLL(r=0) - NLL(r=0.5)) ?
+I was told by some people that the function which participate
+In the envelop and has minimal delta NLL gives us the value.
+Are you sure that on the plot the likelihood distributions without offset for the best fit are shown. I see they have a different min NLL
+and penalty term, C.
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+Tthe plot shows the likelihood distribution without offset for the best fit. It provides no hint whatsoever about the actual input shapes used (besides the legend).
+You can obtain the significance like you would do from a standard likelihood plot, simply subtracting the value of the likelihood ratio at the best fit point. In this case, extracting the values by hand, you have the best fit for r=0.5 at -2DeltaNLL~8512
+For r=0 you have something like q0 = 2DeltaNLL(r=0) - 2*DeltaNLL(r=0.5) ~ 0.25 and he significance should be sqrt(q0)=sqrt(0.25)= 0.5
+Best,
+Giacomo
+
+On 30 Oct 2025, at 15:43, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaOctober 30
+
+Hi Sasha,
+I’m sorry but it is not 100% clear to me what you mean with your question.
+When using discrete profiling, you are introducing a discrete variable in your likelihood function. For each value of the POI that you are testing, you search the minima across all the parameters space, including the discrete one and compute the likelihood ratio with respect to the global minima across all parameters. Is that what you were asking?
+In practice, for each value of your POI, the discrete profiling will select the input function that maximises the likelihood function, like in the plot in the link you sent. The chosen function can be different at different value of the POI if that was your question.
+I hope it helps,
+Best,
+Giacomo
+
+On 30 Oct 2025, at 09:57, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hello,
+I kindly ask you again to answer my question soon. I do need it to understand conclusion of Study Group about our dimuon analysis.
+Thank you, Sasha.
+
+Alexandre Nikitenko anikitenOctober 23
+
+Dear experts,
+I would like to understand how significance (deltaNLL) is evaluated in discrete profiling method.
+I can’t find explanation neither in
+cms-analysis.github.io
+Advanced use cases - Combine
+nor in the original paper.
+1408.6865
+Discussing with some people I got impression that a function with minimal deltaNLL is selected among all input functions. Some people say that not all input functions are used. I can imagine that functions not participating in the envelop building are not taken.
+Cheers, Sasha.
+https://arxiv.org/pdf/1408.6865
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenOctober 30
+
+Hi Giacomo,
+Sorry if I was unclear with my question.
+Take as an example plot from
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+We see an envelop (black color) and two functions participating in the envelop, green and red.
+Envelop reaches minimum at r = 0.5. My question is what is a significance of this observation, r = 0.5 ?
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 13 (by kcormier @ 2025-10-31T15:34:09.390Z):
+No problem, I’ve made much bigger mistakes at all times of the day. Just wanted to clarify.
+Best,
+Kyle
+----------------------------------------

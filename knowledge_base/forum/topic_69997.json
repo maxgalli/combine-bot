@@ -1,0 +1,100 @@
+{
+  "topic_id": 69997,
+  "title": "Question about Combine Parametric Exercise",
+  "url": "https://cms-talk.web.cern.ch/t/69997",
+  "category_id": 279,
+  "created_at": "2024-11-28T13:54:45.014Z",
+  "last_posted_at": "2024-11-29T08:06:35.716Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "johornun",
+      "name": "Johannes Hornung",
+      "created_at": "2024-11-28T13:54:45.296Z",
+      "updated_at": "2024-11-28T13:54:45.296Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nI am performing an analysis looking for a decay of the SM Higgs boson into two pseudoscalar Higgs bosons subsequently decaying into kaons in the ZH production mode of  the SM Higgs boson. Since I am new to particle physics, I initially based my analysis on the Parametric Exercise on the Combine website and went from there. My question now regards a difference between my resulting workflow and the workflow detailed in the exercise.\nIn my workflow, I normalize my signal MC distribution to cs*br/N_events. Then I mutiply that normalization weight with scale factors and luminosity together to obtain an overall event weight. After that, I fit my model to the weighted MC distribution. Finally, I save that model together with the sum of weights as {model}_norm into a workspace and set the signal rate in the datacard to 1. With the asymptotic method of combine, I get an observed limit O(0.01pb) using that workflow. The parametric exercise performs the same workflow (minus weights) for the background estimation.\nBut for the signal estimation the parametric exercise does something different. It also fits a model to a weighted signal MC distribution; however, the weights seem to exclude the luminosity. After that, the exercise calculates an efficiency eff = sumw/(cs*br) and then a norm N = cs*br*eff*lumi. This norm is put into the datacard as signal rate. If I calculate a norm, like the parametric exercise does, it is equal to the norm calculated with my approach, but the resulting observed limit with the asymptotic method comes out to be O(0.1pb).\nSo, I do have two approaches, that give the same intermediate result but two different final results. I hope you are able to solve this discrepancy.\nCheers\nJohannes Hornung",
+      "cooked_html": "<p>Hello,<br>\nI am performing an analysis looking for a decay of the SM Higgs boson into two pseudoscalar Higgs bosons subsequently decaying into kaons in the ZH production mode of  the SM Higgs boson. Since I am new to particle physics, I initially based my analysis on the Parametric Exercise on the Combine website and went from there. My question now regards a difference between my resulting workflow and the workflow detailed in the exercise.</p>\n<p>In my workflow, I normalize my signal MC distribution to <code>cs*br/N_events</code>. Then I mutiply that normalization weight with scale factors and luminosity together to obtain an overall event weight. After that, I fit my model to the weighted MC distribution. Finally, I save that model together with the sum of weights as <code>{model}_norm</code> into a workspace and set the signal rate in the datacard to 1. With the asymptotic method of combine, I get an observed limit O(0.01pb) using that workflow. The parametric exercise performs the same workflow (minus weights) for the background estimation.</p>\n<p>But for the signal estimation the parametric exercise does something different. It also fits a model to a weighted signal MC distribution; however, the weights seem to exclude the luminosity. After that, the exercise calculates an efficiency <code>eff = sumw/(cs*br)</code> and then a norm <code>N = cs*br*eff*lumi</code>. This norm is put into the datacard as signal rate. If I calculate a norm, like the parametric exercise does, it is equal to the norm calculated with my approach, but the resulting observed limit with the asymptotic method comes out to be O(0.1pb).</p>\n<p>So, I do have two approaches, that give the same intermediate result but two different final results. I hope you are able to solve this discrepancy.</p>\n<p>Cheers<br>\nJohannes Hornung</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-11-28T14:13:42.677Z",
+      "updated_at": "2024-11-28T14:13:42.677Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Johannes,\nI think what you should be putting in the datacard for the signal, if you set the {model}_norm to weights*xs*br/Nevents, is the value of the luminosity. The main point is that {model}_norm and the rate in the datacard are multiplied. So you could set {model}_norm to 1 and the rate in the datacard to N=weights*xs*br*lumi/Nevents, {model}_norm to N and the rate in the datacard to 1, or something in between, as long as rate*{model}_norm = N.\nPerhaps you are double counting some of the factors in your setup, ie including them both in rate and in the {model}_norm ?\nHope this helps,\nAdinda",
+      "cooked_html": "<p>Hi Johannes,</p>\n<p>I think what you should be putting in the datacard for the signal, if you set the <code>{model}_norm</code> to <code>weights*xs*br/Nevents</code>, is the value of the luminosity. The main point is that <code>{model}_norm</code> and the rate in the datacard are multiplied. So you could set <code>{model}_norm</code> to 1 and the rate in the datacard to <code>N=weights*xs*br*lumi/Nevents</code>, <code>{model}_norm</code> to N and the rate in the datacard to 1, or something in between, as long as <code>rate*{model}_norm</code> = <code>N</code>.</p>\n<p>Perhaps you are double counting some of the factors in your setup, ie including them both in rate and in the <code>{model}_norm</code> ?</p>\n<p>Hope this helps,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "johornun",
+      "name": "Johannes Hornung",
+      "created_at": "2024-11-28T14:57:25.795Z",
+      "updated_at": "2024-11-28T14:57:25.795Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nthank you for the fast reply. It was very helpful in reinforcing what I already knew about combine!\nHowever, rate*{model}_norm is already equal to N between the two approaches I tried. So combine should give me the same result, shouldn\u2019t it? Unless {model}_norm has a standard value other than 1, if it is not explicitly defined in the workspace?\nThank you again for your help!\nCheers\nJohannes",
+      "cooked_html": "<p>Hi Adinda,<br>\nthank you for the fast reply. It was very helpful in reinforcing what I already knew about combine!</p>\n<p>However, <code>rate*{model}_norm</code> is already equal to <code>N</code> between the two approaches I tried. So combine should give me the same result, shouldn\u2019t it? Unless <code>{model}_norm</code> has a standard value other than 1, if it is not explicitly defined in the workspace?</p>\n<p>Thank you again for your help!</p>\n<p>Cheers<br>\nJohannes</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "johornun",
+      "name": "Johannes Hornung",
+      "created_at": "2024-11-28T15:07:49.046Z",
+      "updated_at": "2024-11-28T15:07:49.046Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Sorry, I didn\u2019t explain properly what I meant: The first approach fully defines {model}_norm as N and keeps rate at 1 and in the second rate is defined as N and {model}_norm is kept undefined in the workspace. And both approaches produce different results. Hope this clears things up!\nCheers again\nJohannes",
+      "cooked_html": "<p>Sorry, I didn\u2019t explain properly what I meant: The first approach fully defines <code>{model}_norm</code> as <code>N</code> and keeps <code>rate</code> at 1 and in the second <code>rate</code> is defined as <code>N</code> and <code>{model}_norm</code> is kept undefined in the workspace. And both approaches produce different results. Hope this clears things up!</p>\n<p>Cheers again<br>\nJohannes</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-11-28T15:09:29.680Z",
+      "updated_at": "2024-11-28T15:09:29.680Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Johannes,\nWould you be able to share the two workspaces? In this case I don\u2019t see off the top of my head what the problem could be (though others may chime in if they do).\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Johannes,</p>\n<p>Would you be able to share the two workspaces? In this case I don\u2019t see off the top of my head what the problem could be (though others may chime in if they do).</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "johornun",
+      "name": "Johannes Hornung",
+      "created_at": "2024-11-28T15:49:00.662Z",
+      "updated_at": "2024-11-28T15:49:00.662Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nsorry for the delay, I rechecked the\nworkspaces myself, but didn\u2019t find anything out of the ordinary. ...limits... should be where rate is set to 1 and ...limitsSanityCheck... where the norm is set to 1.\nThanks again\nJohannes",
+      "cooked_html": "<p>Hi,</p>\n<p>sorry for the delay, I rechecked the<br>\n<a href=\"https://etpwww.etp.kit.edu/~jhornung/?dir=Workspaces\" rel=\"noopener nofollow ugc\">workspaces</a> myself, but didn\u2019t find anything out of the ordinary. <code>...limits...</code> should be where rate is set to 1 and <code>...limitsSanityCheck...</code> where the norm is set to 1.</p>\n<p>Thanks again</p>\n<p>Johannes</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-11-28T17:01:34.416Z",
+      "updated_at": "2024-11-28T17:01:34.416Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Johannes,\nIndeed from a quick look the signal normalization looks the same in both cases. However, the signal shapes look somewhat different - this is not the full source of the difference but would have some effect.\nThe other thing I noticed is that it looks like floating or freezing your systematic uncertainties changes the limits a lot in the ...limitsSanityCheck... case, but do nothing in the ...limits... case - and comparing the limit from the ...limits... case with that obtained with the uncertainties frozen in the ...limitsSanityCheck... case yields two very similar numbers (not identical, because the input signal pdfs are not exactly the same)\nIn summary, there are probably several things different between your two setups\n\nsignal pdfs not exactly the same\nlikely something different in the systematics implementation\n\nCould you double check the implementation of your systematic uncertainties? I don\u2019t obviously see from the workspace what the differences are, but since these mostly seem to be lognormal uncertainties, you should be able to spot any differences between the two datacards.\nThen, for convincing yourself that you get the same result with the two normalization implementations, you can try using the exact same datacard and input workspace in both cases, except flipping the contents of the _norm term with the rate in the datacard, and then things should match. You can even do it without systematics, if it\u2019s not clear to you what the difference in their implementation between the two fits is.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Johannes,</p>\n<p>Indeed from a quick look the signal normalization looks the same in both cases. However, the signal shapes look somewhat different - this is not the full source of the difference but would have some effect.</p>\n<p>The other thing I noticed is that it looks like floating or freezing your systematic uncertainties changes the limits a lot in the <code>...limitsSanityCheck...</code> case, but do nothing in the <code>...limits...</code> case - and comparing the limit from the <code>...limits...</code> case with that obtained with the uncertainties frozen in the <code>...limitsSanityCheck...</code> case yields two very similar numbers (not identical, because the input signal pdfs are not exactly the same)</p>\n<p>In summary, there are probably several things different between your two setups</p>\n<ol>\n<li>signal pdfs not exactly the same</li>\n<li>likely something different in the systematics implementation</li>\n</ol>\n<p>Could you double check the implementation of your systematic uncertainties? I don\u2019t obviously see from the workspace what the differences are, but since these mostly seem to be lognormal uncertainties, you should be able to spot any differences between the two datacards.</p>\n<p>Then, for convincing yourself that you get the same result with the two normalization implementations, you can try using the exact same datacard and input workspace in both cases, except flipping the contents of the <code>_norm</code> term with the rate in the datacard, and then things should match. You can even do it without systematics, if it\u2019s not clear to you what the difference in their implementation between the two fits is.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "johornun",
+      "name": "Johannes Hornung",
+      "created_at": "2024-11-29T08:06:35.716Z",
+      "updated_at": "2024-11-29T08:06:35.716Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nit really was the systematics. Without the scaling to the lumi, my model does some really weird stuff, causing the systematics to get really high. I didn\u2019t expect that.\nThanks a lot for checking the workspaces! I wouldn\u2019t have been able to resolve this without you.\nBest,\nJohannes",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>it really was the systematics. Without the scaling to the lumi, my model does some really weird stuff, causing the systematics to get really high. I didn\u2019t expect that.</p>\n<p>Thanks a lot for checking the workspaces! I wouldn\u2019t have been able to resolve this without you.</p>\n<p>Best,<br>\nJohannes</p>"
+    }
+  ]
+}

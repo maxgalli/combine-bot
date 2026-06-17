@@ -1,0 +1,31 @@
+TOPIC: Parametrization of the signal strength parameters for MLF
+URL: https://cms-talk.web.cern.ch/t/2151
+DATE: 2021-08-16T22:39:49.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Hugo_Becerril_Gonzal @ 2021-08-16T22:39:49.000Z):
+Dear combine experts,
+We are using Combine to unfold the charge asymmetry to truth level. We only have two bins so we define two signal strengths parameters r_neg and r_pos.
+We want to have the value of the charge asymmetry directly from the fit. We achieve this by rearranging r_pos as follows:
+text2workspace.py muon_2016.txt -o muon_2016.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel -m 125 --PO map=‘./Ttbar_1:r_neg[1,0,20]’ --PO map='./Ttbar_2:r_pos=expr;;r_pos(“7053.01/7156.152*@0*(100+@1)/(100-@1)”,r_neg,r_Asym[-2,-5,0])’ --PO verbose
+Once we do the fit and we get the impocats we were confused because some of the systematics that have a low impact in both r_pos and r_neg have a large impact in r_Asym (for example PDF).
+We were wondering if there is a way to investigate how the errors are propagated and understand why we see this behaviour.
+Regards,
+Hugo Becerril
+(Attachment r_neg.pdf is missing)
+(Attachment r_Asym.pdf is missing)
+(Attachment r_pos.pdf is missing)
+----------------------------------------
+
+REPLY 2 (by andrea_marini @ 2021-08-18T18:53:32.000Z):
+Hi Hugo,
+In general, the W asymmetry behaves as a ratio of observables, so common correlated uncertainties usually simplify,
+while anticorrelated uncertainties are counted more.
+In general, it would be wise to make sure that the correlation scheme of the uncertainties is correct (correlated, uncorrelated, vs anticorrelated).
+Probably you would benefit in using finer splitting for jes, jer, pdf, xsec … as the residuals in each of them will behave differently in the W-asymmetry measurement.
+For example, for the jet energy scale, you should understand if the sources give you a larger uncertainty when propagated to the W-asymm.
+Similarly, the jer. For the Pdf you can use the hessian eigenvalues (if available) that represents the different uncorrelated components. For the xsec, you can try to split the two scales or through the different kinematic regions the calculation may be sensitive to, due to different effects (but this may require some inputs from the theorists).
+Cheers,
+-Andrea
+----------------------------------------

@@ -1,0 +1,101 @@
+TOPIC: Combine half sided impacts
+URL: https://cms-talk.web.cern.ch/t/44273
+DATE: 2024-07-25T03:11:31.907Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmajor @ 2024-07-25T03:11:32.240Z):
+Dear Experts,
+I would like to get some help interpreting the impact plot I got for one of our datacards, because quite a number of the impacts is one-sided. I obtained the plot with the following commands:
+combineTool.py -M Impacts -d $massDir.root --doInitialFit         --robustFit 1 -t -1 --expectSignal 0 --rMin -10 --rMax 10 -m 120
+combineTool.py -M Impacts -d $massDir.root --doFits --parallel 20 --robustFit 1 -t -1 --expectSignal 0 --rMin -10 --rMax 10 -m 120
+combineTool.py -M Impacts -d $massDir.root -o $massDir.json -m 120
+plotImpacts.py -i  $massDir.json -o impacts_${massDir}
+
+Both the impact pdf and the datacard are available here: https://cernbox.cern.ch/s/GtEHpi1rGB9A0A3
+The lines starting with greek letter names are unconstrained and represent rateParams that do an ABCD and a sideband transfer factor estimation in the datacard.
+beta_28 is the first strange one. In the datacard it is defined as:
+beta_28	rateParam	B_28	QCD	5.7157	[0.0000,23.99]
+It multiplies 1 in the B region of ABCD to fit the QCD contribution there. I set the initial value simply by subtracting the other expected backgrounds from the observation.
+But for some reason, in the fit it has a zero lower error:
+--- MultiDimFit ---
+Parameter impacts:
+Parameter :   Best-fit               r
+beta_28   :   +5.698  +0.000/+4.611  -0.000/-0.119
+
+Next, there are a host of systematics with one-sided impacts only. For example Deep_uncor_comb_2017.
+--- MultiDimFit ---
+Parameter impacts:
+Parameter            :   Best-fit               r
+Deep_uncor_comb_2017 :   +0.009  -0.959/+0.971  +0.008/-0.081
+
+This does not seem to be an issue when the control regions are not part of the datacard, but I think the rateParams have a very wide limit range. Without the limits, the initial MultiDimFit fails.
+Cheers,
+Peter
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-07-25T07:50:56.185Z):
+Hi Peter,
+I think there are two things happening here.
+First, the parameters where you find no “up” or “down” uncertainty (either rateParams, e.g. beta_28 which has no -ve uncertainty, or constrained parameters where you clearly see no error bar on one side of the plot). These are likely just due to fit failures (the lower crossing of 2*deltaNLL with 1 was not found). You can check this by running the impacts for only one parameter with the --named option, and perhaps increasing the verbosity of the fit, and you should see that it says something like “failed to find crossing”. Playing with the parameter ranges, and/or with the --stepSize parameter (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=stepsize#fit-options), can sometimes help with this.
+The other effect is parameters such as Deep_uncor_comb_2017, where you see the fit works, but the impact is asymmetric. This I would interpret as the uncertainty genuinely having an asymmetric effect on the signal strength, and you should be able to track it down by looking at the size of the uncertainty that is applied to the different processes in your fit. It doesn’t have to be a problem, though you might want to convince yourself that, if it is indeed due to asymmetric uncertainties being applied, those uncertainties make sense.
+Hope that helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by pmajor @ 2024-07-25T11:44:59.867Z):
+Hi Adinda, thank you for the reply.
+I ran the fit for beta_28 alone with -v2, and it seems like the lower uncertainty crossing would be outside of the parameter limits I have supplied. The lower limit is 0 not to allow for negative contribution by the process the rateParam is coupled to. Do you think I should relax this limit for the impact examination?
+Set default minimizer to Minuit2, algorithm Migrad, tolerance 0.1
+Searching for crossing at nll = 24.2714, in the interval 5.69793 < beta_28 < 0
+beta_28 lvl-here lvl-there 	stepping
+5.128141    +0.49053  +0.49448    -0.569793
+4.558347    +0.48240  +0.49053    -0.569793
+3.988554    +0.47329  +0.48240    -0.569793
+3.418760    +0.46405  +0.47329    -0.569793
+2.848967    +0.45492  +0.46405    -0.569793
+2.279174    +0.44599  +0.45492    -0.569793
+1.709380    +0.43729  +0.44599    -0.569793
+1.139587    +0.42863  +0.43729    -0.569793
+0.569793    +0.42026  +0.42863    -0.569793
+0.569793    +0.42026  +0.42026    -0.284897
+0.284897    +0.41604  +0.42026    -0.284897
+0.000000    +0.41187  +0.41604    -0.284897
+0.000000    +0.41190  +0.41187    0.000000
+[ERROR] Closed range without finding crossing!
+
+I think in this case it would be useful if Combine could be instructed to set the parameter to the limit and provide an impact based on that.
+I am still looking into the other nuisances.
+----------------------------------------
+
+REPLY 4 (by pmajor @ 2024-07-25T16:24:36.282Z):
+Dear Experts,
+So by decreasing the lower limit of beta_28 to -100 I tried to fit again.
+combine -M MultiDimFit -n _paramFit_Test_beta_28 --algo impact --redefineSignalPOIs r -P beta_28 --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -t -1 --expectSignal 0 --rMin -10 --rMax 10 -m 120 -d g2000chi700.root -v2
+
+The lower crossing of the 2*nll limit is reached at -57:
+--- MultiDimFit ---
+Parameter impacts:
+Parameter :   Best-fit               r
+beta_28   :   +5.692  -57.386/+4.617
+
+which is clearly not right, the initial fit is much more realistic:
+beta_28    5.7157e+00    5.6919e+00 +/-  3.38e+00
+I tested how this behaves as I eliminate certain nuisance parameters. I found that there seems to be a connection between this and nuisance parameters that affect a background in B_28 with only three NNLO MC events, two positive, and one negative (w~+/-0.7). In many sys cases, one positive event is lost, and the related uncertainty is almost 100% as the bin cintent becomes 0.7+(-0.7).
+Since the systematic nuisance affects other bins (usually to a much lesser degree) I do not really have an option to model this change using other distributions, right?
+That being said this large lnN uncertainty seems to cause some instability, as if I limit the lnN value to between 0.5 and 2.0 the errors on beta_28 seem to somewhat normalize:
+--- MultiDimFit ---
+Parameter impacts:
+Parameter :   Best-fit               r
+beta_28   :   +5.587  -5.393/+4.302
+
+Is there any way I can handle this more correctly than that?
+----------------------------------------
+
+REPLY 5 (by adewit @ 2024-07-25T16:33:13.165Z):
+Hi Peter,
+The initial fit gives you a symmetric uncertainty, so more like an estimate. Perhaps you could try to do the likelihood scan explicitly with --algo grid to see if the curve is indeed as expected.
+You could also test this with the nuisance parameter(s) affecting the background in B_28 and that cause a very large uncertainty there removed from that bin, to see what the effect of that is. If you have reason to believe that the uncertainty is unrealistically large, and the background is very small, it can sometimes be better to remove the uncertainty. Whether or not to eventually remove those uncertainties from that process in the specific bin is a physics question, but you could at least perform some tests with them removed.
+Best,
+Adinda
+----------------------------------------

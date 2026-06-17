@@ -1,0 +1,27 @@
+TOPIC: Acceptable Goodness-of-Fit distributions
+URL: https://cms-talk.web.cern.ch/t/13530
+DATE: 2022-08-01T17:01:08.028Z
+SOLVED: no
+============================================================
+
+QUESTION (by vwachira @ 2022-08-01T17:01:08.422Z):
+Dear combine experts,
+I am currently working on Goodness-of-Fit test from my analysis, but as far as I have checked in the documentation it is not clear to me what shape of distributions that comes out of the test should be. Given a sufficient number of toys, should the output distribution be in the shape of gaussian, chi-square, or in any shape?
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-08-01T22:33:28.729Z):
+Hi, I guess that you are asking about the ‘saturated’ likelihood test statistics.
+It is also called Generalized chi-square goodness of fit link; under certain condition it can be considered a chi-square. However the proper distribution accounting for the effect of the different systematics should be derived with toys. For more details see the link above.
+The other methods implemented are the Kolmogorov–Smirnov and the Anderson–Darling tests.They share a similar concern about the systematic effects, but furethermore these two tests are inherently defined over a 1D distribution, so some assumptions have been made for multichannel experiments (as the sum over the channels, iirc).
+In conclusion, you should always run toys to determine the test-statistics distribution.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by vwachira @ 2022-08-03T14:54:50.372Z):
+Thank you for your reply Andrea. So does this mean the test statistics can be in any shape? Does this also mean we must always run toys to determine the shape of the distribution, since it could be in any shape?
+Regards,
+Vichayanun
+----------------------------------------

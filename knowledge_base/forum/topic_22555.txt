@@ -1,0 +1,65 @@
+TOPIC: Discrete profiling shows the wrong profile
+URL: https://cms-talk.web.cern.ch/t/22555
+DATE: 2023-04-10T19:15:28.916Z
+SOLVED: no
+============================================================
+
+QUESTION (by fanx @ 2023-04-10T19:15:29.087Z):
+Dear combine experts,
+Sorry to bother you guys again. I was trying to run the discrete profiling on my data set, and the profile turned out not to be the profile of the lowest NLL. So I went back to the combine tutorial to check whether I missed any options in combine. In the part 5 of the tutorial, there are 3 PDFs in the envelope. For some reason, the profile is also wrong. The scan result shows that the profile chooses the Chebychev polynomial for the first two data point, and the exponential for the rest. However, if I actually plot out the NLL of all the PDFs, this profile is not the minimum of the envelope at all. Somehow the power law PDF is disregarded.
+The link to the tutorial is here. (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#part-5-discrete-profiling)
+
+image696×472 12.8 KB
+
+I also notice that there are mismatches between the profile and the Chebychev polynomial at the first two data points. My guess is that this is due to different numerical precision. If anyone know the reason for this, please enlighten me on this as well.
+Thanks in advance!
+Xingchen
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-04-11T11:09:14.252Z):
+Dear Xingchen,
+No need to be sorry for asking questions, that is what the forum is for. Just always good to check available sources first. But if you don’t find the answer, this is the right place to come.
+I am wondering how these plots were produced. To me it looks like they are missing the initial nll offset for each of the fits that are being done.
+In particular it might be helpful to look at this part of the documentation on discrete profiling:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+One important point is that if you are going to compare the NLL of the different fits you need to ensure that when you are running the fits you are using the  --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 flag (as well as the --saveNLL flag, of course).
+Then when comparing the NLL, its important that you include the nll0 term saved in the tree. As explained there in the manual, what you want to plot is: (deltaNLL+nll+nll0) (or some monotonic function of that quantity). This should be the comparison you want to make, but if you miss the nll0 term it can give incorrect results since this offset has already been removed from the nll value thats given.
+In particular, if I look at the fits from the tutorial, part5, and do this I see that for the power law fit initial nll,nll0, is 39066, whereas for the exponential and chebyshev it is 39042 (not exactly, more on this below). If I don’t take this offset into account, I think I would get a plot like yours, but taking it into account shifts the power law curve up by 24 relative to the other two, and so it seems the fit with the background functional form floating is performing as expected.
+I think that the issue with the slight offset in the first two points is coming from the same place. Because although I described them as the same above, the initial nll value, nll0, is actually 39042.830 for the exponential and the fit where the background is shape floating, but it is 39042.609 for the chebyshev polynomial. So there should be an offset of 0.219 which differs between what we see for “exp” and “profile” as compared to the chebyshev.
+Hope that helps,
+Kyle
+----------------------------------------
+
+REPLY 3 (by fiemmi @ 2023-04-11T11:44:47.476Z):
+Hi @fanx (and @kcormier),
+I was wondering: Xingchen, how did you check that, quoting you, “the profile turned out not to be the profile of the lowest NLL”? Did you judge based on the plot?
+If you ran the fits with the --saveSpecifiedIndex pdfindex_Tag0 option, it could be interesting to plot how the PDF index is changing during the signal strength scan. Something like
+root -l your_output_file.root
+limit->SetMarkerStlye(8)
+limit->Draw("pdfindex_Tag0:r")
+
+This will give you the value of the PDF index at each scanned r point. Maybe you can get an insight on what PDF is really chosen.
+Hope it helps,
+best,
+Fabio.
+----------------------------------------
+
+REPLY 4 (by fanx @ 2023-04-12T16:22:56.597Z):
+Hi Kyle,
+Thank you for your kind reply! My plot is just nll + deltaNLL. In my output file, nll0 is 0 so I don’t add it to the final NLL value. And I think this is exactly why my plot doesn’t agree with the profile scan. This is probably due to missing --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 flag. This helps me a lot!
+Best
+Xingchen
+----------------------------------------
+
+REPLY 5 (by fanx @ 2023-04-12T16:30:15.331Z):
+Hi Fabio,
+My NLL plot missed nll0, and that is why it didn’t agree with the combine profile scan. I did plot the index out to check, and it confirmed that the first two r points were actually Chebychev polynomial. Thank you for your reply! Also nice meeting you during the DAS at Fermilab!
+Best
+Xingchen
+----------------------------------------
+
+REPLY 6 (by fiemmi @ 2023-04-13T07:49:37.199Z):
+Hi Xingchen,
+right, as Kyle said, missing nll0 indeed does explain your observations. Great! And it was my pleasure meeting you in Fermilab. Hope to see you around, cheers,
+F.
+----------------------------------------

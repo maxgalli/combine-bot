@@ -1,0 +1,173 @@
+TOPIC: Difference in initial fit result in toy generation vs using toy as a dataset
+URL: https://cms-talk.web.cern.ch/t/140512
+DATE: 2026-01-08T11:16:55.191Z
+SOLVED: no
+============================================================
+
+QUESTION (by nivanden @ 2026-01-08T11:16:55.497Z):
+Dear Combine experts,
+For TOP-24-008 we are extracting 68% and 95% limits with toys as we have a quadratic and higher order dependence on the POIs. It is important that we can distinguish between a local minimum and global minimum between positive and negative values of the POI so we are looking closely at these toys and refitting the toy datasets. Here I noticed some behaviour I could not quite understand.
+I run the toy generation and likelihood evaluation as follows:
+combineTool.py -M MultiDimFit workspace.root --algo fixed -t 5 -s 1017 --toysFrequentist -P at --redefineSignalPOIs at --setParameters at=-1,bt=0  --fixedPointPOIs at=-1,bt=0 --freezeParameters bt --cminDefaultMinimizerStrategy 0 -n toys_at_m1_bt_0 --saveToys
+
+and this gives a best fit value for the toy with ID 1 (iToy == 1) at at=-0.983.
+When I now rerun the fit (or perform a likelihood scan) of this toy 1, I notice this result is not the actual minimum. I rerun the fit as:
+combineTool.py -M MultiDimFit workspace.root --algo fixed -s 1017 --toysFrequentist -P at --redefineSignalPOIs at --setParameters at=-1,bt=0  --fixedPointPOIs at=-1,bt=0 --freezeParameters bt --cminDefaultMinimizerStrategy 0 -n toys_at_m1_bt_0_REFIT -D "higgsCombinetoys_at_m2_bt_0.MultiDimFit.mH120.1017.root:toys/toy_1"
+
+and I obtain a best fit value of at = -1.081. A scan of the likelihood also confirms the minimum lies at this -1.081. This behaviour is repeated for other toys. The problem with this, is that the test statistic value distribution that I want to extract from the toys might also be affected (I only tested individual toys at this point), as the value of the test statistic at my fixed point differs between both fits.
+As a last test, I ran over the complete toys file:
+combineTool.py -M MultiDimFit workspace.root --algo fixed -s 1017  -P at --redefineSignalPOIs at --setParameters at=-1,bt=0  --fixedPointPOIs at=-1,bt=0 --freezeParameters bt         --cminDefaultMinimizerStrategy 0 -n toys_at_m1_bt_0_Refit_AllToys --toysFile=higgsCombinetoys_at_m1_bt_0.MultiDimFit.mH120.1017.root -t 5 --toysFrequentist
+
+And this reproduced most of the results of the first command (but not all).
+My expectation is that all three fits should give the same result. Why is this not the case and which result is actually correct?
+Kind regards,
+Niels
+----------------------------------------
+
+REPLY 2 (by gallim @ 2026-01-27T13:56:19.135Z):
+Hi Niels,
+here are my two cents (but I would be happy if someone else could confirm and/or correct this). When you upload the toy with ID 1 using -D, combine doesn’t seem to also upload the corresponding snapshot that was created and saved in the previous step (i.e. toys/toy_1_snapshot).
+However, this should correctly happen when you run with --toysFrequentist (see here). Based on this, I would say that the correct way to go would be to save the toys and then use them with the --toysFrequentist option.
+What I’m still not sure is why only most of the results are reproduced this way, but not all (as you wrote in the thread).
+Best,
+Massimiliano
+----------------------------------------
+
+REPLY 3 (by klin @ 2026-01-28T09:01:17.570Z):
+Hi Niels and Massimiliano,
+This is where -D loaded the dataset. So it only read the RooDataSet but not the RooArgSet.
+Btw, there are so many overlapping options in Combine, could we use Copilot to factorise them a bit?
+Best,
+Kuan
+----------------------------------------
+
+REPLY 4 (by sqian @ 2026-01-28T09:35:11.275Z):
+Sorry for chime in here, I tried quickly, copilot seems to be able to catch something based on a simple prompt but looks irrelevant to here.
+
+github.com/DickyChant/HiggsAnalysis-CombinedLimit
+
+Remove dead commented-out command-line options
+
+main ← copilot/remove-redundant-options-cli
+
+opened 09:11AM - 28 Jan 26 UTC
+
+Copilot
+
++0
+-71
+
+Cleans up legacy minimizer options that were commented out after being replaced …by the centralized `CascadeMinimizer` options (`cminDefault*`).
+
+### Removed dead code
+
+- **`Combine.cc`**: Commented-out `systematics,S` option and related conditionals
+- **`AsymptoticLimits.cc`**: Dead `minimizerAlgo_`, `minimizerTolerance_`, `minimizerStrategy_` declarations/options plus `//minim.setStrategy()` calls
+- **`FitterAlgoBase.cc`**: Same pattern - legacy minimizer vars, options, and debug statements
+- **`GoodnessOfFit.cc`**: Unused minimizer setup block and strategy calls
+- **`HybridNew.cc`**: Commented minimizer config in `run()`
+- **`MultiDimFit.cc`**: Stale `setStrategy` calls
+- **`Significance.cc`**: Two commented option lines
+
+71 lines of dead code removed across 7 files. No functional changes.
+
+<details>
+
+<summary>Original prompt</summary>
+
+> Can you take a look at this repo and remove some redundant options in various places, at least for the commandline?
+
+</details>
+
+---
+
+💬 We'd love your input! Share your thoughts on Copilot coding agent in our [2 minute survey](https://gh.io/copilot-coding-agent-survey).
+----------------------------------------
+
+REPLY 5 (by klin @ 2026-01-28T10:37:45.687Z):
+Hi @Sitian,
+Thanks for sharing your copilot study. So we still need human for now to figure overlaps like setParameter r=0 vs. expectSignal and setParameterRanges r=0,10 vs. --rMin 0 --rMax 10.
+Best,
+Kuan
+----------------------------------------
+
+REPLY 6 (by sqian @ 2026-01-28T10:46:14.988Z):
+Hi Kuan-Yu,
+Emmm I have a personal controversial feeling for the two examples you are sharing:
+
+We have a higher level API like setParameter and setParameterRanges, which is of course necessary when we run complicated tasks
+But, in some analysis, what I’d like is to keep the command simple, for example, --expectSignal helps me avoid any possible typo in the command since it is very intuitive.
+
+That’s just my personal take.
+And it could be that I don’t use good enough prompt / model
+----------------------------------------
+
+REPLY 7 (by amarini @ 2026-01-28T10:50:52.603Z):
+Hi,
+there is some bit of redundancy between expectSignal, setParameters, mass, … (mostly historic),
+but the reason this thread started is not a redundancy.
+The existence of different options and path to arrive to the result is needed by combination efforts  (to avoid redoing expensive fits) and by easiness for newcomers.
+-Andrea
+----------------------------------------
+
+REPLY 8 (by nivanden @ 2026-02-04T10:35:16.277Z):
+Hi Massimiliano,
+(sorry took me a while to reply with the TOP PAG workshop last week)
+Thanks for the input! I also saw the update in the documentation and I should be able to finalize the studies I was doing with all that information together.
+
+Massimiliano Galli:
+
+What I’m still not sure is why only most of the results are reproduced this way, but not all (as you wrote in the thread).
+
+I went back to double check this part, so specifying the toysFile and providing all the inputs, specifically ofcourse the --toysFrequentist. Looking at it now (output is given below), the results are generally in agreement, which is better than what I remember. In the example output here you can see that there was a sign flip for the POI (at), which is the main issue that I’m trying to resolve, but aside from that it looks ok. Any suggestions on trying to resolve these sign flips would be handy ofcourse, but currently I would save the generated toys and:
+
+Rerun the fit with a different initial value of the POI and take the result with the highest (?) deltaNLL value for the scan point (as the highest would imply the fit converged to a lower NLL);
+On a limited number of toys, run a 1D scan to understand the minima;
+Try Scan as the minimization algorithm to maybe avoid dipping in a local minimum.
+
+Thanks for the help,
+Niels
+Output from MultiDimFit on previously generated toys:
+************************************************************************************
+*    Row   *      iToy *        at *  deltaNLL * quantileE *       nll *      nll0 *
+************************************************************************************
+*        0 *         1 * -0.981680 *         0 *        -1 *           *           *
+*        1 *         1 *        -1 * 0.0035035 * 0.9332882 *           *           *
+*        2 *         2 * -0.718977 *         0 *        -1 *           *           *
+*        3 *         2 *        -1 * 0.9673893 * 0.1642365 *           *           *
+*        4 *         3 * -0.931573 *         0 *        -1 *           *           *
+*        5 *         3 *        -1 * 0.0533618 * 0.7439054 *           *           *
+*        6 *         4 * -1.219076 *         0 *        -1 *           *           *
+*        7 *         4 *        -1 * 0.6763784 * 0.2447967 *           *           *
+*        8 *         5 * 0.7513766 *         0 *        -1 *           *           *
+*        9 *         5 *        -1 * 3.0948858 * 0.0128490 *           *           *
+************************************************************************************
+
+Output of MultiDimFit command that generated (and stored) the toys:
+************************************************************************************
+*    Row   *      iToy *        at *  deltaNLL * quantileE *       nll *      nll0 *
+************************************************************************************
+*        0 *         1 * -0.982755 *         0 *        -2 *           *           *
+*        1 *         1 *        -1 * 0.0037316 *        -1 *           *           *
+*        2 *         1 *        -1 * 0.0037316 * 0.9311556 *           *           *
+*        3 *         2 * -0.716944 *         0 *        -2 *           *           *
+*        4 *         2 *        -1 * 0.9674399 *        -1 *           *           *
+*        5 *         2 *        -1 * 0.9674399 * 0.1642255 *           *           *
+*        6 *         3 * -0.933027 *         0 *        -2 *           *           *
+*        7 *         3 *        -1 * 0.0532725 *        -1 *           *           *
+*        8 *         3 *        -1 * 0.0532725 * 0.7441124 *           *           *
+*        9 *         4 *  1.305372 *         0 *        -2 *           *           *
+*       10 *         4 *        -1 * 3.9147174 *        -1 *           *           *
+*       11 *         4 *        -1 * 3.9147174 * 0.0051402 *           *           *
+*       12 *         5 * 0.7503487 *         0 *        -2 *           *           *
+*       13 *         5 *        -1 * 3.0944562 *        -1 *           *           *
+*       14 *         5 *        -1 * 3.0944562 * 0.0128553 *           *           *
+************************************************************************************
+----------------------------------------
+
+REPLY 9 (by klin @ 2026-03-13T08:46:42.842Z):
+Dear @nivanden,
+Sorry for changing the subject. Are you able to save the toy dataset from the second method (MultiDimFit generates the toys directly)? If so, we could compare if the toy dataset match and if the randomised nominal NP (from --toysFrequentist and stored as RooArgSet) match between the 2 methods.
+Best,
+Kuan
+----------------------------------------

@@ -1,0 +1,72 @@
+TOPIC: Re: Running blind with ABCD in the datacard
+URL: https://cms-talk.web.cern.ch/t/2168
+DATE: 2021-09-20T10:48:01.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by vischia @ 2021-09-20T10:48:01.000Z):
+Hi Peter,
+you can always put into the data_obs shape the real data for the control regions and the asimov for the signal region by hand. Then you run without “–blind” as if you were unblinded but technically you’ll be running on the Asimov dataset in the SR.
+Cheers,
+Pietro
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-09-20T11:35:38.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+if you have reasonable prefit values, you should be able to run blind for the CR parameters, you should be able to run blind, as the observations will be set as prefit.
+I think the problem raise in defining large unranged parameters, that in the minimization can be set to arbitrary values. Probably ranging them (even with large values such as -> /2. x2), will help stabilizing the minimization.
+see in your error log:
+
+beta_29 = -32.2956
+
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by Peter_Major @ 2021-10-28T12:33:11.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrea,
+Indeed, adding proper limits on the rateParams did fix the underflow
+errors. However now when I am running blind my ABCD background is
+considered to be a constant (or at least it is missing all of the
+statistical uncertainty).
+According to Pietro's recommendation, I could fix this by putting the
+sum of the background estimate in place of the observed values in the
+search bins (but not the ABC bins) and then running without the blind
+option. Is this the best way to go about this? Isn't there a
+command-line option to mask the observed values in some bins? I feel
+like this must be a frequent use case.
+Cheers, Peter
+----------------------------------------
+
+REPLY 4 (by adewit @ 2021-10-29T09:23:07.000Z):
+*** Discussion title: Higgs Combination
+Hi Peter,
+There are indeed other ways to achieve this, though it is unfortunately
+not completely straightforward. What you can do is to make use of the
+channel masking [*], for which you will need to create a workspace with
+this option enabled. Then, you can run a fit on this workspace, masking
+the signal region(s) from the likelihood, and saving a snapshot of the
+fitted parameters. You'll want to freeze the signal strength to 0, so
+you need to redefine one of your rateParams to be the POI:
+combine -M MultiDimFit --setParameters mask_ch1=1,r=0 --freezeParameters
+r --redefineSignalPOIs <ONE_OF_YOUR_RATEPARAMS> -d ws.root
+--saveWorkspace [other options]
+(if ws.root is your workspace that you created with the --channel-masks
+option, and ch1 is the category that you want to mask)
+Now all the parameters of the CR's have been updated to their best-fit
+values, ignoring the SR, so the state of the model can now be used for
+producing blind limits. You need to run on the output higgsCombine...
+file of the previous step, which contains the workspace with snapshot of
+the best-fit values. Remember to set mask_ch1 back to 0, otherwise the
+SR will still be masked from the likelihood in the limit setting. You
+also need to redefine r to be the POI:
+combine -M AsymptoticLimits -d higgsCombine.... --snapshotName
+MultiDimFit --redefineSignalPOIs r --setParameters mask_ch=0 [other
+options]
+Best,
+Adinda
+[*]
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#channel-masking
+----------------------------------------

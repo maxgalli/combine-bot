@@ -1,0 +1,27 @@
+TOPIC: [FitDiagnostics] Unable to determine uncertainties on all fit parameters
+URL: https://cms-talk.web.cern.ch/t/4254
+DATE: 2022-01-05T13:39:25.272Z
+SOLVED: no
+============================================================
+
+QUESTION (by svanputt @ 2022-01-05T13:39:25.448Z):
+Dear combine experts,
+I am running in some trouble with my 2018 datacard, the FitDiagnostics is “Unable to determine uncertainties on all fit parameters” for both the b-only and the s+b fits.
+The command I issued was:
+combineTool.py -M FitDiagnostics <datacard> -n _u_fit --setParameterRanges 'rgx{.*norm_.*}'=0.1,10 --robustFit 1 --cminDefaultMinimizerStrategy 0 --rMin -10
+
+And the datacard can be found here [1].
+The combine manual [2] suggests to look for correlations between the parameters, but looking at the correlation matrix (obtained with -robustHesse 1) there isn’t anything special w.r.t. my 2016 and 2017 cards that run fine. (Also --robustHesse 1 indicates that all eigenvalues are positive).
+The manual also suggest to look at the NLL shapes to look for discontinuities.
+I ran the commands
+combine <datacard> -M MultiDimFit --algo grid --points 100 -m 125 --robustFit 1 --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs r -P <parameter> --floatOtherPOIs 1 --saveInactivePOI 1 --rMin -10 --setParameterRanges \'rgx{.*norm_.*}\'=0.5,1.5
+
+for each <parameter> to scan the NLL near the fit values [3].
+I could not find anything special except for seemingly random failing points where the fit failed with  Minimization did NOT converge, Edm is above max.
+Can you help me find out what is wrong?
+Cheers,
+Senne
+[1] /afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/datacard_darkHiggs_mhs_160_mx_100_mZp_500_comb_u.root
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties
+[3] /afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/scanNLL.pdf
+----------------------------------------

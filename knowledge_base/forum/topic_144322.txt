@@ -1,0 +1,39 @@
+TOPIC: Scaling shape systematics
+URL: https://cms-talk.web.cern.ch/t/144322
+DATE: 2026-04-23T09:47:30.687Z
+SOLVED: no
+============================================================
+
+QUESTION (by attikis @ 2026-04-23T09:47:31.574Z):
+Dear experts,
+I’m trying to understand whether it’s possible to scale nuisance parameters of type “shape” directly from the datacard or the command line (e.g when running text2workspace.py) in the Combine framework.
+Is there a support for this action, i.e. to increase up/down variations of a shape systematics without adding the actual histograms inside the ROOT files provided to combine.
+Best,
+Alexandros
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-04-23T12:28:38.236Z):
+Dear Alexandros,
+I hope I understood your question correctly. You would like to use the same Up/Down histograms, but associating them to a stronger or weaker effect than the standard 1-sigma one, is it right?
+In this case you can just assign a number different from 1 in the datacard. Combine will scale the unit gaussian used for the interpolation by that number (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#template-shape-uncertainties)
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by attikis @ 2026-04-23T12:43:32.001Z):
+Hi Giacomo,
+thanx for the reply. Does that mean that if one used
+”CMS_top_pt shape - - 2 2 2 - -"
+instead of:
+“CMS_top_pt shape - - 1 1 1 - -”
+does that mean that the up and down variations are effectively doubled wrt to the nominal (double the magnitude of the deviation from nominal).
+Or to rephrase, if the original shape systematics were flat wrt to nominal at 1.2 and 0.8 for up and down respectively, would it basically be effectively treating the up and down as 1.4 and 0.6?
+
+gortona:
+
+Dear Alexandros,
+I hope I understood your question correctly. You would like to use the same Up/Down histograms, but associating them to a stronger or weaker effect than the standard 1-sigma one, is it right?
+In this case you can just assign a number different from 1 in the datacard. Combine will scale the unit gaussian used for the interpolation by that number (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#template-shape-uncertainties)
+Cheers,
+Giacomo
+----------------------------------------

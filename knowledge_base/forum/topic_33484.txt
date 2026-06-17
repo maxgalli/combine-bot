@@ -1,0 +1,63 @@
+TOPIC: How are `flatParams` in maximum likelihood fit initialized? Having difficulty setting their initial value using `--setParameters` option
+URL: https://cms-talk.web.cern.ch/t/33484
+DATE: 2024-01-18T22:37:50.367Z
+SOLVED: no
+============================================================
+
+QUESTION (by ammitra @ 2024-01-18T22:37:50.525Z):
+Combine version: Combine v8.0.0 (GitHub branch 102x)
+Hi all, I have some confusion about how to use the --setParameters option to initialize several flatParams in my fit to a default variable.
+For some background, I’m running a custom framework built around Combine which allows for two-dimensional maximum likelihood fits. I run the following command:
+combine -M FitDiagnostics card.txt --text2workspace "--channel-masks"  \
+--saveWorkspace --cminDefaultMinimizerStrategy 1 \
+--rMin -1 --rMax 5 -v 2 --robustFit 1
+
+My datacard and the file from which it reads are attached [1, 2] and the card contains flatParams at the end, some of which I’d like to initialize to a specific value:
+...
+Background_SR_loose_HIGH_bin_2-1          flatParam
+...
+
+I attempted to do this by appending the following to my Combine invocation:
+--setParameters Background_SR_loose_HIGH_bin_2-1=10.0,[etc...]
+
+When I run the fit, Combine alerts me that it is setting the default value of these parameters to what was requested, but the verbose output seems to indicate the opposite. I’ve attached the full stdout from Combine [3], but here are the parts which show the unexpected behavior:
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is FitDiagnostics
+Creating pdfs for individual modes (12): ............ done.
+Importing combined pdf model_s
+Missing background ModelConfig 'ModelConfig_bonly' in workspace 'w' in file roostats-E2pG8R.root
+Will make one from the signal ModelConfig 'ModelConfig' setting signal strenth 'r' to zero
+...
+Set Default Value of Parameter Background_SR_loose_HIGH_bin_2-1 To : 10
+...
+Info in <Minuit2>: Minuit2Minimizer::Hesse : Hesse is valid - matrix is accurate
+SimNLL created with 12 channels, 0 generic constraints, 28 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[WARNING] Found [Background_SR_loose_HIGH_bin_2-1] at boundary.
+...
+Floating Parameter  InitialValue    FinalValue +/-  Error     GblCorr.
+--------------------  ------------  --------------------------  --------
+...
+Background_SR_loose_HIGH_bin_2-1    1.9539e-06    2.0522e-06 +/-  0.00e+00  <none>
+...
+...
+
+Ignoring the fact that the fit can’t properly calculate the error on this flatParam, I’m a bit confused why the InitialValue indicates 1.9539e-06 instead of 10.0 as requested.
+I’m aware that I’m using an older version of Combine and a custom framework around it, but I think this problem is generic enough. Am I using --setParameters properly? Is there a different way to set the default value of an unconstrained flatParam (from the Combine docs it does not appear so)? Many thanks in advance!
+Best,
+Amitav
+[1] card.txt (172.8 KB)
+[2] base.root (1.6 MB)
+[3] combine_output.txt (133.9 KB)
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-01-22T14:13:50.318Z):
+Dear Amitav,
+I think  --setParameters Background_SR_loose_HIGH_bin_2-1=10 does what one would expect it to, but in the table which is printed by RooFit the values in the InitialValue column are not really initial values that you set, they are coming from an intermediate step in the minimisation routine.
+It looks like you have many of those flatParam’s  at the boundary after the fit, perhaps it would be good to check the inputs again, and make sure that the models works without fitting it to data, i.e. adding the -t -1 option
+Best,
+Aliya
+----------------------------------------

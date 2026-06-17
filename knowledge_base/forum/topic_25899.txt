@@ -1,0 +1,2047 @@
+TOPIC: Different results between MultiDimFit method and Impacts
+URL: https://cms-talk.web.cern.ch/t/25899
+DATE: 2023-06-23T15:42:11.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by beaucero @ 2023-06-23T15:42:11.000Z):
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag   = 0.998043 +/-  0.0158949 (limited)
+p0BTag3M   = 0.714987 +/-  0.0940543 (limited)
+p0BTag3M_2017   = 0.356921 +/-  0.0921374 (limited)
+p0BTag3M_2018   = 0.445114 +/-  0.109089 (limited)
+p0BTag_2017   = 1.16947 +/-  0.0395138 (limited)
+p0BTag_2018   = 1.0806 +/-  0.0101836 (limited)
+p1BTag   = 0.000182224 +/-  3.82199e-05 (limited)
+p1BTag3M   = -0.000310768 +/-  4.10382e-05 (limited)
+p1BTag3M_2017   = -0.000397529 +/-  4.15193e-05 (limited)
+p1BTag3M_2018   = -0.000396681 +/-  3.79317e-05 (limited)
+p1BTag_2017   = 0.000165074 +/-  3.51674e-05 (limited)
+p1BTag_2018   = 0.000168376 +/-  3.34208e-05 (limited)
+p2BTag   = -0.000235561 +/-  4.23189e-05 (limited)
+p2BTag_2017   = -0.000226131 +/-  4.29732e-05 (limited)
+p2BTag_2018   = -0.000231693 +/-  4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+
+including systematics
+Options for Robust Minimizer ::          Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+
+— MultiDimFit —
+Parameter impacts:    Parameter :   Best-fit               r               p1BTag    :   +0.000  +0.000/+0.000  +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>  >>> including systematics
+Options for Robust Minimizer ::          Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+
+— MultiDimFit —
+Parameter impacts:    Parameter :   Best-fit               r              Norma3Mvs3T    Norma2M1Lvs3M  Norma3Mvs3T_2017  Norma2M1Lvs3M_2017  Norma3Mvs3T_2018  Norma2M1Lvs3M_2018
+p1BTag    :   +0.000  +0.000/+0.000  +0.004/+0.004  -0.001/-0.001  +0.000/+0.000  -0.000/-0.000  +0.001/+0.001  +0.000/+0.000  -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag   = 0.998043 +/-  0.0158949 (limited)
+p0BTag3M   = 0.714987 +/-  0.0940543 (limited)
+p0BTag3M_2017   = 0.356921 +/-  0.0921374 (limited)
+p0BTag3M_2018   = 0.445114 +/-  0.109089 (limited)
+p0BTag_2017   = 1.16947 +/-  0.0395138 (limited)
+p0BTag_2018   = 1.0806 +/-  0.0101836 (limited)
+p1BTag   = 0.000182224 +/-  3.82199e-05 (limited)
+p1BTag3M   = -0.000310768 +/-  4.10382e-05 (limited)
+p1BTag3M_2017   = -0.000397529 +/-  4.15193e-05 (limited)
+p1BTag3M_2018   = -0.000396681 +/-  3.79317e-05 (limited)
+p1BTag_2017   = 0.000165074 +/-  3.51674e-05 (limited)
+p1BTag_2018   = 0.000168376 +/-  3.34208e-05 (limited)
+p2BTag   = -0.000235561 +/-  4.23189e-05 (limited)
+p2BTag_2017   = -0.000226131 +/-  4.29732e-05 (limited)
+p2BTag_2018   = -0.000231693 +/-  4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-06-27T13:47:42.365Z):
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters.  Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (--algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+----------------------------------------
+
+REPLY 3 (by beaucero @ 2023-07-07T14:39:34.000Z):
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+Capture d’écran 2023-07-06 à 18.31.57.png1378×1132 13.8 KB
+Just to follow up on the following:
+
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-07-07T14:57:56.158Z):
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5.  I’m wondering if the  apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+----------------------------------------
+
+REPLY 5 (by beaucero @ 2023-07-07T15:12:28.000Z):
+Hi Kyle,
+Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way.
+Again the overall fit is converging and I see values on these parameters, so they are included in the fit. So to my point of view, it is OK. Simply there are issues in measuring the impacts due to them, but I am sure the impact from them are not null… Just very tiny :-), perhaps I should not care, but I want to show to the ARC that I have tried to understand the issue.
+Thanks!
+Steph
+
+Le 7 juil. 2023 à 16:59, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+Just to follow up on the following:
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by afiqaize @ 2023-07-08T12:49:10.000Z):
+Hi Stephanie,
+I’m butting in privately as I am definitely not an expert.
+Have you tried playing with the tolerances? Add these things to your combine command:
+–cminDefaultMinimizerTolerance {tolerance} --robustFit 1 --setRobustFitTolerance {tolerance} --stepSize {tolerance} --setCrossingTolerance {tolerance}
+{tolerance} is some small number, they do not have to be the same numbers for each. A good idea is to have them be half expected size of the impact.
+They make the fit slower at small values, so but for this specific issue this should be fine.
+Cheers,
+Afiq
+
+···
+On 07/07/2023 17:19, Stephanie Beauceron via CMS talk wrote:
+
+Stephanie Beauceron beauceroJuly 7
+
+Hi Kyle,
+Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way.
+Again the overall fit is converging and I see values on these parameters, so they are included in the fit. So to my point of view, it is OK. Simply there are issues in measuring the impacts due to them, but I am sure the impact from them are not null… Just very tiny :-), perhaps I should not care, but I want to show to the ARC that I have tried to understand the issue.
+Thanks!
+Steph
+
+Le 7 juil. 2023 à 16:59, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+Just to follow up on the following:
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Kyle Cormier kcormierJuly 7
+
+Very quick thought: The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real? Perh…
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by afiqaize @ 2023-07-08T14:38:54.000Z):
+Well that clearly did not go as intended, but anyway. That was my question regarding the fit.
+Afiq
+
+···
+On 08/07/2023 14:49, Afiq Anuar wrote:
+
+Hi Stephanie,
+I’m butting in privately as I am definitely not an expert.
+Have you tried playing with the tolerances? Add these things to your combine command:
+–cminDefaultMinimizerTolerance {tolerance} --robustFit 1 --setRobustFitTolerance {tolerance} --stepSize {tolerance} --setCrossingTolerance {tolerance}
+{tolerance} is some small number, they do not have to be the same numbers for each. A good idea is to have them be half expected size of the impact.
+They make the fit slower at small values, so but for this specific issue this should be fine.
+Cheers,
+Afiq
+
+On 07/07/2023 17:19, Stephanie Beauceron via CMS talk wrote:
+
+Stephanie Beauceron beauceroJuly 7
+
+Hi Kyle,
+Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way.
+Again the overall fit is converging and I see values on these parameters, so they are included in the fit. So to my point of view, it is OK. Simply there are issues in measuring the impacts due to them, but I am sure the impact from them are not null… Just very tiny :-), perhaps I should not care, but I want to show to the ARC that I have tried to understand the issue.
+Thanks!
+Steph
+
+Le 7 juil. 2023 à 16:59, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+Just to follow up on the following:
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Kyle Cormier kcormierJuly 7
+
+Very quick thought: The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real? Perh…
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 8 (by vischia @ 2023-07-09T01:02:52.000Z):
+Hi,
+In general going to very small numbers is bad (one may incur in the same issue that leads to vanishing gradients in neural networks).
+Maybe you could try to avoid that by rescaling stuff in such a way that the parameter is larger by a factor 1000 or so, to help the minimizer live not too close to machine precision or similar problematic regions.
+Cheers,
+Pietro
+–
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+El sáb., 8 jul. 2023 16:42, Afiq Aizuddin Anuar via CMS talk <noreply@cms-talk.web.cern.ch> escribió:
+
+Afiq Aizuddin Anuar afiqaizeJuly 8
+
+Well that clearly did not go as intended, but anyway. That was my question regarding the fit.
+Afiq
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Stephanie Beauceron beauceroJuly 7
+
+Hi Kyle, Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way. Again the overall fit is converging and I see values on…
+Previous Replies
+
+Afiq Aizuddin Anuar afiqaizeJuly 8
+
+Hi Stephanie,
+I’m butting in privately as I am definitely not an expert.
+Have you tried playing with the tolerances? Add these things to your combine command:
+–cminDefaultMinimizerTolerance {tolerance} --robustFit 1 --setRobustFitTolerance {tolerance} --stepSize {tolerance} --setCrossingTolerance {tolerance}
+{tolerance} is some small number, they do not have to be the same numbers for each. A good idea is to have them be half expected size of the impact.
+They make the fit slower at small values, so but for this specific issue this should be fine.
+Cheers,
+Afiq
+··· (click for more details)
+
+Stephanie Beauceron beauceroJuly 7
+
+Hi Kyle,
+Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way.
+Again the overall fit is converging and I see values on these parameters, so they are included in the fit. So to my point of view, it is OK. Simply there are issues in measuring the impacts due to them, but I am sure the impact from them are not null… Just very tiny :-), perhaps I should not care, but I want to show to the ARC that I have tried to understand the issue.
+Thanks!
+Steph
+
+Le 7 juil. 2023 à 16:59, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+Just to follow up on the following:
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Kyle Cormier kcormierJuly 7
+
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+
+Stephanie Beauceron beauceroJuly 7
+
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+
+Just to follow up on the following:
+
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Kyle Cormier kcormierJune 27
+
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (--algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 9 (by kcormier @ 2023-07-11T07:49:02.083Z):
+Hi Stephanie,
+Just to clarify, I wasn’t advocating to set the value to 0 since it is small. I was going in the direction of Pietro’s comment; most numerical programs will work best when numbers are of order 1. So it could be that the very small values are the cause of the issue. A rescaling of the parameters might help, and it could be good to see if it solves your problem by rescaling these parameters with small values by a factor ~1000.
+Cheers,
+Kyle
+----------------------------------------
+
+REPLY 10 (by beaucero @ 2023-07-12T11:50:11.000Z):
+Dear all,
+First thanks for all the comments! I have managed to solve my issue relatively easily by simply going with --stepSize 0.001 --cminDefaultMinimizerTolerance 0.01.
+So moving a bit away from the default solved everything. Clearly I knew that the overall fit was OK, I was sure indeed, it was in the impact stuff, something was different.
+For the value itself, I was not thinking that tiny value could have been an issue, because the analysis is established this way since > 5 years, let me be very honest, at the very last stage, I do not want to change knowing that over the review, I have demonstrated that these values have tiny influence on the final results.
+But I take note for the future to rescale to avoid to low value (I would have hope that combine would do it if it can be an issue, but I know that combine cannot think for all the various cases).
+Thanks again for your precious help and feedback!
+Cheers,
+Steph
+
+Le 11 juil. 2023 à 09:50, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+July 11
+Hi Stephanie,
+Just to clarify, I wasn’t advocating to set the value to 0 since it is small. I was going in the direction of Pietro’s comment; most numerical programs will work best when numbers are of order 1. So it could be that the very small values are the cause of the issue. A rescaling of the parameters might help, and it could be good to see if it solves your problem by rescaling these parameters with small values by a factor ~1000.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.Previous Replies
+Pietro Vischia vischia
+July 9
+Hi,
+In general going to very small numbers is bad (one may incur in the same issue that leads to vanishing gradients in neural networks).
+Maybe you could try to avoid that by rescaling stuff in such a way that the parameter is larger by a factor 1000 or so, to help the minimizer live not too close to machine precision or similar problematic regions.
+Cheers,
+Pietro
+–
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+El sáb., 8 jul. 2023 16:42, Afiq Aizuddin Anuar via CMS talk noreply@cms-talk.web.cern.ch escribió:
+Afiq Aizuddin Anuar afiqaize
+July 8
+Well that clearly did not go as intended, but anyway. That was my question regarding the fit. Afiq
+··· (click for more details)Visit Topic or reply to this email to respond.In Reply To
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle, Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way. Again the overall fit is converging and I see values on…
+Previous Replies
+Afiq Aizuddin Anuar afiqaize
+July 8
+Hi Stephanie,
+I’m butting in privately as I am definitely not an expert.
+Have you tried playing with the tolerances? Add these things to your combine command:
+–cminDefaultMinimizerTolerance {tolerance} --robustFit 1 --setRobustFitTolerance {tolerance} --stepSize {tolerance} --setCrossingTolerance {tolerance}
+{tolerance} is some small number, they do not have to be the same numbers for each. A good idea is to have them be half expected size of the impact.
+They make the fit slower at small values, so but for this specific issue this should be fine.
+Cheers,
+Afiq
+··· (click for more details)
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way.
+Again the overall fit is converging and I see values on these parameters, so they are included in the fit. So to my point of view, it is OK. Simply there are issues in measuring the impacts due to them, but I am sure the impact from them are not null… Just very tiny :-), perhaps I should not care, but I want to show to the ARC that I have tried to understand the issue.
+Thanks!
+Steph
+Le 7 juil. 2023 à 16:59, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+Just to follow up on the following:
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…Just to follow up on the following:
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scansVisit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+Afiq Aizuddin Anuar afiqaize
+July 8
+Well that clearly did not go as intended, but anyway. That was my question regarding the fit. Afiq
+··· (click for more details)
+Afiq Aizuddin Anuar afiqaize
+July 8
+Hi Stephanie,
+I’m butting in privately as I am definitely not an expert.
+Have you tried playing with the tolerances? Add these things to your combine command:
+–cminDefaultMinimizerTolerance {tolerance} --robustFit 1 --setRobustFitTolerance {tolerance} --stepSize {tolerance} --setCrossingTolerance {tolerance}
+{tolerance} is some small number, they do not have to be the same numbers for each. A good idea is to have them be half expected size of the impact.
+They make the fit slower at small values, so but for this specific issue this should be fine.
+Cheers,
+Afiq
+··· (click for more details)
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Yep the parameters are very tiny and they correspond to a fitted slope from a transfer function to move between b-tagging regions. The effect is tiny but present (improve the pre fit plots etc). So I think we should keep it this way.
+Again the overall fit is converging and I see values on these parameters, so they are included in the fit. So to my point of view, it is OK. Simply there are issues in measuring the impacts due to them, but I am sure the impact from them are not null… Just very tiny :-), perhaps I should not care, but I want to show to the ARC that I have tried to understand the issue.
+Thanks!
+Steph
+Le 7 juil. 2023 à 16:59, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+July 7
+Hi Kyle,
+Sorry for the long delay but many other things on the way.
+Please find the produced plots and everything looks to be OK there… Which is for me reinsuring that it could be simply an issue with the impact measurement rather than an overall issue in the fit…
+Just to follow up on the following:
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+It was advised to me long time ago: the normalisation variables are unknown and they should be obtained during he fit. Moreover, as I have observed an excess, putting the MGen as POI was advised to me in order to get the highest precision on the MGen (it is also unknown) etc.
+This is why I am used to add these additional POI.
+Honestly, the results are purely changing within the errors if I forced them as additional POI vs non adding them… But indeed I have noticed that MGen error is smaller if I added it as POI.
+Cheers,
+Steph
+Le 27 juin 2023 à 15:49, Kyle Cormier via CMS talk noreply@cms-talk.web.cern.ch a écrit :
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Visit Topic or reply to this email to respond.Previous Replies
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+June 27
+Hi Stephanie,
+Some first thoughts:
+One difference between the two fits, in the first case (the MultiDimFit run with --algo none which is the default), the MultiDim fit is not reporting the uncertainties directly, its just doing the minimization.
+By using -v 3 you’ve been able to check the uncertainties on the parameters. Unless I’m mistaken, these will be the uncertainties reported from MINUIT’s minimization step, from its error matrix, and hence are reported as symmetric intervals.
+When running the impacts, the asymmetric intervals (using MINOS rather than the symmetric ones from the error matrix) are computed and then the impact on the POI at each of the 1 sigma bounds is determined at these points.
+In the original (–algo none, default MultiDimFit) fit, its possible the fit never goes anywhere near these +/-1 sigma points. So it could be that things appear reasonably well-behaved when performing a the minimzation and taking the error matrix from the second derivative at the minimum, but that there are issues elsewhere in the fit.
+As a first step I would suggest maybe running a scan of the NLL over the parameter(s) that are giving you trouble. [1]
+e.g.
+combine -M MultiDimFit --algo grid --points 100 -d <your_datacard> --P p1BTag
+plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI p1BTag
+with other customization options as necessary.
+That will produce a 1D scan of the NLL for that parameter. It may show a large asymmetry, or some other pathology (such as a kink in the NLL) which may serve as a starting point to investigate what is going on, or what next steps might be taken.
+As an aside, it’s not clear to me why in the original fit you are redefining all of your nuisance parameters as POIs? It may not be relevant to the technical issue you’re asking about, given what you’ve said; but in general this is changing the fit model, and typically not what would be appropriate from a physics point of view, and lead to different results. Of course it depends what you’re looking to do, which I don’t know.
+I hope this helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Stephanie Beauceron beaucero
+June 23
+Hi all,
+I am trying to understand the puzzling situation:
+In the datacards, there is a parameter p1BTag (p0BTag is fine and both represent a slope parameter linked to b-tagging case).
+When fitting the MultiDimFit with -v3 options (to see a lot more), the following is observed:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+With no issues on the above parameters and the fit looks like converging without issues…
+But while running the Impacts on this parameter, I have:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>>
+including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r p1BTag : +0.000 +0.000/+0.000 +0.027/+0.027
+Done in 0.05 min (cpu), 0.05 min (real)
+There is an error message and this parameter is then put to 0…
+I have even tried to put the same list of options:
+combine -M MultiDimFit -n _paramFit_Test_p1BTag --algo impact --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan -P p1BTag --floatOtherPOIs 1 --saveInactivePOI 1 --robustFit 1 -m 700 -d Data2016_2017UL_2018UL_TopH_M700.root
+<<< Combine >>> >>> including systematics
+Options for Robust Minimizer :: Tolerance 0.1
+Strategy 0
+Type,Algo Minuit2,Migrad
+method used is MultiDimFit
+random number generator seed is 123456
+Computing results starting from observation (a-posteriori)
+Error: closed range without finding crossing.
+Error: closed range without finding crossing.
+— MultiDimFit —
+Parameter impacts: Parameter : Best-fit r Norma3Mvs3T Norma2M1Lvs3M Norma3Mvs3T_2017 Norma2M1Lvs3M_2017 Norma3Mvs3T_2018 Norma2M1Lvs3M_2018
+p1BTag : +0.000 +0.000/+0.000 +0.004/+0.004 -0.001/-0.001 +0.000/+0.000 -0.000/-0.000 +0.001/+0.001 +0.000/+0.000 -0.000/-0.000
+I understand that the question is tricky… The datacards have been used and validated by experts so I am pretty sure it is not coming from there… There is a change in the analysis to use the quantile but if the p1BTag parameters were an issue I would have expected to see that in the overall fit procedure…
+I have tested that the issue is not coming from the --RobustFit option:
+combine -M MultiDimFit -d Data2016_2017UL_2018UL_TopH_M700.root -v3 --redefineSignalPOIs r,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan --robustFit 1
+p0BTag = 0.998043 +/- 0.0158949 (limited)
+p0BTag3M = 0.714987 +/- 0.0940543 (limited)
+p0BTag3M_2017 = 0.356921 +/- 0.0921374 (limited)
+p0BTag3M_2018 = 0.445114 +/- 0.109089 (limited)
+p0BTag_2017 = 1.16947 +/- 0.0395138 (limited)
+p0BTag_2018 = 1.0806 +/- 0.0101836 (limited)
+p1BTag = 0.000182224 +/- 3.82199e-05 (limited)
+p1BTag3M = -0.000310768 +/- 4.10382e-05 (limited)
+p1BTag3M_2017 = -0.000397529 +/- 4.15193e-05 (limited)
+p1BTag3M_2018 = -0.000396681 +/- 3.79317e-05 (limited)
+p1BTag_2017 = 0.000165074 +/- 3.51674e-05 (limited)
+p1BTag_2018 = 0.000168376 +/- 3.34208e-05 (limited)
+p2BTag = -0.000235561 +/- 4.23189e-05 (limited)
+p2BTag_2017 = -0.000226131 +/- 4.29732e-05 (limited)
+p2BTag_2018 = -0.000231693 +/- 4.15666e-05 (limited)
+Same value…
+I would appreciate any help on this subject, I am available via Zoom/or at Cern if it can ease the discussion.
+Thanks!
+Steph
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+Kyle Cormier kcormier
+July 7
+Very quick thought:
+The plot is showing 0.000 as the best fit value, which I first thought was an error, but then realized its just because the best fit is < 0.001 and the uncertainties are at the level of 10^-5. I’m wondering if the apparently extreme sensitivity to this parameter is real?
+Perhaps this could be an issue related to the very small parameter values. Its surprising to see something constrainted to 4 parts in 100k. Are the initial variations that are defining the size of these uncertainties excessively large? How is it being so strongly constrained?
+I’ll take a bit more of a look later.
+Cheers,
+Kyle
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

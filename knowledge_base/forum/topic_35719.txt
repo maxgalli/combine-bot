@@ -1,0 +1,26 @@
+TOPIC: What Goodness of Fit is doing?
+URL: https://cms-talk.web.cern.ch/t/35719
+DATE: 2024-02-25T07:55:02.708Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-02-25T07:55:03.166Z):
+Dear experts,
+we got background from fit of data and run Goodness of Fit.
+Do I understand it right that this test generate toys according to background pdf
+given by fit of data and then fits for every toy the background distribution using the same background pdf.  Then it plot ch2 distribution and we check if ch2 from data fit is within 68 or 95 % .  How 68 % and 95 % interval is evaluated ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-02-25T21:07:12.177Z):
+Hi Sasha,
+The goodness of fit method will compute the value of a test statistic of your choice.
+E.g., --algo saturated will compute the saturated likelihood test statistics, which for likelihood models behaves very similarly to a chi2 [*].
+In order to get a p-value, you need to know both the value of the observed test statistics, and its expected distribution. The latter can be obtained with toys.
+The goodness of fit result (p-value) will check how frequent it is in the toys to obtain a worse value of the test-statistic distribution.
+In the online guide there are already scripts that will plot the distribution and print the p-value.
+Please, note that by default the signal strength is left floating in the fit, so that the measure is independent from the presence or absence of a signal. It is also recommended to use the frequentist approach in toys generation (--toysFreq) for saturated models.
+You can refer to https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests for further information.
+-A
+[*] https://www.physics.ucla.edu/~cousins/stats/cousins_saturated.pdf
+----------------------------------------

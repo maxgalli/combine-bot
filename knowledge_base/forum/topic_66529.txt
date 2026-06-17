@@ -1,0 +1,49 @@
+TOPIC: Error when running T2W in combineTool.py
+URL: https://cms-talk.web.cern.ch/t/66529
+DATE: 2024-11-21T17:52:05.468Z
+SOLVED: no
+============================================================
+
+QUESTION (by andrey @ 2024-11-21T17:52:05.657Z):
+Dear Combine Experts,
+I am  preparing datacards for our analysis, and getting a strange error when trying to create a Workspace with T2W.
+Command I run is this:
+combineTool.py -M T2W -o "ws.root" -i input/*
+
+And the error is the following:
+> pushd input; text2workspace.py -o ws.root shapes_vhcc_Zee_1_13p6TeV_2022_postEE.root; popd
+~/work/vhcc-limits/CMSSW_14_1_0_pre4/src/CombineHarvester/VHccCoHa/datacards/input ~/work/vhcc-limits/CMSSW_14_1_0_pre4/src/CombineHarvester/VHccCoHa/datacards
+Traceback (most recent call last):
+File "/.automount/home/home__home1/institut_3a/andreypz/work/vhcc-limits/CMSSW_14_1_0_pre4/bin/el9_amd64_gcc12/text2workspace.py", line 79, in <module>
+DC = parseCard(file, options)
+File "/.automount/home/home__home1/institut_3a/andreypz/work/vhcc-limits/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/DatacardParser.py", line 373, in parseCard
+for lineNumber, l in enumerate(file):
+File "/cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/bin/../../../../../../../el9_amd64_gcc12/external/python3/3.9.14-b98669a1dd7ad6f9a9402f3cf1f9d11c/lib/python3.9/codecs.py", line 322, in decode
+(result, consumed) = self._buffer_decode(data, self.errors, final)
+UnicodeDecodeError: 'utf-8' codec can't decode byte 0xf6 in position 6: invalid start byte
+~/work/vhcc-limits/CMSSW_14_1_0_pre4/src/CombineHarvester/VHccCoHa/datacards
+>> pushd input; text2workspace.py -o ws.root shapes_vhcc_Zee_3_13p6TeV_2022_postEE.root; popd
+~/work/vhcc-limits/CMSSW_14_1_0_pre4/src/CombineHarvester/VHccCoHa/datacards/input ~/work/vhcc-limits/CMSSW_14_1_0_pre4/src/CombineHarvester/VHccCoHa/datacards
+
+Interestingly, despite the error the workspace generation continues and seems to succeed. I am able to get a limit using the resulting ws.root file.
+So, is the error above relevant?
+The datacards are pushed here: https://gitlab.cern.ch/cms-analysis/hig/vhcc-run3/datacards/-/tree/master/input?ref_type=heads
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-11-21T17:58:31.282Z):
+Dear Andrey,
+The text2workspace.py script accepts a single .txt file. To run it with combination you should first run combineCards.py as explained in the docs
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by andrey @ 2024-11-22T15:24:45.331Z):
+Hi Aliya,
+Thanks a lot for your input.
+I now understood that the error above comes from trying to run T2W on a .root file with shapes, which is inside my cards directory.
+And I also need to combine the cards with --cc option to the script.
+So, the following command seems to work for me:
+combineTool.py -M T2W --cc combined.txt -o ws.root -i input/*.txt --parallel 6
+
+Reference:  http://cms-analysis.github.io/CombineHarvester/limits.html
+----------------------------------------

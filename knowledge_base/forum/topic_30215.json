@@ -1,0 +1,89 @@
+{
+  "topic_id": 30215,
+  "title": "Large profile-likelihood uncertainties",
+  "url": "https://cms-talk.web.cern.ch/t/30215",
+  "category_id": 279,
+  "created_at": "2023-10-03T19:37:31.476Z",
+  "last_posted_at": "2023-10-11T16:43:38.985Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "amkaur",
+      "name": "Amandeep Kaur",
+      "created_at": "2023-10-03T19:37:31.684Z",
+      "updated_at": "2023-10-03T19:37:31.684Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am performing profile-likelihood fit to estimate the lepton flavor ratio using the combine tool. I have shape-based cards (a sample is attached below) which include different parameters and systematic uncertainties. However, for some reason, the uncertainty in POI (r, flavor ratio) is very large and seems to be not converging. The shape root files can be found in the following folder at CERNBOX (https://cernbox.cern.ch/s/zHgenZ2wKw42JHp).\nI am using the following fit parameters for this:\ncombine -M MultiDimFit datacard_M1200.txt -m 1200 --algo=singles --robustFit 1 --setRobustFitAlgo Minuit --setParameterRanges r=-10,10 --do95=1 --X-rtd MINIMIZER_analytic\nThe result is as follows:\n\nError: closed range without finding crossing.\n\u2014 MultiDimFit \u2014\nbest fit parameter values and profile-likelihood uncertainties:\nWarning - No valid high-error (for 95\ndatacard_M1200.txt (6.4 KB)\n%) found, will report difference to maximum of range for : r\nr :    +0.840   -0.658/+5.412 (68%)    +0.841/-9.160 (95%)\n\nWould you please help me understand this large uncertainty and how can I fix this.\nThanks and regards,\nAmandeep Kaur",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am performing profile-likelihood fit to estimate the lepton flavor ratio using the combine tool. I have shape-based cards (a sample is attached below) which include different parameters and systematic uncertainties. However, for some reason, the uncertainty in POI (r, flavor ratio) is very large and seems to be not converging. The shape root files can be found in the following folder at CERNBOX (<a href=\"https://cernbox.cern.ch/s/zHgenZ2wKw42JHp\" rel=\"noopener nofollow ugc\">https://cernbox.cern.ch/s/zHgenZ2wKw42JHp</a>).</p>\n<p>I am using the following fit parameters for this:</p>\n<p>combine -M MultiDimFit datacard_M1200.txt -m 1200 --algo=singles --robustFit 1 --setRobustFitAlgo Minuit --setParameterRanges r=-10,10 --do95=1 --X-rtd MINIMIZER_analytic</p>\n<p>The result is as follows:</p>\n<hr>\n<p>Error: closed range without finding crossing.</p>\n<p>\u2014 MultiDimFit \u2014<br>\nbest fit parameter values and profile-likelihood uncertainties:<br>\nWarning - No valid high-error (for 95<br>\n<a class=\"attachment\" href=\"/uploads/short-url/xkXdNE1YqCnDo3gmPwLyKS5loPL.txt\">datacard_M1200.txt</a> (6.4 KB)<br>\n%) found, will report difference to maximum of range for : r<br>\nr :    +0.840   -0.658/+5.412 (68%)    +0.841/-9.160 (95%)</p>\n<hr>\n<p>Would you please help me understand this large uncertainty and how can I fix this.</p>\n<p>Thanks and regards,<br>\nAmandeep Kaur</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-10-03T20:50:51.764Z",
+      "updated_at": "2023-10-03T20:50:51.764Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Amandeep,\nA few things to check:\n\nwe recommend against changing settings like --setRobustFitAlgo Minuit. Do you get the same problem using the default?\nWhat happens if you freeze the flavor ratio parameter and repeat --algo singles for r?\nDid you try to make an explicit using using --algo grid? How does the NLL curve look?\n\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Amandeep,</p>\n<p>A few things to check:</p>\n<ul>\n<li>we recommend against changing settings like <code>--setRobustFitAlgo Minuit</code>. Do you get the same problem using the default?</li>\n<li>What happens if you freeze the flavor ratio parameter and repeat <code>--algo singles</code> for r?</li>\n<li>Did you try to make an explicit using using <code>--algo grid</code>? How does the NLL curve look?</li>\n</ul>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "amkaur",
+      "name": "Amandeep Kaur",
+      "created_at": "2023-10-04T15:29:10.445Z",
+      "updated_at": "2023-10-04T15:29:10.445Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Andrew,\nThank you so much for these ideas. Here is what I found after the suggested checks:\n\nsetRobutFitAlgo \u2192 to default , I see the same problem.\n\nI am unable to freeze \u2018r\u2019 with MultiDimFit method.\n\nI tried with --algo grid; the NLL curve looks as below.  For some points : Info in : Minuit2Minimizer::Minimize : Minimization did NOT converge, Edm is above max\n\nplot_1200_1dscan698\u00d7475 12.5 KB\nI realized that if I simply run with default settings for 68% CL (combine -M MultiDimFit datacard_M1200.txt -m 1200 --algo=singles --cl 0.68),  the fit is converging and gives :\nr :    +0.841   -0.660/+1.457 (68%)\nbut with --do95=1, it fails badly.\n\u2013\nAmandeep Kaur",
+      "cooked_html": "<p>Hello Andrew,</p>\n<p>Thank you so much for these ideas. Here is what I found after the suggested checks:</p>\n<ol>\n<li>\n<p>setRobutFitAlgo \u2192 to default , I see the same problem.</p>\n</li>\n<li>\n<p>I am unable to freeze \u2018r\u2019 with MultiDimFit method.</p>\n</li>\n<li>\n<p>I tried with --algo grid; the NLL curve looks as below.  For some points : Info in : Minuit2Minimizer::Minimize : Minimization did NOT converge, Edm is above max</p>\n</li>\n</ol>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/e040ad52535e122745fe0b12615967b6f85b4d30\" title=\"plot_1200_1dscan\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_345x234.png\" alt=\"plot_1200_1dscan\" data-base62-sha1=\"vZPwrxFikjUrhwW6y3a0WFyGuas\" width=\"345\" height=\"234\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_345x234.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_517x351.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_690x468.png 2x\" data-dominant-color=\"FCFBFB\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">plot_1200_1dscan</span><span class=\"informations\">698\u00d7475 12.5 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>I realized that if I simply run with default settings for 68% CL (combine -M MultiDimFit datacard_M1200.txt -m 1200 --algo=singles --cl 0.68),  the fit is converging and gives :</p>\n<p>r :    +0.841   -0.660/+1.457 (68%)</p>\n<p>but with --do95=1, it fails badly.</p>\n<p>\u2013<br>\nAmandeep Kaur</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2023-10-05T08:16:11.534Z",
+      "updated_at": "2023-10-05T08:16:11.534Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Amandeep,\nIf I read correctly the plot you sent, it seems that r is bounded to be positive in your model. Is that correct? If so, you might try to use  --setParameterRanges r=0.00001,20 to constrain properly the allowed phase space.\nAs a side note, the assumption the the likelihood ratio behaves like a chi2 distribution does not hold near the boundary. I\u2019m not sure algo singles will give you the right 68%/95% interval there. A safer approach would be to use toys to estimate the lower intervals.\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Amandeep,</p>\n<p>If I read correctly the plot you sent, it seems that r is bounded to be positive in your model. Is that correct? If so, you might try to use  --setParameterRanges r=0.00001,20 to constrain properly the allowed phase space.</p>\n<p>As a side note, the assumption the the likelihood ratio behaves like a chi2 distribution does not hold near the boundary. I\u2019m not sure algo singles will give you the right 68%/95% interval there. A safer approach would be to use toys to estimate the lower intervals.</p>\n<p>Best regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "amkaur",
+      "name": "Amandeep Kaur",
+      "created_at": "2023-10-05T14:55:50.649Z",
+      "updated_at": "2023-10-05T14:55:50.649Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nThank you for these ideas. Yes, r is always positive my model. I have set the r from 1e-6 to 20 to constraint r.\nRegarding your suggestion to use toys for lower intervals. I tried that but all the fits to toys failed (not sure why).\nI used the following parameters:\ncombine -M MultiDimFit datacard_M1200.txt -m 1200 --robustFit 1 --setParameterRanges r=1e-6,20 -t 10 -s -1\n\u2013\nEven the best fit value (median) is different from the expected value.\n\u2013\nAmandeep Kaur",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>Thank you for these ideas. Yes, r is always positive my model. I have set the r from 1e-6 to 20 to constraint r.</p>\n<p>Regarding your suggestion to use toys for lower intervals. I tried that but all the fits to toys failed (not sure why).</p>\n<p>I used the following parameters:<br>\ncombine -M MultiDimFit datacard_M1200.txt -m 1200 --robustFit 1 --setParameterRanges r=1e-6,20 -t 10 -s -1</p>\n<p>\u2013<br>\nEven the best fit value (median) is different from the expected value.</p>\n<p>\u2013<br>\nAmandeep Kaur</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-10-06T08:20:45.891Z",
+      "updated_at": "2023-10-06T08:20:45.891Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Amandeep,\nI think the answer is in the shape of the likelihood curve:\n\nAmandeep Kaur:\n\nplot_1200_1dscan698\u00d7475 12.5 KB\nplot_1200_1dscan698\u00d7475 12.5 KB\n\nThe curve is flattening towards large values of r, and so at least within the range scanned (0-10) it is not crossing the threshold for the 95% CL (when 2*deltaNLL = 3.84).\nThe reason for this behaviour depends on the physics model, but can happen e.g. with parameterisations involving ratios of signal rates.\nYou could try extending rMax by a large amount (but it may not work if deltaNLL is asymptotically approaching a value < 3.84).\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Amandeep,</p>\n<p>I think the answer is in the shape of the likelihood curve:</p>\n<aside class=\"quote no-group quote-modified\" data-username=\"amkaur\" data-post=\"3\" data-topic=\"30215\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img loading=\"lazy\" alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/dec6dc/48.png\" class=\"avatar\"> Amandeep Kaur:</div>\n<blockquote>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/e040ad52535e122745fe0b12615967b6f85b4d30\" title=\"plot_1200_1dscan\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_345x234.png\" alt=\"plot_1200_1dscan\" data-base62-sha1=\"vZPwrxFikjUrhwW6y3a0WFyGuas\" width=\"345\" height=\"234\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_345x234.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_517x351.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e040ad52535e122745fe0b12615967b6f85b4d30_2_690x468.png 2x\" data-dominant-color=\"FCFBFB\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">plot_1200_1dscan</span><span class=\"informations\">698\u00d7475 12.5 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>plot_1200_1dscan698\u00d7475 12.5 KB</p>\n</blockquote>\n</aside>\n<p>The curve is flattening towards large values of r, and so at least within the range scanned (0-10) it is not crossing the threshold for the 95% CL (when 2*deltaNLL = 3.84).</p>\n<p>The reason for this behaviour depends on the physics model, but can happen e.g. with parameterisations involving ratios of signal rates.</p>\n<p>You could try extending rMax by a large amount (but it may not work if deltaNLL is asymptotically approaching a value &lt; 3.84).</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "amkaur",
+      "name": "Amandeep Kaur",
+      "created_at": "2023-10-11T16:43:38.985Z",
+      "updated_at": "2023-10-11T16:43:38.985Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thanks Andrew. Yes, I tried with rMax = 20, still the curve is approaching delNLL value < 3.84. I am not sure what could be the solution for this behavior with the given signal rates.\nIs there any solution to this kind of problem.\nThanks again,\nRegards,\nAmandeep Kaur",
+      "cooked_html": "<p>Thanks Andrew. Yes, I tried with rMax = 20, still the curve is approaching delNLL value &lt; 3.84. I am not sure what could be the solution for this behavior with the given signal rates.</p>\n<p>Is there any solution to this kind of problem.</p>\n<p>Thanks again,<br>\nRegards,<br>\nAmandeep Kaur</p>"
+    }
+  ]
+}

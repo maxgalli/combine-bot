@@ -1,0 +1,100 @@
+{
+  "topic_id": 35066,
+  "title": "FitDiagnostics vs Impacts",
+  "url": "https://cms-talk.web.cern.ch/t/35066",
+  "category_id": 279,
+  "created_at": "2024-02-18T21:55:52.229Z",
+  "last_posted_at": "2024-02-26T15:22:15.265Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2024-02-18T21:55:52.379Z",
+      "updated_at": "2024-02-18T21:55:52.379Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to interpret some fit results, which I obtained using two methods : Impacts, using instructions here [1] and FitDiagnostics method. For most nuisance parameters there is reasonable agreement for output values and errors between two methods. However there are some results which it is not clear how to interpret: postfit values for some fitParam are different for these two methods. Also in case of pulls the output value has very strange precision (for all rate params) - with the step of 0.5, and zero errors (\u00b10), while in case of FitDiagnostics the value postfit value for rateParam has reasonable precision and non-zero error.\nCould you please suggest, what could case such difference in postfit values for parameter of type rateParam, and why in case of Impacts all parameters of type rateParam have 0 error and low precision (with step of 0.5) ?\nkind regards,\nAnton\n[1]http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#nuisance-parameter-impacts",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to interpret some fit results, which I obtained using two methods : Impacts, using instructions here [1] and FitDiagnostics method. For most nuisance parameters there is reasonable agreement for output values and errors between two methods. However there are some results which it is not clear how to interpret: postfit values for some fitParam are different for these two methods. Also in case of pulls the output value has very strange precision (for all rate params) - with the step of 0.5, and zero errors (\u00b10), while in case of FitDiagnostics the value postfit value for rateParam has reasonable precision and non-zero error.<br>\nCould you please suggest, what could case such difference in postfit values for parameter of type rateParam, and why in case of Impacts all parameters of type rateParam have 0 error and low precision (with step of 0.5) ?</p>\n<p>kind regards,<br>\nAnton</p>\n<p>[1]<a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#nuisance-parameter-impacts\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#nuisance-parameter-impacts</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-02-19T10:11:07.412Z",
+      "updated_at": "2024-02-19T10:11:07.412Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Anton,\nIt would be great if you could share the actual output from the two cases, so we can compare. In addition can you give the exact combine commands used?\nSometimes with the impacts it will fail for rateParams that do not have a reasonable range set on the RooRealVars (aim for no more than 2 orders of magnitude larger than the expected uncertainty). Are you setting a range on these parameters?\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Anton,</p>\n<p>It would be great if you could share the actual output from the two cases, so we can compare. In addition can you give the exact combine commands used?</p>\n<p>Sometimes with the impacts it will fail for rateParams that do not have a reasonable range set on the RooRealVars (aim for no more than 2 orders of magnitude larger than the expected uncertainty). Are you setting a range on these parameters?</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2024-02-20T22:24:25.555Z",
+      "updated_at": "2024-02-20T22:24:25.555Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nPlease find the example datacard in the attachment.\nFor pulls I used following command:\ntext2workspace.py  datacard.txt -o workspace.root\ncombineTool.py -M Impacts -d workspace.root -m 12345 --doInitialFit --robustFit 1  --rMin=-10 --rMax=10\ncombineTool.py -M Impacts -d workspace.root -m 12345  --robustFit 1 --doFits   --rMin=-10 --rMax=10\ncombineTool.py -M Impacts -d workspace.root -m 12345 -o impacts_v38_Data.json\nplotImpacts.py -i  impacts_v38_Data.json -o impacts_v38_Data_pdf\n\nand for fit diagnostics\ncombine -M FitDiagnostics -d dataCard.txt --cminDefaultMinimizerStrategy 0\n\nIt is the only signal point which shows inconsistency between two methods.\nThank you,\nkind regards,\nAnton\ndataCard.txt (3.6 KB)\ndataCard.root (575.1 KB)",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Please find the example datacard in the attachment.<br>\nFor pulls I used following command:</p>\n<pre><code class=\"lang-auto\">text2workspace.py  datacard.txt -o workspace.root\ncombineTool.py -M Impacts -d workspace.root -m 12345 --doInitialFit --robustFit 1  --rMin=-10 --rMax=10\ncombineTool.py -M Impacts -d workspace.root -m 12345  --robustFit 1 --doFits   --rMin=-10 --rMax=10\ncombineTool.py -M Impacts -d workspace.root -m 12345 -o impacts_v38_Data.json\nplotImpacts.py -i  impacts_v38_Data.json -o impacts_v38_Data_pdf\n\n</code></pre>\n<p>and for fit diagnostics</p>\n<pre><code class=\"lang-auto\">combine -M FitDiagnostics -d dataCard.txt --cminDefaultMinimizerStrategy 0\n\n</code></pre>\n<p>It is the only signal point which shows inconsistency between two methods.</p>\n<p>Thank you,</p>\n<p>kind regards,<br>\nAnton</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/5GJx7T3JQu247qJJkKixN2b7zeW.txt\">dataCard.txt</a> (3.6 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/sIWKoAcpBSTaWBYIEMtKUx29Bdf.root\">dataCard.root</a> (575.1 KB)</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-02-23T09:15:54.867Z",
+      "updated_at": "2024-02-23T09:15:54.867Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Anton,\nI ran the Impacts with the commands you provided on the initial datacards and saw many evaluation errors. I think because of the parameters defined as formulas the other floating parameters were pushed to the regions where the likelihood evaluations fails. If you restrict the ranges of freely floating parameters (which is a good practice anyway) as you can see from the uploaded dataCard_wranges.txt file the NP scans and the impacts plot below look fine. Hope that helps, let me know if something is unclear.\nBest,\nAliya\ndataCard_wranges.txt (3.8 KB)\nimage1956\u00d71630 338 KB",
+      "cooked_html": "<p>Dear Anton,</p>\n<p>I ran the Impacts with the commands you provided on the initial datacards and saw many evaluation errors. I think because of the parameters defined as formulas the other floating parameters were pushed to the regions where the likelihood evaluations fails. If you restrict the ranges of freely floating parameters (which is a good practice anyway) as you can see from the uploaded <code>dataCard_wranges.txt</code> file the NP scans and the impacts plot below look fine. Hope that helps, let me know if something is unclear.</p>\n<p>Best,<br>\nAliya</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/prVmr3NPQqUrO8WMPbjc6ueaMcr.txt\">dataCard_wranges.txt</a> (3.8 KB)</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/f/fe54b7cc967714c1d870aa2604a227b1ba5832e1.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/fe54b7cc967714c1d870aa2604a227b1ba5832e1\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/f/fe54b7cc967714c1d870aa2604a227b1ba5832e1_2_600x500.png\" alt=\"image\" data-base62-sha1=\"AhUMF9bwAohL7jyZFNJtRyvu6OJ\" width=\"600\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/f/fe54b7cc967714c1d870aa2604a227b1ba5832e1_2_600x500.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/f/fe54b7cc967714c1d870aa2604a227b1ba5832e1_2_900x750.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/f/fe54b7cc967714c1d870aa2604a227b1ba5832e1_2_1200x1000.png 2x\" data-dominant-color=\"E9E8E9\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1956\u00d71630 338 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 5,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-02-23T09:19:49.726Z",
+      "updated_at": "2024-02-23T09:19:49.726Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Small correction, you might want to check the parameters that depend on MuTTZ0to1j, or modify the range, since I\u2019m not sure what your expectation for this parameter is.\nBest,\nAliya",
+      "cooked_html": "<p>Small correction, you might want to check the parameters that depend on <code>MuTTZ0to1j</code>, or modify the range, since I\u2019m not sure what your expectation for this parameter is.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2024-02-23T16:21:22.855Z",
+      "updated_at": "2024-02-23T16:21:22.855Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThanks a lot for this suggestion! Indeed setting ranges for rateParams makes MuTTZ2to5j in Impacts closer to what we obtain doing FitDiagnostics, but it is still different from FitDiagnostics value. Even complete switching off TTZ01j doesn\u2019t help. And this is the case only for this particular signal point, for others as far as we could see the results between Impacts and FitDiagnostics are consistent for all parameters, including MuTTZ2to5j.\nDo you know if there is any rule of thumb how to select ranges for rateParams?\nkind regards,\nAnton",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Thanks a lot for this suggestion! Indeed setting ranges for rateParams makes MuTTZ2to5j in Impacts closer to what we obtain doing FitDiagnostics, but it is still different from FitDiagnostics value. Even complete switching off TTZ01j doesn\u2019t help. And this is the case only for this particular signal point, for others as far as we could see the results between Impacts and FitDiagnostics are consistent for all parameters, including MuTTZ2to5j.<br>\nDo you know if there is any rule of thumb how to select ranges for rateParams?</p>\n<p>kind regards,<br>\nAnton</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2024-02-23T21:29:28.290Z",
+      "updated_at": "2024-02-23T21:29:28.290Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nI\u2019ve checked 3 simplified cases: no restrictions for rateParams, loose restrictions ([0,2]) and tight restriction ([0.8,1.2]). In all 3 cases I compare MuTTZ2to5j rateParam fit results. In case of no restrictions for Impacts vs FitDiagnostics results were 1.3\u00b10 vs 1.0883e+00 +/-  5.41e-02. In case of \u201cloose restrictions\u201d  ([0,2]) : 1.26\u00b112 vs 1.0883e+00 +/-  5.39e-02. And in case of tight restrictions ([0.8,1.2]) parameters were 1.17+0/-0.11 vs 1.0824e+00 +/-  5.35e-02.\nSo in none of those case MuTTZ2to5j in Impacts and FitDiagnostics are consistent.\nI\u2019m not sure if this still might be caused by wrong choice of rateParam restrictions.\nkind regards,\nAnton",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>I\u2019ve checked 3 simplified cases: no restrictions for rateParams, loose restrictions ([0,2]) and tight restriction ([0.8,1.2]). In all 3 cases I compare MuTTZ2to5j rateParam fit results. In case of no restrictions for Impacts vs FitDiagnostics results were 1.3\u00b10 vs 1.0883e+00 +/-  5.41e-02. In case of \u201cloose restrictions\u201d  ([0,2]) : 1.26\u00b112 vs 1.0883e+00 +/-  5.39e-02. And in case of tight restrictions ([0.8,1.2]) parameters were 1.17+0/-0.11 vs 1.0824e+00 +/-  5.35e-02.<br>\nSo in none of those case MuTTZ2to5j in Impacts and FitDiagnostics are consistent.<br>\nI\u2019m not sure if this still might be caused by wrong choice of rateParam restrictions.</p>\n<p>kind regards,<br>\nAnton</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-02-26T15:22:15.265Z",
+      "updated_at": "2024-02-26T15:22:30.707Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Anton,\nWhen you run the FitDiagnostics method by default the signal strength is allowed to float in the range [0, 20]. But it seems like it the best fit point is outside of the allowed range, so the minimum obtained from the initial fit with Impacts method (where r is allowed to float in [-10, 10]) is different from the one you get from the FitDiagnostics.\nIf you allow the signal strength to vary in the same ranges the fits should be compatible, i.e. try adding --setParameterRanges r=-10,10 to the FitDiagnostics command.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Anton,</p>\n<p>When you run the <code>FitDiagnostics</code> method by default the signal strength is allowed to float in the range [0, 20]. But it seems like it the best fit point is outside of the allowed range, so the minimum obtained from the initial fit with Impacts method (where r is allowed to float in [-10, 10]) is different from the one you get from the FitDiagnostics.</p>\n<p>If you allow the signal strength to vary in the same ranges the fits should be compatible, i.e. try adding <code>--setParameterRanges r=-10,10</code> to the FitDiagnostics command.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

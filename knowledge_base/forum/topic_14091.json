@@ -1,0 +1,45 @@
+{
+  "topic_id": 14091,
+  "title": "Permanently freeze scale parameters?",
+  "url": "https://cms-talk.web.cern.ch/t/14091",
+  "category_id": 279,
+  "created_at": "2022-08-19T11:51:49.852Z",
+  "last_posted_at": "2022-08-19T12:05:52.965Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "vwachira",
+      "name": "Vichayanun Wachirapusitanand",
+      "created_at": "2022-08-19T11:51:50.034Z",
+      "updated_at": "2023-02-07T10:53:06.712Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am working on a combination of four top quark search results, and it turns out that I would need to adjust the luminosity of each analysis to match the most recent measurements. One way that I can think of is to define a new scale parameter that would apply to every process in every combine bin within the datacard, something like this:\nscale_lumi2016 rateParam * * <SOME_VALUE>\nSince this is a scaling parameter to fix integrated luminosity, it should not be free-floating at all, and I want it to be frozen within the workspace file created via text2workspace.py. I don\u2019t want to pass an option --freezeParameters scale_lumi2016 every time I use combine because I may forget to add one sometimes.\nSo my question is, is there a way to bake in a scaling parameter and force it to be always frozen, without me having to use --freezeParameters option every time I run combine?\nRegards,\nVichayanun",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am working on a combination of four top quark search results, and it turns out that I would need to adjust the luminosity of each analysis to match the most recent measurements. One way that I can think of is to define a new scale parameter that would apply to every process in every combine bin within the datacard, something like this:</p>\n<p><code>scale_lumi2016 rateParam * * &lt;SOME_VALUE&gt;</code></p>\n<p>Since this is a scaling parameter to fix integrated luminosity, it should not be free-floating at all, and I want it to be frozen within the workspace file created via text2workspace.py. I don\u2019t want to pass an option <code>--freezeParameters scale_lumi2016</code> every time I use combine because I may forget to add one sometimes.</p>\n<p>So my question is, is there a way to bake in a scaling parameter and force it to be always frozen, without me having to use <code>--freezeParameters</code> option every time I run combine?</p>\n<p>Regards,<br>\nVichayanun</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-08-19T12:00:33.464Z",
+      "updated_at": "2022-08-19T12:00:33.464Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nlumiscale rateParam * * 1.\nnuisance edit freeze lumiscale\n\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<pre><code class=\"lang-auto\">lumiscale rateParam * * 1.\nnuisance edit freeze lumiscale\n</code></pre>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "vwachira",
+      "name": "Vichayanun Wachirapusitanand",
+      "created_at": "2022-08-19T12:05:52.965Z",
+      "updated_at": "2022-08-19T12:06:22.265Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Thanks! I\u2019ll try this one.\n-Vichayanun",
+      "cooked_html": "<p>Thanks! I\u2019ll try this one.</p>\n<p>-Vichayanun</p>"
+    }
+  ]
+}

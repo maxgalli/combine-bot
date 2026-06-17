@@ -1,0 +1,100 @@
+TOPIC: Using 2D histograms as inputs for estimating limits
+URL: https://cms-talk.web.cern.ch/t/17876
+DATE: 2022-11-23T12:20:41.724Z
+SOLVED: no
+============================================================
+
+QUESTION (by sako @ 2022-11-23T12:20:42.023Z):
+Dear Combine experts,
+Hi, I’m new to the Combine tool, and I have a question about using two search variables for estimating limits. In our analysis (H->AA->4l), we were initially using only a single search variable, M(H) (or M(4l)). In that case, I was able to follow up on the tutorial [1] to feed TH1 histograms and estimate limits. (let’s assume we’re doing binned shape analysis using histograms instead of parametric shape analysis.)
+Now, we’re trying to add another search variable, M(A) (or M(ll)), to the Combine tool - let’s say we define a signal region on a 2D phase space of (M(H), M(A)). Nonetheless, the number of POI is still 1, which is ‘r’ (or the upper limit on the xsec).
+As a first shot, I naively fed TH2 instead of TH1. Then the Combine tool refused to take TH2 as inputs raising RuntimeError, saying:
+“Currently supporting only TH1s, RooDataHist and RooAbsPdfs”
+On a second try, I converted TH2 into RooDataHist (since RooDataHist supports a constructor from TH1, TH2 & TH3), and fed RooDataHist to the Combine tool. Then it works (at least technically) and returns some number on the CL on the ‘r’.
+So, is it supposed to be an intended use case? or is it just a coincidence and doesn’t support N-dimensional input data?
+Best,
+Sanghyun.
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2020/exercise/
+----------------------------------------
+
+REPLY 2 (by gortona @ 2022-11-23T13:22:51.000Z):
+Dear Sanghyun,
+Yes combine does indeed support multidimensional PDFs.
+As you worked out, multidimensional THX are not valid as input, but as you already experienced for a binned analysis you can use RooDataHist or RooHistPdf (if you want something which has all the properties of a PDF) as input for combine.
+When doing so, remember to be careful about the binning of the RooRealVars you use to define your axes. They should match your histogram
+Cheers,
+Giacomo
+
+On 23 Nov 2022, at 13:21, Sang Hyun Ko via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Sang Hyun Ko sakoNovember 23
+
+Dear Combine experts,
+Hi, I’m new to the Combine tool, and I have a question about using two search variables for estimating limits. In our analysis (H->AA->4l), we were initially using only a single search variable, M(H) (or M(4l)). In that case, I was able to follow up on the tutorial [1] to feed TH1 histograms and estimate limits. (let’s assume we’re doing binned shape analysis using histograms instead of parametric shape analysis.)
+Now, we’re trying to add another search variable, M(A) (or M(ll)), to the Combine tool - let’s say we define a signal region on a 2D phase space of (M(H), M(A)). Nonetheless, the number of POI is still 1, which is ‘r’ (or the upper limit on the xsec).
+As a first shot, I naively fed TH2 instead of TH1. Then the Combine tool refused to take TH2 as inputs raising RuntimeError, saying:
+“Currently supporting only TH1s, RooDataHist and RooAbsPdfs”
+On a second try, I converted TH2 into RooDataHist (since RooDataHist supports a constructor from TH1, TH2 & TH3), and fed RooDataHist to the Combine tool. Then it works (at least technically) and returns some number on the CL on the ‘r’.
+So, is it supposed to be an intended use case? or is it just a coincidence and doesn’t support N-dimensional input data?
+Best,
+Sanghyun.
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2020/exercise/
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by sako @ 2022-11-23T13:40:46.307Z):
+Dear Giacomo,
+Thanks for the swift response! It’s good to know that it’s a supported feature. (and also the notice about the binning, indeed I wasn’t taking care of it)
+Best,
+Sanghyun.
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-11-23T13:40:35.000Z):
+Hi,
+just a small addition, since THX are already binned, you can unroll each THX into a TH1. (In case you want to use some of the TH1 features like autoMCStats)
+This casting is not supported automatically, to avoid confusion with the under/overflow bins that are normally not used.
+-Andrea
+On Wed, Nov 23, 2022 at 2:25 PM Giacomo Ortona via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Giacomo Ortona gortonaNovember 23
+
+Dear Sanghyun,
+Yes combine does indeed support multidimensional PDFs.
+As you worked out, multidimensional THX are not valid as input, but as you already experienced for a binned analysis you can use RooDataHist or RooHistPdf (if you want something which has all the properties of a PDF) as input for combine.
+When doing so, remember to be careful about the binning of the RooRealVars you use to define your axes. They should match your histogram
+Cheers,
+Giacomo
+
+On 23 Nov 2022, at 13:21, Sang Hyun Ko via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Sang Hyun Ko sakoNovember 23
+
+Dear Combine experts,
+Hi, I’m new to the Combine tool, and I have a question about using two search variables for estimating limits. In our analysis (H->AA->4l), we were initially using only a single search variable, M(H) (or M(4l)). In that case, I was able to follow up on the tutorial [1] to feed TH1 histograms and estimate limits. (let’s assume we’re doing binned shape analysis using histograms instead of parametric shape analysis.)
+Now, we’re trying to add another search variable, M(A) (or M(ll)), to the Combine tool - let’s say we define a signal region on a 2D phase space of (M(H), M(A)). Nonetheless, the number of POI is still 1, which is ‘r’ (or the upper limit on the xsec).
+As a first shot, I naively fed TH2 instead of TH1. Then the Combine tool refused to take TH2 as inputs raising RuntimeError, saying:
+“Currently supporting only TH1s, RooDataHist and RooAbsPdfs”
+On a second try, I converted TH2 into RooDataHist (since RooDataHist supports a constructor from TH1, TH2 & TH3), and fed RooDataHist to the Combine tool. Then it works (at least technically) and returns some number on the CL on the ‘r’.
+So, is it supposed to be an intended use case? or is it just a coincidence and doesn’t support N-dimensional input data?
+Best,
+Sanghyun.
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2020/exercise/
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Sang Hyun Ko sakoNovember 23
+
+Dear Combine experts, Hi, I’m new to the Combine tool, and I have a question about using two search variables for estimating limits. In our analysis (H->AA->4l), we were initially using only a single search variable, M(H) (or M(4l)). In that case, I was able to follow up on the tutorial [1] to feed…
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

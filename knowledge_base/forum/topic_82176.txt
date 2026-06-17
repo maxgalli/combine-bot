@@ -1,0 +1,21 @@
+TOPIC: Understanding the pre-fit and post-fit distributions with FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/82176
+DATE: 2024-12-20T12:27:31.669Z
+SOLVED: no
+============================================================
+
+QUESTION (by anpotreb @ 2024-12-20T12:27:32.115Z):
+Hello,
+I am sorry if this is a very naive question.
+I am trying to understand the output from FitDiagnostics in Combine.
+To test what the prefits show, I am running FitDiagnostics with the Asimov dataset (-t -1 option,command in [1]). Do I understand correctly the data points should match exactly the simulation line? However, they don’t match. The data points match the sum of the input histograms but their uncertainties are increased. The lines are slightly shifted. Are the simulation lines obtained from pseudodata? But then their dispersion seem to be much smaller than I would expect from the error bars.
+{E497013E-FE1C-4ABE-A56B-6F47D4CB17E7}1583×1221 60 KB
+From the paper I understand that the error bars are estimated from pseudodata. I was surprised that changing --numToysForShapes 1000 to --numToysForShapes 1 did not change anything for me. Is that normal? Are all nuisances + statistical uncertainties considered in the errorbars? I tried to inflate some cross section uncertainties but the result again stayed the same.
+I add my simple datacard to the post to explain what I am doing.
+The reason for asking is that we have a disagreement between the data and simulation in the prefits in my analysis.
+Could you please clarify the questions above?
+Best,
+Andris
+[1] combineTool.py -M FitDiagnostics --redefineSignalPOIs TopReweight_0p4,MTop --freezeParameters r --setParameters MTop=0,r=1,TopReweight_0p4=0 --setParameterRanges MTop=-1,1:TopReweight_0p4=-1,1 --saveWorkspace --robustFit 1 --stepSize=0.005 -v 2 -t -1 -m 125 --saveShapes --saveOverallShapes --saveWithUncertainties --saveNormalizations --numToysForShapes 1000
+ele_2016.txt (1.9 KB)
+----------------------------------------

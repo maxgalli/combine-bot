@@ -1,0 +1,114 @@
+TOPIC: Error after a small fluctuation in event yields in the datacards
+URL: https://cms-talk.web.cern.ch/t/47082
+DATE: 2024-08-30T13:08:39.449Z
+SOLVED: no
+============================================================
+
+QUESTION (by aguven @ 2024-08-30T13:08:39.548Z):
+Hello,
+I hope this is the right category to ask this question. It is the first time I am asking a question about “Combine” tool, so apologies in advance.
+I am trying to get upper limits on some signal strength. We perform a cut and count analysis via ABCD method and have different expected number of events for background and signal for each region. Furthermore I also do a scan where I vary two of the cuts and run Combine with AsymptoticLimits method to get an upper limit on the signal strength for each bin, (i.e. the two variables that I am scanning. I obtain a 2D histogram like the following:
+Screenshot 2024-08-30 at 14.44.181231×912 172 KB
+Let’s focus on two values:
+
+MET_pt=700, Max(LxySig)=25
+MET_pt=700, Max(LxySig)=30
+
+For the first one the upper limit looks awesome, but for the latter it is awful! When we look at the datacard we do not see a huge fluctuation though. Here is the datacard for the cut MET_pt=700, Max(LxySig)=25:
+imax 4  number of channels
+jmax 1 number of processes -1
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+-------
+bin		A	B	C	D
+observation		3.3637644048019193	47.02521580686357	3.409817555842722	47.66903597547831
+-------
+bin		A	B	C	D	A	B	C	D
+process		bkg	bkg	bkg	bkg	sig	sig	sig	sig
+process		1	1	1	1	0	0	0	0
+rate		1.0	1.0	1.0	1.0	28.748509606891318	91.08538923635113	14.912923863343504	61.66887056832943
+-------
+SigSys lnN		-	-	-	-	1.2	1.2	1.2	1.2
+SigSysA lnN		-	-	-	-	1.045363797604715	-	-	-
+SigSysB lnN		-	-	-	-	-	1.0295383936081173	-	-
+SigSysC lnN		-	-	-	-	-	-	1.070738121344744	-
+SigSysD lnN		-	-	-	-	-	-	-	1.0379133268574479
+BkgSys lnN		1.2	-	-	-	-	-	-	-
+BkgSysA lnN		1.156505372595005	-	-	-	-	-	-	-
+BkgSysB lnN		-	1.039701477026975	-	-	-	-	-	-
+BkgSysC lnN		-	-	1.1961434480221593	-	-	-	-	-
+BkgSysD lnN		-	-	-	1.0654254990086371	-	-	-	-
+
+alpha rateParam A bkg (@0*@1/@2) beta,gamma,delta
+beta rateParam B bkg 47.02521580686357
+gamma rateParam C bkg 3.409817555842722
+delta rateParam D bkg 47.66903597547831
+
+And here is the datacard for the other one (MET_pt=700, Max(LxySig)=30):
+imax 4  number of channels
+jmax 1 number of processes -1
+kmax *  number of nuisance parameters (sources of systematical uncertainties)
+-------
+bin		A	B	C	D
+observation		3.0494222813827987	43.575457344496954	3.577307049787682	51.118794437844926
+-------
+bin		A	B	C	D	A	B	C	D
+process		bkg	bkg	bkg	bkg	sig	sig	sig	sig
+process		1	1	1	1	0	0	0	0
+rate		1.0	1.0	1.0	1.0	25.126639818389673	79.15326671064112	18.534793651845145	73.6009930940395
+-------
+SigSys lnN		-	-	-	-	1.2	1.2	1.2	1.2
+SigSysA lnN		-	-	-	-	1.0470999683208615	-	-	-
+SigSysB lnN		-	-	-	-	-	1.0312355616505398	-	-
+SigSysC lnN		-	-	-	-	-	-	1.064047412389044	-
+SigSysD lnN		-	-	-	-	-	-	-	1.0351487312409546
+BkgSys lnN		1.2	-	-	-	-	-	-	-
+BkgSysA lnN		1.1620900112248402	-	-	-	-	-	-	-
+BkgSysB lnN		-	1.0383509478907007	-	-	-	-	-	-
+BkgSysC lnN		-	-	1.1903972981744335	-	-	-	-	-
+BkgSysD lnN		-	-	-	1.0629896194025878	-	-	-	-
+
+alpha rateParam A bkg (@0*@1/@2) beta,gamma,delta
+beta rateParam B bkg 43.575457344496954
+gamma rateParam C bkg 3.577307049787682
+delta rateParam D bkg 51.118794437844926
+
+They do not seem much different to me. Can you help me to solve this problem?
+I use Combine v10.0.2 with the CMSSW14_1_0_pre4.
+The command I run is:
+combine -d MC_stop_M600_580_ct2_2018_700_30.txt  -M AsymptoticLimits -v 1 --run blind --rMin 0 --rMax 5
+
+And I have lots of errors like the following:
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset__with_constr) evaluation error,
+origin       : RooAddition::nll_model_s__Asymptotic_asimovDataset__with_constr[ nll_model_s__Asymptotic_asimovDataset_ + nll_model_s__Asymptotic_asimovDataset__constr ]
+message      : function value is NAN
+server values: !set=(nll_model_s__Asymptotic_asimovDataset_ = -nan,nll_model_s__Asymptotic_asimovDataset__constr = 56.6223)
+
+I also tried adding this just before the observations line in the datacard:
+shapes * * FAKE
+
+as the suggestion on this thread: error-warning-while-using-combine.
+It still outputs many errors but the limits get smaller like r<6.25.
+Please feel free to experiment with these datacards. I don’t really understand what makes this so unstable.
+Also I ran the same thing with HybridNew, and it still failed.
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-09-02T09:25:35.228Z):
+Hi Ali Kaan,
+This is the right place to ask these kinds of questions, no need to apologize.
+So, in the setup of this problem, you have 4 data points (you A, B, C, and D) regions which are trying to be fit by 4 free parameters (beta, gamma, delta and your signal strength) plus a bunch of constrained parameters (your nuisances).
+Often, this problem will be well defined, with a unique solution (four free parameters, four data points). But its also not so difficult for the problem to fall into parameter space regions that are going to cause difficulties. There is nothing in the construction of the problem that prevents a change in your signal strength parameter from being degenerate with some combination of your beta, gamma, and delta parameters. If you think of a simplified linear version of the problem, where the data represents a point in a 4-dimensional vector space and each of the four parameters represents a direction in that vector space this would mean that the direction of r lies in the subspace spanned by alpha, beta and gamma. Once you have this kind of a degeneracy and flat direction in your fit it can cause all kinds of problems.
+The real problem is not exactly this simplified linear version, but I suspect this kind of degeneracy is related to what you’re seeing – and the relevant difference is likely the direction of your signal in this 4 dimensional space compared to the directions spanned by your free background parameters (I didn’t explicitly check this, though).  The ABCD parameters are guaranteed not to be collinear by construction, and if your signal is entirely confined to the signal region, it won’t be either. But once you start having significant amounts of signal in the other regions as well, this can happen.
+Even in cases where the parameters are not entirely degenerate you might get unrealistic results in cases where the effect of the your signal largely lies in the subspace spanned by the free background parameters. This will mean that your background parameters can be pulled very far from their expectations and then be compensated with a large signal while only having a small change in observable counts. For example, I think even with your first card which at first glance fives a more sensible limit, there are strong correlations, and the background estimates will go negative even for moderate signal strengths. e.g. at a signal strength of 0.37, your median expected limit, the signal in bin A is 0.37*29 ~ 12 and in C is 0.37*15 ~ 6, but the expected number of events is about 3 in each of those bins, which likely means that the background counts in region C (and therefore also A) are probably pulled to negative values.  If you run the same limit but adding
+--setParameterRanges beta=0,100:gamma=0,100:delta=0,100
+you’ll see that the limit gets a little bit smaller, I get 0.31. You can see what’s happening a little bit more clearly by running:
+combine -d <your datacard> -M MultiDimFit --algo fixed --fixedPointPOIs r=0.31 -t -1  --setParameterRanges beta=0,100:gamma=0,100:delta=0,100 --trackParameters beta,gamma,delta
+
+which will perform the nominal fit as well as a fit for the signal strength r=0.31 and it will save the values of the tracked parameters.
+If you open up the output root file root -l higgsCombineTest.MultiDimFit.mH120.root and look at the values stored in the limit tree
+limit->Scan("*")
+
+You can see that for the fit with r=0.31, gamma is being set to basically 0. This is formally correct as far as the model is defined, but its probably not what you intended, since now two of your regions in the ABCD model will have 0 contribution.
+So, I think that’s the technical problem that you are seeing, the solution might be less technical and more at the analysis-level though. If you are able to, for example, redefine the ABCD region observables or boundaries in such a way that confines the signal more tightly to the ‘signal region’, (or more generally speaking where it is as orthogonal to the degrees of freedom in your background model as possible) it will not only improve the technical problems, but likely make the analysis more powerful.
+I hope that helps,
+Kyle
+----------------------------------------

@@ -1,0 +1,32 @@
+TOPIC: Warning when running FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/140247
+DATE: 2025-12-19T07:44:14.542Z
+SOLVED: no
+============================================================
+
+QUESTION (by ceballos @ 2025-12-19T07:44:14.988Z):
+Dear experts,
+I have noticed I am now getting a warning using the hopefully latest combine version v10.4.1, which I have never seen before. I use the FitDiagnostics (actual parameters not even that important):
+combine -M FitDiagnostics workspace_test.root -n test --saveNorm --saveShapes --saveWithUncertainties --saveOverall --keepFailures --ignoreCovWarning --rMin=-2 --rMax=3 --robustFit=1 --setParameters r_s0=1 -t -1
+I get this warning:
+WARNING! You set the NLL evaluation backend to “legacy”, which is not the default. This code path is not validated. Please don’t use it for production!
+I don’t even know what it is, but even if I explicitly use ‘combine’:
+combine -M FitDiagnostics workspace_test.root -n test --saveNorm --saveShapes --saveWithUncertainties --saveOverall --keepFailures --ignoreCovWarning --rMin=-2 --rMax=3 --robustFit=1 --nllbackend=combine --setParameters r_s0=1 -t -1
+I am still getting the warning! What is it? And how can I switch to the default behavior?
+Thanks, Guillelmo
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-12-19T09:52:15.785Z):
+Dear Guillelmo,
+This indeed was introduced recently as a result of our developments towards auto-differentiation support in combine. The warning can be safely ignored for now and the experts are working on fixing the logic so that it doesn’t appear when not necessary.
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2025-12-19T15:26:35.063Z):
+Dear Guillelmo,
+Thanks a lot for pinging us about this issue.
+It should be resolve in the latest release v10.4.2 as announced in The latest recommended Combine and CombineHarvester versions - #18 by anigamov
+Best,
+Aliya
+----------------------------------------

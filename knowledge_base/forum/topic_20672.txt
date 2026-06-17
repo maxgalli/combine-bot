@@ -1,0 +1,104 @@
+TOPIC: Channel compatibility test fails: Parameter not found in the RooFitResult
+URL: https://cms-talk.web.cern.ch/t/20672
+DATE: 2023-02-23T09:44:35.173Z
+SOLVED: no
+============================================================
+
+QUESTION (by ytakahas @ 2023-02-23T09:44:35.468Z):
+Dear expert
+I’m trying to perform the channel compatibility test following the recipe as documented at [1].
+I’m using following datacards (lxplus) [2], which works nicely for other studies e.g. bias test, impact, GOF etc.
+/afs/cern.ch/user/y/ytakahas/public/forCombine/combine_all.root
+/afs/cern.ch/user/y/ytakahas/public/forCombine/combine_all.txt
+inside which, it is using followings as input,
+/afs/cern.ch/user/y/ytakahas/public/forCombine/param_tauhad_ws.root
+/afs/cern.ch/user/y/ytakahas/public/forCombine/param_taulep_ws.root
+This is the command I used for deriving the channel compatibility
+combine -M ChannelCompatibilityCheck --robustFit 1 --setRobustFitAlgo=Minuit2 --setRobustFitStrategy=0 --setRobustFitTolerance=0.2 --X-rtd MINIMIZER_analytic --cminFallbackAlgo Minuit2,0:0.5 --cminFallbackAlgo Minuit2,0:1.0 --cminPreScan --cminPreFit 1 --rMin -1 --rMax 3 combine_all.root -t -1 --expectSignal 0.71 -m 125 --freezeParameters bc,bkg
+
+Then, I got the following output and could not get the channel compatibilities. Apart from the warning messages such as “hitting boundary”, which I would have expected due to bin-by-bin rate parameters, I see in some cannel, combine could not find any signal contribution? Do you have any suggestions how to solve this?
+Also, is there any way to “bundle” some of the subcategories into one; for instance, bundle r_taulep_ch* into single r_taulep?
+Many thanks,
+Yuta
+<<< Combine >>>                                                                                              │······················································
+>>> random number generator seed is 123456                                                                    │······················································
+Configured fallback algorithm , type Minuit2, algo Migrad, strategy 0, tolerance 0.5                          │······················································
+Configured fallback algorithm , type Minuit2, algo Migrad, strategy 0, tolerance 1                            │······················································
+Options for Robust Minimizer ::                                                                            │······················································
+Tolerance  0.2                                                                                        │······················································
+Strategy   0                                                                                          │······················································
+Type,Algo  Minuit2                                                                                    │······················································
+>>> method used is ChannelCompatibilityCheck                                                                  │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_tauhad_tauhad_sb_2016] at boundary.                           │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_tauhad_tauhad_sb_2017] at boundary.                           │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch2] at boundary.                                      │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch4] at boundary.                                      │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch6] at boundary.                                      │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch8] at boundary.                                      │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch9] at boundary.                                      │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch10] at boundary.                                     │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch11] at boundary.                                     │······················································
+[WARNING] Found [_ChannelCompatibilityCheck_r_taulep_ch12] at boundary.                                     │······················································
+Skipping _ChannelCompatibilityCheck_r_taulep_ch13. Parameter not found in the RooFitResult.
+
+[1]
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#channel-compatibility
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-02-23T12:54:48.130Z):
+Dear Yuta,
+Since in this test a separate POI is assigned for signal in each channel extracted intervals can be significantly larger than for the inclusive nominal fit. Therefore it is a good idea to provide a wider range than you use for inclusive fits, e.g. --rMin -7 --rMax 7.
+To group several categories you should use --group=common_pattern, --group=taulep_ch in your case.
+I tried running the test on Asimov dataset as in your example with combine -M ChannelCompatibilityCheck --rMin -7 --rMax 7 combine_all.root -t -1 -m 125 --freezeParameters bc,bkg  --group=taulep_ch  --expectSignal 0.71
+and got the following output:
+Nominal fit  : r =  0.7100  -0.1669/+0.1784
+Alternate fit: r =  0.7349  -7.7349/+6.2651   in channel tauhad_tauhad_sb_2016
+Alternate fit: r =  0.6132  -8.0518/+6.3867   in channel tauhad_tauhad_sb_2017
+Alternate fit: r =  0.6962  -7.9000/+10.0229   in channel tauhad_tauhad_sb_2018
+Alternate fit: r =  0.7132  -1.6129/+1.4845   in channel tauhad_tauhad_sr_2016
+Alternate fit: r =  0.7015  -0.8463/+0.8848   in channel tauhad_tauhad_sr_2017
+Alternate fit: r =  0.7090  -0.5618/+0.6202   in channel tauhad_tauhad_sr_2018
+Alternate fit: r =  0.7101  -0.2708/+0.2719   in channel taulep_ch
+Chi2-like compatibility variable: -2.96885e-05
+
+As you can see in the tauhad_tauhad_sb* channels the uncertainties are large, and I guess these are side-band regions where you don’t expect any signal anyway, so it might be a good idea to mask these regions for this test following the instructions here.
+Hope it helps,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2023-02-23T13:41:33.765Z):
+About the channels that were skipped, it looks like POIs could not be defined in taulep_ch13 and taulep_ch14 channels, because the signal pdfs/templates are missing in these channels. I would say that you should check your inputs.
+Aliya
+----------------------------------------
+
+REPLY 4 (by ytakahas @ 2023-02-23T13:58:46.101Z):
+Hi @anigamov
+Many thanks for the quick feedback!
+One question, if I may, regarding the sensitivity. In the normal fit, we have +/- 0.17 (0.18) or so, but if I look at individual fit, I see 0.27 from taulep_ch, followed by tauhad_sr_2018, which has 0.6 … Intuitively, this does not add up to the ultimate sensitivity.
+The potential reason is, tauhad channel requires nuisance constraints from taulep channel, and it seems that the channel compatibility test does the fit individually without propagating NP from leptonic tau analysis. In another word, is it possible to have signal POI individually in each channel while using the nuisance constraints from other categories?
+re: taulep_ch13 and taulep_ch14, indeed, you are right. Let us check it.
+Thanks again,
+Yuta
+----------------------------------------
+
+REPLY 5 (by anigamov @ 2023-02-23T15:52:32.726Z):
+The per-channel POIs are actually extracted from the simultaneous fit, but since there are definitely issues in this model and some parameters are close to boundaries (e.g. bin-by-bin in hadronic channels) I would not trust the intervals extracted from this fit, they might not add up indeed.
+I think it is better to run the likelihood scans following an example given here. For text2workspace.py command you can use the following mapping  --PO "map=taulep_ch.*/.*:r_ taulep[1,0,2]" --PO "map=tauhad_tauhad_sr_201.*/.*:r_tauhad[1,0,2]" to map POIs to channels.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 6 (by ytakahas @ 2023-02-23T21:10:39.292Z):
+Hi @anigamov
+Thanks for the reply. I found that by removing this option --freezeParameters bc,bkg, I could get a more reasonable result, as below.
+Nominal fit  : r =  0.7101  -0.1677/+0.1804
+Alternate fit: r =  0.7102  -0.2105/+0.2431   in channel tauhad
+Alternate fit: r =  0.7106  -0.2740/+0.2769   in channel taulep
+Chi2-like compatibility variable: -8.07982e-05
+Done in 12.12 min (cpu), 12.15 min (real)
+
+In the beginning, I thought this option is needed in order to “propagate” the constraints from taulep channel but I realized that the effect was the opposite (it carries pre-fit uncertainty and therefore the sensitivity to tauhad was bad).
+I think it now makes more sense.
+Thanks!
+Yuta
+----------------------------------------

@@ -1,0 +1,19 @@
+TOPIC: How to obtain the template given a nuisance parameter value in Combine
+URL: https://cms-talk.web.cern.ch/t/26324
+DATE: 2023-07-03T17:48:48.768Z
+SOLVED: no
+============================================================
+
+QUESTION (by jrubenac @ 2023-07-03T17:48:49.174Z):
+We have binned analysis with several shape uncertainties and would like to obtain the histogram Combine internally uses given specific values for the nuisance parameters of the shape uncertainties.
+We have found there are functions like shapeBkg_*_morph_wrapper in the workspace, but are not sure if that is really the way to go.
+What is the official method to obtain these histograms?
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-07-04T08:42:12.011Z):
+Hi Jonas,
+I think the easiest way would be to generate and fit the Asimov toy dataset from your model with the nuisance parameters set to the values you are interested in using the -t -1 --toysFrequentist --bypassFrequentistFit --setParameters np_1=some_val --freezeParameters np_1  option, and save the asimov post-fit shapes with the --saveShapes option. There are some instructions for the toys generation here.
+Perhaps, the are better options, so others may comment.
+Best,
+Aliya
+----------------------------------------

@@ -1,0 +1,20 @@
+TOPIC: B2G-24-016 questions regarding significance and limits results
+URL: https://cms-talk.web.cern.ch/t/125651
+DATE: 2025-06-06T01:11:33.936Z
+SOLVED: no
+============================================================
+
+QUESTION (by dpilipov @ 2025-06-06T01:11:34.035Z):
+Dear Experts,
+Kuan-Yu suggested we consult you with regards to the following remaining questions we have about limits and significance results (as summarized by Kuan-Yu):
+1. Why the toy limits zigzag between signal masses, especially the -2\sigma band?
+
+2. Why the expected limit’s band is not symmetric in r, i.e., r_{2\sigma}-r_\text{median} \neq r_\text{median}-r_{-2\sigma}?
+
+3. Why the p-values of the significance are above 2$\sigma$ for the 0.9 TeV signals while the limit is within the 1\sigma of the expected limit?
+
+You can see Kuan-Yu’s excellent answers to the above questions in https://cms-pub-talk.web.cern.ch/t/please-unblind/35298/67 as well as the slides with the limits (both 2D and rolled out 1D) and significance calculation.
+We would appreciate your thoughts on the above as well as recommendations on the next steps.  This is our final step in unblinding.
+Best Regards,
+Dragana
+----------------------------------------

@@ -1,0 +1,34 @@
+{
+  "topic_id": 33793,
+  "title": "File access issues within cmssw",
+  "url": "https://cms-talk.web.cern.ch/t/33793",
+  "category_id": 279,
+  "created_at": "2024-01-29T17:05:36.217Z",
+  "last_posted_at": "2024-01-30T12:41:55.163Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-01-29T17:05:36.372Z",
+      "updated_at": "2024-01-29T17:05:36.372Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am having some xrootd and DAVS issues accessing a file on lxplus which I know from local tests should be accessible.\nIf I try to open the file through xrootd inside of root by using i.e.:\nTFile.Open(root:/cmsxrootd.hep.wisc.edu//store/user/wvetens/<file>.root)\nI get the following error:\n:Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3011] Too many attempts to gain dfs read access to the file\nAnd the same happens if i use cms-xrd-global instead.\nSimilarly using davs:\nTFile.Open(davs://cmsxrootd.hep.wisc.edu:1094/store/user/wvetens/<file>.root) I instead get the following error:\nError in <DavixStat>: can not stat the file with davix: Result HTTP 404 : File not found  after 3 attempts (18)\nHowever, on a gfal-ls, the file is there:\ngfal-ls davs://cmsxrootd.hep.wisc.edu:1094/store/user/wvetens/;\nLikewise the file cannot be copied through gfal-copy, but local tests at hep.wisc.edu show the file is there and accessible.\nNow for the weird part. Without cmsenv, a command like\nroot -l davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/<file>.root\nDOES work. But if I then try to copy the file over locally so that I can then work with it inside cmssw, the following error occurs:\n$ gfal-cp-wisc davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/crmc_Sexaq/FlatTree_BDT/BlockAPUReweighed_Signal_1p8_M2S.root BlockAPUReweighed_Signal_1p8_M2S.root Copying davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/crmc_Sexaq/FlatTree_BDT/BlockAPUReweighed_Signal_1p8_M2S.root   [FAILED]  after 3s                                                                                                                                        gfal-copy error: 13 (Permission denied) - TRANSFER ERROR: Copy failed (3rd pull). Last attempt: copy HTTP 401 : Authentication Error\nWhat on earth is going on? Is this perhaps something to do with the recent LXPLUS upgrade?",
+      "cooked_html": "<p>Dear Experts,<br>\nI am having some xrootd and DAVS issues accessing a file on lxplus which I know from local tests should be accessible.<br>\nIf I try to open the file through xrootd inside of root by using i.e.:<br>\n<code>TFile.Open(root:/cmsxrootd.hep.wisc.edu//store/user/wvetens/&lt;file&gt;.root)</code><br>\nI get the following error:<br>\n<code>:Error in &lt;TNetXNGFile::Open&gt;: [ERROR] Server responded with an error: [3011] Too many attempts to gain dfs read access to the file</code></p>\n<p>And the same happens if i use cms-xrd-global instead.<br>\nSimilarly using davs:</p>\n<p><code>TFile.Open(davs://cmsxrootd.hep.wisc.edu:1094/store/user/wvetens/&lt;file&gt;.root)</code> I instead get the following error:</p>\n<p><code>Error in &lt;DavixStat&gt;: can not stat the file with davix: Result HTTP 404 : File not found  after 3 attempts (18)</code></p>\n<p>However, on a gfal-ls, the file is there:</p>\n<p><code>gfal-ls davs://cmsxrootd.hep.wisc.edu:1094/store/user/wvetens/;</code></p>\n<p>Likewise the file cannot be copied through gfal-copy, but local tests at hep.wisc.edu show the file is there and accessible.</p>\n<p>Now for the weird part. Without cmsenv, a command like</p>\n<p><code>root -l davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/&lt;file&gt;.root</code><br>\nDOES work. But if I then try to copy the file over locally so that I can then work with it inside cmssw, the following error occurs:<br>\n<code>$ gfal-cp-wisc davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/crmc_Sexaq/FlatTree_BDT/BlockAPUReweighed_Signal_1p8_M2S.root BlockAPUReweighed_Signal_1p8_M2S.root Copying davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/crmc_Sexaq/FlatTree_BDT/BlockAPUReweighed_Signal_1p8_M2S.root   [FAILED]  after 3s                                                                                                                                        gfal-copy error: 13 (Permission denied) - TRANSFER ERROR: Copy failed (3rd pull). Last attempt: copy HTTP 401 : Authentication Error </code></p>\n<p>What on earth is going on? Is this perhaps something to do with the recent LXPLUS upgrade?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-01-30T12:41:55.163Z",
+      "updated_at": "2024-01-30T12:41:55.163Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Oops, I accidentally put this in the wrong topic. Please ignore and see this: File access issues on lxplus",
+      "cooked_html": "<p>Oops, I accidentally put this in the wrong topic. Please ignore and see this: <a href=\"https://cms-talk.web.cern.ch/t/file-access-issues-on-lxplus/33822\" class=\"inline-onebox\">File access issues on lxplus</a></p>"
+    }
+  ]
+}

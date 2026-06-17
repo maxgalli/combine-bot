@@ -1,0 +1,134 @@
+TOPIC: Accelerating Postfits (FitDiagnostics)
+URL: https://cms-talk.web.cern.ch/t/15934
+DATE: 2022-10-05T15:27:53.442Z
+SOLVED: no
+============================================================
+
+QUESTION (by dnoll @ 2022-10-05T15:27:53.788Z):
+Dear combine experts,
+we are currently performing Pre- and Postfits (FitDiagnostics) within our HH->bbWW analysis.
+Our final fit contains two analysis branches, with three years, with multiple categories each.
+The Postfit plots take more than >10 days (HTCondor walltime exceeded).
+Are there some best-practices that can be used to speed up our fit?
+We fit this workspace [1] with this command [2].
+This question is linked to Why running FitDiagnostics take too much time which unfortunately did not lead to a solution yet.
+Thank you very much for your great help!
+Best regards
+Dennis
+[1]: Here you find the file postfit_s_comb/combination/workspace.root
+[2]: combine -M FitDiagnostics --verbose 3 --mass 125  --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-100,100 --saveShapes --saveWithUncertainties --saveNormalizations --saveWorkspace --saveToys --saveNLL --saveOverallShapes  --keepFailures --skipBOnlyFit --ignoreCovWarning --robustFit 1 -d workspace.root
+----------------------------------------
+
+REPLY 2 (by dvalsecc @ 2022-10-05T15:36:29.053Z):
+Dear Dennis,
+Others may have better answers… but since we also had this problem in the past, I can suggest you what we did.
+There is a tool called CombineHarvester with some nice functionalities. In particular the PostFitShapesFromWorkspace one [1] has been quite faster than the standard --saveShapes of combine.
+Moreover, it can be useful to create a simplified workspace containing only the channels for which you want the postfit plots done.
+Just my two cents…
+Cheers,
+Davide
+[1] https://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html
+----------------------------------------
+
+REPLY 3 (by nmangane @ 2022-10-05T16:16:49.872Z):
+To add another cent or so, using the PostFitShapesFromWorkspace, since you pass it the FitDiagnostics output you want to use and a (potentially different workspace, for e.g. control/auxiliary variables of interest), you can break up the pre/postfit work. As an example, we have 90 categories/combine bins. We run that in around 12 separate jobs, making some semi-combined datacards/workspaces, and hadd’ing the final results.
+Cheers,
+Nick
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-10-07T09:05:46.950Z):
+Hi,
+IIRC, PostFitShapesFromWorkspace uses the hessian to derive the postfit uncertainties.
+Combine usually use toys to compute the postfit shapes. There are ways to derive postfit from toys manually, i.e., by generating (GenerateOnly) fitting (MultiDimFit) toy-by-toy and later drawing the postfit shape and uncertainties.
+A nice contribution you can implement is the automation of this procedure in steps of FitDiagnostics, similarly to what is done for other heavy steps like AsymptoticLimits or Hybrid.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 5 (by adewit @ 2022-10-07T09:20:35.475Z):
+Hi Dennis,
+I would support others’ suggestions for using PostFitShapesFromWorkspace. You’ll still need the fit results from FitDiagnostics since indeed PostFitShapesFromWorkspace needs to resample from the covariance matrix [*] to compute the uncertainty bands (FitDiagnostics does this too, by the way, but with PostFitShapesFromWorkspace you can manually parallellize the evaluation of the shapes for different categories, as suggested earlier in the thread).
+One thing I want to point out is that you are using --ignoreCovWarning. I assume this means your covariance matrix was not positive-definite. The flag suppresses warnings related to that, but the warning is there for a reason: if the covariance matrix was not accurate, the uncertainty bands on the post-fit distributions will be incorrect. I believe in your analysis robustHesse was used in other places to avoid this issue, you should probably do the same here to ensure the covariance matrix is accurate.
+Best,
+Adinda
+[*] If the --sampling option in PostFitShapesFromWorkspace is passed. It should be switched on by default, if my memory is correct.
+----------------------------------------
+
+REPLY 6 (by mfackeld @ 2022-10-14T10:10:30.841Z):
+Dear all,
+thank you very much for your valuable inputs and suggestions.
+We’ve tried to understand a bit more the speedup, which comes from CombineHarvester’s PostFitShapesFromWorkspace. The generation of toys seem to boil down to the following function calls:
+
+Combine: pdf_->generate(snapshot_, ntoys);
+
+CombineHarvester: fit.randomizePars();
+
+Documentation: generate and randomizePars
+The difference seems to be the sampling from the pdf (Combine) and from the covariance matrix (CombineHarvester). We assume the sampling from the covariance matrix uses gaussian approximation for all the posteriors, which causes the speedup; is our understanding correct?
+If yes, is this generally usable?
+If no, can you explain the difference between both?
+Cheers,
+Peter for the bbWW team
+----------------------------------------
+
+REPLY 7 (by nckw @ 2022-10-14T10:28:42.000Z):
+Hi Manfred,
+The “pdf” in combine is the nuisances pdf which is essentially a multivariate Gaussian so its the the same thing (perhaps the implementation makes one faster than the other)
+Nick
+
+On 14 Oct 2022, at 11:12, Manfred Peter Fackeldey via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Manfred Peter Fackeldey mfackeldOctober 14
+
+Dear all,
+thank you very much for your valuable inputs and suggestions.
+We’ve tried to understand a bit more the speedup, which comes from CombineHarvester’s PostFitShapesFromWorkspace. The generation of toys seem to boil down to the following function calls:
+
+Combine: pdf_->generate(snapshot_, ntoys);
+CombineHarvester: fit.randomizePars();
+
+Documentation: generate and randomizePars
+The difference seems to be the sampling from the pdf (Combine) and from the covariance matrix (CombineHarvester). We assume the sampling from the covariance matrix uses gaussian approximation for all the posteriors, which causes the speedup; is our understanding correct?
+If yes, is this generally usable?
+If no, can you explain the difference between both?
+Cheers,
+Peter for the bbWW team
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 8 (by agilbert @ 2022-10-14T10:33:22.984Z):
+Hi Peter,
+Just to try and clarify a bit: the process of randomly sampling nuisance parameter sets from the covariance matrix to generate the unceratainty bands for the post-fit shapes is exactly the same for FitDiagnostics and PostFitShapesFromWorkspace. You can trace the same call to randomizePars for the former to here. Therefore the (multivariate) Gaussian approximation is assumed in both cases for sampling. The line of code you found in FitDiagnostics.cc is used for pre-fit uncertainties, and refers to the nuisance parameter pdf, not the pdf of the observables.
+In both implementations, the generation of the sampled nuisance parameter values is not the bottleneck, it’s mostly re-evaluating the model each time and extracting the binned histograms. FitDiagnostics can be a little slower, mostly because there are other things it’s doing in addition (e.g. it does both b-only and s+b uncertainty bands by default, as well as computing some other post-fit information).
+Hope this helps.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 9 (by mfackeld @ 2022-10-14T10:51:35.132Z):
+Hi Nick, Andrew,
+thank you very much for your explanation! That clarifies the situation for us pretty much
+Although we did not expect that the model evaluation and extracting the binned histograms is so costly computing-wise. The model evaluation happens in each minimisation step by the minimiser (doesn’t it?), and this did not seem to be so costly so far.
+Best, Peter
+----------------------------------------
+
+REPLY 10 (by fmonti @ 2025-04-17T09:55:54.075Z):
+Dear all,
+I am encountering the same issue of FitDiagnostics taking foverer to produce the shapes, hence  the migration to PostFitShapesFromWorkspace. This script still takes quite a long time because of the loop over all bins/processes.
+The previous messages, if I understood correctly, suggest to reduce the number of bins by simplifying the input workspace.
+I was wondering if this can be equivalently done by tweaking this line to only process a restricted list of bins that I want as follows?
+auto bins = cmb.cp().bin_set(); → auto bins = cmb.cp().bin({"the_bin_that_I_want"}).bin_set();
+[as proof of concept, than of course a list of bins could be provided by command line]
+I would just like to make sure there are no caveats with ignoring the other bins.
+Best,
+Fabio
+----------------------------------------
+
+REPLY 11 (by agilbert @ 2025-04-17T11:29:07.959Z):
+Hi Fabio,
+Yes it should be safe to do that. Indeed a command line option to filter the channels would be helpful to run more things in parallel. You may also be able to use --skip-proc-errs if you don’t need the uncertainty bands on each individual process (often we only need this on the sig/bkg sums).
+cheers,
+Andrew
+----------------------------------------

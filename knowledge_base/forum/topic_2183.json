@@ -1,0 +1,45 @@
+{
+  "topic_id": 2183,
+  "title": "Including contraint in signal model",
+  "url": "https://cms-talk.web.cern.ch/t/2183",
+  "category_id": 279,
+  "created_at": "2021-10-14T12:09:57.000Z",
+  "last_posted_at": "2021-10-15T09:29:11.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dmoran",
+      "name": "Dermot Anthony Moran",
+      "created_at": "2021-10-14T12:09:57.000Z",
+      "updated_at": "2023-02-07T10:55:43.489Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear experts,\nI have a signal model with 3 POIs which correspond to signal\ncross-section fractions with ranges between 0 and 1. I would like to\nenforce a constraint that the sum of the three POIs is <=1. Is this\npossible to implement at the level of the signal model?\nIn the end I would like to be able to scan one POI between 0 and 1, with\nthe other two POIs floating, whilst avoiding the phase space where\nsum(POI)>1. So any advice on how to do this is welcome.\nThanks, Dermot",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear experts,</p>\n<p>I have a signal model with 3 POIs which correspond to signal<br>\ncross-section fractions with ranges between 0 and 1. I would like to<br>\nenforce a constraint that the sum of the three POIs is &lt;=1. Is this<br>\npossible to implement at the level of the signal model?</p>\n<p>In the end I would like to be able to scan one POI between 0 and 1, with<br>\nthe other two POIs floating, whilst avoiding the phase space where<br>\nsum(POI)&gt;1. So any advice on how to do this is welcome.</p>\n<p>Thanks, Dermot</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-10-14T15:46:12.000Z",
+      "updated_at": "2021-11-17T08:39:42.791Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Dermot,\nIt does not come to my mind a straightforward way to do it.\nThe reason behind is stat the minimization algorithms will try to scan the parameters and move towards the minimum.\nHard boundaries could be implemented but often this will result in complaints from the minimization algorithms, the non definition of the hessian matrix at the minimum (and thus the breaking for instance of the regularity conditions of Wilks' theorem).\nSo ditto, you can do a math trick similar to what it is done for the RooAddPdf with recursive coefficient.  The redefinition unfortunately will imply that you have new pois and new parameters (that will define the inputs you can scan). For instance, if your pois are (alpha, beta, gamma) and you want that 0<=alpha+beta+gamma<=1, you can define:\nalpha = a[0,1]\nbeta = (1.-a) * b[0,1]\ngamma = (1.-a)*(1.-b)*c[0,1]\nWhenever you want to set an interval on the POIs you can now use the value of the deltaNLL and transform from a,b,c -> alpha,beta,gamma.\nOf course, since a=alpha, for the first POI is strictly simple and you can easily let b and c floating, giving you the interval you need. Potentially, if you don't mind to generate different mapping, this could also be a strategy having a separate workspace per POI. The order should be completely irrelevant, since the likelihood function is always defined with respect of alpha, beta, and gamma and not a,b,c, and so it is just a redefinition which is invariant under minimization.\nIf you instead want the sum to be exactly equal to 1, you will need to remove a parameter (eg c).\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Dermot,</p>\n<p>It does not come to my mind a straightforward way to do it.<br>\nThe reason behind is stat the minimization algorithms will try to scan the parameters and move towards the minimum.<br>\nHard boundaries could be implemented but often this will result in complaints from the minimization algorithms, the non definition of the hessian matrix at the minimum (and thus the breaking for instance of the regularity conditions of Wilks' theorem).</p>\n<p>So ditto, you can do a math trick similar to what it is done for the RooAddPdf with recursive coefficient.  The redefinition unfortunately will imply that you have new pois and new parameters (that will define the inputs you can scan). For instance, if your pois are (alpha, beta, gamma) and you want that 0&lt;=alpha+beta+gamma&lt;=1, you can define:<br>\nalpha = a[0,1]<br>\nbeta = (1.-a) * b[0,1]<br>\ngamma = (1.-a)*(1.-b)*c[0,1]</p>\n<p>Whenever you want to set an interval on the POIs you can now use the value of the deltaNLL and transform from a,b,c -&gt; alpha,beta,gamma.</p>\n<p>Of course, since a=alpha, for the first POI is strictly simple and you can easily let b and c floating, giving you the interval you need. Potentially, if you don't mind to generate different mapping, this could also be a strategy having a separate workspace per POI. The order should be completely irrelevant, since the likelihood function is always defined with respect of alpha, beta, and gamma and not a,b,c, and so it is just a redefinition which is invariant under minimization.</p>\n<p>If you instead want the sum to be exactly equal to 1, you will need to remove a parameter (eg c).</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "dmoran",
+      "name": "Dermot Anthony Moran",
+      "created_at": "2021-10-15T09:29:11.000Z",
+      "updated_at": "2021-11-17T08:39:42.936Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrea,\nThank you for your suggestion, we have implemented it and now the signal\nmodel does exactly what we were looking for.\nCheers! Dermot",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrea,</p>\n<p>Thank you for your suggestion, we have implemented it and now the signal<br>\nmodel does exactly what we were looking for.</p>\n<p>Cheers! Dermot</p>"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "topic_id": 17670,
+  "title": "Extract asymmetry using physics model",
+  "url": "https://cms-talk.web.cern.ch/t/17670",
+  "category_id": 279,
+  "created_at": "2022-11-17T13:12:02.216Z",
+  "last_posted_at": "2022-11-22T09:00:26.380Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "ntrevisa",
+      "name": "Nicolo Trevisani",
+      "created_at": "2022-11-17T13:12:02.383Z",
+      "updated_at": "2023-02-07T10:53:01.789Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am trying to extract the charge asymmetry in the WH production.\nTo do so, I am defining a physics model, and I would ask your help in understanding if what I am doing is correct. In particular, I often get that the uncertainty on the asymmetry is as large as the \u2018parameter range\u2019 I define in combine. Trying to understand what causes this behavior, I observed that the negative log likelihood quickly reaches a plateau and stops increasing its value when I perform a scan versus the asymmetry value.\nI tried to describe my approach and summarize the combine commands I use and the corresponding results in a set of slides:\n\ndocs.google.com\n\nFit_sanity_checks_in_WH_analysis\n\nFit sanity checks in WH analysis Nicol\u00f2 Trevisani KIT - Karlsruhe Institute of Technology 17/11/2022\n\nPlease let me know if anything is unclear or if you have any suggestions or feedback.\nBest regards,\nNicol\u00f2",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am trying to extract the charge asymmetry in the WH production.</p>\n<p>To do so, I am defining a physics model, and I would ask your help in understanding if what I am doing is correct. In particular, I often get that the uncertainty on the asymmetry is as large as the \u2018parameter range\u2019 I define in combine. Trying to understand what causes this behavior, I observed that the negative log likelihood quickly reaches a plateau and stops increasing its value when I perform a scan versus the asymmetry value.</p>\n<p>I tried to describe my approach and summarize the combine commands I use and the corresponding results in a set of slides:</p><aside class=\"onebox googledocs\" data-onebox-src=\"https://docs.google.com/presentation/d/1uB0N02J4QiIs2yny5_x5mHRsmokLso4wRin_db6-BWk/edit?usp=sharing\">\n  <header class=\"source\">\n\n      <a href=\"https://docs.google.com/presentation/d/1uB0N02J4QiIs2yny5_x5mHRsmokLso4wRin_db6-BWk/edit?usp=sharing\" target=\"_blank\" rel=\"noopener nofollow ugc\">docs.google.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <a href=\"https://docs.google.com/presentation/d/1uB0N02J4QiIs2yny5_x5mHRsmokLso4wRin_db6-BWk/edit?usp=sharing\" target=\"_blank\" rel=\"noopener nofollow ugc\"><span class=\"googledocs-onebox-logo g-slides-logo\"></span></a>\n\n<h3><a href=\"https://docs.google.com/presentation/d/1uB0N02J4QiIs2yny5_x5mHRsmokLso4wRin_db6-BWk/edit?usp=sharing\" target=\"_blank\" rel=\"noopener nofollow ugc\">Fit_sanity_checks_in_WH_analysis</a></h3>\n\n<p>Fit sanity checks in WH analysis Nicol\u00f2 Trevisani KIT - Karlsruhe Institute of Technology 17/11/2022</p>\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n\n<p>Please let me know if anything is unclear or if you have any suggestions or feedback.</p>\n<p>Best regards,<br>\nNicol\u00f2</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-11-21T17:01:45.407Z",
+      "updated_at": "2022-11-21T17:01:45.407Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Nicol\u00f2,\nTo answer the question on slide 9: yes, there is a substantial difference between what you show on slide 8 and slide 9: in slide 8, r_S and r_higgs are floating while on slide 9 they are fixed. On slide 8 you didn\u2019t specify explicitly that r_S and r_higgs should float freely, but they do as they don\u2019t have a constraint in the workspace. You would obtain the same result by using --redefineSignalPOIs r_higgs,r_S,r_A -P r_A --floatOtherPOIs 1 (and this would be the recommended way to ensure the other POIs are really floating)\nAs to why the dNLL plateaus - to me it looks like for extreme values of the asymmetry, the WH cross section is taken almost down to 0 (you can save the value of r_S in the output tree with --trackParameters r_S). For r_S=0 you get deltaNLL ~0.25, and at this point you stop depending on r_A   - so I think what you are seeing is consistent.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Nicol\u00f2,</p>\n<p>To answer the question on slide 9: yes, there is a substantial difference between what you show on slide 8 and slide 9: in slide 8, r_S and r_higgs are floating while on slide 9 they are fixed. On slide 8 you didn\u2019t specify explicitly that r_S and r_higgs should float freely, but they do as they don\u2019t have a constraint in the workspace. You would obtain the same result by using <code>--redefineSignalPOIs r_higgs,r_S,r_A -P r_A --floatOtherPOIs 1</code> (and this would be the recommended way to ensure the other POIs are really floating)</p>\n<p>As to <em>why</em> the dNLL plateaus - to me it looks like for extreme values of the asymmetry, the WH cross section is taken almost down to 0 (you can save the value of r_S in the output tree with <code>--trackParameters r_S</code>). For r_S=0 you get deltaNLL ~0.25, and at this point you stop depending on r_A   - so I think what you are seeing is consistent.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "ntrevisa",
+      "name": "Nicolo Trevisani",
+      "created_at": "2022-11-22T09:00:26.380Z",
+      "updated_at": "2022-11-22T09:00:26.380Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nthank you for the helpful clarifications!\nI tried repeating the scan with the commands you suggested and I get - as expected - the same results.\nAlso regarding the reason of the plateaus, I think you are right. In addition, we realized that by definition, the asymmetry is limited to (-1,1) so it makes sense that we don\u2019t see any usual behavior of the likelihood beyond that range.\nBest regards,\nNicol\u00f2",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>thank you for the helpful clarifications!</p>\n<p>I tried repeating the scan with the commands you suggested and I get - as expected - the same results.</p>\n<p>Also regarding the reason of the plateaus, I think you are right. In addition, we realized that by definition, the asymmetry is limited to (-1,1) so it makes sense that we don\u2019t see any usual behavior of the likelihood beyond that range.</p>\n<p>Best regards,<br>\nNicol\u00f2</p>"
+    }
+  ]
+}

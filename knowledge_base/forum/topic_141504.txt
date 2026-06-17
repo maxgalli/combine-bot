@@ -1,0 +1,39 @@
+TOPIC: Signal Strength Modifier Ranges
+URL: https://cms-talk.web.cern.ch/t/141504
+DATE: 2026-01-29T13:06:57.405Z
+SOLVED: no
+============================================================
+
+QUESTION (by nbower1 @ 2026-01-29T13:06:57.753Z):
+Hi!
+A small question. I think I’ve resolved it but I want to make sure I’m handling and understanding it correctly.
+I have a simplified counting experiment with large singal rates which causes the limit to fail for higher r values, returning the error
+...
+message      : getLogVal() top-level p.d.f evaluates to zero
+...
+Limits are still returned in this case but I’m not sure how to interpret them. When I limit r, combine doesn’t return errors.
+My current approach is to set rMax to the highest possible value where limits are returned without errors. Is there anything else I should consider?
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-01-29T13:44:37.928Z):
+Dear Steffi,
+It is a bit strange to get the error you quote in the case of very large r. I would expect it for large negative values r, but not for positive values. In any case, I don’t think you should trust the limits you get after that error.
+Can you please send us more details on your setup (signal and background yields, the range of the signal strength you are testing, the command you are using  and any other relevant detail) and/or the datacard you are using?
+Thank you,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by adewit @ 2026-01-29T13:53:36.154Z):
+Dear Steffi, Giacomo,
+If it’s a counting experiment, it could be the same issue as described in this post [*]. Can you try converting your counting datacard to a “fake” shape datacard as described here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#combination-of-multiple-datacards , and see if that fixes your issue?
+Best,
+Adinda
+[*] https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1085/1/1/1/1/1.html
+----------------------------------------
+
+REPLY 4 (by nbower1 @ 2026-01-29T14:13:50.155Z):
+Hi Adinda and Giacomo,
+Thanks for your prompt responses. Yes, indeed converting the datacard to a fake shape resolves the issue. Thank you both so much,
+Steffi
+----------------------------------------

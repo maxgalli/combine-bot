@@ -1,0 +1,17 @@
+TOPIC: Suppress minuit warnings
+URL: https://cms-talk.web.cern.ch/t/41045
+DATE: 2024-05-12T16:34:44.761Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-05-12T16:34:45.030Z):
+Dear experts,
+it is possible to suppress Minuit Warnings like
+[#0] WARNING:Minization – RooMinimizerFcn: Minimized function has error status.
+Returning maximum FCN so far (-0.0553594) to force MIGRAD to back out of this region. Error log follows
+Parameter values: a1_17sr1=0.0596302, a1_17sr2=3.95703, a1_17sr3=-0.622024, a2_17sr1=-0.00234913, a2_17sr2=-0.140752, a2_17sr3=-0.262539, a3_17sr1=1.90113e-05, a3_17sr2=0.00120143, a3_17sr3=0.275363, bkgrate_sr1_17=0.983524, bkgrate_sr2_17=1.08643, bkgrate_sr3_17=1.03095, r_sig1=0.0195045, r_sig2=15.5708, r_sig3=148.628
+RooPolynomial::shapeBkg_bkg_SR2_2017[ x=dimuonmass2 coefList=(a1_17sr2,a2_17sr2,a3_17sr2) ]
+p.d.f value is less than zero (-2.401708), forcing value to zero @ x=dimuonmass2=49.6012, coefList=(a1_17sr2 = 3.95703 +/- 0.785163,a2_17sr2 = -0.140752 +/- 0.0402335,a3_17sr2 = 0.00120143 +/- 0.000468253)
+they take a lot of disc space when running few M events with toys in batch jobs
+Thanks, Sasha
+----------------------------------------

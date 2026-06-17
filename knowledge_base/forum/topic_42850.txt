@@ -1,0 +1,17 @@
+TOPIC: Follow-up "Post-fit worse than pre-fit"
+URL: https://cms-talk.web.cern.ch/t/42850
+DATE: 2024-06-28T10:57:12.859Z
+SOLVED: no
+============================================================
+
+QUESTION (by kcormier @ 2024-06-28T10:57:13.283Z):
+Hi, I’m continuing the  discussion from Post-fit worse than pre-fit: here, since its maybe a better forum for it.
+I didn’t look in detail at all of the material in the post, but since we met in person, and you explained a few of the issues you were seeing to me, I would suggest as some first checks just to:
+First remove small and potentially problematic systematic templates which have either large statistical fluctuations or where both up and down variations shift in the same direction.
+Then, try running an asimov fit. If that works, also run a few fits with toys.
+I suspect that those will work as expect, but if not we will have narrowed down where the problem is. After checking those, I would then plot the contribution to the NLL from each bin, or as a very good proxy for it, you can just plot (data-mc)/(stat. unc.). This will make it easier to tell by eye what the fit is optimizing,
+As we discussed, I think its likely that there is a shape in the postfit because the fit is ‘prioritizing’ the high-statistics bins at lower observable values and there isn’t enough freedom in the fit model to get both the high-statistics and low-statistics bins right, so you see this funny looking slope which may look worse by eye, but I suspect isn’t in terms of actual likelihood. The above plot should make it more obvious whether that’s true or not.
+Depending on what those checks show it should give us an idea about where the issue really is.
+Best,
+Kyle
+----------------------------------------

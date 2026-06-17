@@ -1,0 +1,78 @@
+{
+  "topic_id": 111788,
+  "title": "Error using X-assign-flatParam-prior with freely floating pdf parameters",
+  "url": "https://cms-talk.web.cern.ch/t/111788",
+  "category_id": 279,
+  "created_at": "2025-02-10T10:43:32.103Z",
+  "last_posted_at": "2025-02-11T13:54:51.315Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fsimone",
+      "name": "Federica Simone",
+      "created_at": "2025-02-10T10:43:32.225Z",
+      "updated_at": "2025-02-10T10:44:21.738Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nwe use the  \u201cHybrid-Bayesian\u201d method for setting upper limits using Combine v10.0.2. We do a shape analysis on the invariant mass, where the background is modeled by an exponential function whose slope is left freely floating in the fit.\nTherefore, the slope of the exponential is set as a flatParam in the datacard.\nWhen running\ntext2workspace.py datacard.txt -o workspace.root --X-assign-flatParam-prior\nwe get the error below [*].\nCould you please point us to the correct procedure in this case, i.e. using \u201cHybrid-Bayesian\u201d while keeping some pdf parameters freely floating?\nBest,\nFederica for the BPH-24-010 team\n@cbasile\n[*]\nTraceback (most recent call last):\nFile \"/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/bin/slc7_amd64_gcc12/text2workspace.py\", line 104, in <module>\nMB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel)\nFile \"/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py\", line 183, in doModel\nself.doAutoFlatNuisancePriors()\nFile \"/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py\", line 835, in doAutoFlatNuisancePriors\nv, x1, x2 = self.out.var(c_param_name).getVal(), self.out.var(c_param_name).getMin(), self.out.var(c_param_name).getMax()\nFile \"/cvmfs/cms.cern.ch/slc7_amd64_gcc12/lcg/root/6.30.07-f3322c77db1c59847b28fde88ff7218c/lib/ROOT/_pythonization/_roofit/_rooabsreal.py\", line 131, in getVal\nreturn self._getVal(normalizationSet) if normalizationSet else self._getVal()\nTypeError: none of the 2 overloaded methods succeeded. Full details:\ndouble RooAbsReal::getVal(const RooArgSet& normalisationSet) =>\nTypeError: takes at least 1 arguments (0 given)\nattempt to access a null-pointer",
+      "cooked_html": "<p>Dear experts,</p>\n<p>we use the  \u201cHybrid-Bayesian\u201d method for setting upper limits using Combine v10.0.2. We do a shape analysis on the invariant mass, where the background is modeled by an exponential function whose slope is left freely floating in the fit.<br>\nTherefore, the slope of the exponential is set as a <code>flatParam</code> in the datacard.</p>\n<p>When running<br>\n<code>text2workspace.py datacard.txt -o workspace.root --X-assign-flatParam-prior</code><br>\nwe get the error below [*].<br>\nCould you please point us to the correct procedure in this case, i.e. using \u201cHybrid-Bayesian\u201d while keeping some pdf parameters freely floating?</p>\n<p>Best,<br>\nFederica for the BPH-24-010 team<br>\n<a class=\"mention\" href=\"/u/cbasile\">@cbasile</a></p>\n<p>[*]</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">Traceback (most recent call last):\n  File \"/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/bin/slc7_amd64_gcc12/text2workspace.py\", line 104, in &lt;module&gt;\n    MB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel)\n  File \"/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py\", line 183, in doModel\n    self.doAutoFlatNuisancePriors()\n  File \"/lustrehome/fsimone/Tau3muRun3/Combine/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py\", line 835, in doAutoFlatNuisancePriors\n    v, x1, x2 = self.out.var(c_param_name).getVal(), self.out.var(c_param_name).getMin(), self.out.var(c_param_name).getMax()\n  File \"/cvmfs/cms.cern.ch/slc7_amd64_gcc12/lcg/root/6.30.07-f3322c77db1c59847b28fde88ff7218c/lib/ROOT/_pythonization/_roofit/_rooabsreal.py\", line 131, in getVal\n    return self._getVal(normalizationSet) if normalizationSet else self._getVal()\nTypeError: none of the 2 overloaded methods succeeded. Full details:\n  double RooAbsReal::getVal(const RooArgSet&amp; normalisationSet) =&gt;\n    TypeError: takes at least 1 arguments (0 given)\n  attempt to access a null-pointer\n</code></pre>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-02-10T12:00:11.903Z",
+      "updated_at": "2025-02-10T12:00:11.903Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Federica,\nThis seems to be an issue in that the parameter you are attaching a flat prior too is one that text2workspace doesn\u2019t know about (yet). basically, we have a null pointer in this block of code : https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ModelTools.py#L834-L843\nNote that this doesn\u2019t happen for parameters like normalisations as they can be explicitly present before this code is executed.\nI would need to think a bit about how to fix it, unless another expert spots an obvious solution.\nBest,\nNick",
+      "cooked_html": "<p>Hi Federica,</p>\n<p>This seems to be an issue in that the parameter you are attaching a flat prior too is one that text2workspace doesn\u2019t know about (yet). basically, we have a null pointer in this block of code : <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ModelTools.py#L834-L843\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ModelTools.py#L834-L843</a></p>\n<p>Note that this doesn\u2019t happen for parameters like normalisations as they can be explicitly present before this code is executed.</p>\n<p>I would need to think a bit about how to fix it, unless another expert spots an obvious solution.</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-02-10T13:50:12.192Z",
+      "updated_at": "2025-02-10T13:50:12.192Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi again,\nI thought a bit more and found a workaround. Can you try this PR  https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1040  ?\nAll you need to do in your datacard is to extend the declaration of the flatParam to include a default value (its not very important of course for this) and the range for the prior).  eg,\nname flatPrior x [xmin,xmax]\nCan you try that and let me know if it works?\nBest,\nNick",
+      "cooked_html": "<p>Hi again,</p>\n<p>I thought a bit more and found a workaround. Can you try this PR  <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1040\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1040</a>  ?</p>\n<p>All you need to do in your datacard is to extend the declaration of the flatParam to include a default value (its not very important of course for this) and the range for the prior).  eg,</p>\n<p><code>name flatPrior x [xmin,xmax]</code></p>\n<p>Can you try that and let me know if it works?</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "fsimone",
+      "name": "Federica Simone",
+      "created_at": "2025-02-10T15:36:01.788Z",
+      "updated_at": "2025-02-10T15:36:01.788Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nthank you very much for the prompt feedback. I did the following:\n\ntake the PR and compile\n\n-bash-4.2$ git remote -v\norigin\thttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git (fetch)\norigin\thttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git (push)\n-bash-4.2$ git pull origin pull/1040/head\n\nTest with the old datacard. I now getting the new warning:\n\nERROR in flatParam - you need to include nominal value (v) and range  - name flatParam v [x1,x2] when including flat prior for parameter bkg_exp_slope_threeGlobal_2023_A1\n\nModify my datacard accordingly:\n\nbkg_exp_slope_threeGlobal_2023_A1 flatParam -1. [-1000.,100.]\n\nbut the same error is raised:\nERROR in flatParam - you need to include nominal value (v) and range  - name flatParam v [x1,x2] when including flat prior for parameter bkg_exp_slope_threeGlobal_2023_A1\n\nis the syntax wrong?\nThank you and best,\nFederica",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>thank you very much for the prompt feedback. I did the following:</p>\n<ul>\n<li>take the PR and compile</li>\n</ul>\n<pre data-code-wrap=\"batch\"><code class=\"lang-batch\">-bash-4.2$ git remote -v\norigin\thttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git (fetch)\norigin\thttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git (push)\n-bash-4.2$ git pull origin pull/1040/head\n</code></pre>\n<ul>\n<li>Test with the old datacard. I now getting the new warning:</li>\n</ul>\n<pre><code class=\"lang-auto\">ERROR in flatParam - you need to include nominal value (v) and range  - name flatParam v [x1,x2] when including flat prior for parameter bkg_exp_slope_threeGlobal_2023_A1\n</code></pre>\n<ul>\n<li>Modify my datacard accordingly:</li>\n</ul>\n<pre><code class=\"lang-auto\">bkg_exp_slope_threeGlobal_2023_A1 flatParam -1. [-1000.,100.]\n</code></pre>\n<p>but the same error is raised:</p>\n<pre data-code-wrap=\"batch\"><code class=\"lang-batch\">ERROR in flatParam - you need to include nominal value (v) and range  - name flatParam v [x1,x2] when including flat prior for parameter bkg_exp_slope_threeGlobal_2023_A1\n</code></pre>\n<p>is the syntax wrong?</p>\n<p>Thank you and best,<br>\nFederica</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-02-10T15:53:42.343Z",
+      "updated_at": "2025-02-10T15:53:42.343Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Federica,\nNope, my mistake - I forgot to also push a necessary edit for DatacardParser.py. I have pushed it now so hopefully if you pull again and try it will be ok\nBest,\nNick",
+      "cooked_html": "<p>Hi Federica,</p>\n<p>Nope, my mistake - I forgot to also push a necessary edit for <code>DatacardParser.py</code>. I have pushed it now so hopefully if you pull again and try it will be ok<br>\nBest,<br>\nNick</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "fsimone",
+      "name": "Federica Simone",
+      "created_at": "2025-02-11T13:54:51.315Z",
+      "updated_at": "2025-02-11T13:54:51.315Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nsorry for the late answer. It works now, thank you!\nBest,\nFederica",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>sorry for the late answer. It works now, thank you!</p>\n<p>Best,<br>\nFederica</p>"
+    }
+  ]
+}

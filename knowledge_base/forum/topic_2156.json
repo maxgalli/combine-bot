@@ -1,0 +1,67 @@
+{
+  "topic_id": 2156,
+  "title": "Issue with using combine",
+  "url": "https://cms-talk.web.cern.ch/t/2156",
+  "category_id": 279,
+  "created_at": "2021-08-25T20:56:19.000Z",
+  "last_posted_at": "2021-08-28T21:59:34.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Yihui_Lai",
+      "name": "Yihui Lai",
+      "created_at": "2021-08-25T20:56:19.000Z",
+      "updated_at": "2023-02-07T10:55:40.875Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI have some issues when I try to use combine for our X->WGamma search.\nI put a minimal package here (/afs/cern.ch/user/y/yilai/public/for_WG/higgs_mini) on lxplus to better explain my issue.\nOur Background p.d.f is All/mu2018workspace_all.root, signal samples are in signal/\nThe command I used is in Width5/mu2018*/Mass*/run_combine_*.sh\nPreviously in datacards (higgs_mini/Width5/mu2018_fixed/Mass*/wgamma_test_mt_res_.txt), background parameters (dijet_order_muA2018_all_dijet) are fixed with a mean value and an error. We get a smooth limit scan result_5_mu2018_fixed.png in this case.\nBut now we try to make the parameters freely floating, (higgs_mini/Width5/mu2018_floating/Mass*/wgamma_test_mt_res_*.txt). Then I get this limit scan plot: result_5_mu2018_floating.png, which is not smooth. Also the background model only has 2 parameters, and we know the best value for p1 is around -9 from roofit. However, the parameter that comes out from combine has a different best fit value around -12.\nI am not sure what\u2019s going wrong when I try to make the parameters float. Any suggestions are welcome.\nThanks a lot !\nYihui",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I have some issues when I try to use combine for our X-&gt;WGamma search.</p>\n<p>I put a minimal package here (/afs/<a href=\"http://cern.ch/user/y/yilai/public/for_WG/higgs_mini\" rel=\"noopener nofollow ugc\">cern.ch/user/y/yilai/public/for_WG/higgs_mini</a>) on lxplus to better explain my issue.</p>\n<p>Our Background p.d.f is <strong>All/mu2018workspace_all.root</strong>, signal samples are in <strong>signal/</strong><br>\nThe command I used is in <b>Width5/mu2018*/Mass*/run_combine_*.sh</b></p>\n<p>Previously in datacards (higgs_mini/Width5/mu2018_fixed/Mass*/wgamma_test_mt_res_<em>.txt), background parameters (dijet_order</em>_muA2018_all_dijet) are fixed with a mean value and an error. We get a smooth limit scan <strong>result_5_mu2018_fixed.png</strong> in this case.</p>\n<p>But now we try to make the parameters freely floating, (higgs_mini/Width5/mu2018_floating/Mass*/wgamma_test_mt_res_*.txt). Then I get this limit scan plot: <strong>result_5_mu2018_floating.png</strong>, which is not smooth. Also the background model only has 2 parameters, and we know the best value for p1 is around -9 from roofit. However, the parameter that comes out from combine has a different best fit value around -12.</p>\n<p>I am not sure what\u2019s going wrong when I try to make the parameters float. Any suggestions are welcome.</p>\n<p>Thanks a lot !</p>\n<p>Yihui</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-08-27T09:26:40.000Z",
+      "updated_at": "2021-11-17T08:39:31.358Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Yihui,\nIt would probably be best to investigate this with a single fit (e.g. as\nimplemented in MultiDimFit) for one of the mass points, not by looking\nat the limits.\nHow do you find that the best fit value for p1 is -12? Was that from a\nsingle fit? If so you can start investigating there.\nIf you need more help at that stage it would also be good to discuss\nwith the combine contact from the PAG where this analysis is conducted.\nYou can find the names of the contacts here[*].\nBest,\nAdinda\n[*]\nhttps://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Yihui,</p>\n<p>It would probably be best to investigate this with a single fit (e.g. as<br>\nimplemented in MultiDimFit) for one of the mass points, not by looking<br>\nat the limits.</p>\n<p>How do you find that the best fit value for p1 is -12? Was that from a<br>\nsingle fit? If so you can start investigating there.</p>\n<p>If you need more help at that stage it would also be good to discuss<br>\nwith the combine contact from the PAG where this analysis is conducted.<br>\nYou can find the names of the contacts here[*].</p>\n<p>Best,<br>\nAdinda</p>\n<p>[*]<br>\n<a href=\"https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "Yihui_Lai",
+      "name": "Yihui Lai",
+      "created_at": "2021-08-28T01:36:29.000Z",
+      "updated_at": "2021-11-17T08:39:31.484Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nThank you for your suggestions!\nThe best fit value (-12) of p1 comes from using the --trackParameters option in the combine command. We find the reason why the best fit value is different is because the binning of histograms are different.\nIn the toy data, we used 50 bins, use this as the input to combine, the best value comes from combine is -12. If I change to use more bins, such as 200 bins, the best value becomes -9 and the limit scan becomes smooth again!\nSo the previous problem seems to come from we are doing a binned fit and the bin width is too large.\nBest,\nYihui",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>Thank you for your suggestions!</p>\n<p>The best fit value (-12) of p1 comes from using the --trackParameters option in the combine command. We find the reason why the best fit value is different is because the binning of histograms are different.</p>\n<p>In the toy data, we used 50 bins, use this as the input to combine, the best value comes from combine is -12. If I change to use more bins, such as 200 bins, the best value becomes -9 and the limit scan becomes smooth again!</p>\n<p>So the previous problem seems to come from we are doing a binned fit and the bin width is too large.</p>\n<p>Best,</p>\n<p>Yihui</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "Kak_Wong",
+      "name": "Kak Wong",
+      "created_at": "2021-08-28T16:27:54.000Z",
+      "updated_at": "2021-11-17T08:39:31.583Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nI'll add that we don't intend to do a binned fit. We use\nRooAbsPdf.generate to create toy data, but the distribution seems to be\naffected by the default binning of the main variable.",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>I'll add that we don't intend to do a binned fit. We use<br>\nRooAbsPdf.generate to create toy data, but the distribution seems to be<br>\naffected by the default binning of the main variable.</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "andrea_marini",
+      "name": "andrea marini",
+      "created_at": "2021-08-28T21:59:34.000Z",
+      "updated_at": "2021-11-17T08:39:31.703Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi,\nlet me add a couple of points to the discussion:\n*) for the binned vs unbinned fits, it is not clear to me what you are trying to do. What we see as \u201cobserved\u201d (being observed or a particular dataset is irrelevant) seems to be almost identical between the two plots. If the analysis is unbinned you need an asimov to have the expected results, and you want to make sure that it is created in a suitable way. Here there are some options for Asimov generation in unbinned analyses http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets\n*) for binned fits, if your curvature is very large with respect to the bin width the integration performed by roofit is incorrect. See http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analysis for more details.\n*) in general allowing more parameters, and in particular parameters that modify the shape, will decrease the sensitivity towards the edges.\nDid you study the free parameters in the fit? What is the effect on the fitted observable(s)? Do you have eg a node at 500?\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<p>let me add a couple of points to the discussion:</p>\n<p>*) for the binned vs unbinned fits, it is not clear to me what you are trying to do. What we see as \u201cobserved\u201d (being observed or a particular dataset is irrelevant) seems to be almost identical between the two plots. If the analysis is unbinned you need an asimov to have the expected results, and you want to make sure that it is created in a suitable way. Here there are some options for Asimov generation in unbinned analyses <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets</a></p>\n<p>*) for binned fits, if your curvature is very large with respect to the bin width the integration performed by roofit is incorrect. See <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analysis\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analysis</a> for more details.</p>\n<p>*) in general allowing more parameters, and in particular parameters that modify the shape, will decrease the sensitivity towards the edges.</p>\n<p>Did you study the free parameters in the fit? What is the effect on the fitted observable(s)? Do you have eg a node at 500?</p>\n<p>Cheers,</p>\n<p>-Andrea</p>"
+    }
+  ]
+}

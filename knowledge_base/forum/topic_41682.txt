@@ -1,0 +1,280 @@
+TOPIC: Questions about filling out the datacard
+URL: https://cms-talk.web.cern.ch/t/41682
+DATE: 2024-05-28T11:10:59.777Z
+SOLVED: no
+============================================================
+
+QUESTION (by matheus @ 2024-05-28T11:10:59.987Z):
+Hey guys. I would like to ask you for help to help me interpret and understand a problem I am having when building my limits using combine. I have a mass point equal to 1000GeV for the Spin Half Photon Fusion channel of a Magnetic Monopole. The information I have was saved in a json file like this:
+
+“SpinHalf_PhotonFusion_1000”: {
+“cross_section”: 51130,
+“luminosity”: 36.29,
+“num_events_generated”: 85674,
+“weight”: 21.657768984756167,
+“num_events_processed”: 2082,
+“n_expect”: 45091.47502626234
+},
+
+the value of the cross section is indeed high, as I get it from the madgraph output (already converted to fb). The num_events_processed is the number of events after all the cuts applied in the signal region and the number of expected events is done by multiplying the cross section by the luminosity divided by the number of events generated, this value generates the weight and I use this result to multiply by num_events_processed and give me n_expect as a result. However, I find this value too high, because when I run combine on this datacard, no limit is established and it returns a NaN (not a number) result. Below is how my datacard is built.
+
+My question is, is the way I’m calculating my rate for the signal correct? Or do you need something more?   If this is correct, why is no limit calculated?
+Best,
+Matheus Macedo
+----------------------------------------
+
+REPLY 2 (by fiemmi @ 2024-05-28T11:46:06.882Z):
+Hi Matheus,
+generally, speaking, after applying all the selection cuts of your analysis, you should be left with a number of events, predicted by MC. Let’s call this number n_{\textrm{pred}}. Now, this number as is, is a completely arbitrary number, as it depends on how many MC events were generated in the first place. Thus, you should scale n_{\textrm{pred}} in order to obtain the number of expected events corresponding to a give luminosity in data, let’s call it  n_{\textrm{exp}}. The number of expected events is simply obtained from the number of predicted events in MC, scaled by the ratios of luminosities in data and MC:
+n_{\textrm{exp}} = n_{\textrm{pred}} \times \frac{L_{\textrm{data}}}{L_{\textrm{MC}}}.
+This can be rewritten using the number of generated events in MC, prior to any selections (n_{\textrm{gen}}) and the cross section of the MC sample (\sigma_{\textrm{MC}}), as
+n_{\textrm{exp}} = n_{\textrm{pred}} \times \frac{L_{\textrm{data}}}{\frac{n_{\textrm{gen}}}{\sigma_{\textrm{MC}}}} = n_{\textrm{pred}} \times \frac{\sigma_{\textrm{MC}} L_{\textrm{data}}}{n_{\textrm{gen}}},
+which is the usual formula we are familiar with. If I understand correctly, this is the formula you are indeed using. There’s one caveat though: if the MC samples are weighted, the n_{\textrm{pred}} and n_{\textrm{gen}} values from MC aren’t simply number of events, but rather sums of weights. That is, n_{\textrm{pred}} is the sum of weights of events passing your selection, and n_{\textrm{gen}} is the sum of weights of all the generated events in the MC sample, prior to any selection. I suspect neither your num_events_generated nor your num_events_processed are sum of events. If your MC sample(s) is(are) weighted, this will lead to incorrect results.
+I hope this helps,
+best,
+Fabio.
+----------------------------------------
+
+REPLY 3 (by matheus @ 2024-05-28T12:27:52.476Z):
+Dear Fabio. Thank you for the quick response. In fact, my MC samples are not heavy, they are just the “raw” events. For example, part of the code I use to calculate this for several mass points is like this
+
+n_expect = (cross_section * L_fb * len(df_trigger)) / number_of_events
+
+where len(df_trigger) are the events after all triggers and number_of_events are the events generated. If it is correct, then I believe the datacard is correct too. The only thing that I still find strange is that the expected value is very high and this is complicating the process of calculating the limits. No value is computed in the combine output. Could this be “normal” or do I need to configure the flags for the combine command?
+Best,
+Matheus Macedo
+----------------------------------------
+
+REPLY 4 (by fiemmi @ 2024-05-28T12:37:57.484Z):
+Hi Matheus,
+indeed, the fact that you are just using “raw” events might be a problem. That depends on the kind of MC samples you are using in the analysis. Some generators produce events that come with an event weight, meaning that when computing expected yields, that event will not count as “one event” but rather as “one event weight”.
+Are you using NanoAOD format for your analysis? If so, could you check what is the content of the genWeight branch? Is it identically one, or can it take different values?
+Cheers,
+F.
+----------------------------------------
+
+REPLY 5 (by matheus @ 2024-05-28T12:43:13.735Z):
+Dear Fábio, We are using AOD only. The structure of our analysis depends on structures that are direct responses of the subsystems, such as the meaning of dE/dX in the tracker, energy deposit in the ECAL in peak format, energy deposit in the HCAL from the face of the ECAl and some curvature variables . So we are using “raw” events, without a weight for the monte carlo. Possibly this must be the error?
+----------------------------------------
+
+REPLY 6 (by fiemmi @ 2024-05-28T13:21:31.552Z):
+Hi Matheus,
+I never used AOD myself, so I am totally inexperienced when it comes to that. But yes, I think this matter about the MC weights should be clarified and in general event weights, if present, cannot be neglected. I don’t know how these are dealt in AOD. Someone else should jump in.
+Cheers,
+F.
+----------------------------------------
+
+REPLY 7 (by sqian @ 2024-05-28T13:28:10.196Z):
+Hi Matheus,
+IIRC your signal is from MadGraph LO simulation thus being unweighted events with all positive weights. With this regard you don’t even need exact weights for each event.
+So yes I don’t think your formula is off after a quick glance (which basically is after_selection / total number_of_events) * cross section * luminosity.
+----------------------------------------
+
+REPLY 8 (by matheus @ 2024-05-28T13:47:50.696Z):
+Dear Sitian, thank you very much for your reply. If the formula is correct, then I must assume that the datacard is also correct. What leads me to doubt is how to get around the problem of limits calculated by combine. Here below is the combine output that generates me when I run the command like this
+
+combine -d datacard_1000GeV.txt -M HybridNew --LHCmode LHC-limits --name _1000GeV -v 1
+
+<<< Combine >>>
+<<< v9.2.1 >>>
+
+Random number generator seed is 123456
+using the Profile Likelihood test statistic modified for upper limits (Q_LHC)
+Method used is HybridNew
+Search for upper limit to the limit
+r = 20 +/- 0
+CLs = nan +/- nan
+CLs = nan +/- nan
+1-Pb = nan +/- 0
+Pmu = nan +/- 0
+r = 40 +/- 0
+CLs = nan +/- nan
+CLs = nan +/- nan
+1-Pb = nan +/- 0
+Pmu = nan +/- 0
+r = 80 +/- 0
+CLs = nan +/- nan
+CLs = nan +/- nan
+1-Pb = nan +/- 0
+Pmu = nan +/- 0
+r = 160 +/- 0
+CLs = nan +/- nan
+CLs = nan +/- nan
+1-Pb = nan +/- 0
+Pmu = nan +/- 0
+r = 320 +/- 0
+CLs = nan +/- nan
+CLs = nan +/- nan
+1-Pb = nan +/- 0
+Pmu = nan +/- 0
+r = 640 +/- 0
+CLs = nan +/- nan
+CLs = nan +/- nan
+1-Pb = nan +/- 0
+Pmu = nan +/- 0
+Cannot set higher limit: at r = 1280.0000 still get CLs =    nan
+Cannot set higher limit: at r = 1280 still get CLs = nan
+Done in 0.16 min (cpu), 0.16 min (real)
+----------------------------------------
+
+REPLY 9 (by sqian @ 2024-05-28T13:59:29.176Z):
+I don’t think it is too surprising to see large cross sections from a BSM model with the default parameters, what really matters is the limits you will quote on its production cross section.
+Saying, you will get the signal strength “r” which is the POI you are fitting thru combine. Then you multiply that on top of the nominal cross section (the value is 51130 here) and you get the limits on production cross section.
+With that being said, combine, being a numerical tool, works good with not too large values. For your background, you can see that you just have percent level uncertainties, O(1) background, then you should expect exclusion limit around 2sigma saying 0.2 (I assume 10% at the end of the day) which gives you 0.2/45000…
+Would you mind scaling down your nominal signal yields by a large factor? Saying 100000, then you just need to keep in mind that you have this factor in your signal strength. Will combine fail again there?
+----------------------------------------
+
+REPLY 10 (by matheus @ 2024-05-28T14:30:48.794Z):
+Hi Sitian.
+If I understand correctly, when reducing the way you said the datacard looks like this.
+
+When I run the assimov method, I get the limits like this
+
+Random number generator seed is 123456
+Method used is AsymptoticLimits
+Median for expected limits = 7.78125, Sigma for expected limits = 3.9701
+Restricting r to positive values.
+
+Make global fit of real data
+NLL at global minimum of data = 8.38085 (r=0.0199068)
+Make global fit of asimov data
+NLL at global minimum of asimov = 8.38079 (r=0.0072357)
+At r = 67.727045: q_mu = 48.38110 q_A = 48.38122 Pmu = 0.00000 1-Pb = 0.50000 CLs = 0.00000
+At r = 33.873476: q_mu = 23.30482 q_A = 23.30494 Pmu = 0.00000 1-Pb = 0.50000 CLs = 0.00000
+At r = 16.946691: q_mu = 10.46180 q_A = 10.46192 Pmu = 0.00061 1-Pb = 0.50001 CLs = 0.00122
+At r = 8.483299: q_mu = 4.32469 q_A = 4.32481 Pmu = 0.01878 1-Pb = 0.50001 CLs = 0.03756
+At r = 4.251603: q_mu = 1.62311 q_A = 1.62323 Pmu = 0.10133 1-Pb = 0.50002 CLs = 0.20265
+At r = 6.367451: q_mu = 2.91535 q_A = 2.91547 Pmu = 0.04387 1-Pb = 0.50001 CLs = 0.08774
+At r = 7.489445: q_mu = 3.65176 q_A = 3.65188 Pmu = 0.02800 1-Pb = 0.50001 CLs = 0.05601
+At r = 7.914064: q_mu = 3.93716 q_A = 3.93728 Pmu = 0.02362 1-Pb = 0.50001 CLs = 0.04723
+At r = 7.715553: q_mu = 3.80332 q_A = 3.80344 Pmu = 0.02558 1-Pb = 0.50001 CLs = 0.05115
+At r = 7.800530: q_mu = 3.86053 q_A = 3.86065 Pmu = 0.02472 1-Pb = 0.50001 CLs = 0.04943
+At r = 7.760838: q_mu = 3.83379 q_A = 3.83391 Pmu = 0.02511 1-Pb = 0.50001 CLs = 0.05023
+At r = 7.777835: q_mu = 3.84524 q_A = 3.84536 Pmu = 0.02494 1-Pb = 0.50001 CLs = 0.04989
+– AsymptoticLimits ( CLs ) –
+Observed Limit: r < 7.7778
+Expected 2.5%: r < 3.3435
+Expected 16.0%: r < 4.9037
+Expected 50.0%: r < 7.7812
+Expected 84.0%: r < 12.8059
+Expected 97.5%: r < 20.4388
+
+So I would have to multiply the value of r here
+NLL at global minimum of data = 8.38085 (r=0.0199068)
+for 100000. correct?
+----------------------------------------
+
+REPLY 11 (by sqian @ 2024-05-28T14:40:09.439Z):
+actually divide by 100000  (in the past you are fitting “r”, now since you have 1/100000 signal, you are fitting “r * 100000”) So basically, now it is 0.0199068 and in the past you should have 0.0199068 / 100000 since you have 100000x larger signal injected. Note that this would gives you a cross section limit at ~ 50000 fb *  0.0199068 / 100000 which makes more sense to me.
+But now you see combine works which is a good sign, perhaps you can try toy limits from now on due to the lack of background stats for a better limit number (Asymptotic formulation breaks down)
+For HybridNew method, better check the common command line option out which has the --rMin and --rMax and is relevant for such a Toy based limit calculation.
+----------------------------------------
+
+REPLY 12 (by tvami @ 2024-05-28T14:42:27.965Z):
+Matheus Macedo:
+
+combine -d datacard_1000GeV.txt -M HybridNew --LHCmode LHC-limits --name _1000GeV -v 1
+
+With this I think you are unblinding.
+I suggest
+combine datacard_1000GeV.txt -H AsymptoticLimits -M HybridNew  --expectedFromGrid=0.5 --saveWorkspace --LHCmode LHC-limits -v 1 --rAbsAcc 0.00005 --adaptiveToys 1 -T 5000 --plot=limit_scan.png
+
+-H will use the hint method so you look for r around where the asymptotic would suggest
+--expectedFromGrid=0.5 gives you the median expected limit
+--rAbsAcc makes sure your accuracy if correct
+--adaptiveToys 1 will run less toys at improbable r values
+otherwise 5000 toys
+the --plot is a very nice diagnostic plot, you should see if the error bars are ok and if there was enough toys, etc
+
+Tamas
+----------------------------------------
+
+REPLY 13 (by matheus @ 2024-05-28T16:11:05.767Z):
+Dear Tamas and Sitian. Thank you very much for the valuable tips. Tamas made a good suggestion by giving the combine command that way. The output generated was this:
+
+Make global fit of real data
+NLL at global minimum of data = 8.42204 (r=4.46673e-06)
+Make global fit of asimov data
+NLL at global minimum of asimov = 8.38079 (r=0.00229256)
+At r = 3.268294: q_mu = 2.92927 q_A = 1.08691 Pmu = 0.02704 1-Pb = 0.18846 CLs = 0.14350
+At r = 1.634149: q_mu = 1.46867 q_A = 0.35111 Pmu = 0.06232 1-Pb = 0.17284 CLs = 0.36059
+At r = 2.305946: q_mu = 2.07009 q_A = 0.62351 Pmu = 0.04404 1-Pb = 0.17983 CLs = 0.24489
+At r = 1.975115: q_mu = 1.77409 q_A = 0.48306 Pmu = 0.05221 1-Pb = 0.17651 CLs = 0.29580
+At r = 2.108546: q_mu = 1.89351 q_A = 0.53834 Pmu = 0.04874 1-Pb = 0.17787 CLs = 0.27400
+At r = 2.042206: q_mu = 1.83414 q_A = 0.51062 Pmu = 0.05043 1-Pb = 0.17720 CLs = 0.28461
+At r = 2.068857: q_mu = 1.85800 q_A = 0.52170 Pmu = 0.04974 1-Pb = 0.17747 CLs = 0.28030
+At r = 2.055582: q_mu = 1.84612 q_A = 0.51617 Pmu = 0.05009 1-Pb = 0.17733 CLs = 0.28244
+At r = 2.060910: q_mu = 1.85088 q_A = 0.51838 Pmu = 0.04995 1-Pb = 0.17739 CLs = 0.28158
+– AsymptoticLimits ( CLs ) –
+Observed Limit: r < 2.0609
+Search for upper limit to the limit
+r = 2.267 +/- 0
+CLs = 0.485592 +/- 0.0179048
+CLs = 0.485592 +/- 0.0179048
+1-Pb = 0.5136 +/- 0.0141369
+Pmu = 0.2494 +/- 0.00611882
+r = 4.534 +/- 0
+CLs = 0.209729 +/- 0.0104781
+CLs = 0.209729 +/- 0.0104781
+1-Pb = 0.5016 +/- 0.0141421
+Pmu = 0.1052 +/- 0.00433896
+r = 9.06801 +/- 0
+CLs = 0.0309561 +/- 0.00356004
+CLs = 0.0309561 +/- 0.00356004
+1-Pb = 0.5104 +/- 0.0141391
+Pmu = 0.0158 +/- 0.00176354
+Search for lower limit to the limit
+r = 0.618273 +/- 0
+CLs = 0.769531 +/- 0.0251734
+CLs = 0.769531 +/- 0.0251734
+1-Pb = 0.512 +/- 0.0141381
+Pmu = 0.394 +/- 0.00691034
+Now doing proper bracketing & bisection
+r = 7.8072 +/- 1.68995
+CLs = 0.0512097 +/- 0.00471766
+CLs = 0.0512097 +/- 0.00471766
+1-Pb = 0.496 +/- 0.0141417
+Pmu = 0.0254 +/- 0.00222508
+Trying to move the interval edges closer
+r = 4.21273 +/- 1.68995
+CLs = 0.210824 +/- 0.0106068
+CLs = 0.210824 +/- 0.0106068
+1-Pb = 0.4952 +/- 0.0141415
+Pmu = 0.1044 +/- 0.00432436
+r = 6.00996 +/- 1.68995
+CLs = 0.111465 +/- 0.00719254
+CLs = 0.111465 +/- 0.00719254
+1-Pb = 0.5024 +/- 0.014142
+Pmu = 0.056 +/- 0.00325158
+r = 6.90858 +/- 1.68995
+CLs = 0.075 +/- 0.00575026
+CLs = 0.075 +/- 0.00575026
+1-Pb = 0.504 +/- 0.0141417
+Pmu = 0.0378 +/- 0.00269708
+r = 7.35789 +/- 1.68995
+CLs = 0.0596774 +/- 0.00512311
+CLs = 0.060719 +/- 0.00359025
+CLs = 0.060719 +/- 0.00359025
+1-Pb = 0.512195 +/- 0.00999503
+Pmu = 0.0311 +/- 0.00173588
+r = 7.58254 +/- 1.68995
+CLs = 0.0479839 +/- 0.00455626
+CLs = 0.0479839 +/- 0.00455626
+1-Pb = 0.496 +/- 0.0141417
+Pmu = 0.0238 +/- 0.00215562
+r = 8.4376 +/- 1.68995
+CLs = 0.048722 +/- 0.00456902
+CLs = 0.048722 +/- 0.00456902
+1-Pb = 0.5008 +/- 0.0141421
+Pmu = 0.0244 +/- 0.00218196
+– HybridNew, before fit –
+Limit: r < 7.8072 +/- 1.68995 [7.35789, 9.06801]
+Fit to 5 points: 7.853318 +/- 0.116404
+Info in TCanvas::Print: png file limit_scan.png has been created
+– Hybrid New –
+Limit: r < 7.85332 +/- 0.116404 @ 95% CL
+Done in 2.27 min (cpu), 2.32 min (real)
+
+With the datacard the shock section value is reduced. In my understanding, the value of r < 7.85332 will be multiplied by 100000, in this case r_new = 785332, which will then be multiplied by the shock section value of 0.51130, resulting in 401540.252. Let me know if this is correct, as I found the price to be high compared to the original. The graph shows the error bars and they are fine (up to my judgement)
+image696×472 4.37 KB
+----------------------------------------

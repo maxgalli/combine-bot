@@ -1,0 +1,74 @@
+TOPIC: Simultaneous fit with different fitting ranges in combine
+URL: https://cms-talk.web.cern.ch/t/117420
+DATE: 2025-03-06T15:12:40.989Z
+SOLVED: yes (reply 4)
+============================================================
+
+QUESTION (by fanx @ 2025-03-06T15:12:41.270Z):
+Dear experts,
+In our analysis, we want to do a simultaneous fit with multiple channels. But each channel has different fitting range for our fitting variable (i.e. higgs mass). If I put all the channels in the same datacard, what will happen when I run combine to get a significance? Of course, the range that I set the fitting variable of would be large enough that it covers all the fitting ranges.
+Best
+Xingchen
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-03-07T13:20:18.450Z):
+Dear Xingchen,
+In principle there is no problem in doing a fit across multiple channels using Combine, that’s basically its main purpose.
+I’m not sure if by fitting variable you mean the parameter you want to measure (Higgs boson mass)  or the observable you measure (reconstructed Higgs mass of your candidates).
+In the first case, the range will be the same for every combined channel, and I suggest you to set it at run time with --setParameterRanges or --rMin/–rMax.
+In the second case, if you are using THistograms as inputs, Combine will actually ignore the name of the observables, so in all practical way it will treat each channel as if it has been using a different observable.
+Finally, if you are using a parametric distribution, where all (or some of) the channels use observables with the same name but with different ranges or binning, this indeed can have unexpected consequences on the fit, so it should be avoided if possible. If you are in this situation my suggestion would be to either redefine the ranges to make them compatible or declare them as different variables.
+Best,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by fanx @ 2025-03-10T15:25:54.516Z):
+Hi Giacomo,
+Thank you for the reply! Sorry for the lack of clarity. By fitting variable, I mean the reco mass of our Higgs candidates.
+Also, we are not using THistograms as inputs, but we are doing parametric fit. Parametric models are named differently in different channels. To be more specific, in the datacard, there is a data_obs input. For binned fit, the data_obs would be a RooDataHist. And the histograms will have different ranges in different channels. The X axis is the reco candidate mass/fitting variable. Are you suggesting I should change the name of this variable per channel?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 4 [ACCEPTED ANSWER] (by gortona @ 2025-03-10T16:08:41.000Z):
+Dear Xingchen,
+Yes, I think renaming the reco mass per channel would probably be safer. It is not strictly necessary, but I believe is going to be easier and safer than the other option, which is ensuring that the binning and range of the variable is consistent across channels.
+Cheers,
+Giacomo
+
+On 10 Mar 2025, at 16:27, Xingchen Fan via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Xingchen Fan fanxMarch 10
+
+Hi Giacomo,
+Thank you for the reply! Sorry for the lack of clarity. By fitting variable, I mean the reco mass of our Higgs candidates.
+Also, we are not using THistograms as inputs, but we are doing parametric fit. Parametric models are named differently in different channels. To be more specific, in the datacard, there is a data_obs input. For binned fit, the data_obs would be a RooDataHist. And the histograms will have different ranges in different channels. The X axis is the reco candidate mass/fitting variable. Are you suggesting I should change the name of this variable per channel?
+Best
+Xingchen
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaMarch 7
+
+Dear Xingchen,
+In principle there is no problem in doing a fit across multiple channels using Combine, that’s basically its main purpose.
+I’m not sure if by fitting variable you mean the parameter you want to measure (Higgs boson mass) or the observable you measure (reconstructed Higgs mass of your candidates).
+In the first case, the range will be the same for every combined channel, and I suggest you to set it at run time with --setParameterRanges or --rMin/–rMax.
+In the second case, if you are using THistograms as inputs, Combine will actually ignore the name of the observables, so in all practical way it will treat each channel as if it has been using a different observable.
+Finally, if you are using a parametric distribution, where all (or some of) the channels use observables with the same name but with different ranges or binning, this indeed can have unexpected consequences on the fit, so it should be avoided if possible. If you are in this situation my suggestion would be to either redefine the ranges to make them compatible or declare them as different variables.
+Best,
+Giacomo
+
+Xingchen Fan fanxMarch 6
+
+Dear experts,
+In our analysis, we want to do a simultaneous fit with multiple channels. But each channel has different fitting range for our fitting variable (i.e. higgs mass). If I put all the channels in the same datacard, what will happen when I run combine to get a significance? Of course, the range that I set the fitting variable of would be large enough that it covers all the fitting ranges.
+Best
+Xingchen
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

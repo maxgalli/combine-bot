@@ -1,0 +1,139 @@
+TOPIC: One NP dropped during fitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/137473
+DATE: 2025-11-11T14:33:57.643Z
+SOLVED: no
+============================================================
+
+QUESTION (by pdas @ 2025-11-11T14:33:57.959Z):
+Dear experts,
+For our recent set of datacards https://gitlab.cern.ch/cms-analysis/nps/nps-25-003/datacards/-/tree/master/input/cards_bdtbased?ref_type=heads we see the following when we run fitDiagnostics:
+combine -M FitDiagnostics hToA1A2_2b2t_allchannels_allyears_60_40.root -m 60 --skipSBFit --saveShapes --saveWithUncertainties --robustFit 1 --robustHesse 1  --X-rtd FAST_VERTICAL_MORPH --X-rtd MINIMIZER_MaxCalls=9999999 --rMin -10 --rMax 10 -n _60_40_bdtbased_postfit
+<<< Combine >>>
+<<< v10.1.0 >>>
+Random number generator seed is 123456
+Method used is FitDiagnostics
+Found 1403 floating parameters
+The following parameters are protected in the event of negative eigenvalues:
+Verifying eigenvalues are all positive (iteration 0)
+Eigenvalue 1402 : -0.00554188
+
+0.725225     CMS_NPS25003_EMB_scale_t_DM1_2017
+-0.685553    CMS_scale_t_DM1_2017
+0.0300147    CMS_NPS25003_normalization_fake_et_SR34_1b_2017
+0.0292664    prop_binch2_ch2_ch4_bin4
+-0.0134006   prop_binch2_ch1_ch6_bin9
+
+Attempt 0 failed, remove the variable with largest eigenvector component…
+Dropping CMS_NPS25003_EMB_scale_t_DM1_2017 from the hessian
+Verifying eigenvalues are all positive (iteration 1)
+All eigenvalues are positive
+Inverting Hessian…
+Matrix inverted
+Note: the following parameters were dropped to make the covariance matrix pos-def:
+- CMS_NPS25003_EMB_scale_t_DM1_2017
+
+Done in 315.64 min (cpu), 319.43 min (real)
+If we remove --robustFit 1 --robustHesse 1 it fails to determine uncertainties on all fit parameters in b-only fit. We looked at the impacts, CMS_NPS25003_EMB_scale_t_DM1_2017 is ranked at 159 (see attached). We narrowed it down to the 2017 etau channel datacard, but we are wondering how critical is this issue? We had unblinded our analysis NPS-25-003 without any problem, and with this new version of datacards we changed some of the normalization uncertainties as per ARC recommendation. Looking forward to your suggestions.
+With regards,
+Pallabi
+impacts-bdt.pdf (367.4 KB)
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-11-13T15:07:43.890Z):
+Dear Pallabi,
+I don’t think you should worry about it, but just to be on the safe side it could be a good idea to try to run combine MultiDimFit once freezing and once not freezing the CMS*_NPS25003_EMB_scale_t_DM1_*2017 parameter. I expect the two result to be very close.
+If that’s the case, I believe you can not worry about that parameter being dropped from the Hessian.
+Best regards,
+Giacomo (and Massimiliano)
+----------------------------------------
+
+REPLY 3 (by pdas @ 2025-11-13T18:40:27.610Z):
+Hi Giacomo, Massimiliano,
+Ok, I see the following:
+combine -M MultiDimFit -n _test1 --redefineSignalPOIs r  --rMin -20 --rMax 20 -m 60 -d hToA1A2_2b2t_allchannels_allyears_60_40.root --freezeParameters CMS_NPS25003_EMB_scale_t_DM1_2017
+gives r = -0.031281
+combine -M MultiDimFit -n _test2 --redefineSignalPOIs r  --rMin -20 --rMax 20 -m 60 -d hToA1A2_2b2t_allchannels_allyears_60_40.root
+gives r = -0.031101
+Does this look aceptable?
+With regards,
+Pallabi
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-11-14T10:55:41.000Z):
+Dear Pallabi,
+Your uncertainty on r is something like 0.02, the effect of removing the nuisance is something around 0.0002 so basically a factor x100 smaller. so it is not exactly negligible but in this case I think it is fine.
+Cheers,
+Giacomo
+
+On 13 Nov 2025, at 19:41, Pallabi Das via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Pallabi Das pdasNovember 13
+
+Hi Giacomo, Massimiliano,
+Ok, I see the following:
+combine -M MultiDimFit -n _test1 --redefineSignalPOIs r --rMin -20 --rMax 20 -m 60 -d hToA1A2_2b2t_allchannels_allyears_60_40.root --freezeParameters CMS_NPS25003_EMB_scale_t_DM1_2017
+gives r = -0.031281
+combine -M MultiDimFit -n _test2 --redefineSignalPOIs r --rMin -20 --rMax 20 -m 60 -d hToA1A2_2b2t_allchannels_allyears_60_40.root
+gives r = -0.031101
+Does this look aceptable?
+With regards,
+Pallabi
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaNovember 13
+
+Dear Pallabi,
+I don’t think you should worry about it, but just to be on the safe side it could be a good idea to try to run combine MultiDimFit once freezing and once not freezing the CMS*NPS25003EMBscaletDM1*2017 parameter. I expect the two result to be very close.
+If that’s the case, I believe you can not worry about that parameter being dropped from the Hessian.
+Best regards,
+Giacomo (and Massimiliano)
+
+Pallabi Das pdasNovember 11
+
+Dear experts,
+For our recent set of datacards https://gitlab.cern.ch/cms-analysis/nps/nps-25-003/datacards/-/tree/master/input/cards_bdtbased?ref_type=heads we see the following when we run fitDiagnostics:
+combine -M FitDiagnostics hToA1A2_2b2t_allchannels_allyears_60_40.root -m 60 --skipSBFit --saveShapes --saveWithUncertainties --robustFit 1 --robustHesse 1 --X-rtd FAST_VERTICAL_MORPH --X-rtd MINIMIZER_MaxCalls=9999999 --rMin -10 --rMax 10 -n _60_40_bdtbased_postfit
+<<< Combine >>>
+<<< v10.1.0 >>>
+Random number generator seed is 123456
+Method used is FitDiagnostics
+Found 1403 floating parameters
+The following parameters are protected in the event of negative eigenvalues:
+Verifying eigenvalues are all positive (iteration 0)
+Eigenvalue 1402 : -0.00554188
+
+0.725225 CMS_NPS25003_EMB_scale_t_DM1_2017
+-0.685553 CMS_scale_t_DM1_2017
+0.0300147 CMS_NPS25003_normalization_fake_et_SR34_1b_2017
+0.0292664 prop_binch2_ch2_ch4_bin4
+-0.0134006 prop_binch2_ch1_ch6_bin9
+
+Attempt 0 failed, remove the variable with largest eigenvector component…
+Dropping CMS_NPS25003_EMB_scale_t_DM1_2017 from the hessian
+Verifying eigenvalues are all positive (iteration 1)
+All eigenvalues are positive
+Inverting Hessian…
+Matrix inverted
+Note: the following parameters were dropped to make the covariance matrix pos-def:
+- CMS_NPS25003_EMB_scale_t_DM1_2017
+
+Done in 315.64 min (cpu), 319.43 min (real)
+If we remove --robustFit 1 --robustHesse 1 it fails to determine uncertainties on all fit parameters in b-only fit. We looked at the impacts, CMS_NPS25003_EMB_scale_t_DM1_2017 is ranked at 159 (see attached). We narrowed it down to the 2017 etau channel datacard, but we are wondering how critical is this issue? We had unblinded our analysis NPS-25-003 without any problem, and with this new version of datacards we changed some of the normalization uncertainties as per ARC recommendation. Looking forward to your suggestions.
+With regards,
+Pallabi
+impacts-bdt.pdf (367.4 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by pdas @ 2025-11-14T11:00:58.769Z):
+Hi Giacomo,
+Thanks, we will then move ahead with these datacards.
+With regards,
+Pallabi
+----------------------------------------

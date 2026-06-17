@@ -1,0 +1,70 @@
+TOPIC: One-sidede uncertianty and impact of the background function parameters when using discrete profiling method
+URL: https://cms-talk.web.cern.ch/t/12787
+DATE: 2022-07-12T12:37:27.531Z
+SOLVED: no
+============================================================
+
+QUESTION (by xuyan @ 2022-07-12T12:37:27.705Z):
+Hello experts, I got a question regarding the nuisance impact plot. I am doing a parametric bump hunt search, and the background is described by a smooth function. But for some reason, the free parameters of the background function always give one-sided error and impact.
+
+image940×769 87.1 KB
+
+I tried to do likelihood scans by replacing --algo impact with --algo grid, and the NLL looks good. Here is an example for the parameter Dijet_p1_2016
+
+Do you have some ideas about it?
+Thanks a lot!
+Sebastian
+----------------------------------------
+
+REPLY 2 (by vischia @ 2022-07-12T12:51:33.000Z):
+Dear Sebastian,
+for more detailed answers more information would be needed, I guess, but in general if you have a large background and hunt for a small signal, you can think of the background normalization as something that will dramatically impact on your signal strength if it fluctuates down (because you leave lots of space for the very small signal) but will have no impact on the signal strength if it fluctuates up (because once it has “eaten up” the signal, the signal strength will not have any reason to vary, because it has been already saturated. In such a case, you may find changes if you allow the xsec for the signal to go negative in the fit)
+I hope this helps.
+Cheers,
+Pietro
+
+···
+Dr. Pietro Vischia
+FNRS Fellow
+http://cp3.irmp.ucl.ac.be/Members/pvischia
+mobile: 0034 666 986 616 (ES)
+office: +32 10 473205
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 3 (by xuyan @ 2022-07-12T13:50:10.718Z):
+Dear Pietro,
+Thanks a lot for your quick reply!
+I just tried a few things, and realize that the NLL scan I did earlier actually did not show the full picture. If I just scan it in a border range, I got this:
+
+You can see that when the parameter goes out of some specific range (that I did not define) the deltaNLL suddenly changes to an almost flat shape. I linked this behavior to the discrete profiling (http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling) method I am currently using, and I tried following things
+1: freeze the pdf_index and run the impact
+combine -M MultiDimFit -n POIScan --algo impact --redefineSignalPOIs r -P Dijet_p1_2016 --floatOtherPOIs 1 --saveInactivePOI 1 -t -1 --expectSignal 1 --rMin 0 --cminDefaultMinimizerStrategy=0 -m 1 -d datacard.root --saveNLL --robustFit 1 --setParameters pdf_index_2016=0 --freezeParameters pdf_index_2016
+
+–>> got reasonable two-side uncertainty and impact
+2: do not freeze the pdf_index
+combine -M MultiDimFit -n POIScan --algo impact --redefineSignalPOIs r -P Dijet_p1_2016 --floatOtherPOIs 1 --saveInactivePOI 1 -t -1 --expectSignal 1 --rMin 0 --cminDefaultMinimizerStrategy=0 --X-rtd MINIMIZER_freezeDisassociatedParams -m 1 -d datacard.root --saveNLL --robustFit 1
+
+Got one-sided uncertainty and impact, and also got an error message: Error: closed range without finding crossing. (or )
+I suspect that combine might be confused by the discrete parameter that is used to do the discrete profiling. Do you think so?
+Although this is a warning message in the combine manual saying that one can not trust the uncertainty returned by MINOS, but it says uncertainties from scans and limits will correctly account for these nuisances. So I am a bit surprised to find this is not the case in my example.
+What should I do?
+Thanks a lot for your kind help!
+Best regards,
+Sebastian
+----------------------------------------
+
+REPLY 4 (by xuyan @ 2022-07-12T13:55:53.502Z):
+And here is a working example. It would be really nice if you would have some time to have a look:)
+https://cernbox.cern.ch/index.php/s/ZJMeYvumee0DaVB
+Best regards,
+Sebastian
+----------------------------------------
+
+REPLY 5 (by adewit @ 2022-07-12T20:46:45.079Z):
+Dear Sebastian,
+I think it would be best if you can try running the impacts with an appropriate range for these Dijet_p1_201X parameters (you can use e.g. --setParameterRanges Dijet_p1_2016=6,7). The error message you’re seeing means the interval on this parameter could not be determined, which can often happen when the minimizer takes too large a step in this parameter, and adjusting the range helps the minimizer determine a more appropriate step size.
+Best,
+Adinda
+----------------------------------------

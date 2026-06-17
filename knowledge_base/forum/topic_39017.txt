@@ -1,0 +1,54 @@
+TOPIC: Calculating expected limits from grid
+URL: https://cms-talk.web.cern.ch/t/39017
+DATE: 2024-04-12T15:18:17.055Z
+SOLVED: no
+============================================================
+
+QUESTION (by mrogulji @ 2024-04-12T15:18:17.275Z):
+Hello,
+we are trying to calculate exclusion limits using the HybridNew method by generating a grid of values at different signal strengths. The commands used are
+combine Signal_ppStau-200-0x0_area_card.txt -M HybridNew --LHCmode LHC-limits --singlePoint 0.X --saveToys --saveHybridResult -T 2000 --clsAcc 0 -n sp_X
+hadd merged_grid.root higgsCombinesp*root
+
+combine Signal_ppStau-200-0x0_area_card.txt -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged_grid.root --expectedFromGrid 0.160 --plot=p160.png
+combine Signal_ppStau-200-0x0_area_card.txt -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged_grid.root --expectedFromGrid 0.500 --plot=p500.png
+combine Signal_ppStau-200-0x0_area_card.txt -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged_grid.root --expectedFromGrid 0.840 --plot=p840.png
+
+combine Signal_ppStau-200-0x0_area_card.txt -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged_grid.root --expectedFromGrid 0.160 --plot=p160_noUpdate.png --noUpdateGrid
+combine Signal_ppStau-200-0x0_area_card.txt -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged_grid.root --expectedFromGrid 0.500 --plot=p500_noUpdate.png --noUpdateGrid
+combine Signal_ppStau-200-0x0_area_card.txt -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged_grid.root --expectedFromGrid 0.840 --plot=p840_noUpdate.png --noUpdateGrid
+
+where X goes from “060” to “130” in steps of 5
+I am surprised to see that no fit line is present in the the plots, while one is shown in the example. Did I forget to add some option?
+The second and third vertical line seem to point to first and last r that crosses 0.05. What does the first vertical lines represent?
+Also, could you help me understand what --noUpdateGrid does? I tried using this option and the results at different quantiles were identical.
+The datacard and workspace needed to running as well as the output of these are located in this cernbox folder. I am also uploading the plots for results without the “noUpdateGrid” option here for your convenience.
+p160696×472 4.85 KB
+p500696×472 5.01 KB
+p840696×472 5.12 KB
+Thank you.
+Best,
+Matej
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-04-12T16:00:39.481Z):
+Hi Matej,
+Its possible that you’re finding a case where combine determines that the limit is accurate enough without the fit function (see here : https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/HybridNew.cc#L516 ) - if you set the option --rAbsAcc X to something smaller, you may find it invokes the fit but by default this is set to X=0.1 (also there is a relative accuracy of 5% and combine uses the larger of the two).
+The --noUpdateGrid option forces combine not to try to produce more points / update the toys, which by default it will do (again based on the toys). I’ve noticed there is an issue here in that with the --expectedFromGrid option set, the test statistic for the observation is also not updated and so indeed, you’ll get the same results every time. For now, you should remove that option, but its something we need to have another look at in the tool,
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by nckw @ 2024-04-12T16:51:27.464Z):
+P.S - can you try with this update : https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/941 ?
+This forces an update of the grid when using --expectedFromGrid to avoid using the original data test stat value
+Best,
+Nick
+----------------------------------------
+
+REPLY 4 (by mrogulji @ 2024-04-15T08:08:19.388Z):
+Thank you Nick,
+setting the --rAbsAcc to appropriate value resolved it. I tried using the --noUpdategrid option with your commit and now the results do differ between quantilles.
+Best,
+Matej
+----------------------------------------

@@ -1,0 +1,30 @@
+TOPIC: Help for systematics study on parametric function
+URL: https://cms-talk.web.cern.ch/t/49441
+DATE: 2024-09-17T15:30:57.958Z
+SOLVED: no
+============================================================
+
+QUESTION (by santocch @ 2024-09-17T15:30:58.104Z):
+Hello,
+I’m using combine for a search analysis and I was able to write a datacard with a parametric expression for the background (smooth background searching for a gaussian signal). The first step was to choose a function, fit it to the background and use the fitted parameters (with their errors) to calculate the significance of the signal as explained in the combine web page and everything is ok.
+Speaking with few colleagues I realize that combine should be able to deal also with the function systematic choice. At the moment I tried 6 different functions and all of them (more or less) give a good fit (see plot, status is 0 for all function fit and the reduced chi2 is also reported in the legend). The plot is what you get from RooFit (100 bins) but the fit is actually an unbinned fit.
+mdistribution798×575 43.5 KB
+I tried to search for any instruction where I can find how to tell combine to use all the 6 functions for estimating the systematics of the functions choice but I didn’t find anything. At the moment what I can do easily is to use one of the function or the other and the result dosen’t change too much.
+Do you have any idea where I can find any instruction on how to proceed?
+Thanks for helping
+Attilio
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-09-17T15:44:35.297Z):
+Hi Attilio,
+You can try the section here https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#roomultipdf-conventional-bias-studies
+If you scroll down to the “Discrete profiling” part, that is specific to a method which tries to include the choice as an uncertainty.
+Best
+Nick
+----------------------------------------
+
+REPLY 3 (by santocch @ 2024-09-17T15:59:17.316Z):
+Thank for the link… I’ll have a look and try to implement it in my datacard (I hope it’s not too complicated because I’m quite new to combine)
+Best
+Attilio
+----------------------------------------

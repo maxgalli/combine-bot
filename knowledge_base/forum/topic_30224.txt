@@ -1,0 +1,41 @@
+TOPIC: Pyhf Users and Developers Workshop 2023
+URL: https://cms-talk.web.cern.ch/t/30224
+DATE: 2023-10-04T06:53:08.540Z
+SOLVED: no
+============================================================
+
+QUESTION (by clange @ 2023-10-04T06:53:08.624Z):
+Also sharing the Pyhf Users and Developers Workshop 2023 announcement here. Please mind that the week coincides with CMS Week:
+Dear Colleagues,
+We are pleased to announce the 2023 pyhf Users and Developers Workshop will take place at CERN 4 - 8 December, 2023. Registration is now open as is the call for abstracts which will close on 15 November, 2023.
+This workshop will be split into two sections:
+
+User focused section (4 - 6 December) to learn from pyhf users experience across experiments and theory, understand how users and extending the library, and identify areas of improvement with the largest impact.
+Developer focused section (7 - 8 December) to educate users who are interested in becoming contributors to the pyhf codebase and onboard those interested in becoming project maintainers. This part of the workshop will take the form of “development sprints”.
+
+Participation in all sections of the workshop is encouraged regardless of prior experience.
+Thanks to support from NumFOCUS there is a limited pool of funding to support travel and lodging for this workshop. Travel support will be evaluated on a per request with priority given to Ph.D. candidates and early career researchers who register before 30 October, 2023. A limited number of room blocks have been reserved at the CERN hotel until 1 November, 2023.
+We look forward to engaging with you at the workshop.
+Best,
+The pyhf development team (Matthew, Giordon, and Lukas)
+pyhf-workshop-organisers@cern.ch
+----------------------------------------
+
+REPLY 2 (by peveraer @ 2023-12-04T07:49:57.576Z):
+Dear all,
+this pyhf workshop is starting today (sadly enough overlapping with CMS week).  So far there are very few people attending from CMS, while there is a considerable enrolment from other experiments and theory.  So the organizers asked me to send another reminder to the CMS hypernews.  In case anyone is interested in attending part of the workshop, it is still possible.  It would be good to have some more CMS presence.  I copy the original announcement message from organizers below.
+Cheers,
+Pieter
+
+Dear Colleagues,
+We are pleased to announce the 2023 pyhf Users and Developers Workshop  will take place at CERN 4 - 8 December, 2023. Registration is now open as is the call for abstracts which will close on 15 November, 2023.
+This workshop will be split into two sections:
+
+User focused section (4 - 6 December) to learn from pyhf users experience across experiments and theory, understand how users and extending the library, and identify areas of improvement with the largest impact.
+Developer focused section (7 - 8 December) to educate users who are interested in becoming contributors to the pyhf codebase and onboard those interested in becoming project maintainers. This part of the workshop will take the form of “development sprints”.
+
+Participation in all sections of the workshop is encouraged regardless of prior experience.
+We look forward to engaging with you at the workshop.
+Best,
+The pyhf development team (Matthew, Giordon, and Lukas)
+----------------------------------------

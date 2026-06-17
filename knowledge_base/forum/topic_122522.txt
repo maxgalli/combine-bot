@@ -1,0 +1,26 @@
+TOPIC: How to debug text2workspace.py Segfault
+URL: https://cms-talk.web.cern.ch/t/122522
+DATE: 2025-04-07T14:07:08.232Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by anovak @ 2025-04-07T14:07:08.657Z):
+How can I debug a text2workspace.py segfault? I am merging a large (I guess) number of categories 108 due to combining the 4 “years” of Run2 and when trying to merge all 4 I get a segfault.
+
+Any combination of 3 of the 4 seems to work fine.
+Increasing verbosity with (-v) doesn’t seem to yield any useful info.
+I am on a machine with 16GB ram, which doesn’t hit anywhere near the limit, keeping a look with htop. (I thought this was the issue originally but seems not)
+
+Any way to work around this? Is there some internal roo(t/fit) limit on mem?
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by gortona @ 2025-04-07T14:42:29.260Z):
+Hi @anovak ,
+Did you try issuing the ulimit -s unlimited command before calling text2workspace?
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by anovak @ 2025-04-07T14:46:15.933Z):
+Thanks! That was that.
+----------------------------------------

@@ -1,0 +1,45 @@
+{
+  "topic_id": 2197,
+  "title": "Understanding very tiny impacts",
+  "url": "https://cms-talk.web.cern.ch/t/2197",
+  "category_id": 279,
+  "created_at": "2021-11-04T01:32:58.000Z",
+  "last_posted_at": "2021-11-04T06:43:35.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Ka_Wa_Ho",
+      "name": "Ka Wa Ho",
+      "created_at": "2021-11-04T01:32:58.000Z",
+      "updated_at": "2023-02-07T10:55:45.625Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi combine experts,\nI am doing an impact study on my analysis with Asimov data with\nexpectedSignal = 0. The signal is modeled with a pdf fitted to MC and\nbackground is modeled from a pdf fitted to data. I noticed only the\nbackground pdf parameters and normalization have a significant impact\n(see /afs/cern.ch/user/k/kaho/SmallImpact/impacts_ggcat0.pdf or\nimpacts_ggcat0.json). All nuisance parameters basically are < 10^-4 and\none-sided, which I assume is coming from the insufficient crossing\ntolerance. But I struggle to understand why the impacts are so tiny. I\nthink I might have done something wrong.\nI have put all the datacards, root files, the impact plot, as well as\nthe script to run the impact at /afs/cern.ch/user/k/kaho/SmallImpact . I\nam also using a custom pdf for the signal outside of combine defined in\n/afs/cern.ch/user/k/kaho/SmallImpact/RooCBExp.cc and RooCBExp.h. It\nshould run with \"source Impacts.sh\" within combine.\nAny suggestions are appreciated.\nThanks a lot,\nKa Wa",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi combine experts,</p>\n<p>I am doing an impact study on my analysis with Asimov data with<br>\nexpectedSignal = 0. The signal is modeled with a pdf fitted to MC and<br>\nbackground is modeled from a pdf fitted to data. I noticed only the<br>\nbackground pdf parameters and normalization have a significant impact<br>\n(see /afs/cern.ch/user/k/kaho/SmallImpact/impacts_ggcat0.pdf or<br>\nimpacts_ggcat0.json). All nuisance parameters basically are &lt; 10^-4 and<br>\none-sided, which I assume is coming from the insufficient crossing<br>\ntolerance. But I struggle to understand why the impacts are so tiny. I<br>\nthink I might have done something wrong.</p>\n<p>I have put all the datacards, root files, the impact plot, as well as<br>\nthe script to run the impact at /afs/cern.ch/user/k/kaho/SmallImpact . I<br>\nam also using a custom pdf for the signal outside of combine defined in<br>\n/afs/cern.ch/user/k/kaho/SmallImpact/RooCBExp.cc and RooCBExp.h. It<br>\nshould run with \"source Impacts.sh\" within combine.</p>\n<p>Any suggestions are appreciated.</p>\n<p>Thanks a lot,</p>\n<p>Ka Wa</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-11-04T06:12:06.000Z",
+      "updated_at": "2021-11-17T08:39:59.708Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nUnfortunately, I'm unable to look at the material you linked, because I don't have enough privileges (read) to do so: \"Permission denied\".\nFrom the file name, 'CMS_Hemu_13TeV_multipdf.root', I believe you are looking at the H->emu, which is likely a search for tiny signal over a moderate background.\nUsually, in this type of searches the signal systematics will be small or negligible, wrt the statistical component of the signal. For what concern the background, the emu final state should prefer functional forms with a small number of degrees of freedom to be model, potentially being linear. In this regime the only relevant nuisance left is the background normalization.\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>Unfortunately, I'm unable to look at the material you linked, because I don't have enough privileges (read) to do so: \"Permission denied\".</p>\n<p>From the file name, 'CMS_Hemu_13TeV_multipdf.root', I believe you are looking at the H-&gt;emu, which is likely a search for tiny signal over a moderate background.<br>\nUsually, in this type of searches the signal systematics will be small or negligible, wrt the statistical component of the signal. For what concern the background, the emu final state should prefer functional forms with a small number of degrees of freedom to be model, potentially being linear. In this regime the only relevant nuisance left is the background normalization.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "Ka_Wa_Ho",
+      "name": "Ka Wa Ho",
+      "created_at": "2021-11-04T06:43:35.000Z",
+      "updated_at": "2021-11-17T08:39:59.840Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrea,\nThanks a lot for the reply. Indeed we are searching for a very small\nsignal of H to emu. I forgot to put the files in a public directory.\nThey should be accessible here:\n/afs/cern.ch/work/k/kaho/public/SmallImpact/ . But base on your comments\nI guess the small impacts are not too worrying.\nThanks, Ka Wa",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrea,</p>\n<p>Thanks a lot for the reply. Indeed we are searching for a very small<br>\nsignal of H to emu. I forgot to put the files in a public directory.<br>\nThey should be accessible here:<br>\n/afs/cern.ch/work/k/kaho/public/SmallImpact/ . But base on your comments<br>\nI guess the small impacts are not too worrying.</p>\n<p>Thanks, Ka Wa</p>"
+    }
+  ]
+}

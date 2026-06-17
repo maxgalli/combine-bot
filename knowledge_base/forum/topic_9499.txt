@@ -1,0 +1,82 @@
+TOPIC: Throwing post-fit toys from snapshot
+URL: https://cms-talk.web.cern.ch/t/9499
+DATE: 2022-04-20T10:15:28.719Z
+SOLVED: no
+============================================================
+
+QUESTION (by pkeicher @ 2022-04-20T10:15:28.970Z):
+Dear experts,
+in our analysis, we would like to perform bias studies for our statistical model using postfit toys. The goal is to recenter the nuisance pdfs and centeral values based on an initial fit, and then sample the toys by sampling values from the recentered distributions. Based on [1], we decided to use the --toysFrequentist option.
+Based on [2], we thought the following procedure should give us what we want:
+
+Perform a fit using the MultiDimFit Method and save the workspace using --saveWorkspace
+
+Generate toys using the GenerateOnly Method with the options --toysFrequentist --bypassFrequentistFit --snapshotName 'MultiDimFit' --saveToys and feed in the output from the previous step
+feed in the output from the GenerateOnly step into a fitting method, e.g. FitDiagnostics
+
+However, we noticed that the nuisance parameter values aren’t sampled for the toy generation in step 2. We were able to reproduce this behavior using a slightly adapted version of the simple shape datacard example from the documentation (renamed the bins and added the line * autoMCStats -1 0 1 to make it more similar to the real usecase without actually adding more parameters). You can find the datacard, the input root file and the workspace attached to this message. Based on this example, we did the following:
+
+create the postfit Asimov snapshot using the command in [3]
+generate the toys from this snapshot using the command in [4] and track the nuisance parameters in the workspace with --trackParameters
+
+Performing a Scan of the limit tree for the tracked parameters now shows that the values of the nuisances do not change. However, as I stated in the beginning, we’d like to sample the nuisance parameter values from the postfit pdfs.
+Perhaps we misunderstood the documentation in [1]. Is there a way to achieve what we would like to test?
+Thanks in advance for your help!
+Cheers,
+Philip
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#nuisance-parameter-generation
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorials-part-2/#throwing-post-fit-toys
+[3]
+combine -M MultiDimFit -t -1 --expectSignal 1 --saveWorkspace -n _simple_shapes_example_asimov simple_shapes_ws.root --algo=singles --saveFitResult --floatOtherPOIs 1
+
+[4]
+combine -M GenerateOnly --saveToys -t 10 --expectSignal 1 -s -1 --toysFrequentist --bypassFrequentistFit --snapshotName 'MultiDimFit' higgsCombine_simple_shapes_example_asimov.MultiDimFit.mH120.root --trackParameters lumi,bgnorm,alpha,sigma
+
+postfit_toys_question.tar (40 KB)
+----------------------------------------
+
+REPLY 2 (by nckw @ 2022-04-20T10:22:54.438Z):
+Hi Philip,
+You should note that the “toysFrequentist” option also tells combine to generate the toy from the profiled value of the nuisance parameters (i.e the nuisance parameters are not randomised), while the global observables (the “means of the gaussian terms”) are generated (from the same values), as explained here : http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#nuisance-parameter-generation. You should see for example that the parameters “X_In” are randomised in the toys.
+Note also that you might also need to add add the options --toysFrequentist --bypassFrequentistFit also in your last command (eg FitDiagnostics runs) so that combine knows that the toys have different values for the X_In parameters in each toy (though actually it might be that those are automatically picked up these days, maybe another expert can confirm that)
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by pkeicher @ 2022-04-20T11:17:46.647Z):
+Hi Nick,
+thanks for the fast reply! The way you describe it, it sounds like we didn’t actually do anything wrong, except that we maybe have to add the two options you mentioned when doing the actual fit. Is that correct? Is there an easy way to track the X_In parameters in the toys? (I naively tried it with --trackParameters, but that doesn’t work)
+The reason we suspected that something doesn’t work the way we expected is the following: After we generated to post-fit frequentist toys including the nuisance sampling, we performed a fit where we freeze all nuisance parameters with --freezeParameters allConstrainedNuisances, i.e. only fit the signal strength parameter. Since the other degrees of freedom are present in the toy generation but not for the fit, I would have expected the fit to yield some very wild estimates for r, but that doesn’t seem to be the case. The mean post-fit signal strength is compatible with the injected signal strength.
+Is that because we use the asimov fit for the input snap shot and then freeze the parameters to the very same values? I’m still a little puzzled about this tbh.
+Thanks again for the help!
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 4 (by nckw @ 2022-04-20T11:48:31.560Z):
+Hi Philip,
+In general I wouldn’t advise generating the toys with the nuisance parameters on (i.e randomising the constraints) and then fitting with them frozen as indeed thats not ideal. In a very simple example of a counting experiment with one background uncertainty, i’d expect that the fitted value of the signal strength to have a smaller variance in the case of freezing the parameters when fitting (compared to letting them float) since the signal needs to make up for the difference between the data and s+b and in the former case, the b will always be the same (since again, the nuisance parameter itself is generated from the same place, only the constraint term in the likelihood - what we call the X_In – is randomized).
+trackParameters should work for any parameter (including _In) so i’m surprised at that. Note that they will be called “trackedParam_X” in the results tree. You can also try adding -v 3 to your commands and check the log that comes from that. It has some details about the toys.
+Hope this is helping,
+Nick
+----------------------------------------
+
+REPLY 5 (by pkeicher @ 2022-04-20T13:36:40.305Z):
+Hi Nick,
+I totally agree, using the nuisance parameters in the toy generation but not in the final fit is not advisable, just a basic cross check for myself to see if I understand the system (which obviously I don’t, yet).
+I must admit that I still have problems wrapping my head around the idea that the frequentist approach doesn’t sample the central values of the parameters but instead the constraints used in the likelihood function. I think I agree with your expectation for the variance of r (less degrees of freedom result in a smaller variance of the estimated parameter).
+In my mind, I pictured the test that the toy data points in the distributions would fluctuate and that the fit would be performed using that data (which is why I expected the fit to break or at least that the width of the distribution of post-fit rs would be larger than in the case including the nuisances in the fits. If I take away the degrees of freedom used in the actual toy generation, the differences between data and s+b would potentionally be very large and the fit could only use r to mitigate the difference). But instead, we shift the constraints, the the toy data points in my naive picture would stay the same, right? Which is probably why I was so surprised by the distribution of post-fit rs. Is there a downside to something like what I originally envisioned? Or is it just better defined/motivated to use the frequentist approach as it is already implemented? (I’m of course not saying that this is not a powerful setup for these tests, I’m just trying to understand)
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 6 (by pkeicher @ 2022-04-20T13:38:23.775Z):
+Regarding the trackParameters: I picked a random parameter from the original problem I’m looking into, and it was a rateParam. So of course, there was no _In object to load, totally my fault. Choosing another parameter of course works perfectly, and I also see the variation you described in your post
+----------------------------------------
+
+REPLY 7 (by nckw @ 2022-04-20T13:45:32.480Z):
+Hi Philip,
+Perhaps one thing you’re missing is that for inference we always (mostly maybe is better) use the profile likelihood ratio. The worsening between the S and S+B fits is also there in the fact that the likelihood has a term (the constraint term) which has a varying central value in the toys → this is what ends up making the inference less certain (r distribution gets wider etc) so its still leading to the same effect that including systematics generally makes things less certain.
+All the best,
+Nick
+----------------------------------------

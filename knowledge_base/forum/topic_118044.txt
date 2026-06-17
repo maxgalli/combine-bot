@@ -1,0 +1,36 @@
+TOPIC: Background-only impacts plots
+URL: https://cms-talk.web.cern.ch/t/118044
+DATE: 2025-03-11T16:54:50.106Z
+SOLVED: no
+============================================================
+
+QUESTION (by wterrill @ 2025-03-11T16:54:50.429Z):
+Dear combine experts,
+I am trying to create unblinded impacts plots for the background-only hypothesis.
+Currently I tried running:
+combineTool.py -M Impacts -d card_TChiWZ_Disp-neg_200_195_0_allEEMM.root -m 200 --doInitialFit --robustFit 1 -n impacts_expSig0 --expectSignal=0
+
+combineTool.py -M Impacts -d card_TChiWZ_Disp-neg_200_195_0_allEEMM.root -m 200 --robustFit 1 --doFits -n impacts_expSig0 --expectSignal=0 --parallel 8
+
+combineTool.py -M Impacts -d card_TChiWZ_Disp-neg_200_195_0_allEEMM.root -m 200 --robustFit 1 --output impacts_expSig0.json -n impacts_expSig0 --parallel 4 --expectSignal=0
+
+plotImpacts.py -i impacts_expSig0.json -o impacts_expSig0
+
+but this seems to create identical impacts plots as to either not specifying --expectSignal or using --expectSignal=1.
+Any help would be greatly appreciated!
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-03-11T19:37:08.944Z):
+Hi,
+--freezeParameters r --setParameters r=0 should work. (I assume that background is for r=0)
+ExpectedSignal will influence only the asimov dataset or the toy datasets.
+-Andrea
+----------------------------------------
+
+REPLY 3 (by adewit @ 2025-03-12T09:36:12.733Z):
+Hi Wesley,
+Perhaps just to add: for the impacts to run there needs to be a parameter of interest (see this documentation page for more details on what the impacts mean).
+So while you can calculate impacts on a different parameter than r (if there is another freely floating parameter in your model), but you may need to think a bit about exactly what ‘unblinded background-only hypothesis impacts’ mean for your model, and whether it is really going to give you the information that you want.
+Best,
+Adinda
+----------------------------------------

@@ -1,0 +1,213 @@
+TOPIC: Significance with MC toys
+URL: https://cms-talk.web.cern.ch/t/35329
+DATE: 2024-02-21T07:56:50.324Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-02-21T07:56:50.512Z):
+Dear experts
+we want to check our asymptotic significance calculations
+combine -M Significance 2017UL_dimuon_SR3_BERN.txt  --significance   [–pvalue]
+with toys.
+I can’t find a magic line in user guide. Could you advice.   It is very urgent since we go to StatCom soon and they want us to do this.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-02-21T08:48:32.397Z):
+Hi Sasha,
+You can try the instructions here for computing the significance with toys …
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys
+Best
+Nick
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-02-22T11:56:02.000Z):
+Hi Nick,
+following instructions I run first this:
+combine -M HybridNew 2017UL_dimuon_SR3_BERN.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 5000 -i 1 -s -1
+and got
+– Hybrid New –
+Significance: 1.91416 -0.0351975/+0.0377422
+Null p-value: 0.0278 +/- 0.00232496
+Done in 34.28 min (cpu), 35.38 min (real)
+Then according to instructions I run
+combine -M HybridNew 2017UL_dimuon_SR3_BERN.txt --LHCmode LHC-significance --readHybridResult --grid=input.root
+and got
+[#0] WARNING:Eval – RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+[#0] WARNING:Eval – RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+Caught exception Cannot use readHypoTestResult: option toysFile not specified, or input file empty
+I indeed do not see input.root file in my local dir…
+What is Significance reported after first command ?
+I run from this dir.
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_0_4/src/HiggsAnalysis/CombinedLimit/test
+Can you help ?
+Thank you, Sasha.
+
+···
+
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Wednesday, February 21, 2024 09:49
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance with MC toys
+
+Nicholas Wardle nckw Higgs convenerFebruary 21
+
+Hi Sasha,
+You can try the instructions here for computing the significance with toys …
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys
+Best
+Nick
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-02-22T14:04:24.392Z):
+Hi Sasha,
+You only need the second command if you need to split the jobs into multiple steps to build the distribution of test statistics.
+However, you already have a reasonably accurate result from the first command it seems, which I’ve copied below.
+– Hybrid New –
+Significance: 1.91416 -0.0351975/+0.0377422
+Null p-value: 0.0278 +/- 0.00232496
+Done in 34.28 min (cpu), 35.38 min (real)
+
+so you can just take this to be your result from the computation using toys (i.e ~1.9 sigma)
+Best,
+Nick
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2024-02-22T14:11:35.000Z):
+Excellent, Nick !
+Thank you very much.
+Cheers, Sasha.
+
+···
+
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, February 22, 2024 15:05
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance with MC toys
+
+Nicholas Wardle nckw Higgs convenerFebruary 22
+
+Hi Sasha,
+You only need the second command if you need to split the jobs into multiple steps to build the distribution of test statistics.
+However, you already have a reasonably accurate result from the first command it seems, which I’ve copied below.
+– Hybrid New –
+Significance: 1.91416 -0.0351975/+0.0377422
+Null p-value: 0.0278 +/- 0.00232496
+Done in 34.28 min (cpu), 35.38 min (real)
+
+so you can just take this to be your result from the computation using toys (i.e ~1.9 sigma)
+Best,
+Nick
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2024-02-22T14:31:38.000Z):
+Hi Nick,
+do I understand it right that this observed significance (1.9) is
+calculated based on the test statistics from toy experiments when
+background only is generated according to background shape
+from fit of data. Then q0 observed from data fit (-2 ln(Lb/Ls+b) is
+used.
+Thanks, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Thursday, February 22, 2024 15:11
+To: CMS talk cmstalk+b25a03c15db38d246f7be1b11f227e67@dovecotmta.cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Significance with MC toys
+Excellent, Nick !
+Thank you very much.
+Cheers, Sasha.
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, February 22, 2024 15:05
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance with MC toys
+
+Nicholas Wardle nckw Higgs convenerFebruary 22
+
+Hi Sasha,
+You only need the second command if you need to split the jobs into multiple steps to build the distribution of test statistics.
+However, you already have a reasonably accurate result from the first command it seems, which I’ve copied below.
+– Hybrid New –
+Significance: 1.91416 -0.0351975/+0.0377422
+Null p-value: 0.0278 +/- 0.00232496
+Done in 34.28 min (cpu), 35.38 min (real)
+
+so you can just take this to be your result from the computation using toys (i.e ~1.9 sigma)
+Best,
+Nick
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by nckw @ 2024-02-22T14:48:40.278Z):
+Hi Sasha,
+The test statistic is the one shown in the same link as I sent (and attached here as a screenshot)
+
+This is exactly the same test-statistic as for the asymptotic calculation, except that here we generate the distribution of the test statistic from toys (as you said assuming background only) while in the asymptotic calculation, that distribution is assumed to be the one you would get for large statistics data sets.
+Best,
+Nick
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2024-02-22T14:54:21.000Z):
+Thanks, Nick !
+Thanks to you I hope I got more educated in statistics to be
+prepared for Stat. Com. meeting next Monday
+Cheers, Sasha.
+
+···
+
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, February 22, 2024 15:49
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance with MC toys
+
+Nicholas Wardle nckw Higgs convenerFebruary 22
+
+Hi Sasha,
+The test statistic is the one shown in the same link as I sent (and attached here as a screenshot)
+This is exactly the same test-statistic as for the asymptotic calculation, except that here we generate the distribution of the test statistic from toys (as you said assuming background only) while in the asymptotic calculation, that distribution is assumed to be the one you would get for large statistics data sets.
+Best,
+Nick
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 9 (by anikiten @ 2024-02-24T07:33:29.000Z):
+Hi Nick,
+is it correct to say that then I run it with fixed signal mass and width
+I got local significance, while when I float mass and width within
+the signal range of mass of [25-30] GeV and width range of [0-2.8] GeV
+it gives me global significance. I first case I got about of 3, while in the
+second case it is about of 1.9
+Thanks, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Thursday, February 22, 2024 15:54
+To: CMS talk cmstalk+9791b83f61c72d3ed721ad3ac91e736c@dovecotmta.cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Significance with MC toys
+Thanks, Nick !
+Thanks to you I hope I got more educated in statistics to be
+prepared for Stat. Com. meeting next Monday
+Cheers, Sasha.
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, February 22, 2024 15:49
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Significance with MC toys
+
+Nicholas Wardle nckw Higgs convenerFebruary 22
+
+Hi Sasha,
+The test statistic is the one shown in the same link as I sent (and attached here as a screenshot)
+This is exactly the same test-statistic as for the asymptotic calculation, except that here we generate the distribution of the test statistic from toys (as you said assuming background only) while in the asymptotic calculation, that distribution is assumed to be the one you would get for large statistics data sets.
+Best,
+Nick
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

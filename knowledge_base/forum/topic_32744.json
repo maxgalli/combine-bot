@@ -1,0 +1,56 @@
+{
+  "topic_id": 32744,
+  "title": "Segfault when combining multiple years with combine",
+  "url": "https://cms-talk.web.cern.ch/t/32744",
+  "category_id": 279,
+  "created_at": "2023-12-15T02:48:46.682Z",
+  "last_posted_at": "2023-12-15T07:07:36.340Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "phmaster",
+      "name": "Phillip Tyler Masterson",
+      "created_at": "2023-12-15T02:48:47.119Z",
+      "updated_at": "2023-12-15T02:48:47.119Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi all!  Recently, I\u2019ve been running into an unusual error with combine.  I currently have four datacards that I would like to merge and run AsymptoticLimits on, located on lxplus at /eos/home-p/phmaster/tth_hqu/CMSSW_11_3_4/src/PlotToolsTTH/ttH/cards/scripts/runspuppi_sig_201*/ttHcc*.txt.  After combining the cards as follows:\ncombineCards.py puppi_sig_201*/ttHcc*.txt > ttHcc_SL.txt\nI then run:\ncombine -M AsymptoticLimits -d ttHcc_SL.txt\nThis results in a segfault with no debugging message:\n...\n=> Total parameter prop_binch4_ttHcc_SLm_catBJ_CR_bin1[0.00,-7.00,7.00] to be gaussian constrained\n------------------------------------------------------------\nChannel ch4_ttHcc_SLm_catBB_CR will use autoMCStats with settings: event-threshold=0, include-signal=0, hist-mode=1\n============================================================\nAnalysing bin errors for: prop_binch4_ttHcc_SLm_catBB_CR\nPoisson cut-off: 0\nProcesses excluded for sums: ttH_hcc\n============================================================\nBin        Contents        Error           Notes\n0          693.184195      7.925550        total sum\n0          693.026956      7.925549        excluding marked processes\n0          7646.000000     87.441409       Unweighted events, alpha=0.090660\n=> Total parameter prop_binch4_ttHcc_SLm_catBB_CR_bin0[0.00,-7.00,7.00] to be gaussian constrained\n------------------------------------------------------------\n1          357.465258      5.319881        total sum\n1          357.436395      5.319881        excluding marked processes\n1          4514.000000     67.186308       Unweighted events, alpha=0.079190\n=> Total parameter prop_binch4_ttHcc_SLm_catBB_CR_bin1[0.00,-7.00,7.00] to be gaussian constrained\n------------------------------------------------------------\nSegmentation fault (core dumped)\n\nI\u2019ve noticed something highly unusual:  combining any two of the four datacards does not produce a segfault, while combining three or more does.  The issue does not involve any one card, only three or more together.  I thought that maybe this pointed to a memory issue, but I tried clearing out some old files and switching to a new lxplus node, and I\u2019m still getting the same error.\nDoes anyone have any ideas about what\u2019s going on, or how I can debug this when combine isn\u2019t giving me any terminal output?",
+      "cooked_html": "<p>Hi all!  Recently, I\u2019ve been running into an unusual error with combine.  I currently have four datacards that I would like to merge and run AsymptoticLimits on, located on lxplus at <code>/eos/home-p/phmaster/tth_hqu/CMSSW_11_3_4/src/PlotToolsTTH/ttH/cards/scripts/runspuppi_sig_201*/ttHcc*.txt</code>.  After combining the cards as follows:</p>\n<p><code>combineCards.py puppi_sig_201*/ttHcc*.txt &gt; ttHcc_SL.txt</code></p>\n<p>I then run:</p>\n<p><code>combine -M AsymptoticLimits -d ttHcc_SL.txt</code></p>\n<p>This results in a segfault with no debugging message:</p>\n<pre><code class=\"lang-auto\">...\n=&gt; Total parameter prop_binch4_ttHcc_SLm_catBJ_CR_bin1[0.00,-7.00,7.00] to be gaussian constrained\n------------------------------------------------------------\nChannel ch4_ttHcc_SLm_catBB_CR will use autoMCStats with settings: event-threshold=0, include-signal=0, hist-mode=1\n============================================================\nAnalysing bin errors for: prop_binch4_ttHcc_SLm_catBB_CR\nPoisson cut-off: 0\nProcesses excluded for sums: ttH_hcc\n============================================================\nBin        Contents        Error           Notes                         \n0          693.184195      7.925550        total sum                     \n0          693.026956      7.925549        excluding marked processes    \n0          7646.000000     87.441409       Unweighted events, alpha=0.090660\n  =&gt; Total parameter prop_binch4_ttHcc_SLm_catBB_CR_bin0[0.00,-7.00,7.00] to be gaussian constrained\n------------------------------------------------------------\n1          357.465258      5.319881        total sum                     \n1          357.436395      5.319881        excluding marked processes    \n1          4514.000000     67.186308       Unweighted events, alpha=0.079190\n  =&gt; Total parameter prop_binch4_ttHcc_SLm_catBB_CR_bin1[0.00,-7.00,7.00] to be gaussian constrained\n------------------------------------------------------------\nSegmentation fault (core dumped)\n</code></pre>\n<p>I\u2019ve noticed something highly unusual:  combining <em>any two</em> of the four datacards does not produce a segfault, while combining three or more does.  The issue does not involve any one card, only three or more together.  I thought that maybe this pointed to a memory issue, but I tried clearing out some old files and switching to a new lxplus node, and I\u2019m still getting the same error.</p>\n<p>Does anyone have any ideas about what\u2019s going on, or how I can debug this when combine isn\u2019t giving me any terminal output?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "phmaster",
+      "name": "Phillip Tyler Masterson",
+      "created_at": "2023-12-15T04:12:42.409Z",
+      "updated_at": "2023-12-15T04:12:42.409Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Update:  Running with -v 3 gives slightly more information, although there\u2019s a large amount of extra text that gets written to the output.  The last section is:\n...\nprop_binch4_ttHcc_SLm_catBJ_CR_bin1,prop_binch4_ttHcc_SLm_catBB_CR_bin0,prop_binch4_ttHcc_SLm_catBB_CR_bin1)\nobservables:(CMS_th1x,CMS_channel)\n\ngeneric objects\n---------------\nRooStats::ModelConfig::ModelConfig\nRooStats::ModelConfig::ModelConfig_bonly\nRooArgSet::discreteParams\n\nSegmentation fault (core dumped)",
+      "cooked_html": "<p>Update:  Running with <code>-v 3</code> gives slightly more information, although there\u2019s a large amount of extra text that gets written to the output.  The last section is:</p>\n<pre><code class=\"lang-auto\">...\nprop_binch4_ttHcc_SLm_catBJ_CR_bin1,prop_binch4_ttHcc_SLm_catBB_CR_bin0,prop_binch4_ttHcc_SLm_catBB_CR_bin1)\nobservables:(CMS_th1x,CMS_channel)\n\ngeneric objects\n---------------\nRooStats::ModelConfig::ModelConfig\nRooStats::ModelConfig::ModelConfig_bonly\nRooArgSet::discreteParams\n\nSegmentation fault (core dumped)\n</code></pre>"
+    },
+    {
+      "post_number": 3,
+      "username": "hqu",
+      "name": "Huilin Qu",
+      "created_at": "2023-12-15T04:26:54.822Z",
+      "updated_at": "2023-12-15T04:26:54.822Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi @phmaster ,\nMaybe you can try increasing the stack size with the command ulimit -s unlimited before running combine?\nBest,\nHuilin",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/phmaster\">@phmaster</a> ,</p>\n<p>Maybe you can try increasing the stack size with the command <code>ulimit -s unlimited</code> before running <code>combine</code>?</p>\n<p>Best,<br>\nHuilin</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "phmaster",
+      "name": "Phillip Tyler Masterson",
+      "created_at": "2023-12-15T07:07:36.340Z",
+      "updated_at": "2023-12-15T07:07:36.340Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Huilin Qu:\n\nulimit -s unlimited\n\nThat got it working.  Thank you so much!",
+      "cooked_html": "<aside class=\"quote no-group\" data-username=\"hqu\" data-post=\"3\" data-topic=\"32744\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img loading=\"lazy\" alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/h/9dc877/48.png\" class=\"avatar\"> Huilin Qu:</div>\n<blockquote>\n<p>ulimit -s unlimited</p>\n</blockquote>\n</aside>\n<p>That got it working.  Thank you so much!</p>"
+    }
+  ]
+}

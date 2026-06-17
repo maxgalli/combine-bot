@@ -1,0 +1,14 @@
+TOPIC: Impact of parametric uncertainty
+URL: https://cms-talk.web.cern.ch/t/7356
+DATE: 2022-02-24T16:41:47.571Z
+SOLVED: no
+============================================================
+
+QUESTION (by kaho @ 2022-02-24T16:41:47.724Z):
+Hi combine experts,
+I have a question on studying the impact of parametric uncertainty with an Asimov dataset injected with signal. I have a parametric uncertainty which shift the mean parameter of my signal (see attached picture for an example). Since the Asimov dataset is injected with the nominal signal and variations of the parametric uncertainty would always shift the peak left/right to the nominal signal, it leads to a one-sided impact as a result (always negative). I would like to ask what is the correct procedure to study the impact of a parametric uncertainty, is this the correct approach,  or b) the Asimov dataset should be injected with a varied signal shape when we study the impact?
+Thanks,
+Ka Wa
+
+check696×472 8.32 KB
+----------------------------------------

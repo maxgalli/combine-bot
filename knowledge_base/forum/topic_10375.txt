@@ -1,0 +1,54 @@
+TOPIC: Using extArg in ABCD method
+URL: https://cms-talk.web.cern.ch/t/10375
+DATE: 2022-05-12T12:42:43.962Z
+SOLVED: no
+============================================================
+
+QUESTION (by kakwok @ 2022-05-12T12:42:44.156Z):
+Dear experts,
+I have a simple datacard implementing the ABCD method [see attached txt].
+To avoid the parameters getting too big, I re-scaled the yields using the following formula:
+NA  rateParam       chA     bkg      (@0*(1+1/sqrt(@0))**@1)       NA_val,NA_x
+where NA_val is a constant set by the line:
+NA_val      extArg          12.0882352941   [const]
+However, when I compute the Asymptotic limit with
+combine -M AsymptoticLimits card.txt --freezeParameters=norm -t -1  -v 3
+I see the value of NA_val (and others) are set to 1, not respecting the constant.
+Is this the expected behaviour?
+Thanks,
+Martin
+card.txt (1.5 KB)
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-05-12T16:57:44.403Z):
+Hi Martin,
+I can’t reproduce this problem - I see NA_val is always the value that you set it to in the datacard. Can you share the log where you are seeing this parameter being set to 1? Maybe we can figure out from there what is going on.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by kakwok @ 2022-05-12T17:57:01.939Z):
+Hi Adinda,
+Sure. I’m attaching two logs here:
+card_log.txt: produced from using [const] in the NA_val
+card_log_OK.txt: produced from using [min,max] syntax of NA_val
+You can see from the card_log_OK.txt that the parameters are set to the desired value.
+Cheers,
+Martin
+card_log_OK.txt (79.6 KB)
+card_log.txt (80.3 KB)
+----------------------------------------
+
+REPLY 4 (by adewit @ 2022-05-13T11:03:39.296Z):
+Hi Martin,
+Ok, thanks - can you also say which combine version you are using? If it’s older than v8.2.0, can you update to that version and check if that fixes the issue?
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by kakwok @ 2022-05-13T14:34:29.706Z):
+Hi Adinda,
+Indeed, I’m using v8.1.0. I’ll update and check again.
+Thanks,
+Martin
+----------------------------------------

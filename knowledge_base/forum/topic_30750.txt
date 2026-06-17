@@ -1,0 +1,152 @@
+TOPIC: Why combined significance from two Search Regions (SR1 and SR2) is smaller than the significance from SR1 alone
+URL: https://cms-talk.web.cern.ch/t/30750
+DATE: 2023-10-20T09:03:30.645Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2023-10-20T09:03:30.975Z):
+Dear experts,
+in my two Search Regions with 2016 data I have from combine tool the following bump characterization:
+SR1                                          SR2mod13
+
+mass, GeV                           28.0+/-0.5                                       28.7+/-1.3
+width, GeV                           1.4+/-1.1                                         2.3+/-3.6
+significance                          3.0                                                   1.5
+When I combined it with
+combineCards.py SR1_2016=2016_dimuon_SR1.txt SR2mod13_2016=2016_dimuon_SR2mod13.txt > SR1andSR2mod13.txt
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO ‘map=SR1_2016/sig:r_sig1[1,0,200]’ --PO ‘map=SR2mod13_2016/sig:r_sig2[1,0,200]’ SR1andSR2mod13.txt -o SR1andSR2mod13.root
+combine -M MultiDimFit --setParameters r_sig1=0,r_sig2=0 SR1andSR2mod13.root -v 3 > SR1andSR2mod13.out
+I got
+mass = 28.042	 +/-  0.407202 GeV
+width = 1.3431	 +/-  0.916107  GeV
+deltaNLL = 5.52272
+quantileExpected = 0.00399497
+From deltaNLL I calculate one-sided p-value with two degree of freedom as
+pvalue_chi2 = 0.5TMath::Prob(2deltaNLL,2);
+and then combined significance as
+significance_2ndf = RooStats::PValueToSignificance(pvalue_chi2);
+and I got significance_2ndf = 2.87856
+So, my naive question, who combined significance 2.90 is smaller than the significance in SR1, 3.0 ?
+I would assume it might happen in the case than the masses in SR1 and SR2mod13 are very different,
+but it is not my case.  Please, explain.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-10-20T12:38:48.060Z):
+Hi Sasha,
+I’d just like to make sure I’m understanding your question correctly first.  Am I understanding you correctly that for the significances you quote for the individual channel fits (3.0 and 1.5) that you are fitting a single parameter of interest in each of those cases, so you are getting those with one additional degree of freedom using Wilk’s theorem?
+And then you fit both channels simultaneously with two separate signal strengths, so using two degrees of freedom, and this is what you use to calculate your significance of 2.88 using wilk’s theorem in the second case?
+Is that right?
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2023-10-20T15:10:36.234Z):
+Hi Kyle,
+that’s right.
+3.0 and 1.5 are from single fits, separately in SR1 and SR2mod13
+2.88 when I do combined fit of both SRs with two separate signal strengths.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 4 (by nckw @ 2023-10-20T15:36:38.354Z):
+Hi all,
+The bit I am confused about is pvalue_chi2 = 0.5*TMath::Prob(2* deltaNLL,2)
+The 0.5 is usually there for one degree of freedom since we ignore downward fluctuations. In 2 degrees of freedom, wouldn’t we ignore either of the signals being negative? So I would assume this factor is 0.25 since there is only one quadrant where both are positive?
+Best
+Nick
+P.S I remember a long thread some time ago involving Chernoff’s results being used to determine pvalues for two independent signal bumps…
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2023-10-21T12:21:55.000Z):
+Hi Nick,
+indeed, for the first publication we used Chernoff formulae
+which you and Andre David have tested:
+pvalue_2dbc = 0.5TMath::Prob(2deltaNLL,1)+0.25TMath::Prob(2deltaNLL,2);
+It is for two independent bumps with boundary conditions, mu1, mu2 > 1
+It gives me significance 3.0, the same like in SR1 alone. So it looks like SR2mod13 with significance 1.5 does not contribute at all… Probably due to number of events in SR2mod13 is much smaller and mass is shifted, although within the errors masses are overlap within one sigma… I do not understand what is going on…
+By the way, when I combine 2017 and 2018 in SR1 should I still use
+0.5TMath::Prob(2 deltaNLL,2)
+?
+Thanks, Sasha.
+
+···
+
+From: Nicholas Wardle via CMS talk noreply@cms-talk.web.cern.ch
+Sent: Friday, October 20, 2023 17:37
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Why combined significance from two Search Regions (SR1 and SR2) is smaller than the significance from SR1 alone
+
+Nicholas Wardle nckw Higgs convenerOctober 20
+
+Hi all,
+The bit I am confused about is pvalue_chi2 = 0.5*TMath::Prob(2* deltaNLL,2)
+The 0.5 is usually there for one degree of freedom since we ignore downward fluctuations. In 2 degrees of freedom, wouldn’t we ignore either of the signals being negative? So I would assume this factor is 0.25 since there is only one quadrant where both are positive?
+Best
+Nick
+P.S I remember a long thread some time ago involving Chernoff’s results being used to determine pvalues for two independent signal bumps…
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2023-10-23T08:32:38.082Z):
+Hi again NIck, All,
+I think that combining 2017 and 2018 data within one SR I still should used
+Chernoff formula.  We do not know the signal model and although within a given SR we use the same off-line kinematical selections, there are a number of differences:  trigger (double in 2017 vs single in 2018),  jet pileup ID for forward jets, pileup which affects differently muon off-line isolation. So we can’t use just luminosity scaling and ratio of the signal efficiencies from MC to just combine 2017 and 2018 data with one degree of freedom.
+What do you think ?
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2023-10-23T08:50:24.754Z):
+for whose who are interested about Chernoff formula to be used for the two signal strengths with a boundary confitions mu1 > 0 and mu2 > 0, have a look from line 355 of this Analysis Note related to the first publication of dimuon analysis (HIG-16-017):
+cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS AN-2015/289
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 8 (by anigamov @ 2023-10-23T09:41:01.459Z):
+Dear Sasha,
+I think different experimental conditions and the corresponding corrections are usually modelled with separate nuisance parameters, not parameters of interests.
+Therefore I would propose to decorrelate the systematic uncertainties in 2017 and 2018 datacards and use the same POI to model signal.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 9 (by anikiten @ 2023-10-23T09:58:46.000Z):
+Dear Aliya,
+significance and bump characteristics are defined entirely from the data from unbinned fit with the signal and bkg. pdf analitical functions. Therefore we do not have nuisance parameters in this analysis. For the first publications we checked that the formal inclusion in the data cards lumi, muon and b-tagging uncertainty does not change anything in the signal characterization and the significance.
+Cheers, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply@cms-talk.web.cern.ch
+Sent: Monday, October 23, 2023 11:42
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Why combined significance from two Search Regions (SR1 and SR2) is smaller than the significance from SR1 alone
+
+Aliya Nigamova anigamovOctober 23
+
+Dear Sasha,
+I think different experimental conditions and the corresponding corrections are usually modelled with separate nuisance parameters, not parameters of interests.
+Therefore I would propose to decorrelate the systematic uncertainties in 2017 and 2018 datacards and use the same POI to model signal.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 10 (by anigamov @ 2023-10-24T10:47:00.142Z):
+Dear Sasha,
+Thanks a lot for the explanations!
+I think it should be possible to extract the estimates for the systematic uncertainties that affect signal shape from a resonant MC sample of similar width and peak position.
+It can be then included into the likelihood fit as uncertainties on signal parameters with constraint terms as described here.
+To me it seems to be more robust, but of course this should be decided within PAG and I just wanted to make sure that everyone is aware that these effects can be properly parametrised.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 11 (by anikiten @ 2023-10-25T07:23:36.942Z):
+Dear Aliya,
+thanks for pointing to this possibility. But it is not our case. Dimuon mass shape is well parametrized
+with BW (natural width) + Gaussian for di-muon detector resolution and we have checked for the first publicatio0n that muon pT uncertainties have a negligible effect on the total width.
+Cheers, Sasha.
+----------------------------------------

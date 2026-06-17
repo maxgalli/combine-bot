@@ -1,0 +1,100 @@
+TOPIC: Understanding asymmetric impact (BPH-23-001)
+URL: https://cms-talk.web.cern.ch/t/40957
+DATE: 2024-05-08T14:51:39.977Z
+SOLVED: no
+============================================================
+
+QUESTION (by ytakahas @ 2024-05-08T14:51:40.197Z):
+Dear expert,
+We are trying to understand the asymmetric impact of the nuisance parameters related to the bin-by-bin statistical uncertainties in the sideband, as shown below.
+impacts_01261×1036 93 KB
+Our fit model is as follows (please refer to the image below too)
+
+simultaneous fit of the sideband (SB) and the signal region (SR)
+in the SB, we derive the background template by doing (data - BG - mu*signal) in each bin, which is then extrapolated to the signal region with the transfer factor derived by MC. The transfer factor contains both normalization and the shape correction
+
+We allocate;
+
+30% normalization uncertainty on the extrapolated background in the SR
+bin-by-bin uncertainty related to the MC transfer factor (red error bars in the middle bottom plot)
+bin-by-bin statistical uncertainty of the SB data → This is what shows asymmetric behavior.
+
+Screenshot 2024-05-08 at 10.29.49 AM1854×1078 251 KB
+Our hypothesis:
+The bin-by-bin stat. uncertainty of the SB is very small (1-2% level) compared to the overall normalization uncertainty (30%) as well as the bin-by-bin uncertainty related to the MC transfer factor (10-20%). Therefore, depending on the pulls of these relatively-large-prior nuisance parameters, +/-1 sigma deviations of the SB data can be easily end up with one-sided. Therefore, this is not a big issue. To followup, we also performed Asimov studies and it shows symmetric behavior
+Do you think this is reasonable? Is the asymmetric behavior worrisome?
+If you have any inputs or suggestions to verify this, we are happy to test it.
+For your reference, here is a relevant information:
+
+CMSSW_10_2_13
+CombinedLimit: 612fafc
+CombineHarvester: 84ebbde
+
+workspace
+
+/afs/cern.ch/user/y/ytakahas/public/forImpact/combine_all.root
+/afs/cern.ch/user/y/ytakahas/public/forImpact/combine_all.txt
+
+workspace="combine_all.root"
+toy=""
+option="--setParameterRanges bc=0.8,1.2:bkg=0.8,1.2 --cminDefaultMinimizerStrategy 0"
+
+combineTool.py -M Impacts -d ${workspace} -m 125 --doInitialFit --robustFit 1 ${toy} ${option}
+
+combineTool.py -M Impacts -d ${workspace} -m 125 --doFits --robustFit 1 ${toy} ${option} --job-mode slurm --task-name rjpsi --job-dir jobs --merge 1 --sub-opts '--partition standard --time 12:00:00'
+
+and to make the plot, I used,
+file="impacts_comb.json"
+combineTool.py -M Impacts -d ${workspace} -m 125 -o ${file} ${toy}
+plotImpacts.py -i ${file} -o impacts --blind
+
+Thanks for your support,
+Best,
+Yuta for analysis team
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-05-10T09:39:56.685Z):
+Hi Yuta,
+There might be a more fundamental question as to whether you need parameters for the sideband data statistics at all - if these bins are included in the simultaneous fit then the data statistics are implicitly accounted for by the Poisson term in the likelihood - there is no need to add an additional nuisance parameter. Can you clarify the situation?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by ytakahas @ 2024-05-10T10:09:27.953Z):
+Hi @agilbert
+Thanks for your reply! As you can see from the datacard (/afs/cern.ch/user/y/ytakahas/public/forImpact/combine_all.txt), these are defined as the bin-by-bin floating parameters in the SB so that we can dynamically construct the bkg. template while doing a fit. Namely,
+bkg(sr, bin=i) = data(sb, bin=i) - mu*signal (sb, bin=i) - other bkg. (sb, bin=i)
+This has been the choice we made to take into account the “signal contamination” in the SB. It seems that the combine automatically “create” nuisance parameters related to the statistical uncertainty of these bbb floating parameters, as I haven’t explicitly defined them.
+I also tried a simple fit using SR only (without SB). In this case, I made a bkg template using SB data after subtracting relevant backgrounds and signals (I have to assume SM in this case though). I then used that template in the SR. In this case, I could get more symmetric impacts, as shown below.
+image1261×1036 89.8 KB
+If there are no issues in the simultaneous fit model and the asymmetric impact for some of these nuisances, we would like to keep the current fit method as we are approaching approval and would like to avoid introducing additional changes.
+Thanks a lot,
+Yuta
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2024-05-10T10:53:09.021Z):
+Hi Yuta,
+It’s not totally clear from the datacard itself, but I think I understand that these bg_bin[X]_tauhad_sb_2018 parameters are representing the rates of the your background in each bin of the CR, which are then extrapolating via a formula to the rate in the SR. This is fine, though I wouldn’t really call them bin-by-bin statistical uncertainties. I don’t think anything is being created by combine automatically - you have already defined these parameters in your input datacard, combine will not add constraint terms on these by default. We see them in the impacts just because they’re defined as parameters of the model.
+It’s pretty hard to say where the asymmetric impacts come from without performing detailed studies. If things look ok in an Asimov data set that implies there is some feature in your observed data that can cause this. It’s possibily due to non-trivial correlations with parameters - you could test freezing some or all of the other parameters to their post-fit values and checking if the impact becomes more symmetric.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 6 (by ytakahas @ 2024-05-10T14:29:41.182Z):
+Hi @Andrew Gilbert
+Please see inline;
+
+It’s not totally clear from the datacard itself, but I think I understand that these bg_bin[X]_tauhad_sb_2018 parameters are representing the rates of the your background in each bin of the CR, which are then extrapolating via a formula to the rate in the SR. This is fine, though I wouldn’t really call them bin-by-bin statistical uncertainties. I don’t think anything is being created by combine automatically - you have already defined these parameters in your input datacard, combine will not add constraint terms on these by default. We see them in the impacts just because they’re defined as parameters of the model.
+
+Right.
+
+It’s pretty hard to say where the asymmetric impacts come from without performing detailed studies. If things look ok in an Asimov data set that implies there is some feature in your observed data that can cause this. It’s possibily due to non-trivial correlations with parameters - you could test freezing some or all of the other parameters to their post-fit values and checking if the impact becomes more symmetric.
+
+Okay, I just made impact plots with this options;
+--freezeParameters fakeNorm_2016,fakeNorm_2017,fakeNorm_2018,var{.*fakesshape}
+(i.e. turn-off other nuisance parameters (except for SB stat. related ones) that can affect fake normalization/shape in the SR)
+The resulting impact plot becomes more symmetric. However, it still contains these nuisance parameters that I froze and have some variations too (please see below e.g. #7 and #49 etc)… do I specify this option properly?
+impacts.pdf (196.7 KB)
+Thanks,
+Yuta
+----------------------------------------

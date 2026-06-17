@@ -1,0 +1,45 @@
+{
+  "topic_id": 13530,
+  "title": "Acceptable Goodness-of-Fit distributions",
+  "url": "https://cms-talk.web.cern.ch/t/13530",
+  "category_id": 279,
+  "created_at": "2022-08-01T17:01:08.028Z",
+  "last_posted_at": "2022-08-03T14:54:50.372Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "vwachira",
+      "name": "Vichayanun Wachirapusitanand",
+      "created_at": "2022-08-01T17:01:08.422Z",
+      "updated_at": "2023-02-07T10:53:05.384Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am currently working on Goodness-of-Fit test from my analysis, but as far as I have checked in the documentation it is not clear to me what shape of distributions that comes out of the test should be. Given a sufficient number of toys, should the output distribution be in the shape of gaussian, chi-square, or in any shape?\nRegards,\nVichayanun",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am currently working on Goodness-of-Fit test from my analysis, but as far as I have checked in the documentation it is not clear to me what shape of distributions that comes out of the test should be. Given a sufficient number of toys, should the output distribution be in the shape of gaussian, chi-square, or in any shape?</p>\n<p>Regards,<br>\nVichayanun</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-08-01T22:33:28.729Z",
+      "updated_at": "2022-08-01T22:33:28.729Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi, I guess that you are asking about the \u2018saturated\u2019 likelihood test statistics.\nIt is also called Generalized chi-square goodness of fit link; under certain condition it can be considered a chi-square. However the proper distribution accounting for the effect of the different systematics should be derived with toys. For more details see the link above.\nThe other methods implemented are the Kolmogorov\u2013Smirnov and the Anderson\u2013Darling tests.They share a similar concern about the systematic effects, but furethermore these two tests are inherently defined over a 1D distribution, so some assumptions have been made for multichannel experiments (as the sum over the channels, iirc).\nIn conclusion, you should always run toys to determine the test-statistics distribution.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi, I guess that you are asking about the \u2018saturated\u2019 likelihood test statistics.<br>\nIt is also called <code>Generalized chi-square goodness of fit</code> <a href=\"https://www.physics.ucla.edu/~cousins/stats/cousins_saturated.pdf\" rel=\"noopener nofollow ugc\">link</a>; under certain condition it can be considered a chi-square. However the proper distribution accounting for the effect of the different systematics should be derived with toys. For more details see the link above.<br>\nThe other methods implemented are the Kolmogorov\u2013Smirnov and the Anderson\u2013Darling tests.They share a similar concern about the systematic effects, but furethermore these two tests are inherently defined over a 1D distribution, so some assumptions have been made for multichannel experiments (as the sum over the channels, iirc).</p>\n<p>In conclusion, you should always run toys to determine the test-statistics distribution.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "vwachira",
+      "name": "Vichayanun Wachirapusitanand",
+      "created_at": "2022-08-03T14:54:50.372Z",
+      "updated_at": "2022-08-03T14:54:50.372Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank you for your reply Andrea. So does this mean the test statistics can be in any shape? Does this also mean we must always run toys to determine the shape of the distribution, since it could be in any shape?\nRegards,\nVichayanun",
+      "cooked_html": "<p>Thank you for your reply Andrea. So does this mean the test statistics can be in any <em>shape</em>? Does this also mean we must always run toys to determine the <em>shape</em> of the distribution, since it could be in any <em>shape</em>?</p>\n<p>Regards,<br>\nVichayanun</p>"
+    }
+  ]
+}

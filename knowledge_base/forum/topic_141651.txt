@@ -1,0 +1,179 @@
+TOPIC: Validation of five-POI simultaneous differential A_C Combine fit
+URL: https://cms-talk.web.cern.ch/t/141651
+DATE: 2026-02-03T04:01:26.152Z
+SOLVED: no
+============================================================
+
+QUESTION (by sbhandar @ 2026-02-03T04:01:26.899Z):
+Dear Combine experts,
+As part of our pre-approval preparation, and before requesting a formal Combine review, we would like to validate that our Combine setup for the differential charge asymmetry measurement is conceptually correct.
+We aim to measure the charge asymmetry A_C differentially at reconstruction level as a function of m_tt. To do so, we define one parameter of interest per m_tt region:
+NoAC_mtt350to500
+NoAC_mtt500to750
+NoAC_mtt750to1000
+NoAC_mtt1000to1500
+NoAC_mtt1500toinf
+Each shape input in the datacard includes shape variations corresponding to all five POIs, so that migrations and correlations between mass regions are encoded directly at the template level. We build one datacard per mass region and combine them using combineCards.py into a single datacard for the differential measurement, performed separately in each channel (using combine_datacard_mtt.txt for the dileptonic channel and datacard_all.txt for the semileptonic channel). A single workspace (text2workspace1.sh) is then created with all five POIs defined and used to perform a simultaneous likelihood fit.
+FYI: This is not a combination of the channels yet
+combine_datacard_mtt.txt (1.8 MB)
+datacard_all.txt (154.9 KB)
+text2workspace1.sh (233 Bytes)
+#text2workspace1.sh
+
+text2workspace.py combine_datacard_mtt_combined.txt -o workspaces/workspace.root --PO NoAC_mtt1000to1500,NoAC_mtt1500toinf,NoAC_mtt350to500,NoAC_mtt500to750,NoAC_mtt750to1000
+
+#ln_scan.sh
+
+workspace="workspaces/workspace.root"
+
+POIS=(NoAC_mtt350to500 NoAC_mtt500to750 NoAC_mtt750to1000 NoAC_mtt1000to1500 NoAC_mtt1500toinf)
+ALL_POIS="NoAC_mtt350to500,NoAC_mtt500to750,NoAC_mtt750to1000,NoAC_mtt1000to1500,NoAC_mtt1500toinf"
+
+SETPOINT="NoAC_mtt350to500=0,NoAC_mtt500to750=0,NoAC_mtt750to1000=0,NoAC_mtt1000to1500=0,NoAC_mtt1500toinf=0"
+RANGES="NoAC_mtt350to500=-10,10:NoAC_mtt500to750=-10,10:NoAC_mtt750to1000=-10,10:NoAC_mtt1000to1500=-10,10:NoAC_mtt1500toinf=-25,25"
+
+POINTS=240
+ALGO="grid"
+
+for POI in "${POIS[@]}"; do
+echo "Full scan ${POI}"
+combine "${workspace}" -M MultiDimFit --algo "${ALGO}" --points "${POINTS}" --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --floatOtherPOIs 1 -P "${POI}" --setParameters "r=1,${SETPOINT}" --setParameterRanges "${RANGES}" --freezeParameters r -t -1 --saveNLL --saveFitResult -n "Scan_${POI}_Expected"
+
+echo "Stat-only scan ${POI}"
+combine "${workspace}" -M MultiDimFit --algo "${ALGO}" --points "${POINTS}" --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --floatOtherPOIs 1 -P "${POI}" --setParameters "r=1,${SETPOINT}" --setParameterRanges "${RANGES}" --freezeParameters r,allConstrainedNuisances -t -1 --saveNLL --saveFitResult -n "Scan_${POI}_Stat"
+
+Questions
+
+Does this setup (as implemented in ln_scan.sh above) correctly correspond to a simultaneous differential fit with five POIs, such that migrations and correlations between m_tt regions are properly taken into account?
+ln_scan.sh (1.2 KB)
+
+Since a full five-dimensional likelihood scan is not practical, is it conceptually correct to extract the differential results via one-dimensional likelihood scans, scanning one POI at a time (using -P) while profiling the remaining POIs and all nuisance parameters, and interpret these as the differential measurements?
+
+Impact plots
+We also evaluate systematic uncertainties using the Combine Impacts framework, based on the same workspace with all five POIs defined simultaneously. Impact plots are produced for each POI using the reference script expected_impact.sh.
+expected_impact.sh (1.6 KB)
+#expected_impact.sh
+
+workspace="workspaces/workspace.root"
+
+POIS=(NoAC_mtt350to500 NoAC_mtt500to750 NoAC_mtt750to1000 NoAC_mtt1000to1500 NoAC_mtt1500toinf)
+ALL_POIS=$(IFS=,; echo "${POIS[*]}")
+
+SETPOINT="NoAC_mtt350to500=0,NoAC_mtt500to750=0,NoAC_mtt750to1000=0,NoAC_mtt1000to1500=0,NoAC_mtt1500toinf=0"
+RANGES="NoAC_mtt350to500=-10,10:NoAC_mtt500to750=-10,10:NoAC_mtt750to1000=-10,10:NoAC_mtt1000to1500=-10,10:NoAC_mtt1500toinf=-25,25"
+
+echo "Initial fit"
+combineTool.py -M Impacts -d "${workspace}" -m 125 --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --setParameterRanges "${RANGES}" --setParameters "r=1,${SETPOINT}" --freezeParameters r --cminDefaultMinimizerStrategy 0 -t -1 --doInitialFit
+
+echo "Nuisance fits"
+combineTool.py -M Impacts -d "${workspace}" -m 125 --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --setParameterRanges "${RANGES}" --setParameters "r=1,${SETPOINT}" --freezeParameters r  --cminDefaultMinimizerStrategy 0 -t -1 --doFits --parallel 20
+
+for POI in "${POIS[@]}"; do
+echo "Processing ${POI}"
+OUTDIR="impact_${POI}"
+mkdir -p "${OUTDIR}"
+
+combineTool.py -M Impacts -d "${workspace}" -m 125 --redefineSignalPOIs "${ALL_POIS}" --POI "${POI}" -o "impacts_${POI}.json"
+plotImpacts.py -i "impacts_${POI}.json" --POI "${POI}" -o "impacts_${POI}"
+
+In this context, is the impact plot procedure conceptually valid for a simultaneous differential measurement with correlated POIs? Specifically, does it correctly account for correlations and migration effects when evaluating the impact of nuisance parameters on a given differential POI?
+
+Thanks for taking the time to look into this.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-02-03T12:41:19.000Z):
+Dear Santosh,
+To me the commands you sent make sense, so I think there is nothing wrong technically in your setup.
+Concerning question 1, yes that would be correct.
+Concerning question 2, though I think the situation is less straight-forward, and it depends a lot on the way you plan to present your results.
+Basically what you propose would be what in Combine is given by algo=singles (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/?h=multidimf#likelihood-fits-and-scans), while it seems to me what you would like to achieve is the result of the cross algorithm. Basically the difference will lie in how you define the position of the 68 and 95% CL, as the 2 fits will have different dimensions.
+Depending on exactly what you want to achieve this might or might not be the correct approach. If you don’t need to produce the plot of the likelihood vs POIs, I think probably using algo=cross is the best option for you.
+If instead you really need to perform a grid scan, then I think you need to be clear in the paper about how you treat the POIs, and specify that this can lead to small deviations between the plot and (eventually) the numbers from the cross algorithm.
+On question 3, I think the impact you obtain should be fine, yes,
+Best,
+Giacomo
+
+On 3 Feb 2026, at 05:02, Santosh Bhandari noreply-cms-talk@cern.ch wrote:
+
+Santosh Bhandari sbhandarFebruary 3
+
+Dear Combine experts,
+As part of our pre-approval preparation, and before requesting a formal Combine review, we would like to validate that our Combine setup for the differential charge asymmetry measurement is conceptually correct.
+We aim to measure the charge asymmetry A_C differentially at reconstruction level as a function of m_tt. To do so, we define one parameter of interest per m_tt region:
+NoAC_mtt350to500
+NoAC_mtt500to750
+NoAC_mtt750to1000
+NoAC_mtt1000to1500
+NoAC_mtt1500toinf
+Each shape input in the datacard includes shape variations corresponding to all five POIs, so that migrations and correlations between mass regions are encoded directly at the template level. We build one datacard per mass region and combine them using combineCards.py into a single datacard for the differential measurement, performed separately in each channel (using combine_datacard_mtt.txt for the dileptonic channel and datacard_all.txt for the semileptonic channel). A single workspace (text2workspace1.sh) is then created with all five POIs defined and used to perform a simultaneous likelihood fit.
+FYI: This is not a combination of the channels yet
+combine_datacard_mtt.txt (1.8 MB)
+datacard_all.txt (154.9 KB)
+text2workspace1.sh (233 Bytes)
+#text2workspace1.sh
+
+text2workspace.py combine_datacard_mtt_combined.txt -o workspaces/workspace.root --PO NoAC_mtt1000to1500,NoAC_mtt1500toinf,NoAC_mtt350to500,NoAC_mtt500to750,NoAC_mtt750to1000
+
+#ln_scan.sh
+
+workspace="workspaces/workspace.root"
+
+POIS=(NoAC_mtt350to500 NoAC_mtt500to750 NoAC_mtt750to1000 NoAC_mtt1000to1500 NoAC_mtt1500toinf)
+ALL_POIS="NoAC_mtt350to500,NoAC_mtt500to750,NoAC_mtt750to1000,NoAC_mtt1000to1500,NoAC_mtt1500toinf"
+
+SETPOINT="NoAC_mtt350to500=0,NoAC_mtt500to750=0,NoAC_mtt750to1000=0,NoAC_mtt1000to1500=0,NoAC_mtt1500toinf=0"
+RANGES="NoAC_mtt350to500=-10,10:NoAC_mtt500to750=-10,10:NoAC_mtt750to1000=-10,10:NoAC_mtt1000to1500=-10,10:NoAC_mtt1500toinf=-25,25"
+
+POINTS=240
+ALGO="grid"
+
+for POI in "${POIS[@]}"; do
+echo "Full scan ${POI}"
+combine "${workspace}" -M MultiDimFit --algo "${ALGO}" --points "${POINTS}" --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --floatOtherPOIs 1 -P "${POI}" --setParameters "r=1,${SETPOINT}" --setParameterRanges "${RANGES}" --freezeParameters r -t -1 --saveNLL --saveFitResult -n "Scan_${POI}_Expected"
+
+echo "Stat-only scan ${POI}"
+combine "${workspace}" -M MultiDimFit --algo "${ALGO}" --points "${POINTS}" --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --floatOtherPOIs 1 -P "${POI}" --setParameters "r=1,${SETPOINT}" --setParameterRanges "${RANGES}" --freezeParameters r,allConstrainedNuisances -t -1 --saveNLL --saveFitResult -n "Scan_${POI}_Stat"
+
+Questions
+
+Does this setup (as implemented in ln_scan.sh above) correctly correspond to a simultaneous differential fit with five POIs, such that migrations and correlations between m_tt regions are properly taken into account?
+ln_scan.sh (1.2 KB)
+
+Since a full five-dimensional likelihood scan is not practical, is it conceptually correct to extract the differential results via one-dimensional likelihood scans, scanning one POI at a time (using -P) while profiling the remaining POIs and all nuisance parameters, and interpret these as the differential measurements?
+
+Impact plots
+We also evaluate systematic uncertainties using the Combine Impacts framework, based on the same workspace with all five POIs defined simultaneously. Impact plots are produced for each POI using the reference script expected_impact.sh.
+expected_impact.sh (1.6 KB)
+#expected_impact.sh
+
+workspace="workspaces/workspace.root"
+
+POIS=(NoAC_mtt350to500 NoAC_mtt500to750 NoAC_mtt750to1000 NoAC_mtt1000to1500 NoAC_mtt1500toinf)
+ALL_POIS=$(IFS=,; echo "${POIS[*]}")
+
+SETPOINT="NoAC_mtt350to500=0,NoAC_mtt500to750=0,NoAC_mtt750to1000=0,NoAC_mtt1000to1500=0,NoAC_mtt1500toinf=0"
+RANGES="NoAC_mtt350to500=-10,10:NoAC_mtt500to750=-10,10:NoAC_mtt750to1000=-10,10:NoAC_mtt1000to1500=-10,10:NoAC_mtt1500toinf=-25,25"
+
+echo "Initial fit"
+combineTool.py -M Impacts -d "${workspace}" -m 125 --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --setParameterRanges "${RANGES}" --setParameters "r=1,${SETPOINT}" --freezeParameters r --cminDefaultMinimizerStrategy 0 -t -1 --doInitialFit
+
+echo "Nuisance fits"
+combineTool.py -M Impacts -d "${workspace}" -m 125 --robustFit 1 --redefineSignalPOIs "${ALL_POIS}" --setParameterRanges "${RANGES}" --setParameters "r=1,${SETPOINT}" --freezeParameters r  --cminDefaultMinimizerStrategy 0 -t -1 --doFits --parallel 20
+
+for POI in "${POIS[@]}"; do
+echo "Processing ${POI}"
+OUTDIR="impact_${POI}"
+mkdir -p "${OUTDIR}"
+
+combineTool.py -M Impacts -d "${workspace}" -m 125 --redefineSignalPOIs "${ALL_POIS}" --POI "${POI}" -o "impacts_${POI}.json"
+plotImpacts.py -i "impacts_${POI}.json" --POI "${POI}" -o "impacts_${POI}"
+
+In this context, is the impact plot procedure conceptually valid for a simultaneous differential measurement with correlated POIs? Specifically, does it correctly account for correlations and migration effects when evaluating the impact of nuisance parameters on a given differential POI?
+
+Thanks for taking the time to look into this.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+<expected_impact.sh><ln_scan.sh><text2workspace1.sh>
+----------------------------------------

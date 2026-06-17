@@ -1,0 +1,78 @@
+{
+  "topic_id": 126426,
+  "title": "Problem setting up the latest version of combine",
+  "url": "https://cms-talk.web.cern.ch/t/126426",
+  "category_id": 279,
+  "created_at": "2025-06-27T09:26:03.577Z",
+  "last_posted_at": "2025-07-14T09:32:01.174Z",
+  "tags": [],
+  "accepted_answer_post_number": 4,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jheikkil",
+      "name": "Jaana Heikkilae",
+      "created_at": "2025-06-27T09:26:03.800Z",
+      "updated_at": "2025-06-27T09:26:03.800Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am following the instructions [1] to setup combine on lxplus9, and while I am able to compile everything as expected, I have this peculiar problem when trying to run text2workspace:\ntext2workspace.py card.txt -m 220 -o workspace.root\nRuntimeError: module compiled against API version 0x10 but this version of numpy is 0xf . Check the section C-API incompatibility at the Troubleshooting ImportError section at https://numpy.org/devdocs/user/troubleshooting-importerror.html#c-api-incompatibility for indications on how to solve this problem .\nI executed the setup commands exactly as they are written, and I started from a clean environment.\nHave you ever faced a similar issue? Any tips?\nThanks for your help in advance!\n-Jaana\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am following the instructions [1] to setup combine on lxplus9, and while I am able to compile everything as expected, I have this peculiar problem when trying to run text2workspace:</p>\n<p><code>text2workspace.py card.txt -m 220 -o workspace.root</code></p>\n<p><code>RuntimeError: module compiled against API version 0x10 but this version of numpy is 0xf . Check the section C-API incompatibility at the Troubleshooting ImportError section at https://numpy.org/devdocs/user/troubleshooting-importerror.html#c-api-incompatibility for indications on how to solve this problem .</code></p>\n<p>I executed the setup commands exactly as they are written, and I started from a clean environment.</p>\n<p>Have you ever faced a similar issue? Any tips? <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=14\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>Thanks for your help in advance!</p>\n<p>-Jaana</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "clange",
+      "name": "Clemens Lange",
+      "created_at": "2025-06-27T10:23:56.602Z",
+      "updated_at": "2025-06-27T10:23:56.602Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jaana,\nI\u2019ve coincidentally seen this message at CMSDAS this week and the reason was that the user had unknowingly set up an LCG release through their ~/.bashrc file (look also in ~/.profile and ~/.zshrc). You can also check this by looking at environment variables such as $PYTHON3PATH and $PYTHONPATH, which should only contain path values starting with /cvmfs/cms.cern.ch/ or your CMSSW directory. $PYTHONPATH is empty in my case. A Conda environment might also be the reason for this.\nCheers,\nClemens",
+      "cooked_html": "<p>Hi Jaana,</p>\n<p>I\u2019ve coincidentally seen this message at CMSDAS this week and the reason was that the user had unknowingly set up an LCG release through their <code>~/.bashrc</code> file (look also in <code>~/.profile and ~/.zshrc</code>). You can also check this by looking at environment variables such as <code>$PYTHON3PATH</code> and <code>$PYTHONPATH</code>, which should only contain path values starting with <code>/cvmfs/cms.cern.ch/</code> or your CMSSW directory. <code>$PYTHONPATH</code> is empty in my case. A Conda environment might also be the reason for this.</p>\n<p>Cheers,<br>\nClemens</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jheikkil",
+      "name": "Jaana Heikkilae",
+      "created_at": "2025-07-02T14:36:05.536Z",
+      "updated_at": "2025-07-02T14:36:05.536Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Clemens,\nMany thanks for your prompt reply!\nI indeed did notice that under ~/.bashrc I had some conda-related lines, but even after removing them - and starting from scratch - this error keeps on popping up. I also checked $PYTHON3PATH and $PYTHONPATH as you proposed, and those should be OK.\nHaving said all this, it seems that combine is able to provide the workspace, and it seems to be valid - at least the file is not corrupted. Nevertheless, I would like to find a solution for future reference.\n-Jaana",
+      "cooked_html": "<p>Hi Clemens,</p>\n<p>Many thanks for your prompt reply!</p>\n<p>I indeed did notice that under <code>~/.bashrc</code> I had some conda-related lines, but even after removing them - and starting from scratch - this error keeps on popping up. I also checked <code>$PYTHON3PATH</code> and <code>$PYTHONPATH</code> as you proposed, and those should be OK.</p>\n<p>Having said all this, it seems that combine is able to provide the workspace, and it seems to be valid - at least the file is not corrupted. Nevertheless, I would like to find a solution for future reference. <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=14\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>-Jaana</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2025-07-02T14:50:33.964Z",
+      "updated_at": "2025-07-02T14:50:33.964Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": true,
+      "text": "Hi Jaana,\nI\u2019ve had people ask me about a similar-seeming (but not identical) issue in the past where it has turned out to be due to them having a different version of numpy installed locally. I wonder if this might be the problem you are seeing.\n(From my notes some time ago) for a clean environment following the setup instructions on lxplus where everything was working, if I opened python and checked which numpy it was picking up, I\u2019d get:\n>>> import numpy\n>>> numpy.__file__\n'/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-numpy/1.24.3-ac08ea497df571aa0b37dc29bb7a2045/lib/python3.9/site-packages/numpy/__init__.py'\n>>> numpy.__version__\n'1.24.3'\n\nWhereas someone who was getting numpy incompatibility errors with text2workspace (although, again a slightly different error) had numpy version 2.0.2 which was coming from their local installation with ~/.local/lib/python3.9/site-packages/numpy/__init__.py. Perhaps you have a similar local install which is getting picked up by default?\nIn their case they removed the local install  because there was no real reason for them to have it in the first place. After that things worked fine for them following the instructions.\nHope that helps,\nKyle",
+      "cooked_html": "<p>Hi Jaana,</p>\n<p>I\u2019ve had people ask me about a similar-seeming (but not identical) issue in the past where it has turned out to be due to them having a different version of numpy installed locally. I wonder if this might be the problem you are seeing.</p>\n<p>(From my notes some time ago) for a clean environment following the setup instructions on lxplus where everything was working, if I opened python and checked which numpy it was picking up, I\u2019d get:</p>\n<pre><code class=\"lang-auto\">&gt;&gt;&gt; import numpy\n&gt;&gt;&gt; numpy.__file__\n'/cvmfs/cms.cern.ch/el9_amd64_gcc12/external/py3-numpy/1.24.3-ac08ea497df571aa0b37dc29bb7a2045/lib/python3.9/site-packages/numpy/__init__.py'\n&gt;&gt;&gt; numpy.__version__\n'1.24.3'\n</code></pre>\n<p>Whereas someone who was getting numpy incompatibility errors with text2workspace (although, again a slightly different error) had numpy version 2.0.2 which was coming from their local installation with <code>~/.local/lib/python3.9/site-packages/numpy/__init__.py</code>. Perhaps you have a similar local install which is getting picked up by default?</p>\n<p>In their case they removed the local install  because there was no real reason for them to have it in the first place. After that things worked fine for them following the instructions.</p>\n<p>Hope that helps,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jheikkil",
+      "name": "Jaana Heikkilae",
+      "created_at": "2025-07-02T15:13:35.628Z",
+      "updated_at": "2025-07-02T15:13:35.628Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThis turned out to be the issue! Removing the local installation of numpy worked.\nThanks a lot for your help!\n-Jaana",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>This turned out to be the issue! Removing the local installation of numpy worked.</p>\n<p>Thanks a lot for your help! <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=14\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>-Jaana</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "ineuteli",
+      "name": "Izaak Neutelings",
+      "created_at": "2025-07-14T09:32:01.174Z",
+      "updated_at": "2025-07-14T09:32:01.174Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi all,\nLate to the party, but in case the following is useful to anyone, you can set following environmental variable to have python ignore local installations:\nexport PYTHONNOUSERSITE=True # do not add user site-packages in ~/.local to sys.path\n\nsee the official documentation on PYTHONNOUSERSITE and ENABLE_USER_SITE. In this way, you do not need to delete local installations.\nI also ran into clashes between CMSSW and local python installations several times, which can manifest in many ways, even mysterious compilation issues\u2026 The CMSSW Core experts recommended me the method above.\nCheers,\nIzaak",
+      "cooked_html": "<p>Hi all,</p>\n<p>Late to the party, but in case the following is useful to anyone, you can set following environmental variable to have python ignore local installations:</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">export PYTHONNOUSERSITE=True # do not add user site-packages in ~/.local to sys.path\n</code></pre>\n<p>see the <a href=\"https://docs.python.org/3.3/using/cmdline.html#envvar-PYTHONNOUSERSITE\" rel=\"noopener nofollow ugc\">official documentation on <code>PYTHONNOUSERSITE</code></a> and <a href=\"https://docs.python.org/3.3/library/site.html#site.ENABLE_USER_SITE\" rel=\"noopener nofollow ugc\"><code>ENABLE_USER_SITE</code></a>. In this way, you do not need to delete local installations.</p>\n<p>I also ran into clashes between CMSSW and local python installations several times, which can manifest in many ways, even mysterious compilation issues\u2026 The CMSSW Core experts recommended me the method above.</p>\n<p>Cheers,<br>\nIzaak</p>"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "topic_id": 141983,
+  "title": "Plot likelihood scans for many POIs",
+  "url": "https://cms-talk.web.cern.ch/t/141983",
+  "category_id": 279,
+  "created_at": "2026-02-13T11:07:47.151Z",
+  "last_posted_at": "2026-02-14T16:42:08.198Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "gmelachr",
+      "name": "Georgios Melachroinos",
+      "created_at": "2026-02-13T11:07:47.289Z",
+      "updated_at": "2026-02-13T11:07:47.289Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nfor the BPH-24-005,  I am working on some fits with many POIs that are all measured simultaneously. I am trying to scan and plot the likelihood for all the POIs. For two POIs, I can use the plot2D_scan.py in order to draw the likelihood, but there are ~25 POIs for only one of the fits. Therefore, in order to check the scan of the likelihood, I was considering to project the scan to each POI separately. Could you please let me know, if there is an effective way to do it?\nThank you,\nGiorgos",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>for the BPH-24-005,  I am working on some fits with many POIs that are all measured simultaneously. I am trying to scan and plot the likelihood for all the POIs. For two POIs, I can use the plot2D_scan.py in order to draw the likelihood, but there are ~25 POIs for only one of the fits. Therefore, in order to check the scan of the likelihood, I was considering to project the scan to each POI separately. Could you please let me know, if there is an effective way to do it?</p>\n<p>Thank you,<br>\nGiorgos</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2026-02-13T15:14:53.573Z",
+      "updated_at": "2026-02-13T15:51:39.993Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear @gmelachr,\nAre you sure that you are running 25-dimensional likelihood scan?\nI would assume that while you are varying one POI, the rest of them are profiled like any other parameter in the model.\nTo do this you can run the scan for each parameter ( `\u2013floatOtherPOIs=1` profiles all other POIs) and plot it with the following command:\n```\ncombineTool.py -M MultiDimFit --datacard <ws.root> -t -1 --setParameters <poi_1>=<initial_value>,<poi_2>=<initial_value2>,\u2026  --redefineSignalPOIs  --algo=grid --points=100 -P <poi_name> --floatOtherPOIs=1 -n .<poi_name>\npython scripts/plot1DScan.py higgsCombinescan_.<poi_name>.MultiDimFit.mH120.root -o <poi_name> --POI  <poi_name>\n```\nBest,\nAliya",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/gmelachr\">@gmelachr</a>,</p>\n<p>Are you sure that you are running 25-dimensional likelihood scan?<br>\nI would assume that while you are varying one POI, the rest of them are profiled like any other parameter in the model.</p>\n<p>To do this you can run the scan for each parameter ( <code>`</code>\u2013floatOtherPOIs=1` <code>profiles all other POIs) and plot it with the following command:</code></p>\n<p><code>```</code><br>\ncombineTool.py -M MultiDimFit --datacard &lt;ws.root&gt; -t -1 --setParameters &lt;poi_1&gt;=&lt;initial_value&gt;,&lt;poi_2&gt;=&lt;initial_value2&gt;,\u2026  --redefineSignalPOIs  --algo=grid --points=100 -P &lt;poi_name&gt; --floatOtherPOIs=1 -n .&lt;poi_name&gt;</p>\n<p>python scripts/plot1DScan.py higgsCombinescan_.&lt;poi_name&gt;.MultiDimFit.mH120.root -o &lt;poi_name&gt; --POI  &lt;poi_name&gt;<br>\n```</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gmelachr",
+      "name": "Georgios Melachroinos",
+      "created_at": "2026-02-14T16:42:08.198Z",
+      "updated_at": "2026-02-14T16:42:08.198Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThank you for your answer. I did it and I also broke down the uncertainty.\nimage1194\u00d7761 16 KB\nBest,\nGiorgos",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Thank you for your answer. I did it and I also broke down the uncertainty.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/717b06b2427c10661e09464444a9fc05ff059799.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/717b06b2427c10661e09464444a9fc05ff059799\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/717b06b2427c10661e09464444a9fc05ff059799.png\" alt=\"image\" data-base62-sha1=\"gbTxgg1hokdmZ7gWi0HqCM7x5zz\" width=\"689\" height=\"439\" data-dominant-color=\"F8F8F8\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1194\u00d7761 16 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div><br>\nBest,<br>\nGiorgos</p>"
+    }
+  ]
+}

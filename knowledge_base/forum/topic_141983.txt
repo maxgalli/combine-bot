@@ -1,0 +1,33 @@
+TOPIC: Plot likelihood scans for many POIs
+URL: https://cms-talk.web.cern.ch/t/141983
+DATE: 2026-02-13T11:07:47.151Z
+SOLVED: no
+============================================================
+
+QUESTION (by gmelachr @ 2026-02-13T11:07:47.289Z):
+Dear Experts,
+for the BPH-24-005,  I am working on some fits with many POIs that are all measured simultaneously. I am trying to scan and plot the likelihood for all the POIs. For two POIs, I can use the plot2D_scan.py in order to draw the likelihood, but there are ~25 POIs for only one of the fits. Therefore, in order to check the scan of the likelihood, I was considering to project the scan to each POI separately. Could you please let me know, if there is an effective way to do it?
+Thank you,
+Giorgos
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2026-02-13T15:14:53.573Z):
+Dear @gmelachr,
+Are you sure that you are running 25-dimensional likelihood scan?
+I would assume that while you are varying one POI, the rest of them are profiled like any other parameter in the model.
+To do this you can run the scan for each parameter ( `–floatOtherPOIs=1` profiles all other POIs) and plot it with the following command:
+```
+combineTool.py -M MultiDimFit --datacard <ws.root> -t -1 --setParameters <poi_1>=<initial_value>,<poi_2>=<initial_value2>,…  --redefineSignalPOIs  --algo=grid --points=100 -P <poi_name> --floatOtherPOIs=1 -n .<poi_name>
+python scripts/plot1DScan.py higgsCombinescan_.<poi_name>.MultiDimFit.mH120.root -o <poi_name> --POI  <poi_name>
+```
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by gmelachr @ 2026-02-14T16:42:08.198Z):
+Dear Aliya,
+Thank you for your answer. I did it and I also broke down the uncertainty.
+image1194×761 16 KB
+Best,
+Giorgos
+----------------------------------------

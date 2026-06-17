@@ -1,0 +1,67 @@
+{
+  "topic_id": 10150,
+  "title": "Details of the Goodness-of-Fit tests",
+  "url": "https://cms-talk.web.cern.ch/t/10150",
+  "category_id": 279,
+  "created_at": "2022-05-06T13:28:02.038Z",
+  "last_posted_at": "2022-05-12T17:35:25.083Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-05-06T13:28:02.222Z",
+      "updated_at": "2023-02-07T10:57:34.359Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello experts,\nRecently when doing GoF tests (saturated model) with the combine for a parametric background function, I start having questions regarding how the GoF tests using toys are performed within the combine tool.\n\nWhat is the test statistic the combined tool calculates for the saturated model? Is the one in this form?:\n(obtained from PDG https://cds.cern.ch/record/1481544/files/PhysRevD.86.010001.pdf)\n\nWhen running this method on toys, are the test statistics calculated between the toy data and the observed data, or between the toy data and the background function used to generate the toys? (i.e., in this case, what is the \u201cexpected\u201d bin entry \\nu_i and what is the \u201cobserved\u201d bin entry) n_i)?\n\nFrom the literature, the saturated model statistic should follow an asymptotic chi2 distribution with (N_bin - n_free-parameter) degrees if freedom. Shall I expect to see the saturated test output to have a roughly similar number to the (# of input binning - # of free parameters)?",
+      "cooked_html": "<p>Hello experts,</p>\n<p>Recently when doing GoF tests (saturated model) with the combine for a parametric background function, I start having questions regarding how the GoF tests using toys are performed within the combine tool.</p>\n<ol>\n<li>\n<p>What is the test statistic the combined tool calculates for the saturated model? Is the one in this form?:<br>\n<img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/1/183a93e49d2c388765c667079d9ca353879891ec.jpeg\" alt=\"saturated\" data-base62-sha1=\"3skXBOkvUa1fXyaJyB8627XQTKY\" width=\"394\" height=\"77\"> (obtained from PDG <a href=\"https://cds.cern.ch/record/1481544/files/PhysRevD.86.010001.pdf\" rel=\"noopener nofollow ugc\">https://cds.cern.ch/record/1481544/files/PhysRevD.86.010001.pdf</a>)</p>\n</li>\n<li>\n<p>When running this method on toys, are the test statistics calculated between the toy data and the observed data, or between the toy data and the background function used to generate the toys? (i.e., in this case, what is the \u201cexpected\u201d bin entry \\nu_i and what is the \u201cobserved\u201d bin entry) n_i)?</p>\n</li>\n<li>\n<p>From the literature, the saturated model statistic should follow an asymptotic chi2 distribution with (N_bin - n_free-parameter) degrees if freedom. Shall I expect to see the saturated test output to have a roughly similar number to the (# of input binning - # of free parameters)?</p>\n</li>\n</ol>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-05-06T14:05:49.814Z",
+      "updated_at": "2022-05-06T14:05:49.814Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sebastian,\nYou can find a little more information in slide 9 of this talk - the test statistic is indeed of the form you quote here. When you run on toys, n_i (or d_i in the slides) replaces the observed data. Note that by default the signal strength is left floating in the fit when the test statistic is evaluated.\nI\u2019m not sure I understand your third question - the expected distribution will be built up by generating the toys, based on this and the observed value you can then calculate a p-value to assess the goodness of fit - you don\u2019t need anything else.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Sebastian,</p>\n<p>You can find a little more information in slide 9 of <a href=\"https://indico.cern.ch/event/677948/contributions/2776352/attachments/1550599/2468832/HComb-Tutorial-FitDiagnostics.pdf\" rel=\"noopener nofollow ugc\">this talk</a> - the test statistic is indeed of the form you quote here. When you run on toys, n_i (or d_i in the slides) replaces the observed data. Note that by default the signal strength is left floating in the fit when the test statistic is evaluated.</p>\n<p>I\u2019m not sure I understand your third question - the expected distribution will be built up by generating the toys, based on this and the observed value you can then calculate a p-value to assess the goodness of fit - you don\u2019t need anything else.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-05-06T15:14:18.387Z",
+      "updated_at": "2022-05-06T15:16:28.574Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nThanks a lot for your prompt reply!\n\u201cWhen you run on toys, n_i (or d_i in the slides) replaces the observed data.\u201d\nSo can I say that the combine tool uses toys to get the saturated model and calculate the test statistic against the function used to generate the model? (well I think maybe any functions but in the background modeling context I fit the data with a function, generate toys from the fitted function, and naturally evaluate the GoF using the fitted function)\nFor my third question, I am a bit concerned as the distribution of the saturated model test statistics I got does not follow the chi2 distribution, see the attached plot (which theoretically speaking they should follow, although asymptotically). I understand that using distributions sampled from toys is always a good way to get the p-value, but given we have a theoretical expectation, I think it is better to understand why they do not agree.\n\nsaturated884\u00d7619 28.3 KB\n\nI have 830 data bins, and 3 free parameters in by background function, so I would expect the distribution to be centered around 800. The observed value from data is ~575\nThanks a lot!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Thanks a lot for your prompt reply!</p>\n<p>\u201cWhen you run on toys, n_i (or d_i in the slides) replaces the observed data.\u201d<br>\nSo can I say that the combine tool uses toys to get the saturated model and calculate the test statistic against the function used to generate the model? (well I think maybe any functions but in the background modeling context I fit the data with a function, generate toys from the fitted function, and naturally evaluate the GoF using the fitted function)</p>\n<p>For my third question, I am a bit concerned as the distribution of the saturated model test statistics I got does not follow the chi2 distribution, see the attached plot (which theoretically speaking they should follow, although asymptotically). I understand that using distributions sampled from toys is always a good way to get the p-value, but given we have a theoretical expectation, I think it is better to understand why they do not agree.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/6/62e26f5e685d9fc04fec3f96221dc7429a491214.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/62e26f5e685d9fc04fec3f96221dc7429a491214\" title=\"saturated\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/62e26f5e685d9fc04fec3f96221dc7429a491214_2_690x483.jpeg\" alt=\"saturated\" data-base62-sha1=\"e6LVt6Ne7GzaqOChnr1RS3Qr4kA\" width=\"690\" height=\"483\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/62e26f5e685d9fc04fec3f96221dc7429a491214_2_690x483.jpeg, https://cms-talk.web.cern.ch/uploads/default/original/2X/6/62e26f5e685d9fc04fec3f96221dc7429a491214.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/6/62e26f5e685d9fc04fec3f96221dc7429a491214.jpeg 2x\" data-small-upload=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/62e26f5e685d9fc04fec3f96221dc7429a491214_2_10x10.png\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">saturated</span><span class=\"informations\">884\u00d7619 28.3 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div><br>\nI have 830 data bins, and 3 free parameters in by background function, so I would expect the distribution to be centered around 800. The observed value from data is ~575</p>\n<p>Thanks a lot!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-05-12T09:17:30.236Z",
+      "updated_at": "2022-05-12T09:17:30.236Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sebastian,\nI wouldn\u2019t say it exactly like that: the toys are used to build up the test statistic distribution (so that you can calculate the p-value), and when evaluating the test statistic on the real data you\u2019re calculating the test statistic between \u2018model/background function\u2019 and \u2018data\u2019\nFor the distribution of the test statistic values - I would expect there is something in your model that means the degree of freedom counting is not perfect (any uncertainties?). If you want to convince yourself that the test statistic distribution does follow a chi2, it is probably easier to construct a toy example with a small number of bins.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Sebastian,</p>\n<p>I wouldn\u2019t say it exactly like that: the toys are used to build up the test statistic distribution (so that you can calculate the p-value), and when evaluating the test statistic on the real data you\u2019re calculating the test statistic between \u2018model/background function\u2019 and \u2018data\u2019</p>\n<p>For the distribution of the test statistic values - I would expect there is something in your model that means the degree of freedom counting is not perfect (any uncertainties?). If you want to convince yourself that the test statistic distribution does follow a chi2, it is probably easier to construct a toy example with a small number of bins.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-05-12T17:35:25.083Z",
+      "updated_at": "2022-05-12T17:35:25.083Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nThanks for your reply!\nSorry that I was not clear last time, I meant to say that the toy distribution is sampled for toys against the PDF used to generate the toy. So I think we are on the same page.\nNow I\u2019ve switched to a wider binning for my fit and the distribution now looks more reasonable. I do think when counting the DOF we need to exclude the zero entry bins, however. Please correct me if I am wrong.\nThanks again for your kind help!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Thanks for your reply!</p>\n<p>Sorry that I was not clear last time, I meant to say that the toy distribution is sampled for toys against the PDF used to generate the toy. So I think we are on the same page.</p>\n<p>Now I\u2019ve switched to a wider binning for my fit and the distribution now looks more reasonable. I do think when counting the DOF we need to exclude the zero entry bins, however. Please correct me if I am wrong.</p>\n<p>Thanks again for your kind help!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+TOPIC: Issue making prefit snapshot file
+URL: https://cms-talk.web.cern.ch/t/125894
+DATE: 2025-06-13T02:34:31.466Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by abasnet @ 2025-06-13T02:34:38.454Z):
+Hi,
+I have a workspace made using AnaliticAnomalousCoupling physics model. My POIs are the Wilson Coefficients relevant to my work. I am currently using this workspace to make a prefit snapshot file, and here is the command I am using:
+combine -M FitDiagnostics wps.root -n prefit --cminDefaultMinimizerStrategy=0 --redefineSignalPOI ctW -v 2 --skipBOnlyFit --minos poi --setParameters ctp=0,ctG=0,cpt=0,cQQ1=0,cpQM=0,cbW=0,cQei=0,cQl3i=0,cQlMi=0,cQq11=0,cQq13=0,cQq81=0,cQq83=0,cQt1=0,cQt8=0,cbW=0,cpQ3=0,cpQM=0,cpt=0,cptb=0,ctW=0,ctZ=0,ctei=0,ctlSi=0,ctlTi=0,ctli=0 --setParameterRanges ctW=-4,4:ctZ=-5,5:cpt=-30,30:ctp=-35,65:ctli=-10,10:ctlSi=-15,15:cQl3i=-15,15:cptb=-20,20:ctG=-2,2:cpQM=-10,10:ctlTi=-2,2:ctei=-10,10:cQei=-10,10:cQlMi=-10,10:cpQ3=-15,10:cbW=-5,5:cQq13=-1,2:cQq83=-2,2:cQq11=-2,2:ctq1=-2,2:cQq81=-5,5:ctq8=-5,5:ctt1=-5,5:cQQ1=-10,10:cQt8=-20,20:cQt1=-10,10 --preFitValue 0.00
+
+First of all, my question to the experts is:
+
+Does the command look good or am I missing some parameters needed to generate the prefit file?
+
+On to the next question.
+So the aforementioned command runs fine without any issue, and it outputs a prefit root file called fitDiagnosticsprefit.root. The root file has a RooFitResult object called fit_s, which is what my custom prefit plot maker uses eventually. But when I print out this object, I see something like ctp    1.8100e+01 +/-  3.08e+01.
+Does that even make sense? Shouldn’t the prefit value for my POIs be just 0?
+Please let me know if I can add more context or information to this question. Any help would be much appreciated. Thank you.
+Also, for reference, I am using combine v8.2.0.
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by anigamov @ 2025-06-19T03:25:20.572Z):
+Dear Aashwin,
+With the command you provided you actually run the fit, so it makes sense that the values are not those that you initially set. What do you mean by prefit snapshot exactly? In principle, your workspace already contains in wps.root is by definition prefit.
+Could it be that you would like to run a fit on the Asimov dataset? If this is the case, you should add -t -1 option. Also --preFitValue 0.00 does not do anything in your case, since you are not using the default model.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by abasnet @ 2025-06-19T22:49:17.571Z):
+Hi Aliya,
+The -t -1 was exactly what I was forgetting from my command. And yes, I realized that --preFitValue 0.0 is not relevant to my case. Thank you for your response.
+----------------------------------------

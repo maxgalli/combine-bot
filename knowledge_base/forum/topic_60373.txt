@@ -1,0 +1,31 @@
+TOPIC: Systematic uncertainties at pre-selection
+URL: https://cms-talk.web.cern.ch/t/60373
+DATE: 2024-11-09T00:35:55.310Z
+SOLVED: no
+============================================================
+
+QUESTION (by jiyoo @ 2024-11-09T00:35:55.773Z):
+Hello,
+I’m not sure if you help with this. I can plot the final systematic uncertainties for my final fit (take it from combine). But our subgroup convenors would like systematic uncertainties at pre-selection like before we do the final cuts (in our case we have plots before we apply a tagger score).
+I’m a little confused how to do this. I know we have for example lnN uncertainties in our datacard. Also, we have shape uncertainties.
+Are those same uncertainties what convenors want? Is there some rule of thumb that people generally use when they add systematic uncertainties at this pre-selection level? Or do I just choose what I think are some major ones and put some sort of uncertainty?
+Thank you very much.
+Sincerely,
+Jieun
+----------------------------------------
+
+REPLY 2 (by ntrevisa @ 2024-11-09T19:40:22.358Z):
+Hi all,
+I am one of the conveners, and what we are requesting is a data/MC comparison where the total uncertainty band is shown for the MC prediction.
+The approach we typically use is to sum in quadrature all the uncertainties (lnN and shape ones), with the idea of having a meaningful estimate of the prediction agreement with data. This is valid since the nuisances are independent, and allows to produce the plots without using Combine or performing any fit.
+I hope this helps in understanding our request.
+Best,
+Nicolò
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2024-11-11T15:35:02.978Z):
+Hi Jieun,
+Just wanted to add that you can produce pre-fit and post-fit plots with FitDiagnostics as described here, alternatively you can do it with PostFitShapesFromWorkspace from CombineHarvester with the --prefit option. Anyway for the pre-fit plots both of these methods will sum the uncertainties in quadrature, which is exactly what you want to do, and one can do it relatively easily starting from the datacards.
+Best,
+Aliya
+----------------------------------------

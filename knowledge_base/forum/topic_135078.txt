@@ -1,0 +1,73 @@
+TOPIC: Unfolding using Combine: combination (semilep+dilep) workspace mapping
+URL: https://cms-talk.web.cern.ch/t/135078
+DATE: 2025-10-21T21:47:30.743Z
+SOLVED: no
+============================================================
+
+QUESTION (by beozek @ 2025-10-21T21:47:31.233Z):
+Dear all,
+We’re building the combined semileptonic+dileptonic workspace (slide5) for the UL ttbar charge-asymmetry measurement and would appreciate a sanity check on our mapping strategy and advice on some warnings/errors. Our variable Δ∣y∣, and shapes are 2-bin deltaY histograms(slide2-3).  We have signals (TTbar_1, and TTbar_2)  which are two gen-level bin obtained by unfolding reco to gen.
+What we observe:
+
+It is running without any crash, and impact plots look reasonable. The log output and plots are attached.
+
+Commands that we are running for combination
+AC_combination_strategy.pdf (518.0 KB)
+are on Slide 4-5
+
+However, on the combination datacard we get “missing inputs” in the fit.
+
+CMS_scale_met_unclustered_energy_18
+
+lumi_13TeV_correlated
+
+When running channels separately:
+
+semileptonic: no missing input.
+
+dileptonic: only lumi_13TeV_correlated shows as missing.
+
+Our questions:
+
+Mapping sanity: Is sharing r_neg, Ac, and r_pos across both decay channels while using channel-specific truth ratios (semilep vs dilep) the right way to set up the combination?
+
+r_pos has the same name but defined differently for each decay channel by differing the signal name (TTbar_2 (semilep), TTbar_2_ll(dilep)).
+
+Validation checks: aside from “it is running without crashing”, what checks do you recommend to confirm the mapping is behaving as intended in the combined workspace?
+
+Missing inputs: what is the recommended way to diagnose/fix the missing input issues.
+
+I am attaching:
+
+The combined datacard
+
+Two bash scripts (one for workspace, one for running Combine)
+
+Input ROOT files
+
+text2workspace.py log
+
+combine, impact runs’ log
+
+Slides that explains the strategy, Combine commands, etc.
+
+datacard_UL18.txt (38.9 KB)
+Ac.pdf (33.7 KB)
+r_neg.pdf (33.9 KB)
+impact_log.txt (187.5 KB)
+workspace_log.txt (23.4 KB)
+Screenshot 2025-10-21 at 12.08.481846×284 70.6 KB
+inputROOT.zip (271.9 KB)
+Many thanks for your time and guidance!
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-10-22T10:08:50.721Z):
+Dear Beren,
+I only had time for a very quick look on your setup so far, so my answer might be incomplete. Please feel free to iterate further if you need more details.
+First of all, on the command on slide 5. I think that the second definition of r_pos, the one scaling TTBar_2 dileptonic, is not being picked up by the workspace. You can check this by looking in the workspace with w→function(“r_pos”)→Print(“v”). This is because there can not be 2 objects with the same name in the workspace. If you need to scale TTBar differently in the 2 bins you will need 2 different objects. It should be fine since in any case they will depend on the same inputs (r_neg and Ac), so the correlation is preserved.
+About missing inputs, this can mean that the fit failed while calculating the impact for that parameter. Can you open the higgsCombine_paramFit_Test_lumi_13TeV_correlated.MultiDimFit.mH125.root file and see if you get all 3 entries? If not, indeed there was some problem running the fit. My suggestion would be to re-run it only for the 2 missing systematics. You have the command inside the log. Sometimes it fails just out of bad luck, but if not it is worth investigating what is going on. It might be that for that particular parameter you need to fine tune a bit the command.
+About the validation checks, I can suggest having a look at the covariance matrix, and maybe one can make a test by scaling by a large factor just one channel, but I don’t think we have standard tests we run in these cases on top of the standard ones from each PAG, so I’m not sure what to suggest here.
+I hope it helps,
+Best,
+Giacomo
+----------------------------------------

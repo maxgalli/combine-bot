@@ -1,0 +1,47 @@
+TOPIC: Question about parametric exercise part 5
+URL: https://cms-talk.web.cern.ch/t/26158
+DATE: 2023-06-29T12:42:00.679Z
+SOLVED: no
+============================================================
+
+QUESTION (by gkaratha @ 2023-06-29T12:42:01.018Z):
+Dear all,
+Firstly thanks for the excellent documentation. I was going through the parametric exercise and in part 5 I read this [*]. So I am a bit confused why in the fitting part we do setParameters pdfindex=i? Shouldnt be  setParameters pdfindex=j and freezeParameters pdfindex? Is it something technical that I am missing?
+Best regards,
+george
+[*] You can then set which function is used for generating the toys with the --setParameters pdfindex=i option, and which function is used for fitting with --setParameters pdfindex=i --freezeParameters pdfindex=j options.
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-06-29T15:21:34.959Z):
+Dead Georgios,
+I think you’re right. If you try running with --freezeParameters  <name>=<value> you should get a warning like this:
+WARNING: cannot freeze nuisance parameter pdfindex_Tag0=1 if it doesn't exist!
+
+I think its just a mistake in the documentation. I’ve created a pull request to fix the documentation:
+
+github.com/cms-analysis/HiggsAnalysis-CombinedLimit
+
+Fix arguments for setting pdfindex for toys in tutorial
+
+cms-analysis:main ← kcormi:param_tutorial_docs_discrete_freeze_fix
+
+opened 03:18PM - 29 Jun 23 UTC
+
+kcormi
+
++1
+-1
+
+Fixing a small mistake in the parametric fit tutorial documentation about using …`RooMultiPDF`
+
+As pointed out on cms talk, the current documentation says to use
+
+```
+--setParameters pdfindex=i --freezeParameters pdfindex=j
+```
+when doing the fit, to test the fit using a different pdf than was used to generate the toys. But the second part is not a valid argument, it should only take the parameter name, not a value.
+
+thanks for pointing this out.
+Best,
+Kyle
+----------------------------------------

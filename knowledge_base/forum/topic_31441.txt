@@ -1,0 +1,28 @@
+TOPIC: Minimisation finished with status=-1
+URL: https://cms-talk.web.cern.ch/t/31441
+DATE: 2023-11-08T14:42:51.341Z
+SOLVED: no
+============================================================
+
+QUESTION (by fmonti @ 2023-11-08T14:42:51.726Z):
+Dear combine experts,
+We are performing a likelihood scan of a certain POI using the combine method MultiDimFit with the grid algorithm. In a non-negligible fraction of points of the grid we get the following messages at the end of the log:
+....
+INFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=0, tolerance=0.1
+INFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=-1
+DEBUG: (function: improveOnce) CascadeMinimizer.cc: 217 -- Minimization ended with latest status != 0 or 1
+
+What is the meaning of status=-1? Also the last message suggests that acceptable statuses are 0 and 1, do I understand correctly? Thank you.
+Best regards,
+Fabio
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-11-09T10:43:41.578Z):
+Hi Fabio,
+The status=-1 means that the fit has not converged for that particular point, status=1 means that the covariance matrix ended up not positive definite and status=0 means everything is fine.
+Depending on the model this could happen and does not necessarily mean that you have a problem with the fit. You mention a non-negligible fraction of points, but are these points close to the POIs boundaries, or rather in the middle of the 2D scan?
+First, I would suggest adding the -v 3 option, it will increase the verbosity level and should  help you to understand what is happening.
+If you don’t see anything striking from the log you could add the --X-rtd MINIMIZER_MaxCalls=9999999 option which increases the number of maximum calls for the minimisation.
+Best,
+Aliya
+----------------------------------------

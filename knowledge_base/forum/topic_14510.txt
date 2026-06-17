@@ -1,0 +1,159 @@
+TOPIC: Fit failure at doInitialFit stage
+URL: https://cms-talk.web.cern.ch/t/14510
+DATE: 2022-08-30T20:47:25.962Z
+SOLVED: no
+============================================================
+
+QUESTION (by abdollah @ 2022-08-30T20:47:26.298Z):
+Dear experts,
+I am trying to compute the impact plot in Higgs diff x.s. measurement v.s. leadjet pT analysis in highly boosted Htautau when dR between two leptons is less than 0.5 (not many stat. actually).
+Do you have any recommendations on how to deal with a fit failure at the doInitialFit stage for computing the impacts?
+Here is the command:
+combineTool.py -M Impacts -d all.root -m 125 --doInitialFit --robustFit 1 --redefineSignalPOIs r_H_PTH_GT600 --setParameterRanges r_H_PTH_450_600=-50,50:r_H_PTH_GT600=-50,50 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy=0
+and here is the outcome:
+
+combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r_H_PTH_GT600 --robustFit 1 --setParameterRanges r_H_PTH_450_600=-50,50:r_H_PTH_GT600=-50,50 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy=0 -m 125 -d all.root
+<<< Combine >>>
+
+random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+method used is MultiDimFit
+ModelConfig ‘ModelConfig’ defines more than one parameter of interest. This is not supported in some statistical methods.
+Set Range of Parameter r_H_PTH_450_600 To : (-50,50)
+Set Range of Parameter r_H_PTH_GT600 To : (-50,50)
+Warning! – You haven’t picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the ‘B-only’ ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 18 channels, 43 generic constraints, 316 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[WARNING] Found [prop_binch1_bin7_VV] at boundary.
+[WARNING] Found [prop_binch1_bin7_QCD] at boundary.
+[WARNING] Found [prop_binch1_bin7_ggH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch1_bin7_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch2_bin5_XH_PTH_GT600] at boundary.
+[WARNING] Found [prop_binch2_bin5_ggH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch2_bin5_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch2_bin5_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch5_bin8_VV] at boundary.
+[WARNING] Found [prop_binch5_bin8_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch5_bin8_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch6_bin9_XH_PTH_GT600] at boundary.
+[WARNING] Found [prop_binch6_bin9_VV] at boundary.
+[WARNING] Found [prop_binch6_bin9_QCD] at boundary.
+[WARNING] Found [prop_binch7_bin4_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch7_bin4_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch7_bin8_VV] at boundary.
+[WARNING] Found [prop_binch7_bin8_QCD] at boundary.
+[WARNING] Found [prop_binch7_bin8_ggH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch7_bin8_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch7_bin8_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch11_bin9_VV] at boundary.
+[WARNING] Found [prop_binch11_bin9_QCD] at boundary.
+[WARNING] Found [prop_binch11_bin9_ggH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch11_bin9_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch11_bin9_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch13_bin5_VV] at boundary.
+[WARNING] Found [prop_binch13_bin5_ggH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch13_bin5_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch13_bin5_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch13_bin8_VV] at boundary.
+[WARNING] Found [prop_binch13_bin8_QCD] at boundary.
+[WARNING] Found [prop_binch13_bin8_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch13_bin8_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch16_bin9_ggH_PTH_GT600] at boundary.
+[WARNING] Found [prop_binch16_bin9_XH_PTH_GT600] at boundary.
+[WARNING] Found [prop_binch16_bin9_OutsideAcceptance] at boundary.
+[WARNING] Found [prop_binch17_bin9_VV] at boundary.
+[WARNING] Found [prop_binch17_bin9_QCD] at boundary.
+[WARNING] Found [prop_binch17_bin9_ggH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch17_bin9_XH_PTH_450_600] at boundary.
+[WARNING] Found [prop_binch17_bin9_OutsideAcceptance] at boundary.
+
+WARNING: MultiDimFit failed
+
+If I drop the two following options
+–X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy=0
+Fit no longer fails but the ‘closed range without finding crossing’ error occurs:
+[abdollah@lxplus749 all_GT600]$ combineTool.py -M Impacts -d all.root -m 125 --doInitialFit --robustFit 1 --redefineSignalPOIs r_H_PTH_GT600 --setParameterRanges r_H_PTH_450_600=-50,50:r_H_PTH_GT600=-50,50               Have POIs: [‘r_H_PTH_GT600’]
+
+combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r_H_PTH_GT600 --robustFit 1 --setParameterRanges r_H_PTH_450_600=-50,50:r_H_PTH_GT600=-50,50 -m 125 -d all.root
+<<< Combine >>>
+
+random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+method used is MultiDimFit
+ModelConfig ‘ModelConfig’ defines more than one parameter of interest. This is not supported in some statistical methods.
+Set Range of Parameter r_H_PTH_450_600 To : (-50,50)
+Set Range of Parameter r_H_PTH_GT600 To : (-50,50)
+Warning! – You haven’t picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the ‘B-only’ ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 18 channels, 43 generic constraints, 316 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[WARNING] Found [prop_binch11_bin9_QCD] at boundary.
+[WARNING] Found [prop_binch17_bin9_QCD] at boundary.
+Error: closed range without finding crossing.
+
+— MultiDimFit —
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error found, will report difference to maximum of range for : r_H_PTH_GT600
+r_H_PTH_GT600 :   +50.000   -10.441/+0.000 (68%)
+Done in 1.30 min (cpu), 1.37 min (real)
+I have looked at the LL scan. I see some discontinuities in the first derivative of a LL of a few nuisance parameters. However, the discontinuities are not significant. I tried to freeze a few of them, but I see no measurable impact on the fit outcome. I also have looked at the prefit distributions, but I do not see any obvious problem in the plots, either.
+All of the prefit plots, LL scans, WS, and a protocol on how to run the fit can be found in the following GitLab repository.
+https://gitlab.cern.ch/cms-hcg/cadi/hig-21-017/-/tree/master/BoostedHTT_DiffXS_LeadJetPt/WS_for_leadJetPt_NonOverlap
+Would you please have a look and let me know whether you have any comments or suggestions?
+Thanks,
+Abdollah
+----------------------------------------
+
+REPLY 2 (by ncsmith @ 2022-08-31T13:46:26.204Z):
+Some small suggestions:
+In the last fit, you might try to increase the parameter range for r_H_PTH_GT600. Also worth heeding the warning to set starting values for the POIs (even if this is a data fit) with -setParameters
+As a note, for combine v8.2 (102x) and up, –X-rtd MINIMIZER_analytic is implied.
+----------------------------------------
+
+REPLY 3 (by abdollah @ 2022-08-31T19:44:18.884Z):
+Hi Nick,
+I have enlarged the parameter range, even though the fit failure does not occur anymore, the impact plot looks unreasonable. It is attached here.
+Actually, many of the nuisance root files 'did not contain a sufficient number of entries as well so Combine skipped them.
+Can you please comment on that?
+Thanks,
+Abdollah
+impacts_GT600.pdf (55.4 KB)
+
+combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r_H_PTH_GT600 --robustFit 1 --setParameterRanges r_H_PTH_450_600=-15,15:r_H_PTH_GT600=-150,250 --X-rtd MINIMIZER_analytic -m 125 -d all.root --setParameters r_H_PTH_450_600,r_H_PTH_GT600
+<<< Combine >>>
+
+random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+method used is MultiDimFit
+ModelConfig ‘ModelConfig’ defines more than one parameter of interest. This is not supported in some statistical methods.
+Set Range of Parameter r_H_PTH_450_600 To : (-15,15)
+Set Range of Parameter r_H_PTH_GT600 To : (-150,250)
+Error parsing physics model parameter expression : r_H_PTH_450_600
+Error parsing physics model parameter expression : r_H_PTH_GT600
+SimNLL created with 18 channels, 43 generic constraints, 316 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+Error: minimization failed at r_H_PTH_GT600 = 87.2885
+
+— MultiDimFit —
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid low-error found, will report difference to minimum of range for : r_H_PTH_GT600
+r_H_PTH_GT600 :  +113.929   -263.929/+51.613 (68%)
+Done in 0.58 min (cpu), 0.58 min (real)
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-09-06T09:35:19.336Z):
+Hi Abdollah,
+From what you pasted above, there is still a failure to determine the uncertainties on r_H_PTH_GT600:
+Warning - No valid low-error found, will report difference to minimum of range for : r_H_PTH_GT600
+r_H_PTH_GT600 : +113.929 -263.929/+51.613 (68%)
+
+Usually at this stage one has to turn up the verbosity (-v 3) and try and get clues from the Minuit logs as to why the fit is not converging. We have some slides that cover some the debugging steps: https://indico.cern.ch/event/976099/contributions/4138476/attachments/2163625/3651175/CombineTutorial-2020-debugging.pdf
+If you prefer not to do this yourself, we can try and help, but please share the exact workspace you are using, and give the full combineTool.py command to reproduce. Note that understanding these kinds of problems can be very time intensive - we may not be able to respond quickly.
+cheers,
+Andrew
+----------------------------------------

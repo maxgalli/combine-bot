@@ -1,0 +1,119 @@
+TOPIC: Expected significances using HybridNew
+URL: https://cms-talk.web.cern.ch/t/22974
+DATE: 2023-04-20T19:20:25.843Z
+SOLVED: no
+============================================================
+
+QUESTION (by scooper @ 2023-04-20T19:20:26.347Z):
+Dear Experts,
+I’ve been trying to compute expected significances using HybridNew, but I keep getting -inf.
+First, I looked at the asymptotic significance, which comes out to about 1.4 in this case:
+combine -M Significance datacard.root -t -1 --expectSignal=1
+However, the expected background and signal yields are very small, so I wanted to do this with toys instead.
+I tried to follow the documentation here:
+
+Generation step:
+combine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1
+
+Compute median:
+combine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --toysFile=higgsCombineTest.HybridNew.mH120.466818793.root --expectedFromGrid=0.5
+Note that the documentation says to use --grid, but this gives an exception:
+Caught exception Cannot use readHypoTestResult: option toysFile not specified, or input file empty
+So I assume --toysFile is the correct option to use.
+But I always get:
+
+Significance: -inf  -nan/+-nan
+Null p-value: 1 +/- 0
+Done in 0.01 min (cpu), 0.01 min (real)
+
+It seems not to matter if I run step (1) many times (I tried 9 times) and hadd the results.
+What am I doing wrong?
+Thanks very much,
+Seth
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-04-21T17:25:15.819Z):
+Dear Seth,
+I think you’re right that you should use --toysFile rather than --grid. I don’t see anything obviously wrong with your commands, so there’s likely something going wrong in one of the fits. It’s not really possible to say what based on the result that you get.
+Did you run any other fits on this model yet, to see if you spot any problems there?
+Other than that, we’ll be better able to help you if you can share your input workspace and the file with the toys with which you observe the issue.
+In the meantime others may have other suggestions too.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by scooper @ 2023-04-25T14:13:52.710Z):
+Hi Adinda,
+Thank you for the reply.
+Actually, what I would really want is the pre-fit or a priori significance, so I assume I should be using pre-fit Asimov toys again in place of the data:
+combine -M GenerateOnly datacard.root -t -1 -s -1 --saveToys -n .asimov
+
+Then I suppose I have to feed in the -D option for each subsequent command:
+combine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1 -D higgsCombine.asimov.GenerateOnly.mH120.-928789165.root:toys/toy_asimov
+
+and finally:
+combine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --expectedFromGrid=0.5 -D higgsCombine.asimov.GenerateOnly.mH120.-928789165.root:toys/toy_asimov --toysFile=higgsCombineTest.HybridNew.mH120.855973917.root
+
+But I get the same -inf result for the significance.
+In case it’s relevant here, I did run MultiDimFit on the datacard/workspace, and it seems to have converged AOK.
+I attach the datacard and a toys file here.
+Cheers,
+Seth
+datacard.cfg (379 Bytes)
+higgsCombineTest.HybridNew.mH120.855973917.root (1.0 MB)
+----------------------------------------
+
+REPLY 4 (by adewit @ 2023-05-02T21:04:04.679Z):
+Hi Seth,
+Apologies for the slow response - the issue indeed seems to be related to the fact that you were calculating the post-fit expected significance, and given you have set the observation to 0 in the datacard, the significance is also more or less 0. To me it looks you then end up with -inf as a result of some numerical instabilities.
+When you calculate the pre-fit expected significance, what you’re doing is almost right, but to generate the asimov dataset remember to add --expectSignal 1 (or some other nonzero signal strength). Otherwise the issue remains since the background expectation is so small that N in the asmov dataset is ~0.  In addition, you don’t need -s -1 for the asimov dataset generation (in this case the seed doesn’t do anything, so it also doesn’t do any harm, but the file containing the asimov dataset will have a friendlier name without it)
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by scooper @ 2023-05-03T07:17:05.452Z):
+Hi Adinda,
+Thanks a lot!
+So I simply added --expectSignal 1 to the GenerateOnly step.  Now, when I run the HybridNew toy generation like so:
+combine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1 -D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov
+
+it outputs a reasonable significance of about 1.8.
+However, in the instructions here, it says to run another step afterwards, which I’ve done like so:
+combine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --expectedFromGrid=0.5 -D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov --toysFile=higgsCombineTest.HybridNew.mH120.587227248.root
+
+where the toysFile comes from the result of the previous command. But this outputs -inf for the significance.  Perhaps something is going wrong when reading the result from the toysFile.  On the other hand, do I actually need this last step, or is that only useful to obtain the result after combining multiple toys files into one?  Is the result reported at the end of the toy generation step the median expected significance?
+Cheers,
+Seth
+----------------------------------------
+
+REPLY 6 (by adewit @ 2023-05-04T17:51:56.760Z):
+Hi Seth,
+Just to confirm I observe the same issue - I had expected these two steps to come out more or less the same, so I’d need to look into what is happening here a little more.
+I’ll try to get back to you in the next few days, in the meantime if others have a suggestion that would of course also be welcome!
+Best,
+Adinda
+----------------------------------------
+
+REPLY 7 (by scooper @ 2023-05-22T09:56:34.137Z):
+Hi @adewit ,
+Would you happen to have any news about this?  It would be nice to know at least whether the significance as reported by the second step (toy generation) is indeed the median expected.  If so, then that is sufficient for me for now.
+Thanks very much,
+Seth
+----------------------------------------
+
+REPLY 8 (by adewit @ 2023-05-22T16:31:24.507Z):
+Hi Seth,
+I didn’t have a chance to look into it further in the end, and don’t know when I will. I was hoping somebody else would have a suggestion in the meantime!
+Best,
+Adinda
+----------------------------------------
+
+REPLY 9 (by anigamov @ 2023-05-25T12:53:03.544Z):
+Hi Seth,
+I’m sorry for a delayed reply, quite a few of us looked at this issue, let me try to summarise what we’ve found so far.
+The disagreement between the two values can be understood if we look at the test statistics distribution (attached to this post), you can see the distribution is very discrete and the majority (>50%) of entries are 0, hence the median test statistics value = 0, which results in the p-value for 0.5 quantile at 1. This plot also shows that the asimov “observed” significance does not correspond to the median expected significance from the toys. It might be possible that with a larger sample of toys one would be able to populate this distribution better and get a better agreement between the asimov and expected values, but this has to be tested.
+Someone else might want to comment further. Let me just say that we’ll get back to you with better recommendations, after some studies with more toys. But for optimisation studies it should be fine to use Asimov or asymptotic values as long as you are consistent.
+Best,
+Aliya
+plot_HybridTestStat.pdf (16.7 KB)
+----------------------------------------

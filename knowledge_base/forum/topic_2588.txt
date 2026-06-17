@@ -1,0 +1,94 @@
+TOPIC: How to make shape nuisance unconstrained
+URL: https://cms-talk.web.cern.ch/t/2588
+DATE: 2021-11-22T15:57:20.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by abrinke1 @ 2021-11-22T15:57:20.000Z):
+*** Discussion title: Higgs Combination
+Hi all,
+I have a fairly simple question: is there a proper way to make a
+background shape uncertainty nuisance parameter unconstrained in the
+datacard? In particular I'd like to do it without defining the shape
+uncertainty as a POI. We've tried the "shapeU" option, but that seems to
+impose a hard cut-off at a pull value of -1.0 for the shape nuisance
+parameter. Also that option is not documented, and we don't see any
+other documentation on how to accomplish this.
+Thanks much, Andrew
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-12-09T17:46:40.446Z):
+Hi Andrew,
+Honestly, I didn’t look at the implementation of shapeU in a while.
+shapeU is likely the thing close to what you want to achieve. It is true that at the moment the range value for the uniform uncertainty is going to be set to [-1,1], which will perform only the interpolation part.
+The constrain term between [-1,1] is added here:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/ModelTools.py#L382
+
+for b in errline.keys():
+for v in errline[b].values():
+if v > 0 and 1.0 + trG_min * v < 0: trG_min = -1.0/v;
+if v < 0 and 1.0 + trG_max * v < 0: trG_max = -1.0/v;
+r = "%f,%f" % (trG_min,trG_max);
+self.doObj("%s_Pdf" % n, "Gaussian", "%s[0,%s], %s_In[0,%s], 1" % (n,r,n,r));
+globalobs.append("%s_In" % n)
+if self.options.bin:
+self.out.var("%s_In" % n).setConstant(True)
+elif pdf == "lnU" or pdf == "shapeU":
+self.doObj("%s_Pdf" % n, "Uniform", "%s[-1,1]" % n);
+elif pdf == "unif":
+self.doObj("%s_Pdf" % n, "Uniform", "%s[%f,%f]" % (n,args[0],args[1]))
+elif (pdf == "dFD" or pdf == "dFD2"):
+dFD_min = -(1+8/args[0]); dFD_max = +(1+8/args[0]);
+for b in errline.keys():
+for v in errline[b].values():
+if v > 0 and 1.0 + dFD_min * v < 0: dFD_min = -1.0/v;
+if v < 0 and 1.0 + dFD_max * v < 0: dFD_max = -1.0/v;
+r = "%f,%f" % (dFD_min,dFD_max)
+#r = "%f,%f" % (-(1+8/args[0]), +(1+8/args[0]));
+
+and could be in principle overwritten with --setParameterRanges
+You should be careful in extrapolating these kind of uncertainties too much or to rely in a specificity of the interpolation scheme. (which is also true for the constraint ones) . The normalization term should be of the form of kappa^theta (but w/ the constraint part that is now a RooUniform), so it should not be allowed to become negative and IIRC, there is a protection on the shape to become negative as well.  If a precise modelling of such uncertainties is necessary, probably ad hoc construction should be placed, as usually done in signal modelling.
+Alternatively, though it is not the same thing,
+you can also instruct combine by saying that a particular shape should not be interpreted as a 1 sigma shift, but as a “N” sigma shift by placing 1./N in the argument line (instead of the usual 1).
+This changes the interpolation scheme, allowing to pass to combine different n. of sigmas shifts, and may be more or less suitable accordingly to each particular case.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by hjabusch @ 2023-08-18T06:14:39.756Z):
+Hi Andrew, hi Andrea, all,
+I know it’s been a while, but just I found this thread and was wondering:
+What was the solution to this problem in the end?
+Thanks in advance and cheers,
+Henrik
+----------------------------------------
+
+REPLY 4 (by gpetrucc @ 2023-08-21T07:23:11.000Z):
+Hi,
+The shapeU was implemented for nuisances that have no Gaussian constraint but a hard boundary at +/-1, as it was mainly for studies of alternative statistical models of theory uncertainties.
+It would be probably easy to add something like shapeU3 or shapeU5 to have a +/-3 or +/-5 range if needed for production, but for first studies you could probably even just use shapeU and redefine the range of the nuisance from the command line.
+Giovanni
+Il Ven 18 Ago 2023, 08:16 Henrik Jabusch via CMS talk <noreply@cms-talk.web.cern.ch> ha scritto:
+
+Henrik Jabusch hjabuschAugust 18
+
+Hi Andrew, hi Andrea, all,
+I know it’s been a while, but just I found this thread and was wondering:
+What was the solution to this problem in the end?
+Thanks in advance and cheers,
+Henrik
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Andrea Carlo Marini amariniDecember 9, 2021
+
+Hi Andrew, Honestly, I didn’t look at the implementation of shapeU in a while. shapeU is likely the thing close to what you want to achieve. It is true that at the moment the range value for the uniform uncertainty is going to be set to [-1,1], which will perform only the interpolation part. The …
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

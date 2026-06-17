@@ -1,0 +1,34 @@
+{
+  "topic_id": 18537,
+  "title": "--trackParameters in AsymptoticLimits",
+  "url": "https://cms-talk.web.cern.ch/t/18537",
+  "category_id": 279,
+  "created_at": "2022-12-12T01:58:17.147Z",
+  "last_posted_at": "2022-12-12T07:54:15.853Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "kaho",
+      "name": "Ka Wa Ho",
+      "created_at": "2022-12-12T01:58:17.464Z",
+      "updated_at": "2023-02-07T10:53:03.415Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI would like to understand what --trackParameters does in AsymptoticLimits. Naively, I would think if one passes a nuisance parameter, it saves the profiled values of the nuisance parameter corresponding to the limits; and if one passes the POI, it would be exactly the same as the limit. So I did a simple test with the following command:\n\ncombine -M AsymptoticLimits -m 125 mycard.txt --trackParameters r\n\nto track the signal strength which is also the POI. Interestingly, r and limit have different values in the tree output (notably for the median expected limit):\nScreen Shot 2022-12-12 at 9.56.19 AM1740\u00d7446 25.7 KB\nAm I misunderstanding how trackParameters works?\nCheers,\nKa Wa",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I would like to understand what --trackParameters does in AsymptoticLimits. Naively, I would think if one passes a nuisance parameter, it saves the profiled values of the nuisance parameter corresponding to the limits; and if one passes the POI, it would be exactly the same as the limit. So I did a simple test with the following command:</p>\n<blockquote>\n<p>combine -M AsymptoticLimits -m 125 mycard.txt --trackParameters r</p>\n</blockquote>\n<p>to track the signal strength which is also the POI. Interestingly, r and limit have different values in the tree output (notably for the median expected limit):</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/96c662d07888389f2e9215282da7b2d7dabea7d7.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/96c662d07888389f2e9215282da7b2d7dabea7d7\" title=\"Screen Shot 2022-12-12 at 9.56.19 AM\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/96c662d07888389f2e9215282da7b2d7dabea7d7.png\" alt=\"Screen Shot 2022-12-12 at 9.56.19 AM\" data-base62-sha1=\"lvOEXl2SSXGHUOSE4oNbb598ueb\" width=\"690\" height=\"176\" data-dominant-color=\"363636\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screen Shot 2022-12-12 at 9.56.19 AM</span><span class=\"informations\">1740\u00d7446 25.7 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>Am I misunderstanding how trackParameters works?</p>\n<p>Cheers,<br>\nKa Wa</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-12-12T07:54:15.853Z",
+      "updated_at": "2022-12-12T07:54:15.853Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Ka Wa,\nThere is an interpolation in r used to define the limit value once combine has bisected the crossing of the NLL at the critical value, so in general this may not correspond to the exact value found in the final fit. If you want to understand the behaviour of the profiled parameters at particular fixed values of r, it may be easier to use -M MultiDimFit --algo fixed --fixedPointPOIs r=[X].\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Ka Wa,</p>\n<p>There is an interpolation in r used to define the <code>limit</code> value once combine has bisected the crossing of the NLL at the critical value, so in general this may not correspond to the exact value found in the final fit. If you want to understand the behaviour of the profiled parameters at particular fixed values of <code>r</code>, it may be easier to use <code>-M MultiDimFit --algo fixed --fixedPointPOIs r=[X]</code>.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

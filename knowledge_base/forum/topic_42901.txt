@@ -1,0 +1,122 @@
+TOPIC: Test statistic in combine tool for spin-parity separation
+URL: https://cms-talk.web.cern.ch/t/42901
+DATE: 2024-07-01T01:27:45.243Z
+SOLVED: no
+============================================================
+
+QUESTION (by jingqing @ 2024-07-01T01:27:45.588Z):
+Hi,
+We are currently doing spin-parity separation for a resonance decay to to Jpsi, which is similar to Higgs to ZZ*, and we therefore using the same approach to do this, which will finally use the combine tool to do a 2D fit.
+The paper arXiv:2404.06614 in page 25, last paragraph, said one can modified the test statistics so that to do the Higgs spin-parity separation (arXiv:1411.3441). After reading the related papers, I understand how to to it without technical. And now I am trying to implement it for our analysis. I was wondering if there are some examples/instructions about how to do the modification in the Higgs spin-parity analysis which I can read for a reference/example.
+Best Regards,
+Jingqing
+----------------------------------------
+
+REPLY 2 (by mpierini @ 2024-07-01T05:44:16.600Z):
+Hello
+Are you in contact with the HZZ team? They could share their card.  @acappati for instance might be able to help
+Maurizio
+----------------------------------------
+
+REPLY 3 (by acappati @ 2024-07-01T07:40:51.657Z):
+Hi @jingqing ,
+in HZZ the measurement of spin-parity was done defining MELA discriminants for the different hypotheses and then implementing templates in the combine model.
+I would suggest to contact @gritsan for more details on how to build the MELA probabilities and discriminants in your specific case.
+Best,
+Alessandra
+----------------------------------------
+
+REPLY 4 (by gortona @ 2024-07-01T07:52:26.148Z):
+Dear Jingqing,
+If I remember correctly, at the time we were using the 2 hypotheses testing model from combine:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/HiggsJPC.py
+
+from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+
+### This base class implements signal yields by production and decay mode
+### Specific models can be obtained redefining getHiggsSignalYieldScale
+class TwoHypotesisHiggs(PhysicsModel):
+def __init__(self):
+self.mHRange = []
+self.muAsPOI    = False
+self.muFloating = False
+self.fqqIncluded = False
+self.fqqFloating = False
+self.poiMap  = []
+self.pois    = {}
+self.verbose = False
+self.altSignal  = "ALT"
+def setModelBuilder(self, modelBuilder):
+PhysicsModel.setModelBuilder(self, modelBuilder)
+self.modelBuilder.doModelBOnly = False
+def getYieldScale(self,bin,process):
+"Split in production and decay, and call getHiggsSignalYieldScale; return 1 for backgrounds "
+
+This file has been truncated. show original
+
+You can find some instructions on how to use it here:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/physicsmodels/?h=hypo#two-hypothesis-testing
+but basically you just need to provide in the datacard the baseline model (the SM in your case) and the alternative hypothesis with the “_ALT” suffix. You will need one datacard for each alternative hypothesis you will be testing.
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 5 (by jingqing @ 2024-07-02T02:33:09.831Z):
+Dear all,
+Thanks for all your helps. The link @gortona shown is exactly what I wanted, thank you
+Best Regards,
+Jingqing
+----------------------------------------
+
+REPLY 6 (by jingqing @ 2024-07-19T10:53:22.146Z):
+Dear Giacomo,
+Thank your for providing the above materials, which really helps me a lot.
+I had a trial run for the two hypotheses testing example.
+It seems everything is good, but I was wondering if you can check my combine command and output so that I was not doing something wrong.
+In addition, I also have a few questions which I am not clean how to do it/how it works in combine, which are listed in the last.
+I used this command to do the evaluation/test:
+combine jcp_hww.root -M HybridNew --testStat=LEP --generateNuisances=1 --fitNuisances=0  -T 1000 --significance –saveHybridResult
+
+and the output looks like this:
+output:
+<<< Combine >>>
+<<< v10.0.1 >>>
+>>> Random number generator seed is 123456
+>>> using the Simple Likelihood Ratio test statistic (Q_LEP)
+>>> Method used is HybridNew
+
+-- Hybrid New --
+Significance: 0.355787  -0.0402795/+0.0408653
+Null p-value: 0.361 +/- 0.0151881
+Done in 0.01 min (cpu), 0.01 min (real)
+
+From the output, I guess the combine command (with options) is correctly used for this evaluation. Is this right?
+And I also have a question for presenting the result. I want to draw a similar figure like the fig. 3 in arxiv:1208.4018 (also shown in below)
+fig32093×939 199 KB.
+To draw a similar plot, I have stored the HybridNew result to the output root file.
+But I found the sampling distribution for null hypothesis has 1000 entries (expected as we used the option -T 1000), while the sampling distribution for alternative hypothesis has only 11 entries. Does this mean the alternative hypothesis only stored the tail of generated toy distribution/samples? How to store or get the whole sampling distribution for this alternative hypothesis?
+I have one more question, when the combine uses the LEP-style test statistics to evaluate significance like the above, how does it treat the POIs? Does it treat the POIs like it treats other nuisance parameters?
+Best Regards,
+Jingqing
+----------------------------------------
+
+REPLY 7 (by gortona @ 2024-07-19T12:33:33.986Z):
+Dear Jingqing,
+I will need to refresh my memory a bit, but at first sight your command seems correct to me. You probably need to add the --fullBToys option to get a significant amount of alternative hypothesis entries.
+For plotting, can you try this script:
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/plotting/hypoTestResultTree.cxx and check if it suits your needs? Otherwise I will try to dig around and see if I can find the plotting code we used in Run1, but it might take me a while to find it.
+About your last question, no POIs and NP are treated differently. When you run LEP-style in each toy it first generates the value of each NP from the prior PDF, and afterward the POI is fitted to get the best fit position of the given toy.
+I hope it helps,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 8 (by jingqing @ 2024-07-19T14:21:28.188Z):
+Dear Giacomo,
+Thank you very much for the quick response. I will try the plotting script and if I still need some help I will ask here again.
+Best Regards,
+Jingqing
+----------------------------------------

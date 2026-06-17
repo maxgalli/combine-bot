@@ -1,0 +1,452 @@
+TOPIC: Fit failed in `FitDiagnostics` method
+URL: https://cms-talk.web.cern.ch/t/139738
+DATE: 2025-12-05T13:17:44.925Z
+SOLVED: no
+============================================================
+
+QUESTION (by moameen @ 2025-12-05T13:17:45.072Z):
+Dear combine experts,
+We are in the process of producing pre- and post-Fit (Signal Asimov) plots for our 4lepton CR (ZZ enriched process). By following the method `FitDiagnostics` as detailed in [1] with the following command:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties
+
+As a results, I ended with fit failed with following output:
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+integrals don't match: +135.633234  +135.636423   0.0000235 prop_binCR_4l_2022
+
+--- FitDiagnostics ---
+Fit failed.
+
+Apart from Fit Failed, we can see integrals don’t mathc, could it be the problem? Could you please help me to sort out this issue?
+It will be helpful. Thank you in advance!
+The workspace and datacard are attached [2, 3].
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/
+[2] CR_4l_2022.txt (23.5 KB)
+[3] workspace_CR_4l_2022.root (108.9 KB)
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-12-05T14:24:07.190Z):
+Dear @moameen,
+Could you please try with the latest Combine version and let us know if it persists?
+See the post  The latest recommended Combine and CombineHarvester versions - #16 by anigamov
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by moameen @ 2025-12-06T08:33:36.238Z):
+Dear @anigamov
+I tried the new version and the fit seems to be working.
+However, I’m unsure how to interpret the r values I am getting.
+I also tried with different rMin and rMax settings, and the results varied each time.
+first try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test1
+
+Outputs:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: -10  -2.17959e-12/+20  (68% CL)
+mean   expected limit: r < -10 @ 95%CL (1 toyMC)
+median expected limit: r < -10 @ 95%CL (1 toyMC)
+68% expected band : -10 < r < -10
+95% expected band : -10 < r < -10
+
+and second try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+it’s output:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.40816e-10  -1.40816e-10/+2  (68% CL)
+mean   expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+median expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+68% expected band : 1.40816e-10 < r < 1.40816e-10
+95% expected band : 1.40816e-10 < r < 1.40816e-10
+
+For your reference, I’m attaching the corresponding FitDiagnostics ROOT files for both cases, named test1[1] and test2[2].
+Any help would be greatly appreciated.
+[1] fitDiagnostics_CR_4l_2022_test1.root (624.3 KB)
+[2] fitDiagnostics_CR_4l_2022_test2.root (624.5 KB)
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-12-06T13:13:02.000Z):
+Dear Mohammad,
+That’s because you are running with just 1 toy, and so combine can’t extract a meaningful toy distribution. You can either increase the toy number or use -t -1 if you wanted to use the Asimov dataset
+Cheers,
+Giacomo
+
+On 6 Dec 2025, at 09:34, Mohammad Mobassir Ameen via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Mohammad Mobassir Ameen moameenDecember 6
+
+Dear @anigamov
+I tried the new version and the fit seems to be working.
+However, I’m unsure how to interpret the r values I am getting.
+I also tried with different rMin and rMax settings, and the results varied each time.
+first try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test1
+
+Outputs:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: -10  -2.17959e-12/+20  (68% CL)
+mean   expected limit: r < -10 @ 95%CL (1 toyMC)
+median expected limit: r < -10 @ 95%CL (1 toyMC)
+68% expected band : -10 < r < -10
+95% expected band : -10 < r < -10
+
+and second try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+it’s output:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.40816e-10  -1.40816e-10/+2  (68% CL)
+mean   expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+median expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+68% expected band : 1.40816e-10 < r < 1.40816e-10
+95% expected band : 1.40816e-10 < r < 1.40816e-10
+
+For your reference, I’m attaching the corresponding FitDiagnostics ROOT files for both cases, named test1[1] and test2[2].
+Any help would be greatly appreciated.
+[1] fitDiagnostics_CR_4l_2022_test1.root (624.3 KB)
+[2] fitDiagnostics_CR_4l_2022_test2.root (624.5 KB)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Aliya Nigamova anigamovDecember 5
+
+Dear @moameen,
+Could you please try with the latest Combine version and let us know if it persists?
+See the post The latest recommended Combine and CombineHarvester versions - #16 by anigamov
+Best,
+Aliya
+
+Mohammad Mobassir Ameen moameenDecember 5
+
+Dear combine experts,
+We are in the process of producing pre- and post-Fit (Signal Asimov) plots for our 4lepton CR (ZZ enriched process). By following the method FitDiagnostics as detailed in [1] with the following command:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties
+
+As a results, I ended with fit failed with following output:
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+integrals don't match: +135.633234  +135.636423   0.0000235 prop_binCR_4l_2022
+
+--- FitDiagnostics ---
+Fit failed.
+
+Apart from Fit Failed, we can see integrals don’t mathc, could it be the problem? Could you please help me to sort out this issue?
+It will be helpful. Thank you in advance!
+The workspace and datacard are attached [2, 3].
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/
+[2] CR_4l_2022.txt (23.5 KB)
+[3] workspace_CR_4l_2022.root (108.9 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by moameen @ 2025-12-07T05:56:30.635Z):
+Dear Giacomo,
+sorry my bad, I missed to put -t -1.
+Now, I run with the following command:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t -1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+Output:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.00007  -1.00007/+0.999932  (68% CL)
+
+Is this accepted best fit r value?
+Furthermore, I also tried in place of -t -1 to -t 100:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t 100 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+I am getting *** Break *** segmentation violation as follows:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/100
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.25179e-09  -1.25179e-09/+2  (68% CL)
+Generate toy 2/100
+
+*** Break *** segmentation violation
+
+Why so?
+please also note that in each case, I am facing a warning WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+is that effect on fitting?
+Also, could you please help me to plots or find out the scan of the likelihood if possible in this case?
+----------------------------------------
+
+REPLY 6 (by gortona @ 2025-12-07T15:29:23.000Z):
+Dear Mohammad,
+Can you try increasing the allowed range for r? It seems that [0:2] is quite small
+Cheers,
+Giacomo
+
+On 7 Dec 2025, at 06:57, Mohammad Mobassir Ameen via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Mohammad Mobassir Ameen moameenDecember 7
+
+Dear Giacomo,
+sorry my bad, I missed to put -t -1.
+Now, I run with the following command:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t -1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+Output:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.00007  -1.00007/+0.999932  (68% CL)
+
+Is this accepted best fit r value?
+Furthermore, I also tried in place of -t -1 to -t 100:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t 100 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+I am getting *** Break *** segmentation violation as follows:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/100
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.25179e-09  -1.25179e-09/+2  (68% CL)
+Generate toy 2/100
+
+*** Break *** segmentation violation
+
+Why so?
+please also note that in each case, I am facing a warning WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+is that effect on fitting?
+Also, could you please help me to plots or find out the scan of the likelihood if possible in this case?
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaDecember 6
+
+Dear Mohammad,
+That’s because you are running with just 1 toy, and so combine can’t extract a meaningful toy distribution. You can either increase the toy number or use -t -1 if you wanted to use the Asimov dataset
+Cheers,
+Giacomo
+
+On 6 Dec 2025, at 09:34, Mohammad Mobassir Ameen via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Mohammad Mobassir Ameen moameenDecember 6
+
+Dear @anigamov
+I tried the new version and the fit seems to be working.
+However, I’m unsure how to interpret the r values I am getting.
+I also tried with different rMin and rMax settings, and the results varied each time.
+first try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test1
+
+Outputs:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: -10  -2.17959e-12/+20  (68% CL)
+mean   expected limit: r < -10 @ 95%CL (1 toyMC)
+median expected limit: r < -10 @ 95%CL (1 toyMC)
+68% expected band : -10 < r < -10
+95% expected band : -10 < r < -10
+
+and second try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+it’s output:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.40816e-10  -1.40816e-10/+2  (68% CL)
+mean   expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+median expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+68% expected band : 1.40816e-10 < r < 1.40816e-10
+95% expected band : 1.40816e-10 < r < 1.40816e-10
+
+For your reference, I’m attaching the corresponding FitDiagnostics ROOT files for both cases, named test1[1] and test2[2].
+Any help would be greatly appreciated.
+[1] fitDiagnostics_CR_4l_2022_test1.root (624.3 KB)
+[2] fitDiagnostics_CR_4l_2022_test2.root (624.5 KB)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Aliya Nigamova anigamovDecember 5
+
+Dear @moameen,
+Could you please try with the latest Combine version and let us know if it persists?
+See the post The latest recommended Combine and CombineHarvester versions - #16 by anigamov
+Best,
+Aliya
+
+Mohammad Mobassir Ameen moameenDecember 5
+
+Dear combine experts,
+We are in the process of producing pre- and post-Fit (Signal Asimov) plots for our 4lepton CR (ZZ enriched process). By following the method FitDiagnostics as detailed in [1] with the following command:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties
+
+As a results, I ended with fit failed with following output:
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+integrals don't match: +135.633234  +135.636423   0.0000235 prop_binCR_4l_2022
+
+--- FitDiagnostics ---
+Fit failed.
+
+Apart from Fit Failed, we can see integrals don’t mathc, could it be the problem? Could you please help me to sort out this issue?
+It will be helpful. Thank you in advance!
+The workspace and datacard are attached [2, 3].
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/
+[2] CR_4l_2022.txt (23.5 KB)
+[3] workspace_CR_4l_2022.root (108.9 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Mohammad Mobassir Ameen moameenDecember 6
+
+Dear @anigamov
+I tried the new version and the fit seems to be working.
+However, I’m unsure how to interpret the r values I am getting.
+I also tried with different rMin and rMax settings, and the results varied each time.
+first try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test1
+
+Outputs:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: -10  -2.17959e-12/+20  (68% CL)
+mean   expected limit: r < -10 @ 95%CL (1 toyMC)
+median expected limit: r < -10 @ 95%CL (1 toyMC)
+68% expected band : -10 < r < -10
+95% expected band : -10 < r < -10
+
+and second try:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin 0 --rMax 2 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties -n _CR_4l_2022_test2
+
+it’s output:
+<<< Combine >>>
+<<< v10.3.3 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+
+--- FitDiagnostics ---
+Best fit r: 1.40816e-10  -1.40816e-10/+2  (68% CL)
+mean   expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+median expected limit: r < 1.40816e-10 @ 95%CL (1 toyMC)
+68% expected band : 1.40816e-10 < r < 1.40816e-10
+95% expected band : 1.40816e-10 < r < 1.40816e-10
+
+For your reference, I’m attaching the corresponding FitDiagnostics ROOT files for both cases, named test1[1] and test2[2].
+Any help would be greatly appreciated.
+[1] fitDiagnostics_CR_4l_2022_test1.root (624.3 KB)
+[2] fitDiagnostics_CR_4l_2022_test2.root (624.5 KB)
+
+Aliya Nigamova anigamovDecember 5
+
+Dear @moameen,
+Could you please try with the latest Combine version and let us know if it persists?
+See the post The latest recommended Combine and CombineHarvester versions - #16 by anigamov
+Best,
+Aliya
+
+Mohammad Mobassir Ameen moameenDecember 5
+
+Dear combine experts,
+We are in the process of producing pre- and post-Fit (Signal Asimov) plots for our 4lepton CR (ZZ enriched process). By following the method FitDiagnostics as detailed in [1] with the following command:
+combine -M FitDiagnostics workspace_CR_4l_2022.root -m 125 --rMin -10 --rMax 10 -t 1 --expectSignal=1 --saveShapes --saveWithUncertainties
+
+As a results, I ended with fit failed with following output:
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Generate toy 1/1
+integrals don't match: +135.633234  +135.636423   0.0000235 prop_binCR_4l_2022
+
+--- FitDiagnostics ---
+Fit failed.
+
+Apart from Fit Failed, we can see integrals don’t mathc, could it be the problem? Could you please help me to sort out this issue?
+It will be helpful. Thank you in advance!
+The workspace and datacard are attached [2, 3].
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/
+[2] CR_4l_2022.txt (23.5 KB)
+[3] workspace_CR_4l_2022.root (108.9 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

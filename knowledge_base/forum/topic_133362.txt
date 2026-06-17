@@ -1,0 +1,258 @@
+TOPIC: Strange bias test results after including ``autoMCstat``
+URL: https://cms-talk.web.cern.ch/t/133362
+DATE: 2025-10-02T16:43:43.608Z
+SOLVED: no
+============================================================
+
+QUESTION (by klin @ 2025-10-02T16:43:43.862Z):
+Dear experts of Combine,
+The analysers from B2G-22-007 have performed blinded bias tests. And they found that the bias distribution to have two peaks when they used r=0 toys. Furthermore the double peaks were gone when they removed autoMCstats. What I observed was that the estimated uncertainty \sigma_\text{fit} had a wider spread when they turned on autoMCstats. This didn’t seem to make sense to me as most of their prop_bin NPs were Gaussian. So adding additional NP should always increase \sigma_\text{fit}. But they saw the opposite.
+Here are the data card:
+ARs_TT_M_900GeV_Run2.txt (7.3 MB)
+Workspace with autoMCstats
+ARs_TT_M_900GeV_Run2.root (9.6 MB)
+Workspace without autoMCstats
+ARs_TT_M_900GeV_Run2.root (8.2 MB)
+Combine command:
+combine -d ARs_TT_M_900GeV_Run2.root -M GenerateOnly --toysFrequentist --bypassFrequentistFit -t 50 --saveToys --expectSignal=0 -s $1 -n _50toys_r0
+combine -d ARs_TT_M_900GeV_Run2.root -M MultiDimFit -n _50toys_s$1 --algo singles --rMin -1 --rMax 2 --toysFile higgsCombine_50toys_r0.GenerateOnly.mH120.$1.root --toysFrequentist --setParameters rgx{mask_VR.*}=1 --verbose 1 -t 50
+
+Note: all plots from now on only considered toys without r_\text{hi} nor r_\text{low} touching rMax or rMin.
+Here is the pull distribution with r_\text{truth} = 0
+pull_r0.00_allSR_toyFreq696×472 8.03 KB
+To breakdown the issue, I made the distribution of just the r_\text{fit} relative to r_\text{truth}
+diff_r0.00_allSR_toyFreq696×472 5.48 KB
+This is quite Poisson-ish because they have many bins with less than 1 background events.
+And here is to show the relation between r_\text{truth} and \sigma_\text{fit}
+pull_2d_r0.00_allSR_toyFreq696×472 2.94 KB
+I marked the position of r_\text{truth}. Below that line, the definition of \sigma_\text{fit} will switch to r_\text{hi}-r_\text{fit}, instead of r_\text{fit}-r_\text{low}.
+And now let’s see what happened if we removed autoMCstats
+pull_2d_r0.00_allSR_noMCstat696×472 3.53 KB
+So first the fit is able to go more negative, which could be explained by the fact the NLL couldn’t minimise anymore in the bins with 0 data by lowering NPs created by autoMCstats. But I still couldn’t see why this would also keep the uncertainty of r more constant?
+We then see the pull only has one peak without autoMCstats
+pull_r0.00_allSR_noMCstat696×472 5.73 KB
+And r_\text{fit} still Poissonian, but relaxed more in the negative end.
+diff_r0.00_allSR_noMCstat696×472 5.32 KB
+The analysers had also tried to use --robustFit 1 but the result was similar. It only triggered more failures when autoMCstats was missing. This was because some bins had so little background that rs+b became negative before NLL dropping by 0.5.
+Could this situation simply due to mixing Gaussian NP with extremely Poissonian bin-by-bin likelihood? Have we pushed autoMCstats beyond its applicability and so we should find alternatives?
+Best regards,
+Kuan-Yu from B2G
+----------------------------------------
+
+REPLY 2 (by klin @ 2025-10-23T08:15:29.385Z):
+Thanks for @anigamov, who suggested me to turn off analytical solution via --X-rtd MINIMIZER_no_analytic. The problem seemed to be gone with this setting. Although I only have ~250 toys for now as a single MultiDimFit would take 30-120 minutes even without --robustFit 1.
+pull_r0.00_noAna696×472 5.48 KB
+pull_2d_r0.00_noAna696×472 2.93 KB
+diff_r0.00_noAna696×472 5.62 KB
+I had investigated further using only one out of 126 regions from the analyser to save fitting time. With --robustFit 1 and --verbose 3 I found that the analytical solution tended to move quickly towards having autoMCstats NP shifted for the best-fit value when r is still at the initial value. And then when RooFit float r, it is unable to use the Hessian matrix to go toward the global minimum because the latter requires to move the autoMCstats NP back. I am thinking if we can let autoMCstats NP float in RooFit and just use the analytical solution to enhance the minimisation speed?
+Best regards,
+Kuan-Yu
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2025-10-23T10:45:03.163Z):
+Dear Kuan-Yu,
+Let me try to add a few comments on the behaviour of the analytic minimisation here.
+
+klin:
+
+I found that the analytical solution tended to move quickly towards having autoMCstats NP shifted for the best-fit value when r is still at the initial value.
+
+The way the analytic minimisation works is that when enabled, those nuisance parameter RooRealVars are set to frozen, and our CMSHistFuncErrorPropagator class will now set them to the best-fit value automatically whenever the model pdf is evaluated. Then, the minimizer object is created. When RooFit sets up the Minuit2 minimizer, it does not pass frozen RooRealVars. From the start of the fit, the MC stat parameters are set to their best-fit, given the initial values of r and all other floating parameters. As the fit progresses, they are updated to a new analytic solution any time another parameter value is changed by Minuit.
+
+klin:
+
+And then when RooFit float r, it is unable to use the Hessian matrix to go toward the global minimum because the latter requires to move the autoMCstats NP back.
+
+I’m afraid I don’t fully understand this part. If you see error messages about the Hessian, perhaps being non-positive-definite, this suggests a problem in the shape of your (MC-stat-profiled) likelihood function. It seems what you are seeing is the presence of local minima when the analytic minimisation is enabled - the MC stat parameters are moved to some region of parameter space at the beginning, that fit then converges to a different minimum compared with Minuit stepping all parameters from their initial value. One would have to look carefully into the model and the effect of other parameters to understand why this local minimum occurs.
+
+klin:
+
+I am thinking if we can let autoMCstats NP float in RooFit and just use the analytical solution to enhance the minimisation speed?
+
+I guess you mean leave floating in the Minuit fit, but I don’t see how to use the analytic solution in that case - if we hand over a free parameter to Minuit then we have no more control over it until the fit ends. One could imagine a setup where we first: freeze MC stats parameters, disable their analytic minimisation and minimize wrt the other params. Then enable MC stat analytic minimisation and run the fit again. This might avoid your double minima (assuming that is the underlying problem), but it’s not guaranteed. This procedure will be a bit tricky to test with toys unfortunately (though a few modifications in the combine fitter code could probably do it).
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 4 (by klin @ 2025-10-23T12:12:35.438Z):
+Hi @agilbert,
+
+Andrew Gilbert:
+
+When RooFit sets up the Minuit2 minimizer, it does not pass frozen RooRealVars
+
+Did you mean RooFit doesn’t freeze it? Because I saw this line of freezing the autoMCStats NP, which are RooRealVars, according to here
+
+Andrew Gilbert:
+
+I’m afraid I don’t fully understand this part.
+
+Sorry about that. I didn’t see non-positive-definite complaint in these particular toys, which are quite common in B2G analysis actually. What I meant was that RooFit was unable to use the full Hessian matrix with autoMCStats NP included to get the real EDM in its stopping criterion check. I believe this is not a local minimum problem, but simply because Combine forces RooFit to do a zigzag minimisation[1] so that it can miss the global minimum when RooFit stops with a small EDM.
+I would need to do some likelihood scan to prove my points but let me finish 1000 toys first (I just realised the analysers have 4 years times 126 regions with multiple bins per region… no wonder it is so slow. Do you know the complexity of minimising NLL in MIGRAD? Is it O(N) or O(NlogN)?). For now I have nll values for first 10 toys when I only used one year of regions[2]:
+
+toy
+best-fit r (analytic)
+best-fit r (no analytic)
+min-nll+0.5 (analytic)
+min-nll+0.5 (no analytic)
+
+0
+-0.058
+-0.675
+0.519457
+-1.03834
+
+1
+-0.084
+-0.697
+-71.1998
+-72.2242
+
+2
++0.291
++0.303
+-278.708
+-278.594
+
+3
+-0.037
+-0.129
+-154.36
+-154.39
+
+4
+-0.027
+-0.079
+-105.207
+-105.216
+
+5
+-0.063
+-0.303
+-99.4253
+-99.6172
+
+6
+-0.009
+-0.246
+18.3588
+18.0672
+
+7
+-0.025
+-0.394
+-57.8464
+-58.0765
+
+8
+-0.096
+-0.296
+358.141
+357.973
+
+9
++0.353
++0.350
+-189.986
+-189.988
+
+I have the +0.5 offset because the values are printed out from --verbose 1 --robustFit 1. You can see that except for toy-2, the min-nll without analytical solution is always lower.
+
+Andrew Gilbert:
+
+I guess you mean leave floating in the Minuit fit, but I don’t see how to use the analytic solution in that case - if we hand over a free parameter to Minuit then we have no more control over it until the fit ends.
+
+My naive proposal is not to set the autoMCStats NP as constant here and not constant there. The latter seemed to be a state identifier for here? And as long as the cache was updated, RooFit will still be able to update the autoMCStat NP values, right?
+By the way, it seemed to me that the bin errors were not updated like the bin content (cache). I wonder if this is intentional or not. I personally think this is wrong because if I only have one unweighted event in the histogram, then when the the minimiser reduce the bin-content, the relative error becomes > 100%, which is wrong.
+Best,
+Kuan-Yu
+
+zig in Barlow-Beeston and then zag in other NP ↩︎
+
+so that I can use robustFit without waiting for too long ↩︎
+----------------------------------------
+
+REPLY 5 (by agilbert @ 2025-10-23T12:35:24.038Z):
+Hi Kuan-Yu,
+
+Kuan-Yu Lin:
+
+Did you mean RooFit doesn’t freeze it? Because I saw this line of freezing the autoMCStats NP, which are RooRealVars, according to here
+
+No, I mean that when RooFit initialises the minimizer, it does not pass on parameters that are frozen as parameters to be fitted.
+
+Kuan-Yu Lin:
+
+I believe this is not a local minimum problem, but simply because Combine forces RooFit to do a zigzag minimisation so that it can miss the global minimum when RooFit stops with a small EDM.
+
+This is not exactly correct. The minimisation is still smooth, and for a well-defined model there is no issue with computing the Hessian. We have just replaced the normal likelihood function with one in which some parameters are profiled - the profile likelihood function is still smooth in the remaining parameters. So there is no “zigzag” as you write.
+
+Kuan-Yu Lin:
+
+Do you know the complexity of minimising NLL in MIGRAD? Is it O(N) or O(NlogN)?)
+
+For sure it is typically worse than O(N).
+
+Kuan-Yu Lin:
+
+My naive proposal is not to set the autoMCStats NP as constant here and not constant there. The latter seemed to be a state identifier for here? And as long as the cache was updated, RooFit will still be able to update the autoMCStat NP values, right?
+
+If you mean to run the fit with MC stat parameters floating for the Minimiser and being analytically minimized at the same time, I’m afraid this will not work at all.
+
+Kuan-Yu Lin:
+
+By the way, it seemed to me that the bin errors were not updated like the bin content (cache). I wonder if this is intentional or not. I personally think this is wrong because if I only have one unweighted event in the histogram, then when the the minimiser reduce the bin-content, the relative error becomes > 100%, which is wrong.
+
+Updated as a function of what? When we compute the total uncertainty in a bin we account for the overall normalisation scaling of each process (which multiplies both the contents and error). It’s true we do not modify these bin errors in the presence of shape uncertainties. Or rather, since we do factorise norm and pure shape effects, we account for the norm part but not the pure shape part. Doing this correctly is rather difficult, and what we do now should be a reasonable approximation in most cases (though it was not studied in detail).
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 6 (by klin @ 2025-12-05T15:37:42.002Z):
+Hi @agilbert,
+I think I have found the root cause. If I understand your words and RooFit correctly, when MIGRAD go around the parameter space in iteration the function “CMSHistErrorPropagator::eval()” would find the best-fit autoMCStats NP for the given floating parameters. Therefore the Hessian matrix estimated by RooFit effectively include the change of NLL due to autoMCStats NPs and the EDM is still equivalent to the full NLL with those NPs floating.
+I now believe the problem is that there are too many bins in this workspace have a high chance of having 0 data in each toy dataset, and one of the two analytical solution in CMSHistErrorPropagator become invalid. Maybe this is too trivial for you but let me give the full derivation process.
+Assume that data = N_\text{data}, nominal prediction = n with \delta n MC errors, which was varied by the NP \theta. And the NP has global observable \theta_0. Then the NLL is
+-N_\text{data}\log(n+\theta\delta n)+n+\theta\delta n+(\theta-\theta_0)^2/2.
+We find the extrema by solving:
+-N_\text{data}\delta n/(n+\theta\delta n)+\delta n +\theta-\theta_0 = 0 (Eq 1)
+\implies (\theta-\theta_0+\delta n)(\theta+n/\delta n) = N_\text{data} (Eq 2)
+If N_\text{data}>0, we get the two analytical solutions found in Combine, but only the large one is the true extremum because the other can be proved to be less than n/\delta n, rendering the log operation undefined.
+But funny thing happens when N_\text{data}=0. The first term in Equation 1 disappears, and there is only one solution: \theta_\text{true} = \theta_0-\delta n. But the analytical solution is based on Equation 2, which will compare the only true solution to the non-existing solution \theta_\text{false} = -n/\delta n. If \theta_\text{true} \geq \theta_\text{false}, which is usually the case when r\geq0, then the solution taken by Combine is correct; otherwise, it were wrong.
+But the false solution has an interesting property, the shifted bin prediction would be exactly 0! So if the true solution is less than the false solution, this means that the shifted prediction, n+\theta\delta n, is less than 0, an unphysical prediction. But unlike the N_\text{data}>0 situation, there is no log to evaluate in the likelihood function. So this unphysical solution is mathematically well defined. And Combine effectively force the shifted prediction to be non-negative.
+I believed the divergence between the default behaviour and the alternative with --X-rtd MINIMIZER_no_analytic is due to the unphysical solution allowed by the latter. So I tested by hypothesis by adding the following line:
+if(fabs(bb_.dat[j])<1e-8) bb_.res[j] = bb_.gobs[j] - bb_.toterr[j];
+
+after this line. And indeed I recover the low-bias pull plot and a symmetric r distribution, as what --X-rtd MINIMIZER_no_analytic had produced.
+From this reasoning, the problem can only appear when n+\theta_\text{true}\delta n<0. This occurs frequently in this workspace not only because it has a lot bin with N_\text{data}=0, but also \theta_0 going negative in frequentist toys. When the analyser set asymptotic limit, \theta_0 would be fixed to 0. Then even if N_\text{data} is indeed 0, n+\theta_\text{true}\delta n = n-\delta^2 n. This identity can be < 0 if r is very negative such that n=rs+b<0 or if the average weights are large. So perhaps the exclusion limit based on \tilde{q}_\mu is unaffected. But I am still curious if allowing unphysical solution would allow the asymptotic approximation work better in low data analysis based on the symmetric r distribution I found in this workspace.
+May I ask your recommendation on this situation? Should we keep Combine as it is and deem this bias/pull test from toys not useful because it has high chance to bump into the unphysical bound for the model? Or we should add an option in Combine to allow this unphysical solution to check if the systematic templates were well defined?
+Best,
+Kuan
+----------------------------------------
+
+REPLY 7 (by agilbert @ 2025-12-08T13:18:46.211Z):
+Hi Kuan-Yu,
+Thanks for looking into this in detail.
+The special case where the total number of expected events in a bin is <= 0 is always problematic. Indeed if one is just setting upper limits it should be less of a problem, otherwise we advise people to try and avoid this situation if possible, perhaps by rebinning distributions. Even if combine manages to work around this when Ndata = 0, I think there is no guarantee the subsequent results are really correct. That said, I think we may try and fix the behaviour of the analytic solution so it’s at least consistent with the non-analytic.
+In any case, if the relative MC stat. uncertainty in the bin is quite large, such that toys regularly lead to the total yield < 0, it suggests the modelling with a single Gaussian is anyway not really a good approximation of the real likelihood, and it would be better to adjust the threshold in the datacard to treat these with a separate parameter per process. Did you try this already?
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 8 (by klin @ 2025-12-12T17:02:46.721Z):
+Hi @agilbert,
+I agree that if the MC stat errors are large then we should use a Poisson rather than Gaussian constraint. But this analysis is very special that the default text2workspace.py would assign almost every bin Gaussian constraint even if we set a tight threshold in the datacard. This analysis’ dominant background is the QCD multi-jet, which has less than 10% stat errors in almost every bin so they can easily pass the common threshold: effective events > 10. They achieve such small statistical errors by measuring their mis-tag rates in inclusive jet spectra in data and then use the products and permutations of mistags rates to assign QCD estimates into signal regions with specific combination of tags.
+On the other hand, due to their 4-jet selections plus jet tagging, their signal MC has very few events in many bins. But I think CMSHistErrorPropagator::setupBinPars() won’t pick this up in its effective events calculation, even if we don’t mark signal as excluded processes in the card. This is because the default signal strength (=1) is too small to make the total error large.
+I also tried to hack CMSHistErrorPropagator::setupBinPars() by checking wether each process pass the effective event check. In this way, a lot of bins will get Poisson autoMCStats constraints. This should prevent the negative yield problem. But I haven’t tried to use this workspace because I expect it to be as slow and as memory hungry in fitting as the previous workspace with --X-rtd MINIMIZER_no_analytic enabled.
+So I have suggested the analyser to rebin their input to reduce the relative MC statistical errors of their signals. I hope fewer bins will elevate the faster fit speed and also reduce the chance that the expected events (rs+b) go negative during the minimisation.
+Best,
+Kuan
+----------------------------------------
+
+REPLY 9 (by klin @ 2025-12-19T17:10:06.261Z):
+Hi @agilbert,
+Sorry to bother you again. The analysers seemed to prefer using Poisson constraints rather than rebin more until the Gaussian approximation is OK-ish. But the current CMSHistErrorPropagator::setupBinPars() only checks if the summed n_\text{eff} is below the threshold. So we won’t be able to check if the signal alone has large enough n_\text{eff}, right? Can we increases r in text2workspace.py so that the sum will be dominated by signals (using [channel] autoMCStats [threshold] 1 1)?
+Another thing is that the analysis has some signal bins with >100% MC Stat errors. I believe this is due to negative weighted events. For these signal bins, CMSHistErrorPropagator::setupBinPars() will assign Gaussian errors. Do you think we should let them live with this, now that we know their best-fit r is close the the physical boundaries in many toy data?
+Best regards,
+Kuan
+----------------------------------------

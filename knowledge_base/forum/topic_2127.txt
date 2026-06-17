@@ -1,0 +1,161 @@
+TOPIC: Limits using B-fit only
+URL: https://cms-talk.web.cern.ch/t/2127
+DATE: 2021-07-23T14:04:54.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by beaucero @ 2021-07-23T14:04:54.000Z):
+Dear Experts,
+I have been requested to investigate the limits in case of B-Fit only:
+https://hypernews.cern.ch/HyperNews/CMS/get/B2G-19-001/117/5/1/1/1/1/2.html
+Summary of the situation:
+CADI line: B2G-19-001
+The analysis is performed in 2 channels, top+H and top+Z in all hadronic final state in Run2 (2016+2017+2018)
+DataCards have been reviewed by the B2G-Combine contacts
+Using RooParametricHist method, so the background shape is calculated during the fit by taking into account 3 independent regions of b-tagging: 2Medium+1Loose b-tag, 3Medium B-tag, 3 Tight B-tag (veto of each region is in place)
+Normalisation parameters between each of the region are fitted and they are called: Normaxxx (_TopZ is for top+Z channel, top+H is default)
+First, question: B-Fit only is that not expected to be the same than the expected limit? I understand that for the RooParametricHist, it can be slightly different.
+Second, how can I do B-Fit only in AsymptoticLimits calculation? (See below)
+The command used to derive the limit is:
+combine -M AsymptoticLimits --freezeParameters MGen --redefineSignalPOIs r,Norma3Mvs3T_TopZ,Norma2M1Lvs3M_TopZ,Norma3Mvs3T_2017_TopZ,Norma2M1Lvs3M_2017_TopZ,Norma3Mvs3T_2018_TopZ,Norma2M1Lvs3M_2018_TopZ,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan  Data2016_2017UL_2018UL_TOTAL_M650.txt
+Outcome:
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 5.0544
+Expected  2.5%: r < 1.2908
+Expected 16.0%: r < 1.7268
+Expected 50.0%: r < 2.4297
+Expected 84.0%: r < 3.4660
+Expected 97.5%: r < 4.7990
+Now to fit with setting r=0 and freezing r:
+combine -M AsymptoticLimits --freezeParameters MGen,r --redefineSignalPOIs r,Norma3Mvs3T_TopZ,Norma2M1Lvs3M_TopZ,Norma3Mvs3T_2017_TopZ,Norma2M1Lvs3M_2017_TopZ,Norma3Mvs3T_2018_TopZ,Norma2M1Lvs3M_2018_TopZ,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan Data2016_2017UL_2018UL_TOTAL_M650.txt --setParameters r=0
+Outcome:
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 5.0544
+Expected  2.5%: r < 1.2908
+Expected 16.0%: r < 1.7268
+Expected 50.0%: r < 2.4297
+Expected 84.0%: r < 3.4660
+Expected 97.5%: r < 4.7990
+==> Exact same value
+With ExpectSignal=0:
+combine -M AsymptoticLimits --freezeParameters MGen --redefineSignalPOIs r,Norma3Mvs3T_TopZ,Norma2M1Lvs3M_TopZ,Norma3Mvs3T_2017_TopZ,Norma2M1Lvs3M_2017_TopZ,Norma3Mvs3T_2018_TopZ,Norma2M1Lvs3M_2018_TopZ,Norma3Mvs3T,Norma2M1Lvs3M,Norma3Mvs3T_2017,Norma2M1Lvs3M_2017,Norma3Mvs3T_2018,Norma2M1Lvs3M_2018 --cminPreScan Data2016_2017UL_2018UL_TOTAL_M650.txt --expectSignal 0
+Outcome:
+Observed Limit: r < 5.0544
+Expected  2.5%: r < 1.2908
+Expected 16.0%: r < 1.7268
+Expected 50.0%: r < 2.4297
+Expected 84.0%: r < 3.4660
+Expected 97.5%: r < 4.7990
+==> Exact same value
+Thanks for your help!
+Cheers,
+Steph
+Stephanie Beauceron
+stephanie.beauceron@cern.ch
+IP2I - Batiment Dirac - Piece 122
+Cern Office: 40-4B-16
+Cern Phone: 71558
+Outside Cern: +41 22 76 71 558
+Skype: stephanie.beauceron
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-07-23T14:23:41.000Z):
+*** Discussion title: Higgs Combination
+Hi Stephanie,
+The limits are on the first POI, that is scanned irrespectively if it were fixed or floating.
+The test statistics and the CLs are computed for each fixed value of r and the intercept with the 95% is derived.
+What do you want to do? Do you want to derive the upper limit on another POI with r freeze / floating?
+Or are you trying to derive the expected limits on the Asimov dataset with the signal injected? (-t -1 --setParameter r=1)[*] (you need to look at the observed) (notice that with r=0 the expected median and the observed should be identical).
+Cheers,
+-Andrea
+[*] for multidim model it is better to specify them with setparameters, in order to avoid possible confusions.
+----------------------------------------
+
+REPLY 3 (by beaucero @ 2021-07-23T15:49:31.000Z):
+Ciao Andrea,
+Let me try to explain what I have understood as the request:
+Because RooParametricHist method is building the background shape during the fitting phase and because there is an excess, there is a slight difference between the background shape using B-Fit Only or using S+B Fit (S+B is preferred due to the visible excess). So people are wondering is by using the background shape from the B-Fit only, the limits would not show the excess anymore...
+This is my understanding but in the meantime I am not sure the request make fully sense because as you say: "(notice that with r=0 the expected median and the observed should be identical). "
+Now, another way perhaps to convince the ARC would be the show that the B-Fit background shape and S+B background shape are identical within errors... I just find the tutorial to produce individual shape (Good features that I am discovering, it will help a lot). Hopefully it will be good enough but if not, is there a way to compute the limits but requesting B-Fit for the background shape?
+Thanks!
+Steph
+
+*** Discussion title: Higgs Combination
+Hi Stephanie,
+The limits are on the first POI, that is scanned irrespectively if it were fixed or floating.
+The test statistics and the CLs are computed for each fixed value of r and the intercept with the 95% is derived.
+What do you want to do? Do you want to derive the upper limit on another POI with r freeze / floating?
+Or are you trying to derive the expected limits on the Asimov dataset with the signal injected? (-t -1 --setParameter r=1)[*] (you need to look at the observed) (notice that with r=0 the expected median and the observed should be identical).
+Cheers,
+-Andrea
+[*] for multidim model it is better to specify them with setparameters, in order to avoid possible confusions.
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1657/1.html
+
+Stephanie Beauceron
+stephanie.beauceron@cern.ch
+IP2I - Batiment Dirac - Piece 122
+Cern Office: 40-4B-16
+Cern Phone: 71558
+Outside Cern: +41 22 76 71 558
+Skype: stephanie.beauceron
+----------------------------------------
+
+REPLY 4 (by amarini @ 2021-07-23T16:56:06.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+I don't understand your request or what you are trying to achieve.
+Two clarifications:
+* My comment on r=0 was referred to the fit on the Asimov dataset.
+* The S+B and B fits are two different fits and there is not reason why they should yield the same B prediction. In general, the larger the Signal the larger will be the difference in the B prediction from the two fits.
+An extreme example is the to the continuum background under the Z peak.
+You should clarify if you are trying to obtain an information from the maximum likelihood fits (S+B or B-only) or from the Asymptotic Limit setting procedure.
+I don't understand why comparing the two background predictions in data should be relevant. If you want to study coverage or bias properties, it is better done on Asimov or pseudo experiments of known datasets.
+
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 5 (by beaucero @ 2021-07-23T17:21:36.000Z):
+Hi Andrea,
+Thanks, on the analysis hypernews I got a further clarification which should be easier to answer (even if myself I am not sure about the answer, so I still need your help):
+"Sorry to be more clear - what I mean is how exactly is the p-value calculated with the combine tool. I am really not an expert on how this is done with combine and that is what I am trying to understand ultimately."
+Thanks!
+Steph
+PS: The background comparison is to make sure the signal hypothesis is not made by pushing the background shape to the ultimate limits...
+
+*** Discussion title: Higgs Combination
+Hi,
+I don't understand your request or what you are trying to achieve.
+Two clarifications:
+* My comment on r=0 was referred to the fit on the Asimov dataset.
+* The S+B and B fits are two different fits and there is not reason why they should yield the same B prediction. In general, the larger the Signal the larger will be the difference in the B prediction from the two fits.
+An extreme example is the to the continuum background under the Z peak.
+You should clarify if you are trying to obtain an information from the maximum likelihood fits (S+B or B-only) or from the Asymptotic Limit setting procedure.
+I don't understand why comparing the two background predictions in data should be relevant. If you want to study coverage or bias properties, it is better done on Asimov or pseudo experiments of known datasets.
+Cheers,
+-Andrea
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1657/1/1/1.html
+
+Stephanie Beauceron
+stephanie.beauceron@cern.ch
+IP2I - Batiment Dirac - Piece 122
+Cern Office: 40-4B-16
+Cern Phone: 71558
+Outside Cern: +41 22 76 71 558
+Skype: stephanie.beauceron
+----------------------------------------
+
+REPLY 6 (by amarini @ 2021-07-23T17:30:28.000Z):
+*** Discussion title: Higgs Combination
+Hi Stephanie,
+p-values are computed with combine in many ways depending on the method used and the specific setting selected.
+They can range from deltaLogLikelihood interpreted as p-value under the regularity assumption of Wilks theorem (Likelihood scan), using the asymptotic formulae for the modified test statistics used in upper limits, to the derivation of test-statistics with pseudo experiments (e.g GoF, Hybrid limits, FC confidence intervals, ...) . The latter really depends on the methods used and how toys are generated.
+You can refer to the manual page for detailed information of each method and options available.
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods.html
+Cheers,
+-Andrea
+----------------------------------------

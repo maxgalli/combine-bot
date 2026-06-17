@@ -1,0 +1,63 @@
+TOPIC: Combination of three Search Regions using toys and three independent signal strengths
+URL: https://cms-talk.web.cern.ch/t/37654
+DATE: 2024-03-26T07:57:23.561Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-26T07:57:23.696Z):
+Dear experts,
+we have been asked to evaluate combined local and global significance using toys. We have three independent signal strengths (mu1 >0m mu2>0m mu3>0)
+corresponding to three Search Regions (SR1, SR2, SR3). The mass and width of the resonance is the same in all three Search Regions.
+For one SR and one year data with single mu I used the following command:
+combine -M HybridNew datacard.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 5000 -i 1 -s -1
+How it will look like for three independent mu parameters ?
+My combined datacards you can find in
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/2017UL_dimuon_SR1SR2SR3.txt
+Thank you, Sasha.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-04-08T16:16:37.084Z):
+Dear Sasha,
+You could try Feldman-Cousins method described with instructions from Combine documentation [1], the workspace creation step can be done as discussed in the previous threads [2, 3].  Let us know if you run into issues.
+Best,
+Aliya
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#feldman-cousins
+[2] Follow up question to Alyia about two years and three SR combination for dimuon excess 28 GeV
+[3] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3) - #18 by anikiten
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-04-08T16:25:33.000Z):
+Thanks, Alyia !
+We will try it out.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2024-04-20T16:09:06.000Z):
+Dear Aliya,
+I did two runs with
+combine 2017UL_dimuon_SR3.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint r=0 --saveToys --fullBToys --saveHybridResult -T 10000 -i 1 -s -1 --setParameters mean=27.2,width=4.9 --freezeParameters mean,width --setParameterRanges r=0.0,200.0
+then add two output files:
+hadd input.root higgsCombineTest.HybridNew.mH120.-2006411143.root higgsCombineTest.HybridNew.mH120.-1442953344.root
+and I want to get p-value from two runs using
+combine -M HybridNew 2017UL_dimuon_SR3.txt --LHCmode LHC-feldman-cousins --readHybridResult --grid=input.root
+it tells me
+<<< Combine >>>
+
+random number generator seed is 123456
+using the Profile Likelihood test statistics not modified for upper limits (Q_Profile)
+method used is HybridNew
+Caught exception The grid must contain at least 2 points.
+
+when I used instead:
+combine -M HybridNew 2017UL_dimuon_SR3.txt --LHCmode LHC-feldman-cousins --readHybridResult --toysFile=input.root
+it tells me:
+<<< Combine >>>
+
+random number generator seed is 123456
+using the Profile Likelihood test statistics not modified for upper limits (Q_Profile)
+method used is HybridNew
+Caught exception When setting a limit reading results from file, a grid file must be specified with option --grid
+
+How should I do if I run with option singlePoint and want to get p-value from merged root files ?
+Thanks, Sasha.
+----------------------------------------

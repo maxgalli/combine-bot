@@ -1,0 +1,78 @@
+{
+  "topic_id": 125904,
+  "title": "Implementing regularisation terms in the datacard",
+  "url": "https://cms-talk.web.cern.ch/t/125904",
+  "category_id": 279,
+  "created_at": "2025-06-13T08:06:48.261Z",
+  "last_posted_at": "2025-06-13T13:53:16.043Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    },
+    {
+      "id": 249,
+      "name": "combineharvester",
+      "slug": "combineharvester"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dkavtara",
+      "name": "David Kavtaradze",
+      "created_at": "2025-06-13T08:06:48.493Z",
+      "updated_at": "2025-06-13T08:06:48.493Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI\u2019m trying to implement Regularised Maximum likelihood fits. From what I understand this can be done by adding a simple line in the systematics section of the datacard. The penalty term that I want to try out is this:\nScreenshot 2025-06-13 at 09.56.151182\u00d7258 26.3 KB\nWhere delta is the regularisation strength. How can this be implemented? Is it easier to implement this while writing the datacard using the combineHarvester tool or just to add the regularisation line in the datacard? I also stumbled upon something like this:\nScreenshot 2025-06-13 at 10.04.021758\u00d7258 42.3 KB\nBut I\u2019m unsure how this line should actually look like.\nThank you for your help in advance.\nBest,\nDati",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I\u2019m trying to implement Regularised Maximum likelihood fits. From what I understand this can be done by adding a simple line in the systematics section of the datacard. The penalty term that I want to try out is this:<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/1/1a5ee6fecb76ba06c141685ba8fcb71c1245645e.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/1a5ee6fecb76ba06c141685ba8fcb71c1245645e\" title=\"Screenshot 2025-06-13 at 09.56.15\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/1/1a5ee6fecb76ba06c141685ba8fcb71c1245645e_2_517x112.png\" alt=\"Screenshot 2025-06-13 at 09.56.15\" data-base62-sha1=\"3LhJYqpFLEYZrF6kpGB5FTyIQ3Q\" width=\"517\" height=\"112\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/1/1a5ee6fecb76ba06c141685ba8fcb71c1245645e_2_517x112.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/1/1a5ee6fecb76ba06c141685ba8fcb71c1245645e_2_775x168.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/1/1a5ee6fecb76ba06c141685ba8fcb71c1245645e_2_1034x224.png 2x\" data-dominant-color=\"F4F5F5\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot 2025-06-13 at 09.56.15</span><span class=\"informations\">1182\u00d7258 26.3 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div><br>\nWhere delta is the regularisation strength. How can this be implemented? Is it easier to implement this while writing the datacard using the combineHarvester tool or just to add the regularisation line in the datacard? I also stumbled upon something like this:</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/e/e69684671458d3bb047f1e42e98eab5c956148c8.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/e69684671458d3bb047f1e42e98eab5c956148c8\" title=\"Screenshot 2025-06-13 at 10.04.02\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e69684671458d3bb047f1e42e98eab5c956148c8_2_517x75.png\" alt=\"Screenshot 2025-06-13 at 10.04.02\" data-base62-sha1=\"wTSiAtHqw5I4Zwe9IbZsk41wT9K\" width=\"517\" height=\"75\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e69684671458d3bb047f1e42e98eab5c956148c8_2_517x75.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e69684671458d3bb047f1e42e98eab5c956148c8_2_775x112.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e69684671458d3bb047f1e42e98eab5c956148c8_2_1034x150.png 2x\" data-dominant-color=\"F2F2EF\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot 2025-06-13 at 10.04.02</span><span class=\"informations\">1758\u00d7258 42.3 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>But I\u2019m unsure how this line should actually look like.<br>\nThank you for your help in advance.</p>\n<p>Best,<br>\nDati</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-06-13T08:14:34.003Z",
+      "updated_at": "2025-06-13T08:14:34.003Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Dati\nOn the docs page you can find a concrete example of such a term\nname constr @0-2*@2+@1 r_Bin0,r_Bin1,r_Bin2 0.03\n(See here:https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/regularisation/#singular-value-decomposition-svd)\nThis gives you an example of how to write formula and the delta\nThe delta is just a constant that can be thought of as a tunable parameter. There are a few different ideas on how best to choose that parameter, I suggest you consult the statistics committee Twiki for that\nBest\nNick",
+      "cooked_html": "<p>Hi Dati</p>\n<p>On the docs page you can find a concrete example of such a term</p>\n<p><code>    name constr @0-2*@2+@1 r_Bin0,r_Bin1,r_Bin2 0.03</code></p>\n<p>(See here:<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/regularisation/#singular-value-decomposition-svd\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/regularisation/#singular-value-decomposition-svd</a>)</p>\n<p>This gives you an example of how to write formula and the delta</p>\n<p>The delta is just a constant that can be thought of as a tunable parameter. There are a few different ideas on how best to choose that parameter, I suggest you consult the statistics committee Twiki for that</p>\n<p>Best<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2025-06-13T08:14:37.353Z",
+      "updated_at": "2025-06-13T08:14:37.353Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Dati,\nThe general syntax for the regularisation term in the datacard is\nname constr formula dependents delta\n\nYou can find some practical examples and instructions at the following link:\n\ncms-analysis.github.io\n\nUnfolding & regularization - Combine\n\nI hope it helps,\nCheers,\nGiacomo",
+      "cooked_html": "<p>Dear Dati,</p>\n<p>The general syntax for the regularisation term in the datacard is</p>\n<pre><code class=\"lang-auto\">    name constr formula dependents delta\n</code></pre>\n<p>You can find some practical examples and instructions at the following link:</p><aside class=\"onebox allowlistedgeneric\" data-onebox-src=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/regularisation/#regularization\">\n  <header class=\"source\">\n      <img src=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/logo.png\" class=\"site-icon\" width=\"487\" height=\"487\">\n\n      <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/regularisation/#regularization\" target=\"_blank\" rel=\"noopener nofollow ugc\">cms-analysis.github.io</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    \n\n<h3><a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/regularisation/#regularization\" target=\"_blank\" rel=\"noopener nofollow ugc\">Unfolding &amp; regularization - Combine</a></h3>\n\n\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n\n<p>I hope it helps,<br>\nCheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "dkavtara",
+      "name": "David Kavtaradze",
+      "created_at": "2025-06-13T11:25:59.769Z",
+      "updated_at": "2025-06-13T11:25:59.769Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Nick and Giacomo,\nThank you for the very quick responses. I made some quick tests by adding these three lines in the datacard and it seems to work.\nRegularisation constr exp(-0.5*((@2-@1)-(@1-@0))) {r_ttbb_bin0,r_ttbb_bin1,r_ttbb_bin2} delta[0.03]\nRegularisation constr exp(-0.5*((@3-@2)-(@2-@1))) {r_ttbb_bin1,r_ttbb_bin2,r_ttbb_bin3} delta[0.03]\nRegularisation constr exp(-0.5*((@4-@3)-(@3-@2))) {r_ttbb_bin2,r_ttbb_bin3,r_ttbb_bin4} delta[0.03]\n\nAs I understood I need to add lines for each product term, could you please confirm if this is the case?\nDoes the delta enter into the exponent or remains outside of the formula? From the behaviour of the quick tests I assume it does.\nComing back to the question of CombineHarvester, is there a simple way to add the formulas while creating the datacard via the CombineHarvester tool?\nThank you again for your help,\nBest regards,\nDati",
+      "cooked_html": "<p>Dear Nick and Giacomo,</p>\n<p>Thank you for the very quick responses. I made some quick tests by adding these three lines in the datacard and it seems to work.</p>\n<pre><code class=\"lang-auto\">Regularisation constr exp(-0.5*((@2-@1)-(@1-@0))) {r_ttbb_bin0,r_ttbb_bin1,r_ttbb_bin2} delta[0.03] \nRegularisation constr exp(-0.5*((@3-@2)-(@2-@1))) {r_ttbb_bin1,r_ttbb_bin2,r_ttbb_bin3} delta[0.03]\nRegularisation constr exp(-0.5*((@4-@3)-(@3-@2))) {r_ttbb_bin2,r_ttbb_bin3,r_ttbb_bin4} delta[0.03]\n</code></pre>\n<p>As I understood I need to add lines for each product term, could you please confirm if this is the case?<br>\nDoes the delta <strong>enter into the exponent</strong> or remains outside of the formula? From the behaviour of the quick tests I assume it does.<br>\nComing back to the question of CombineHarvester, is there a simple way to add the formulas while creating the datacard via the CombineHarvester tool?</p>\n<p>Thank you again for your help,<br>\nBest regards,<br>\nDati</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2025-06-13T13:53:16.043Z",
+      "updated_at": "2025-06-13T13:53:16.043Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "It should be outside, irrc, as it is the constrain term that will be put as part of the gaus pdfs used to implement it.\n-Andrea",
+      "cooked_html": "<p>It should be outside, irrc, as it is the constrain term that will be put as part of the gaus pdfs used to implement it.</p>\n<p>-Andrea</p>"
+    }
+  ]
+}

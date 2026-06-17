@@ -1,0 +1,210 @@
+TOPIC: Combine FitDiagnostics failure with zero events in the signal region
+URL: https://cms-talk.web.cern.ch/t/142141
+DATE: 2026-02-18T11:48:34.420Z
+SOLVED: no
+============================================================
+
+QUESTION (by mbuonsan @ 2026-02-18T11:48:34.606Z):
+Dear experts,
+For the BPH-24-007 analysis I am computing upper limits on the rare B^0_{(s)} \to 4\mu branching ratios using Combine. As part of the usual sanity checks and post-unblinding validation, I am running FitDiagnostics and evaluating the Impacts.
+However, after my final selections I end up with a very small number of background events, and in particular there are no events in the signal region. This causes FitDiagnostics (run with r in the range [-10, 10]) to fail, or to get stuck at the boundary value r = -10. I attach a plot obtained using a toy dataset to illustrate the issue.
+Screenshot 2026-02-18 alle 12.37.551000×812 69.3 KB
+From some tests, it seems that the problem originates in RooFit, which (reasonably) cannot properly perform the signal fit when there are no events in the signal region.
+I also attach a minimal code snippet that reproduces the issue. It generates a toy background dataset and then creates datacard.txt and workspace.root, which can be used as input to FitDiagnostics.
+Code:  https://cernbox.cern.ch/s/QWQzFnJ3MWtAIU5
+Run as: python create_simple_workspace.py --nevents 10
+Regarding the ULs calculation I am using HybridNew with the following configuration:
+text2workspace.py datacard.txt -o combined.root --X-assign-flatParam-prior
+
+combineTool.py -M HybridNew -d ../combined.root \
+--generateNuisances=1 --generateExternalMeasurements=0 \
+--fitNuisances=1 --testStat LHC --clsAcc=0 \
+--singlePoint 1.00:1.60:0.01 -T 5000 -s -1 \
+--saveToys --saveHybridResult \
+--X-rtd MINIMIZER_freezeDisassociatedParams \
+--cminDefaultMinimizerStrategy 0 \
+--job-mode condor --task-name toys_Bs
+
+combine -M HybridNew datacard_combined.txt \
+--generateNuisances=1 --generateExternalMeasurements=0 \
+--fitNuisances=1 --testStat LHC \
+--readHybridResults --grid=toys/merged.root \
+--rule CLs --expectedFromGrid 0.5 \
+--cminDefaultMinimizerStrategy 0
+
+All commands run without errors, and the observed limits (i.e. post-unblinding) look reasonable.
+In summary, I would like to understand:
+
+Is there a way to make FitDiagnostics and the Impacts work in situations like mine (i.e. with zero events in the signal region)?
+More importantly, I would like to be sure that the failure of the fit is not biasing the HybridNew result in any way.
+
+Thank you very much for your help.
+Best regards,
+Marco
+----------------------------------------
+
+REPLY 2 (by nckw @ 2026-02-18T16:43:29.000Z):
+Hi Marco
+First, the fit failure you see is indeed a real effect from having no signal region events. The upper limits you’ve calculated are not affected by this so don’t worry about that.
+For impacts in these cases, you could try running expected impacts (IE for an Asimov dataset) with signal injected. That should avoid the zero events issue. Generally observed impacts are going to be somewhat meaningless when you have so few events and none in the signal region, but the expected ones can at least be informative.
+Others might have other ideas to get useful diagnostics out of the fit.
+Best
+Nick
+
+···
+
+From: Marco Buonsante noreply-cms-talk@cern.ch
+Sent: Wednesday, February 18, 2026 11:51:33 AM
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combine FitDiagnostics failure with zero events in the signal region
+
+Marco Buonsante mbuonsanFebruary 18
+
+Dear experts,
+For the BPH-24-007 analysis I am computing upper limits on the rare B^0_{(s)} \to 4\mu branching ratios using Combine. As part of the usual sanity checks and post-unblinding validation, I am running FitDiagnostics and evaluating the Impacts.
+However, after my final selections I end up with a very small number of background events, and in particular there are no events in the signal region. This causes FitDiagnostics (run with r in the range [-10, 10]) to fail, or to get stuck at the boundary value r = -10. I attach a plot obtained using a toy dataset to illustrate the issue.
+
+From some tests, it seems that the problem originates in RooFit, which (reasonably) cannot properly perform the signal fit when there are no events in the signal region.
+I also attach a minimal code snippet that reproduces the issue. It generates a toy background dataset and then creates datacard.txt and workspace.root, which can be used as input to FitDiagnostics.
+Code: https://cernbox.cern.ch/s/QWQzFnJ3MWtAIU5
+Run as: python create_simple_workspace.py --nevents 10
+Regarding the ULs calculation I am using HybridNew with the following configuration:
+text2workspace.py datacard.txt -o combined.root --X-assign-flatParam-prior
+
+combineTool.py -M HybridNew -d ../combined.root \
+--generateNuisances=1 --generateExternalMeasurements=0 \
+--fitNuisances=1 --testStat LHC --clsAcc=0 \
+--singlePoint 1.00:1.60:0.01 -T 5000 -s -1 \
+--saveToys --saveHybridResult \
+--X-rtd MINIMIZER_freezeDisassociatedParams \
+--cminDefaultMinimizerStrategy 0 \
+--job-mode condor --task-name toys_Bs
+
+combine -M HybridNew datacard_combined.txt \
+--generateNuisances=1 --generateExternalMeasurements=0 \
+--fitNuisances=1 --testStat LHC \
+--readHybridResults --grid=toys/merged.root \
+--rule CLs --expectedFromGrid 0.5 \
+--cminDefaultMinimizerStrategy 0
+
+All commands run without errors, and the observed limits (i.e. post-unblinding) look reasonable.
+In summary, I would like to understand:
+
+Is there a way to make FitDiagnostics and the Impacts work in situations like mine (i.e. with zero events in the signal region)?
+More importantly, I would like to be sure that the failure of the fit is not biasing the HybridNew result in any way.
+
+Thank you very much for your help.
+Best regards,
+Marco
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by manzoni @ 2026-02-19T09:30:37.858Z):
+Hi Nick,
+thanks for your reply.
+
+I feel I am still missing some crucial points in understanding the statistical behavior of our model, so let me try to lay out my reasoning clearly.
+We are performing an extended unbinned maximum-likelihood fit. If there are no events in the signal region, then no corresponding per-event term enters the product (or sum of log terms) in that region. In a purely unbinned likelihood, this would mean that this part of the likelihood carries no information on the signal strength. Taken literally, the fit would then appear ill-defined with respect to the signal contribution in that region.
+However, in the case of an extended likelihood, empty regions still contribute information through the Poisson term for the total expected yield. Even if no events are observed in the signal region, the expected signal yield enters the Poisson factor, which should provide sensitivity to the signal strength. From this perspective, the problem seems statistically well-defined, and the likelihood should remain sensitive to the signal normalization. One would therefore expect the fit to converge.
+That said, I suspect the issue may be more subtle. In our current model, the background normalization is left unconstrained (implemented as a rateParam). Since the sensitivity to the signal strength arises only from the extended (Poisson) term, the minimization could in principle compensate an increase in signal strength with a corresponding decrease in background yield, leaving the total expected yield unchanged. If this degeneracy is exact (or nearly so), the problem becomes ill-posed and the minimization may fail or behave unstably.
+This leads me to two questions:
+
+Would it make more sense to switch to a finely binned likelihood? In that case, empty bins in the signal region would explicitly constrain the signal strength through the Poisson terms of each bin.
+
+Alternatively, should we introduce a constraint on the background normalization, for example based on the sideband fit and extrapolation to the signal region?
+
+A further point of confusion is the following: you state that the observed limits are well defined, even though the maximum-likelihood fit fails. However, the denominator of the likelihood ratio is constructed from the same likelihood fit taht fails. I do not fully understand how the limits can remain reliable under these conditions.
+Cheers,
+Riccardo
+----------------------------------------
+
+REPLY 4 (by nckw @ 2026-02-19T10:26:46.000Z):
+Hi Riccardo,
+The problems all stem from the fact that at some point the total (signal+background) pdf is going negative and this makes no sense. Even the integral that appears in the extended Poisson term (the total yield) makes no sense when the signal strength+background rate is negative (I have some slides that explains how upper limits can be calculated with no events which contains some of this explanation, which are attached )
+In the upper limits calculation, we restrict mu>0 so there is never a negative signal and so (assuming a well behaved background function) also never a negative pdf. This is in the definition of the test statistic for upper limits - that’s why those still work.
+Now finally, if you were to impose the same restriction when calculating impacts, you would hit the issue that many of them would become one-sided as there’s not a “nice” minimum to work with, instead the fit runs to a boundary due to the extended Poisson term. If instead you use expected impacts with signal injected, you at least have a decent minimum to work with and can calculate impacts as usual.
+I hope that makes sense
+Nick
+
+···
+
+From: Riccardo Manzoni noreply-cms-talk@cern.ch
+Sent: Thursday, February 19, 2026 9:38:55 AM
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combine FitDiagnostics failure with zero events in the signal region
+
+Riccardo Manzoni manzoniFebruary 19
+
+Hi Nick,
+thanks for your reply.
+I feel I am still missing some crucial points in understanding the statistical behavior of our model, so let me try to lay out my reasoning clearly.
+We are performing an extended unbinned maximum-likelihood fit. If there are no events in the signal region, then no corresponding per-event term enters the product (or sum of log terms) in that region. In a purely unbinned likelihood, this would mean that this part of the likelihood carries no information on the signal strength. Taken literally, the fit would then appear ill-defined with respect to the signal contribution in that region.
+However, in the case of an extended likelihood, empty regions still contribute information through the Poisson term for the total expected yield. Even if no events are observed in the signal region, the expected signal yield enters the Poisson factor, which should provide sensitivity to the signal strength. From this perspective, the problem seems statistically well-defined, and the likelihood should remain sensitive to the signal normalization. One would therefore expect the fit to converge.
+That said, I suspect the issue may be more subtle. In our current model, the background normalization is left unconstrained (implemented as a rateParam). Since the sensitivity to the signal strength arises only from the extended (Poisson) term, the minimization could in principle compensate an increase in signal strength with a corresponding decrease in background yield, leaving the total expected yield unchanged. If this degeneracy is exact (or nearly so), the problem becomes ill-posed and the minimization may fail or behave unstably.
+This leads me to two questions:
+
+Would it make more sense to switch to a finely binned likelihood? In that case, empty bins in the signal region would explicitly constrain the signal strength through the Poisson terms of each bin.
+
+Alternatively, should we introduce a constraint on the background normalization, for example based on the sideband fit and extrapolation to the signal region?
+
+A further point of confusion is the following: you state that the observed limits are well defined, even though the maximum-likelihood fit fails. However, the denominator of the likelihood ratio is constructed from the same likelihood fit taht fails. I do not fully understand how the limits can remain reliable under these conditions.
+Cheers,
+Riccardo
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+
+(attachments)
+nobackground.pdf (1.22 MB)
+----------------------------------------
+
+REPLY 5 (by manzoni @ 2026-02-19T13:04:00.895Z):
+Thanks Nick!
+Right, r>0 in the test statistics keeps us out of trouble. Agreed.
+But, for my education, let me elaborate further.
+It’s understood that the PDF cannot go negative.
+This requires that the the sum of the background exponential and signal gaussian PDF (let me simplify) be positive definite  over the fitted range.
+In addition, the expected s+b in the poissonian term must be positive, obviously.
+To ensure the former we assumed that --protectUnbinnedChannels would be sufficient, while to ensure the latter, we’ve adjusted --rMin appropriately such that rMin * S < B.
+Then, even freezing all parameters save for r the fit still cannot find the minimum.
+The reason why (I believe) this goes wrong is that the r that would maximize the poisson term would result in a non pos-def exponential + poisson in some part of the fitted range.
+For example, in one of the categories we have 3 observed events, 3.4 bkg expected, 0.6 signal expected. I would think the minimization of poisson term would prefer r = -0.7, so that s + b = -0.7 * 0.6 + 3.4 = 3, but if I plot the total pdf with r = -0.7, it becomes negative (see attachment, from FitDiagnostics).
+Makes sense?
+What do you think of doing a binned fit instead?
+Thanks,
+Riccardo
+Screenshot 2026-02-19 alle 13.59.512127×1219 111 KB
+----------------------------------------
+
+REPLY 6 (by nckw @ 2026-02-19T14:04:03.000Z):
+Hi Riccardo,
+In the case where you freeze all of the parameters aside from r, did you just try to scan the likelihood to see where the minimum is ? My guess is it’s still going to be at the boundary you placed.
+Yes, if any part of the pdf goes negative , there’ll be problems.
+You can try a binned fit, although there you will get a bunch of 0*log(something) which means bins with 0 entry won’t have an effect. I’m not sure I find the idea of changing a fit setup a good way to diagnose a different kind of fit though,
+Nick
+Sent from Outlook for Mac
+From: Riccardo Manzoni noreply-cms-talk@cern.ch
+Date: Thursday, 19 February 2026 at 13:10
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combine FitDiagnostics failure with zero events in the signal region
+
+Riccardo Manzoni manzoniFebruary 19
+
+Thanks Nick!
+Right, r>0 in the test statistics keeps us out of trouble. Agreed.
+But, for my education, let me elaborate further.
+It’s understood that the PDF cannot go negative.
+This requires that the the sum of the background exponential and signal gaussian PDF (let me simplify) be positive definite over the fitted range.
+In addition, the expected s+b in the poissonian term must be positive, obviously.
+To ensure the former we assumed that --protectUnbinnedChannels would be sufficient, while to ensure the latter, we’ve adjusted --rMin appropriately such that rMin * S < B.
+Then, even freezing all parameters save for r the fit still cannot find the minimum.
+The reason why (I believe) this goes wrong is that the r that would maximize the poisson term would result in a non pos-def exponential + poisson in some part of the fitted range.
+For example, in one of the categories we have 3 observed events, 3.4 bkg expected, 0.6 signal expected. I would think the minimization of poisson term would prefer r = -0.7, so that s + b = -0.7 * 0.6 + 3.4 = 3, but if I plot the total pdf with r = -0.7, it becomes negative (see attachment, from FitDiagnostics).
+Makes sense?
+What do you think of doing a binned fit instead?
+Thanks,
+Riccardo
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

@@ -1,0 +1,277 @@
+TOPIC: Using Combine for bias tests (Crash)
+URL: https://cms-talk.web.cern.ch/t/17280
+DATE: 2022-11-08T18:17:03.403Z
+SOLVED: no
+============================================================
+
+QUESTION (by avargash @ 2022-11-08T18:17:03.558Z):
+Dear Combine experts,
+I’m using combine to perform Signal Injection and other statistical tests.
+The signal injection tests make combine crash and I haven’t found the cause of it so I wanted to check with you if you have seen this before or if you have suggestions about how to go about debugging this issue.
+The following is the list of commands I use, including the location of datacards in LXPlus and all the commands used to the point of crash:
+# Datacard store
+DCARDIR=/afs/cern.ch/user/a/avargash/eos/www/WprimeSearch/datacards/16Bins/
+# Datacard for Control Region 1
+CR2=${DCARDIR}DataCard_eee_HMassWZ_CR2_2016_600
+# Datacard for Signal Region 1
+SR1=${DCARDIR}DataCard_eee_HMassWZ_SR1_2016_600
+# Name for combined data card
+CFILE=${DCARDIR}CombinedCR2SR1_eee_2016_600
+# Combine CR2 + SR1
+combineCards.py SR1_eee_HMassWZ_2016_600=${SR1}.txt CR2_eee_HMassWZ_2016_600=${CR2}.txt>${CFILE}.txt
+file ${CFILE}.txt
+# Make workspace out of combined data card
+combineTool.py -M T2W --channel-masks -o ${CFILE}.root -i ${CFILE}.txt
+file ${CFILE}.root
+# Run fitDiagnostics with masked signal region
+combine -d ${CFILE}.root -M FitDiagnostics --saveShapes --saveWithUncertainties \
+-n eee_HMassWZ_2016_600 --setParameters mask_SR1_eee_HMassWZ_2016_600=1
+## ---- OUTPUT ----
+##  --- FitDiagnostics ---
+## Best fit r: 1.11022e-15  -1.11022e-15/+3.61435  (68% CL)
+## Done in 3.73 min (cpu), 3.74 min (real)
+# Download importPars.py
+wget -O importPars.py https://raw.githubusercontent.com/lcorcodilos/2DAlphabet/bstar/importPars.py
+# Run to get morphed space
+python importPars.py ${SR1}.txt fitDiagnosticseee_HMassWZ_2016_600.root
+#python importPars.py ${CFILE}.txt fitDiagnosticseee_HMassWZ_2016_600.root
+# Generate toys with morphed workspace. Just 10 toys for testing
+combineTool.py  -M GenerateOnly -d morphedWorkspace.root \
+-n eee_HMassWZ_2016_600 -m 600 --saveToys --toysFrequentist --bypassFrequentistFit \
+--expectSignal 0. -t 10 -s 1234 \
+--cminDefaultMinimizerStrategy 0
+## OUTPUT
+## mean   expected limit: r < 0 +/- 0 @ 95%CL (10 toyMC)
+## median expected limit: r < 0 @ 95%CL (10 toyMC)
+##    68% expected band : 6.92978e-310 < r < 6.92978e-310
+##    95% expected band : 6.92978e-310 < r < 6.92978e-310
+# Is this output reasonable?
+root -l -b -q  higgsCombineeee_HMassWZ_2016_600.GenerateOnly.mH600.1234.root -e "limit->Scan()"
+# Run fitDiagnostics with morphed workspace and toys
+# This one crashes with 1+ toys and the fit fails with -t 1
+combineTool.py -M FitDiagnostics -d morphedWorkspace.root \
+-n fromMW_eee_HMassWZ_2016_600 --saveShapes --saveWithUncertainties \
+--toysFile higgsCombineeee_HMassWZ_2016_600.GenerateOnly.mH600.1234.root -t 100 \
+--rMin -100 --rMax 100 --expectSignal 0. --verbose 3
+
+The crash log looks like this:
+... A COUPLE OF ITERATIONS after ...
+Floating Parameter  InitialValue    FinalValue (+HiError,-LoError)    GblCorr.
+--------------------  ------------  ----------------------------------  --------
+CMS_ElID2016   -2.0425e-02   -2.4886e-02         +/-  9.61e-01  <none>
+CMS_ElReco2016   -1.5569e-02   -1.4473e-02         +/-  9.92e-01  <none>
+CMS_ElTrigger2016   -8.7031e-03   -9.0857e-03         +/-  9.99e-01  <none>
+CMS_KFactorEWK2016    5.7024e-03    5.4239e-03         +/-  1.00e+00  <none>
+CMS_KFactorQCD2016    5.4333e-04    5.2153e-04         +/-  1.00e+00  <none>
+CMS_L1Pref2016   -2.0428e-03   -1.1764e-03         +/-  9.99e-01  <none>
+CMS_LHEPdfTTTo2L2Nu2016   -7.5409e-04   -1.1415e-03         +/-  1.00e+00  <none>
+CMS_LHEPdfWZTo3LNu2016   -1.8670e-02   -1.8489e-02         +/-  9.96e-01  <none>
+CMS_LHEScaleTTTo2L2Nu2016   -2.1026e-02   -2.1589e-02         +/-  9.95e-01  <none>
+CMS_LHEScaleWZTo3LNu2016    4.2582e-03    3.7060e-03         +/-  9.87e-01  <none>
+CMS_MetUncl2016    3.5769e-02    3.4814e-02         +/-  8.02e-01  <none>
+CMS_Pileup2016    2.2712e-01    2.2441e-01         +/-  9.07e-01  <none>
+lumi_13TeV2016   -5.8008e-03   -5.9551e-03         +/-  9.98e-01  <none>
+prop_bineee_2016_bin10    2.5999e-01    2.6000e-01         +/-  9.53e-01  <none>
+prop_bineee_2016_bin11   -2.3096e-01   -2.3096e-01         +/-  1.00e+00  <none>
+prop_bineee_2016_bin12    4.1540e-01    4.1541e-01         +/-  9.25e-01  <none>
+prop_bineee_2016_bin13   -6.7283e-02   -6.7283e-02         +/-  1.00e+00  <none>
+prop_bineee_2016_bin14   -2.0135e-03   -2.0135e-03         +/-  1.00e+00  <none>
+prop_bineee_2016_bin3   -6.0035e-02   -6.0035e-02         +/-  1.00e+00  <none>
+prop_bineee_2016_bin4    3.1699e-02    3.1707e-02         +/-  9.70e-01  <none>
+prop_bineee_2016_bin5    2.3595e-01    2.3597e-01         +/-  9.63e-01  <none>
+prop_bineee_2016_bin6   -1.8908e-01   -1.8907e-01         +/-  9.79e-01  <none>
+prop_bineee_2016_bin7   -1.8789e-01   -1.8787e-01         +/-  9.74e-01  <none>
+prop_bineee_2016_bin8    3.0429e-02    3.0455e-02         +/-  1.00e+00  <none>
+prop_bineee_2016_bin9   -1.3872e-01   -1.3871e-01         +/-  9.81e-01  <none>
+r   -1.0478e-01   -1.0465e-01 (+1.06e-01,-8.03e-02)  <none>
+xsecUnc_WWW   -4.7225e-05   -1.6370e-04         +/-  1.00e+00  <none>
+xsecUnc_WWZ   -3.1703e-03   -3.1571e-03         +/-  1.00e+00  <none>
+xsecUnc_WZZ   -1.1193e-04   -1.0958e-04         +/-  1.00e+00  <none>
+xsecUnc_ZZ   -6.7913e-03   -6.3692e-03         +/-  9.98e-01  <none>
+xsecUnc_ZZZ   -1.8997e-04   -1.8377e-04         +/-  1.00e+00  <none>
+xsecUnc_ttZJets   -1.8529e-02   -1.8304e-02         +/-  9.98e-01  <none>
+
+--- FitDiagnostics ---
+Best fit r: -0.104655  -0.0802892/+0.105873  (68% CL)
+Done in 1.56 min (cpu), 1.57 min (real)
+[#1] INFO:ObjectHandling -- RooWorkspace::saveSnaphot(w) replacing previous snapshot with name toyGenSnapshot
+
+*** Break *** segmentation violation
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+#0  0x00007efc70d5760c in waitpid () from /lib64/libc.so.6
+#1  0x00007efc70cd4f62 in do_system () from /lib64/libc.so.6
+#2  0x00007efc72853a8b in TUnixSystem::StackTrace() () from /cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_2_13/external/slc7_amd64_gcc700/lib/libCore.so
+#3  0x00007efc728560cc in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_2_13/external/slc7_amd64_gcc700/lib/libCore.so
+#4  <signal handler called>
+#5  0x00007efc7461e3c2 in FitDiagnostics::getNormalizations(RooAbsPdf*, RooArgSet const&, RooArgSet&, FitDiagnostics::NuisanceSampler&, TDirectory*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, RooAbsData&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#6  0x00007efc746241b5 in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#7  0x00007efc746d51f9 in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#8  0x00007efc746bf0f0 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#9  0x00007efc746c4e2e in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#10 0x0000000000410af7 in main ()
+===========================================================
+
+The lines below might hint at the cause of the crash.
+You may get help by asking at the ROOT forum http://root.cern.ch/forum.
+Only if you are really convinced it is a bug in ROOT then please submit a
+report at http://root.cern.ch/bugs. Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#5  0x00007efc7461e3c2 in FitDiagnostics::getNormalizations(RooAbsPdf*, RooArgSet const&, RooArgSet&, FitDiagnostics::NuisanceSampler&, TDirectory*, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, RooAbsData&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#6  0x00007efc746241b5 in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#7  0x00007efc746d51f9 in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#8  0x00007efc746bf0f0 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#9  0x00007efc746c4e2e in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#10 0x0000000000410af7 in main ()
+===========================================================
+
+Any suggestion/test that could help debug this issue would be helpful,
+Thank you so much!
+----------------------------------------
+
+REPLY 2 (by nckw @ 2022-11-09T11:14:03.000Z):
+Hi Andres,
+I think the crash could be related to the fact you have --saveShapes —saveWithUncertainties included in your command line. This routine won’t work with >1 toy since it would be overwriting the shapes for each toy. There should be an error printed about that or a protection but clearly its not working so I can look into that. Can you check what happens if you remove those two options.
+As to why the fit fails with -t 1, this could be specific to your setup so would need to dig in a little but more to find out. Does the fit also fail for the data or only when you use -t 1 ?
+Best,
+Nick
+
+On 8 Nov 2022, at 18:18, Andres Vargas Hernandez via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+Andres Vargas Hernandez avargash
+November 8
+Dear Combine experts,
+I’m using combine to perform Signal Injection and other statistical tests.
+The signal injection tests make combine crash and I haven’t found the cause of it so I wanted to check with you if you have seen this before or if you have suggestions about how to go about debugging this issue.
+The following is the list of commands I use, including the location of datacards in LXPlus and all the commands used to the point of crash:
+Datacard store
+DCARDIR=/afs/
+cern.ch/user/a/avargash/eos/www/WprimeSearch/datacards/16Bins/
+Datacard for Control Region 1
+CR2=${DCARDIR}DataCard_eee_HMassWZ_CR2_2016_600
+Datacard for Signal Region 1
+SR1=${DCARDIR}DataCard_eee_HMassWZ_SR1_2016_600
+Name for combined data card
+CFILE=${DCARDIR}CombinedCR2SR1_eee_2016_600
+Combine CR2 + SR1
+combineCards.py SR1_eee_HMassWZ_2016_600={SR1}.txt CR2_eee_HMassWZ_2016_600={CR2}.txt>{CFILE}.txt
+file {CFILE}.txt
+Make workspace out of combined data card
+combineTool.py -M T2W --channel-masks -o {CFILE}.root -i {CFILE}.txt
+file ${CFILE}.root
+Run fitDiagnostics with masked signal region
+combine -d ${CFILE}.root -M FitDiagnostics --saveShapes --saveWithUncertainties
+-n eee_HMassWZ_2016_600 --setParameters mask_SR1_eee_HMassWZ_2016_600=1
+---- OUTPUT ----
+— FitDiagnostics —
+Best fit r: 1.11022e-15 -1.11022e-15/+3.61435 (68% CL)
+Done in 3.73 min (cpu), 3.74 min (real)
+Download importPars.py
+wget -O importPars.py
+https://raw.githubusercontent.com/lcorcodilos/2DAlphabet/bstar/importPars.py
+Run to get morphed space
+python importPars.py {SR1}.txt fitDiagnosticseee_HMassWZ_2016_600.root
+#python importPars.py {CFILE}.txt fitDiagnosticseee_HMassWZ_2016_600.root
+Generate toys with morphed workspace. Just 10 toys for testing
+combineTool.py -M GenerateOnly -d morphedWorkspace.root
+-n eee_HMassWZ_2016_600 -m 600 --saveToys --toysFrequentist --bypassFrequentistFit
+–expectSignal 0. -t 10 -s 1234
+–cminDefaultMinimizerStrategy 0
+OUTPUT
+mean expected limit: r < 0 +/- 0 @ 95%CL (10 toyMC)
+median expected limit: r < 0 @ 95%CL (10 toyMC)
+68% expected band : 6.92978e-310 < r < 6.92978e-310
+95% expected band : 6.92978e-310 < r < 6.92978e-310
+Is this output reasonable?
+root -l -b -q higgsCombineeee_HMassWZ_2016_600.GenerateOnly.mH600.1234.root -e “limit->Scan()”
+Run fitDiagnostics with morphed workspace and toys
+This one crashes with 1+ toys and the fit fails with -t 1
+combineTool.py -M FitDiagnostics -d morphedWorkspace.root
+-n fromMW_eee_HMassWZ_2016_600 --saveShapes --saveWithUncertainties
+–toysFile higgsCombineeee_HMassWZ_2016_600.GenerateOnly.mH600.1234.root -t 100
+–rMin -100 --rMax 100 --expectSignal 0. --verbose 3
+The crash log looks like this:
+… A COUPLE OF ITERATIONS after …
+Floating Parameter InitialValue FinalValue (+HiError,-LoError) GblCorr.
+
+CMS_ElID2016 -2.0425e-02 -2.4886e-02 +/- 9.61e-01
+CMS_ElReco2016 -1.5569e-02 -1.4473e-02 +/- 9.92e-01
+CMS_ElTrigger2016 -8.7031e-03 -9.0857e-03 +/- 9.99e-01
+CMS_KFactorEWK2016 5.7024e-03 5.4239e-03 +/- 1.00e+00
+CMS_KFactorQCD2016 5.4333e-04 5.2153e-04 +/- 1.00e+00
+CMS_L1Pref2016 -2.0428e-03 -1.1764e-03 +/- 9.99e-01
+CMS_LHEPdfTTTo2L2Nu2016 -7.5409e-04 -1.1415e-03 +/- 1.00e+00
+CMS_LHEPdfWZTo3LNu2016 -1.8670e-02 -1.8489e-02 +/- 9.96e-01
+CMS_LHEScaleTTTo2L2Nu2016 -2.1026e-02 -2.1589e-02 +/- 9.95e-01
+CMS_LHEScaleWZTo3LNu2016 4.2582e-03 3.7060e-03 +/- 9.87e-01
+CMS_MetUncl2016 3.5769e-02 3.4814e-02 +/- 8.02e-01
+CMS_Pileup2016 2.2712e-01 2.2441e-01 +/- 9.07e-01
+lumi_13TeV2016 -5.8008e-03 -5.9551e-03 +/- 9.98e-01
+prop_bineee_2016_bin10 2.5999e-01 2.6000e-01 +/- 9.53e-01
+prop_bineee_2016_bin11 -2.3096e-01 -2.3096e-01 +/- 1.00e+00
+prop_bineee_2016_bin12 4.1540e-01 4.1541e-01 +/- 9.25e-01
+prop_bineee_2016_bin13 -6.7283e-02 -6.7283e-02 +/- 1.00e+00
+prop_bineee_2016_bin14 -2.0135e-03 -2.0135e-03 +/- 1.00e+00
+prop_bineee_2016_bin3 -6.0035e-02 -6.0035e-02 +/- 1.00e+00
+prop_bineee_2016_bin4 3.1699e-02 3.1707e-02 +/- 9.70e-01
+prop_bineee_2016_bin5 2.3595e-01 2.3597e-01 +/- 9.63e-01
+prop_bineee_2016_bin6 -1.8908e-01 -1.8907e-01 +/- 9.79e-01
+prop_bineee_2016_bin7 -1.8789e-01 -1.8787e-01 +/- 9.74e-01
+prop_bineee_2016_bin8 3.0429e-02 3.0455e-02 +/- 1.00e+00
+prop_bineee_2016_bin9 -1.3872e-01 -1.3871e-01 +/- 9.81e-01
+r -1.0478e-01 -1.0465e-01 (+1.06e-01,-8.03e-02)
+xsecUnc_WWW -4.7225e-05 -1.6370e-04 +/- 1.00e+00
+xsecUnc_WWZ -3.1703e-03 -3.1571e-03 +/- 1.00e+00
+xsecUnc_WZZ -1.1193e-04 -1.0958e-04 +/- 1.00e+00
+xsecUnc_ZZ -6.7913e-03 -6.3692e-03 +/- 9.98e-01
+xsecUnc_ZZZ -1.8997e-04 -1.8377e-04 +/- 1.00e+00
+xsecUnc_ttZJets -1.8529e-02 -1.8304e-02 +/- 9.98e-01
+— FitDiagnostics —
+Best fit r: -0.104655 -0.0802892/+0.105873 (68% CL)
+Done in 1.56 min (cpu), 1.57 min (real)
+[#1] INFO:ObjectHandling – RooWorkspace::saveSnaphot(w) replacing previous snapshot with name toyGenSnapshot
+*** Break *** segmentation violation
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+#0 0x00007efc70d5760c in waitpid () from /lib64/libc.so.6
+#1 0x00007efc70cd4f62 in do_system () from /lib64/libc.so.6
+#2 0x00007efc72853a8b in TUnixSystem::StackTrace() () from /cvmfs/
+cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_2_13/external/slc7_amd64_gcc700/lib/libCore.so
+#3 0x00007efc728560cc in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/
+cms.cern.ch/slc7_amd64_gcc700/cms/cmssw/CMSSW_10_2_13/external/slc7_amd64_gcc700/lib/libCore.so
+#4
+#5 0x00007efc7461e3c2 in FitDiagnostics::getNormalizations(RooAbsPdf*, RooArgSet const&, RooArgSet&, FitDiagnostics::NuisanceSampler&, TDirectory*, std::__cxx11::basic_string<char, std::char_traits, std::allocator > const&, RooAbsData&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#6 0x00007efc746241b5 in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#7 0x00007efc746d51f9 in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#8 0x00007efc746bf0f0 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#9 0x00007efc746c4e2e in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits, std::allocator > const&, double&, double&, int&, TTree*, int) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#10 0x0000000000410af7 in main ()
+The lines below might hint at the cause of the crash.
+You may get help by asking at the ROOT forum
+http://root.cern.ch/forum.
+Only if you are really convinced it is a bug in ROOT then please submit a
+report at
+http://root.cern.ch/bugs. Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+#5 0x00007efc7461e3c2 in FitDiagnostics::getNormalizations(RooAbsPdf*, RooArgSet const&, RooArgSet&, FitDiagnostics::NuisanceSampler&, TDirectory*, std::__cxx11::basic_string<char, std::char_traits, std::allocator > const&, RooAbsData&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#6 0x00007efc746241b5 in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#7 0x00007efc746d51f9 in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#8 0x00007efc746bf0f0 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#9 0x00007efc746c4e2e in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits, std::allocator > const&, double&, double&, int&, TTree*, int) () from /eos/home-a/avargash/Combine/CMSSW_10_2_13/lib/slc7_amd64_gcc700/libHiggsAnalysisCombinedLimit.so
+#10 0x0000000000410af7 in main ()
+Any suggestion/test that could help debug this issue would be helpful,
+Thank you so much!
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by avargash @ 2022-11-10T03:00:11.404Z):
+Dear Nick
+Thank you so much for your input. Removing  --saveShapes —saveWithUncertainties prevents Combine from crashing. Indeed, an error message would be useful. I’ll proceed with the rest of the test and will post back if somethings goes wrong. Thanks again!
+----------------------------------------

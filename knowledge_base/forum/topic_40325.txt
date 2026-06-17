@@ -1,0 +1,40 @@
+TOPIC: Inflate bin-by-bin statistical uncertainties for a specific process/region
+URL: https://cms-talk.web.cern.ch/t/40325
+DATE: 2024-04-30T14:26:50.907Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmeiring @ 2024-04-30T14:26:51.135Z):
+Dear experts,
+For the estimation of the fake lepton background in my analysis, I’m using the tight-to-loose method; Usually this is a standard procedure, consisting of applying transfer factors (based on fake rates) on observed data events in a side-band of the search region (application region, AR).
+Due to very low event counts in my analysis, we modified the approach to apply the transfer factors not on observed data events, but on fake lepton MC events that are scaled to the data in bins of dilepton mass (mll). This way we better populate the AR phase-space with more simulated events, while still relying on data to govern the mll shape. More details on the procedure can be found in Section 7.4.1 of our AN [1].
+Given that we scale the AR fake lepton MC events to data bin-by-bin in mll, we figure that the statistical uncertainty of the scaled MC should correspond to the Poisson uncertainty of the observed data events in each bin, not the uncertainty on the simulated events themselves. In other words, we cannot artificially decrease the statistical uncertainty by simply using more MC events, but instead are limited by the number of observed data events. As such, the Poisson uncertainty on AR data should be propagated to the fake-lepton background estimate in the SR.
+To propagate this uncertainty, I’m trying to understand if Combine has capabilities to manually inflate the statistical uncertainties of a given process/region (in my case, the fake lepton background in the SR). We’re currently using autoMCstats to add the bin-wise statistical uncertainties. Does this have an option to do so?
+Any help would be much appreciated! Thanks in advance.
+Cheers,
+Peter
+[1] http://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2022_096_v8.pdf
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-05-01T12:11:23.616Z):
+Hi Peter,
+I’m not sure I completely follow the method being used here, but from a technical perspective you can manually set the bin errors on the input TH1 to be whatever you want, and this is what autoMCStats will pick up. Would this address your use case?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by kcormier @ 2024-05-02T08:47:40.491Z):
+Hi Peter,
+As Andrew mentioned, you can manually set the bin errors in the TH1 and autoMCStats will use those.
+That being said, its not clear to me if that’s really what should be done in this situation.
+If I understand correctly, you have three ‘fake regions’ depending on the tagging status of the two leptons (LL, TL, LT) and one Signal Region (TT). My understanding is that in each bin of the dilepton mass, you use the event counts in the three control regions to estimate the non-prompt background in your signal regions; that each region has its own scale factor (estimated from another set of control regions) and that the scale factor for the LL region is negative (for reasons which are expected in this method, as it accounts for some kind of double-counting).  Thus, (presumbaly) statistical fluctuations in the relative ratios of events in each of the three regions can cause the overall prediction to become negative, which you’d like to avoid.  Your method for avoiding this is to use the MC to get the relative rates in the three control regions, but take the normalization from the total number of events (LL + TL + LT) observed in data, per bin of m(ll). Please correct me if any of that is wrong, its my understanding of your model.
+What I understand from that is your model is one where:
+
+You trust the modelling of the relative rates in LL, TL, LT regions given by MC
+You want the total rate of those combined regions to come from data and by independent per bin of m(ll)
+
+But then I think you likely don’t want to add the data statistical uncertainty as a bin-by-bin uncertainty on the MC. That would decorrelate the relative rates of the MC in LL, TL, LT – and while you may want some systematic uncertainty to cover MC mismodelling of these relative rates, its not clear to me why the size of that uncertainty should be the statistical uncertainty of the data. The m(ll) distribution of the MC can be decorrelated from each other by having the normalizations float separately in each bin of m(ll) and this will then be constrained only as much as the statistical power of the data in each bin of m(ll) allows.
+Let us know if that’s helpful, or if I’ve misunderstood something about your model setup or intentions.
+Cheers,
+Kyle
+----------------------------------------

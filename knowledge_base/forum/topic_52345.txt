@@ -1,0 +1,55 @@
+TOPIC: One-Sided Impacts in BDT Score Distribution
+URL: https://cms-talk.web.cern.ch/t/52345
+DATE: 2024-10-09T05:22:13.858Z
+SOLVED: no
+============================================================
+
+QUESTION (by acotarod @ 2024-10-09T05:22:14.000Z):
+Dear Experts,
+I am working on a shape analysis applied to a BDT score distribution and recently encountered an issue where I observed one-sided impacts for several systematic uncertainties on the parameter of interest in my fit. As far as I know, good systematics are expected to be symmetric. Could someone help me better understand why I’m seeing these one-sided impacts and how I can approach resolving this issue?
+Here is the link to my impact plot:
+https://acotarod.web.cern.ch/for_cmstalk/impact_plot_20bins/impacts.pdf
+I am using the following Combine commands for my analysis:
+
+First, I perform the likelihood scan using:
+
+combine -M MultiDimFit ws.root --algo grid --points=1000 -t -1 --expectSignal=1
+
+For impact plot creation
+
+Initial fit
+combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doInitialFit -t -1 --expectSignal 1
+Fit for each nuisance parameter
+combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --doFits --parallel 5 -t -1 --expectSignal 1
+Collect the results
+combineTool.py -M Impacts -d ws.root -m 120 --rMin -1 --rMax 5 --robustFit 1 --output impacts.json -t -1 --expectSignal 1
+Plot the impacts
+plotImpacts.py -i impacts.json -o impacts
+Many thanks.
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2024-10-09T07:44:53.307Z):
+Hi @acotarod ,
+first, let me clarify your statement about one-sided impacts. In principle, it’s not impossible to have a one-sided impact on the signal strength. You should however take time to understand this effect and make sure that it’s not due to a technical bug somewhere, but rather that it’s a physical effect.
+Unfortunately, there is no fool-proof way to debug this. There are a couple of things you can check though:
+
+Are there any mistakes in your datacard? Double-checking this is never a bad idea.
+Are there feature in your datacard that are “strange” (though the definition of this word is here very loose)? You can for example use the ValideCards.py script to check this, see the docs here.
+Do the one-sided impacts arise for shape-based systematics (based on the plot you attached, I guess yes)? If yes, are the templates themselves one-sided? If the templates are one-sided, the impacts will likely also be one-sided. The script mentioned above will also point you to one-sided templates in your datacard. lnN-based systematics should in principle be two-sided, provided you didn’t encode a one-sided effect with e.g. 0.945/0.8123
+If you do see one-sided templates, are you sure this is not due to statistical fluctuations? Particularly systematics that can cause migration into and outside of the analysis phase space (e.g. jet enery corrections) are known to be able to cause such behavior due to a lack of statistics. In these cases, something like (motivated) smoothing of templates can help stabilize the fit.
+One-sided impacts can also arise from correlations in your statistical model. This can be debugged for example with the following steps:
+
+If you use multiple categories in your fit (what is referred to as bin in combine language), it might be worthwhile checking the categories individually,
+You can have a look at the correlation of you different parameters. You can do this by generating a RooFitResult object that stores these values, either with the MultiDimFit or FitDiagnostics method. Since you already use MultiDimFit, here is a corresponding example [1]. Note the --saveFitResult option is only needed for MultiDimFit. This will generate a new file which contains a fit_mdf object. You can access the correlations with the correlation function of this object.
+If the individual categories behave differently than the combination and you see large correlations between parameters, it might make sense to decorrelate categories depending on the physics case (e.g. are the experimental conditions different between categories? Are the phase spaces of some of the categories more sensitive to particular modeling effects than others which can lead to a tension?).
+
+Check the NLL scan for the parameters. Is the NLL smooth and continuous? You can for example use the FastScan method to create plots of the NLL curve and its first two derivatives for all parameters (might take a while), see documentation here.
+Double check the code that creates these templates. Again, just to make sure.
+Since you use a multivariate analysis method, it might be worthwhile to check a more simple observable (e.g. one of your input features). Ideally, it would be an observable for which you have a clear expectation of the behavior of the one-sided systematics. This would further validate your implementation of the systematic variations.
+
+If you have performed all these checks and do not see any issues, the one-sided impact of the parameter(s) is probably genuine.
+Cheeres,
+Philip
+[1]
+combine -M MultiDimFit ws.root --algo singles -t -1 --expectSignal=1 --saveFitResult
+----------------------------------------

@@ -1,0 +1,133 @@
+{
+  "topic_id": 142937,
+  "title": "Spikes in regularization \ud835\udeff scans",
+  "url": "https://cms-talk.web.cern.ch/t/142937",
+  "category_id": 279,
+  "created_at": "2026-03-12T12:21:18.327Z",
+  "last_posted_at": "2026-05-04T10:12:03.472Z",
+  "tags": [],
+  "accepted_answer_post_number": 10,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-03-12T12:21:18.764Z",
+      "updated_at": "2026-03-12T12:21:18.764Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nI am studying regularization after unfolding in our analysis, HIG-25-019. The CADI link is here.\nWe observe sharp spikes in the \ud835\udeff scans of the mean global correlation coefficient. From our study it appears that these spikes are linked to increased correlations between the POIs. While individual nuisance parameters tend to reduce the correlations among the POIs, introducing multiple nuisance parameters simultaneously increases these correlations and seems to generate the spikes.\nHas anyone encountered a similar effect before? In particular, we would like to understand what could be causing this behavior and what would be the best way to get rid of these spikes.\nThe Combine version used is v10.2.1.  The command\nand used is\nAll final state (variable is FastMTTHpT_v5.1) :  combine -t -1 --setParameters delta=1.3 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_all_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_all_2223_FastMTTHpT_v5.1_reg_12\nAll NP frozen : combine -t -1 --freezeParameters allConstrainedNuisances --setParameters delta=1.3 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_eltau_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_eltau_2223_FastMTTHpT_v5.1_reg_12\nFreezing NP group btag + DY : combine -t -1 --freezeParameters CMS_MET_unclustered_2022postEE,CMS_MET_unclustered_2022preEE,CMS_MET_unclustered_2023postBPix,CMS_MET_unclustered_2023preBPix,CMS_pileup_2022postEE,CMS_pileup_2022preEE,CMS_pileup_2023postBPix,CMS_pileup_2023preBPix,lumi_13p6TeV_2324,lumi_13p6TeV_correlated --setParameters delta=1.4000000000000001 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups FF,theory,calibration,efficiency,autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_eltau_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_eltau_2223_FastMTTHpT_v5.1_reg_13\nPlease find attached slides with the relevant plots and details below.\nRegularization_spike.pdf (2.3 MB)\nThanks,\nNaila",
+      "cooked_html": "<p>Dear all,</p>\n<p>I am studying regularization after unfolding in our analysis, <code>HIG-25-019</code>. The CADI link is <a href=\"https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=HIG-25-019&amp;tp=an&amp;id=3072&amp;ancode=HIG-25-019\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>We observe sharp spikes in the \ud835\udeff scans of the mean global correlation coefficient. From our study it appears that these spikes are linked to increased correlations between the POIs. While individual nuisance parameters tend to reduce the correlations among the POIs, introducing multiple nuisance parameters simultaneously increases these correlations and seems to generate the spikes.</p>\n<p>Has anyone encountered a similar effect before? In particular, we would like to understand what could be causing this behavior and what would be the best way to get rid of these spikes.</p>\n<p>The Combine version used is <code>v10.2.1</code>.  The command<br>\nand used is</p>\n<p>All final state (variable is FastMTTHpT_v5.1) :  <code>combine -t -1 --setParameters delta=1.3 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_all_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_all_2223_FastMTTHpT_v5.1_reg_12</code></p>\n<p>All NP frozen : <code>combine -t -1 --freezeParameters allConstrainedNuisances --setParameters delta=1.3 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_eltau_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_eltau_2223_FastMTTHpT_v5.1_reg_12</code></p>\n<p>Freezing NP group btag + DY : <code>combine -t -1 --freezeParameters CMS_MET_unclustered_2022postEE,CMS_MET_unclustered_2022preEE,CMS_MET_unclustered_2023postBPix,CMS_MET_unclustered_2023preBPix,CMS_pileup_2022postEE,CMS_pileup_2022preEE,CMS_pileup_2023postBPix,CMS_pileup_2023preBPix,lumi_13p6TeV_2324,lumi_13p6TeV_correlated --setParameters delta=1.4000000000000001 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups FF,theory,calibration,efficiency,autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_eltau_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_eltau_2223_FastMTTHpT_v5.1_reg_13</code></p>\n<p>Please find attached slides with the relevant plots and details below.</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/kmjTyffakQEZELrfSXZAQFkofe5.pdf\">Regularization_spike.pdf</a> (2.3 MB)</p>\n<p>Thanks,<br>\nNaila</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-03-17T10:05:17.685Z",
+      "updated_at": "2026-03-17T10:05:17.685Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nThis is just a gentle reminder on this thread. We are still trying to understand the sharp spikes in the \u03b4 scan of the mean global correlation coefficient in our unfolding regularization study for HIG-25-019. If anyone has seen similar behavior before, or has suggestions on the possible cause and how to mitigate it, we would really appreciate your input.\nThank you,\nNaila",
+      "cooked_html": "<p>Dear all,</p>\n<p>This is just a gentle reminder on this thread. We are still trying to understand the sharp spikes in the \u03b4 scan of the mean global correlation coefficient in our unfolding regularization study for <code>HIG-25-019</code>. If anyone has seen similar behavior before, or has suggestions on the possible cause and how to mitigate it, we would really appreciate your input.</p>\n<p>Thank you,<br>\nNaila</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2026-03-17T10:15:10.653Z",
+      "updated_at": "2026-03-17T10:15:10.653Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Naila,\nI don\u2019t have any great suggestions and have not seen this before, but one thing I wondered was how you extracted the correlation matrices? If they\u2019re from the covariance matrix evaluated with the Hesse algorithm, did you make sure to check the covariance matrix quality, to make sure the issue doesn\u2019t originate from a problem at that stage?\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Naila,</p>\n<p>I don\u2019t have any great suggestions and have not seen this before, but one thing I wondered was how you extracted the correlation matrices? If they\u2019re from the covariance matrix evaluated with the Hesse algorithm, did you make sure to check the covariance matrix quality, to make sure the issue doesn\u2019t originate from a problem at that stage?</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-03-18T12:55:45.725Z",
+      "updated_at": "2026-03-18T12:55:45.725Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nThank you for the suggestion. Yes, I extract the correlation matrices from the covariance matrix. Following your suggestion I checked the covariance matrix quality, in most cases it is 3 (\u201cFull, accurate covariance matrix\u201d), and only in a few cases it is 2 (\u201cFull matrix, but forced positive-definite\u201d). However, these quality 2 cases do not seem to consistently line up with the peaks.\nBest,\nNaila",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>Thank you for the suggestion. Yes, I extract the correlation matrices from the covariance matrix. Following your suggestion I checked the covariance matrix quality, in most cases it is 3 (\u201cFull, accurate covariance matrix\u201d), and only in a few cases it is 2 (\u201cFull matrix, but forced positive-definite\u201d). However, these quality 2 cases do not seem to consistently line up with the peaks.</p>\n<p>Best,<br>\nNaila</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-03-26T09:53:56.192Z",
+      "updated_at": "2026-03-26T09:53:56.192Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nA gentle reminder on this thread. We are still looking into this effect, so if anyone has any suggestions or has seen something similar before, we would greatly appreciate your input.\nThank you,\nNaila",
+      "cooked_html": "<p>Dear all,</p>\n<p>A gentle reminder on this thread. We are still looking into this effect, so if anyone has any suggestions or has seen something similar before, we would greatly appreciate your input.</p>\n<p>Thank you,<br>\nNaila</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-04-02T10:15:08.973Z",
+      "updated_at": "2026-04-02T10:15:08.973Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nA gentle reminder on this thread. This analysis is currently on hold until we understand this issue better. For now, we continue studies with temporary values, but no final choice can be made until the source of these spikes is clear.\nAny comments or suggestions would be very helpful.\nBest,\nNaila",
+      "cooked_html": "<p>Dear experts,</p>\n<p>A gentle reminder on this thread. This analysis is currently on hold until we understand this issue better. For now, we continue studies with temporary values, but no final choice can be made until the source of these spikes is clear.</p>\n<p>Any comments or suggestions would be very helpful.</p>\n<p>Best,<br>\nNaila</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2026-04-02T10:40:31.952Z",
+      "updated_at": "2026-04-02T10:40:31.952Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Dear Naila,\nI think it would be good to check whether these uncertainties have variations that make sense.\nHave you tried plotting them? Do they affect the process normalization in the reco bins significantly, or is it mostly shape effect? If they have large normalization effects, it might make sense to normalize the variations, so that they only affect the shape of your observables, especially if you also have background rate parameters in your model.\nConsider uploading the datacards to https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards and we take a look.\nHope that helps,\nAliya",
+      "cooked_html": "<p>Dear Naila,</p>\n<p>I think it would be good to check whether these uncertainties have variations that make sense.</p>\n<p>Have you tried plotting them? Do they affect the process normalization in the reco bins significantly, or is it mostly shape effect? If they have large normalization effects, it might make sense to normalize the variations, so that they only affect the shape of your observables, especially if you also have background rate parameters in your model.<br>\nConsider uploading the datacards to <a href=\"https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards</a> and we take a look.</p>\n<p>Hope that helps,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-04-13T14:10:12.942Z",
+      "updated_at": "2026-04-13T14:10:12.942Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThank you for the suggestion. We tested this in the updated workspaces by removing the normalization effect of all uncertainties on the signal, to check whether this was responsible for the spikes in the regularization strength scan. The spikes still persist. Based on this observation we can confirm that the normalization effect of the uncertainties on the signal does not seem to be the source of the issue.\nThe datacards and their corresponding workspaces have been uploaded to: https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards.\nThank you,\nNaila",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Thank you for the suggestion. We tested this in the updated workspaces by removing the normalization effect of all uncertainties on the signal, to check whether this was responsible for the spikes in the regularization strength scan. The spikes still persist. Based on this observation we can confirm that the normalization effect of the uncertainties on the signal does not seem to be the source of the issue.</p>\n<p>The datacards and their corresponding workspaces have been uploaded to: <a href=\"https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards</a>.</p>\n<p>Thank you,<br>\nNaila</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-04-24T09:37:13.634Z",
+      "updated_at": "2026-04-24T09:37:13.634Z",
+      "reply_to_post_number": 8,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nSince we have not yet been able to identify the source of the issue, we would be very grateful if anyone could help us review the datacards/workspaces. The location of the files is provided in my previous message.\nAny guidance or suggestions on what could be causing the spikes would be greatly appreciated.\nThank you very much for your help,\nNaila for HTT",
+      "cooked_html": "<p>Dear all,</p>\n<p>Since we have not yet been able to identify the source of the issue, we would be very grateful if anyone could help us review the datacards/workspaces. The location of the files is provided in my previous message.<br>\nAny guidance or suggestions on what could be causing the spikes would be greatly appreciated.</p>\n<p>Thank you very much for your help,<br>\nNaila for HTT</p>"
+    },
+    {
+      "post_number": 10,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2026-04-24T09:56:38.109Z",
+      "updated_at": "2026-04-24T09:56:38.109Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi,\nmaybe it is due to the precision of the correlation matrix. Did you try to play with the hesse algorithm or try to use robustHesse?\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<p>maybe it is due to the precision of the correlation matrix. Did you try to play with the hesse algorithm or try to use robustHesse?</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 11,
+      "username": "naislam",
+      "name": "Naila Islam",
+      "created_at": "2026-05-04T10:12:03.472Z",
+      "updated_at": "2026-05-04T10:12:03.472Z",
+      "reply_to_post_number": 10,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nThank you for the suggestion. I tried using --robustHesse 1 together with --cminDefaultMinimizerStrategy 1, and this helped get rid of the spikes in the scan. So it does seem that the issue was related to the precision of the correlation matrix.\nThanks again this suggestion was very helpful. Thanks also to everyone else for the useful comments and suggestions.\nBest,\nNaila for HTT",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>Thank you for the suggestion. I tried using <code>--robustHesse 1</code> together with <code>--cminDefaultMinimizerStrategy 1</code>, and this helped get rid of the spikes in the scan. So it does seem that the issue was related to the precision of the correlation matrix.</p>\n<p>Thanks again this suggestion was very helpful. Thanks also to everyone else for the useful comments and suggestions.</p>\n<p>Best,<br>\nNaila for HTT</p>"
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+TOPIC: Segv with ValidateDatacards.py
+URL: https://cms-talk.web.cern.ch/t/42380
+DATE: 2024-06-14T21:56:22.243Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by wtford @ 2024-06-14T21:56:22.755Z):
+Hi,
+I’m getting a segv crash with this command:
+
+ValidateDatacards.py 1DTChiHH800_LSP1_Data_Combo.txt
+The card file is at [1].  The release is CMSSW_11_3_4, with CombineHarvester/CombineTools checked out.
+The output is
+[SetFlag] Changing value of flag “check-negative-bins-on-import” from 1 to 0
+[SetFlag] Changing value of flag “workspaces-use-clone” from 0 to 1
+[#1] INFO:ObjectHandling – RooWorkspace::import(_rateParams) importing RooRealVar::rp_xsig1_ybkg_met0_drmax1
+[#1] INFO:ObjectHandling – RooWorkspace::import(_rateParams) importing RooRealVar::rp_xbkg_ysig_met1_drmax1
+[#1] INFO:ObjectHandling – RooWorkspace::import(_rateParams) importing RooRealVar::rp_xbkg_ysig_met1_drmax0
+[#0] ERROR:InputArguments –  RooWorkspace::argSet(_rateParams) no RooAbsArg named “rp_xbkg_ysig_met0_drmax1” in workspace
+[#0] ERROR:InputArguments –  RooWorkspace::argSet(_rateParams) no RooAbsArg named “rp_xbkg_ybkg_met0_drmax1” in workspace
+[#0] ERROR:InputArguments –  RooWorkspace::argSet(_rateParams) no RooAbsArg named “kappa_xsig1_ysig_met0_drmax1” in workspace
+[#0] ERROR:InputArguments – RooArgList::operator ERROR: index 1 out of range (0,1)
+*** Break *** segmentation violation
+…
+The rateParam lines (61 of them), are at the end of the datacard file.
+
+[1] https://cernbox.cern.ch/s/nlZa0WLmwFCLlVe
+Any pointers on how to diagnose this would be welcome.
+Thanks,
+Bill
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by kcormier @ 2024-06-19T10:31:37.318Z):
+Hi Bill,
+Sorry for the delayed response. I took a quick look, and I think the issue is related to the order in which things are being declared in your datacard.
+It seems you have some RooFormulaVars defined which rely on params (or rateParams) which aren’t defined until later lines in the datacard, I think this is what is causing the fault.  (see for example, the FormulaVar defined on line 181 which references rateParams defined on lines 235 and 219).
+CombineHarvester is parsing the formulaVar line first and crashing because the relevant parameters aren’t in the workspace yet. There are some other lines like that too, so you’ll need to fix them all.
+Then, unfortunately it seems there is another problem which is a bug in the current recommended release of CH (v2.1.0) however, it has been fixed in the main branch, so you could use that. There will also be a new CH release soon which will include the fix.
+Hope that helps,
+Kyle
+----------------------------------------
+
+REPLY 3 (by wtford @ 2024-06-22T21:07:56.718Z):
+Thanks Kyle.  ValidateDatacards.py now works for me, after reordering to put formulaVars at the end of the txt file, and switching to the main branch of CombineHarvester.
+Bill
+----------------------------------------

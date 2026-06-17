@@ -1,0 +1,20 @@
+TOPIC: Analytic functions and profile NPs with combine
+URL: https://cms-talk.web.cern.ch/t/39053
+DATE: 2024-04-15T06:24:39.405Z
+SOLVED: no
+============================================================
+
+QUESTION (by mzeinali @ 2024-04-15T06:24:39.634Z):
+Dear CAT experts,
+I’ve recently initiated an analysis on the top quark mass measurement, and would like to perform a simultaneous fit with a pdf, defined as the sum of a Gaussian distribution and a Gamma function. However, there was a comment concerning the profile NPs with combine, which might not be possible with analytic functions. I’d like to know whether I can still exploit the idea of using an analytic function in my project or I’ll get into trouble when considering systematics.
+Thanks for your comments on this,
+Maryam
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-04-15T09:05:19.235Z):
+Dear Maryam,
+It is definitely possible to profile nuisance parameters in parametric analyses with Combine.
+In fact, there is a tutorial on parametric models with a section describing how the systematics can be implemented. Please follow the link, and let us know if something is not clear.
+Best,
+Aliya
+----------------------------------------

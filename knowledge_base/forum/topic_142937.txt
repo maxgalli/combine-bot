@@ -1,0 +1,96 @@
+TOPIC: Spikes in regularization 𝛿 scans
+URL: https://cms-talk.web.cern.ch/t/142937
+DATE: 2026-03-12T12:21:18.327Z
+SOLVED: yes (reply 10)
+============================================================
+
+QUESTION (by naislam @ 2026-03-12T12:21:18.764Z):
+Dear all,
+I am studying regularization after unfolding in our analysis, HIG-25-019. The CADI link is here.
+We observe sharp spikes in the 𝛿 scans of the mean global correlation coefficient. From our study it appears that these spikes are linked to increased correlations between the POIs. While individual nuisance parameters tend to reduce the correlations among the POIs, introducing multiple nuisance parameters simultaneously increases these correlations and seems to generate the spikes.
+Has anyone encountered a similar effect before? In particular, we would like to understand what could be causing this behavior and what would be the best way to get rid of these spikes.
+The Combine version used is v10.2.1.  The command
+and used is
+All final state (variable is FastMTTHpT_v5.1) :  combine -t -1 --setParameters delta=1.3 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_all_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_all_2223_FastMTTHpT_v5.1_reg_12
+All NP frozen : combine -t -1 --freezeParameters allConstrainedNuisances --setParameters delta=1.3 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_eltau_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_eltau_2223_FastMTTHpT_v5.1_reg_12
+Freezing NP group btag + DY : combine -t -1 --freezeParameters CMS_MET_unclustered_2022postEE,CMS_MET_unclustered_2022preEE,CMS_MET_unclustered_2023postBPix,CMS_MET_unclustered_2023preBPix,CMS_pileup_2022postEE,CMS_pileup_2022preEE,CMS_pileup_2023postBPix,CMS_pileup_2023preBPix,lumi_13p6TeV_2324,lumi_13p6TeV_correlated --setParameters delta=1.4000000000000001 --X-rtd MINIMIZER_analytic --freezeNuisanceGroups FF,theory,calibration,efficiency,autoMCStats --saveFitResult -M MultiDimFit --algo none -d /afs/cern.ch/user/n/naislam/HTT/emu/CMSSW_13_0_10/src/TauFW/Fitter/soft/CMSSW_14_1_0_pre4/../../HTauTau/Regularization_HTT/UnfoldingDYptll/output/combined_eltau_2223_FastMTTHpT_v5.1_reg.root -n DeltaScan_combined_eltau_2223_FastMTTHpT_v5.1_reg_13
+Please find attached slides with the relevant plots and details below.
+Regularization_spike.pdf (2.3 MB)
+Thanks,
+Naila
+----------------------------------------
+
+REPLY 2 (by naislam @ 2026-03-17T10:05:17.685Z):
+Dear all,
+This is just a gentle reminder on this thread. We are still trying to understand the sharp spikes in the δ scan of the mean global correlation coefficient in our unfolding regularization study for HIG-25-019. If anyone has seen similar behavior before, or has suggestions on the possible cause and how to mitigate it, we would really appreciate your input.
+Thank you,
+Naila
+----------------------------------------
+
+REPLY 3 (by adewit @ 2026-03-17T10:15:10.653Z):
+Dear Naila,
+I don’t have any great suggestions and have not seen this before, but one thing I wondered was how you extracted the correlation matrices? If they’re from the covariance matrix evaluated with the Hesse algorithm, did you make sure to check the covariance matrix quality, to make sure the issue doesn’t originate from a problem at that stage?
+Best,
+Adinda
+----------------------------------------
+
+REPLY 4 (by naislam @ 2026-03-18T12:55:45.725Z):
+Dear Adinda,
+Thank you for the suggestion. Yes, I extract the correlation matrices from the covariance matrix. Following your suggestion I checked the covariance matrix quality, in most cases it is 3 (“Full, accurate covariance matrix”), and only in a few cases it is 2 (“Full matrix, but forced positive-definite”). However, these quality 2 cases do not seem to consistently line up with the peaks.
+Best,
+Naila
+----------------------------------------
+
+REPLY 5 (by naislam @ 2026-03-26T09:53:56.192Z):
+Dear all,
+A gentle reminder on this thread. We are still looking into this effect, so if anyone has any suggestions or has seen something similar before, we would greatly appreciate your input.
+Thank you,
+Naila
+----------------------------------------
+
+REPLY 6 (by naislam @ 2026-04-02T10:15:08.973Z):
+Dear experts,
+A gentle reminder on this thread. This analysis is currently on hold until we understand this issue better. For now, we continue studies with temporary values, but no final choice can be made until the source of these spikes is clear.
+Any comments or suggestions would be very helpful.
+Best,
+Naila
+----------------------------------------
+
+REPLY 7 (by anigamov @ 2026-04-02T10:40:31.952Z):
+Dear Naila,
+I think it would be good to check whether these uncertainties have variations that make sense.
+Have you tried plotting them? Do they affect the process normalization in the reco bins significantly, or is it mostly shape effect? If they have large normalization effects, it might make sense to normalize the variations, so that they only affect the shape of your observables, especially if you also have background rate parameters in your model.
+Consider uploading the datacards to https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards and we take a look.
+Hope that helps,
+Aliya
+----------------------------------------
+
+REPLY 8 (by naislam @ 2026-04-13T14:10:12.942Z):
+Dear Aliya,
+Thank you for the suggestion. We tested this in the updated workspaces by removing the normalization effect of all uncertainties on the signal, to check whether this was responsible for the spikes in the regularization strength scan. The spikes still persist. Based on this observation we can confirm that the normalization effect of the uncertainties on the signal does not seem to be the source of the issue.
+The datacards and their corresponding workspaces have been uploaded to: https://gitlab.cern.ch/cms-analysis/hig/hig-25-019/datacards.
+Thank you,
+Naila
+----------------------------------------
+
+REPLY 9 (by naislam @ 2026-04-24T09:37:13.634Z):
+Dear all,
+Since we have not yet been able to identify the source of the issue, we would be very grateful if anyone could help us review the datacards/workspaces. The location of the files is provided in my previous message.
+Any guidance or suggestions on what could be causing the spikes would be greatly appreciated.
+Thank you very much for your help,
+Naila for HTT
+----------------------------------------
+
+REPLY 10 [ACCEPTED ANSWER] (by amarini @ 2026-04-24T09:56:38.109Z):
+Hi,
+maybe it is due to the precision of the correlation matrix. Did you try to play with the hesse algorithm or try to use robustHesse?
+-Andrea
+----------------------------------------
+
+REPLY 11 (by naislam @ 2026-05-04T10:12:03.472Z):
+Hi Andrea,
+Thank you for the suggestion. I tried using --robustHesse 1 together with --cminDefaultMinimizerStrategy 1, and this helped get rid of the spikes in the scan. So it does seem that the issue was related to the precision of the correlation matrix.
+Thanks again this suggestion was very helpful. Thanks also to everyone else for the useful comments and suggestions.
+Best,
+Naila for HTT
+----------------------------------------

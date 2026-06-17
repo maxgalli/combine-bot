@@ -1,0 +1,44 @@
+TOPIC: Background-only toys: Different variables, same seed
+URL: https://cms-talk.web.cern.ch/t/128928
+DATE: 2025-08-12T14:47:38.436Z
+SOLVED: no
+============================================================
+
+QUESTION (by niharrin @ 2025-08-12T14:47:38.936Z):
+Dear Combine experts,
+I want to generate background only toys in different variables in order to do an interpretation. To compare the toys later, I keep the seed per toy identical for all variables (toy1: variableA, variableB, variableC, seed=123456; toy2: variableA, variableB, variableC, seed=123457; …).
+Two of my variables share the same first bin (same input root files after categorization, both for MC and for data), so I would expect that for the same seed the background only distribution in the observable I bin in (Higgs mass) would look identical. But for some reason, this is not the case.
+I use the variables NJ and PTJ0 which share the first bin (identical functions chosen for the discrete profiling, identical distribution in mgg). The datacards and the input workspaces are attached. For the generation I use the command:
+# Generate NJ
+combine -M GenerateOnly -d ./Datacard_NJ_2023.root -t 1 -s 123456 --setParameters r_NJ_0p0_1p0=0,r_NJ_1p0_2p0=0,r_NJ_2p0_3p0=0,r_NJ_3p0_100p0=0 --saveToys --freezeParameters MH -m 125.38 -n NJ
+
+# Generate PTJ0
+combine -M GenerateOnly -d ./Datacard_PTJ0_2023.root -t 1 -s 123456 --setParameters r_PTJ0_0p0_30p0=0,r_PTJ0_30p0_75p0=0,r_PTJ0_75p0_120p0=0,r_PTJ0_120p0_200p0=0,r_PTJ0_200p0_10000p0=0 --saveToys --freezeParameters MH -m 125.38 -n PTJ0
+
+I set the POI to zero, so I would expect that the signal model and its associated nuisance parameters do not play a role. However, in case I add --toysNoSystematics the two toys I receive are identical in the first bin.
+Since deactivating the randomization of the nuisance parameters is not what I want, I am wondering what is the correct approach here?
+Why do the signal nuisances even play a role when generating a background only toy?
+Thank you very much,
+Nico
+Datacard_PTJ0_2023.txt (88.0 KB)
+Datacard_PTJ0_2023.root (904.1 KB)
+Datacard_NJ_2023.txt (68.4 KB)
+Datacard_NJ_2023.root (713.9 KB)
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-08-26T09:39:51.999Z):
+Hi Nico,
+Did you try removing the other categories aside from the two that should be identical in each card?
+It’s not obvious that the same seed will yield the same results - we’ve noticed this in the past where if one runs text2workspace.py and then produce toys from the resulting ROOT file, you will get identical toys, however if you re-run text2workspace.py, the same seed won’t necessarily yield the same result after running toys (see the discussion here : https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues/883 )
+If you know already that the toys should be exactly the same then you can just generate using one card, and then use the same output file as the “data” for that category when using the second card. Otherwise it might be simpler to generate toys outside of combine if there needs to be some dependence between different categories,
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by niharrin @ 2025-09-05T12:06:35.855Z):
+Dear Nick,
+Thank you very much for your response!
+In the end, we went with your last suggestion and we generated the toys outside of Combine.
+Cheers,
+Nico
+----------------------------------------

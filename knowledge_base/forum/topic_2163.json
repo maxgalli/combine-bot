@@ -1,0 +1,78 @@
+{
+  "topic_id": 2163,
+  "title": "combineCards functionality in combineTool",
+  "url": "https://cms-talk.web.cern.ch/t/2163",
+  "category_id": 279,
+  "created_at": "2021-09-15T16:14:34.000Z",
+  "last_posted_at": "2021-09-20T11:24:39.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Peter_Major",
+      "name": "Peter Major",
+      "created_at": "2021-09-15T16:14:34.000Z",
+      "updated_at": "2023-02-07T10:55:41.971Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Experts,\nTo properly implement the ABCD method into our statistical analysis I\ncrate N+1 datacards now. N for the different signal points and the\nsearch bins and 1 which contains the ABC regions for the relevant\nbackground. I am wondering if it is possible to use the combineTool to\nbuch combine my cards or I should write a bash script that calls\ncombineCards N times.\nSorry if this is not the best place to ask about this, unfortunately I\ncouldn't find this information anywhere.\nCheers, Peter",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Experts,</p>\n<p>To properly implement the ABCD method into our statistical analysis I<br>\ncrate N+1 datacards now. N for the different signal points and the<br>\nsearch bins and 1 which contains the ABC regions for the relevant<br>\nbackground. I am wondering if it is possible to use the combineTool to<br>\nbuch combine my cards or I should write a bash script that calls<br>\ncombineCards N times.</p>\n<p>Sorry if this is not the best place to ask about this, unfortunately I<br>\ncouldn't find this information anywhere.</p>\n<p>Cheers, Peter</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-09-15T17:09:08.000Z",
+      "updated_at": "2021-11-17T08:39:33.439Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nyou can call combineCards one time. Is this your question?\ncombineCards.py [ch1=]datacard1.txt [ch2=]datacard2.txt ... > datacard_comb.txt\nif specified, the part before equal sign will be pretented in the channel names. Normally, it is ch1, ch2, ....\nAlternatively, you can also use combine tools.\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>you can call combineCards one time. Is this your question?</p>\n<p>combineCards.py [ch1=]datacard1.txt [ch2=]datacard2.txt ... &gt; datacard_comb.txt</p>\n<p>if specified, the part before equal sign will be pretented in the channel names. Normally, it is ch1, ch2, ....</p>\n<p>Alternatively, you can also use combine tools.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "Peter_Major",
+      "name": "Peter Major",
+      "created_at": "2021-09-15T20:08:20.000Z",
+      "updated_at": "2021-11-17T08:39:33.573Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrea,\nthank you for the answer. This wasn't exactly what I meant to ask, let me try again.\nWhat I did before:\nI have N signal samples with different gluino masses and my aim is to compute an exclusion plot. I make a datacard for each of these N samples with all search bins in each of the cards. The cards are saved in directories labeled by the corresponding gluino mass, such as\nm_gluino1000/card.txt\n\nthen I run all these cards separately using\ncombineTool.py -M AsymptoticLimits -d  ./m_gluino*/card.txt --there --job-mode condor ...\n\nand finally, gather the results with a python script and make my plot.\nWhat I am trying to do now:\nOne of our backgrounds is computed with the ABCD method. Thus far we just inserted the resulting central value into the datacard with a nuisance parameter representing the uncertainty, but now I implemented it in the datacard using rateParams in accordance with the documentation. For this, it seemed easier to have a separate datacard for the ABC regions. (D=B*C/A)\nI am looking to simplify the following process:\n# for all X\ncombineCards.py Name1=abc.txt Name2=m_gluino<X>/card.txt > m_gluino<X>/card2.txt\ncombineTool.py -M AsymptoticLimits -d  ./m_gluino*/card2.txt --there --job-mode condor ...\n\nCheers,\nPeter",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrea,</p>\n<p>thank you for the answer. This wasn't exactly what I meant to ask, let me try again.</p>\n<p>What I did before:<br>\nI have N signal samples with different gluino masses and my aim is to compute an exclusion plot. I make a datacard for each of these N samples with all search bins in each of the cards. The cards are saved in directories labeled by the corresponding gluino mass, such as</p>\n<pre><code class=\"lang-auto\">m_gluino1000/card.txt\n</code></pre>\n<p>then I run all these cards separately using</p>\n<pre><code class=\"lang-auto\">combineTool.py -M AsymptoticLimits -d  ./m_gluino*/card.txt --there --job-mode condor ...\n</code></pre>\n<p>and finally, gather the results with a python script and make my plot.</p>\n<p>What I am trying to do now:<br>\nOne of our backgrounds is computed with the ABCD method. Thus far we just inserted the resulting central value into the datacard with a nuisance parameter representing the uncertainty, but now I implemented it in the datacard using rateParams in accordance with the documentation. For this, it seemed easier to have a separate datacard for the ABC regions. (D=B*C/A)</p>\n<p>I am looking to simplify the following process:</p>\n<pre><code class=\"lang-auto\"># for all X\n    combineCards.py Name1=abc.txt Name2=m_gluino&lt;X&gt;/card.txt &gt; m_gluino&lt;X&gt;/card2.txt\ncombineTool.py -M AsymptoticLimits -d  ./m_gluino*/card2.txt --there --job-mode condor ...\n</code></pre>\n<p>Cheers,<br>\nPeter</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-09-15T20:37:31.000Z",
+      "updated_at": "2021-11-17T08:39:33.718Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nI don't think that you can skip the combineCards or equivalent step (either as combineCards or combineHarvester),\nas I doubt that the combineTool (for job submission) allows you to do it on the fly (maybe you can have it as a prepend command, but this will not change a lot ...).\nThe idea behind it is that the card should represent a complete input statistical model.\nAlthough, (I don't see the full cmd line nor the dc, so you may already do it or may not be in the condition of doing it), if you are interested in a limit on other than 'r' parameters, do you know you can run the 'singlePoint' cls and check only the 'r=1' point to be (<>0.05); with great benefit on the timing for the limit computations, since you ran only two fits? (instead of eg. comparing the limit on r<>1)\nFurthermore, quite a lot of time actually goes into the model building of the workspace creation (text2workspace), so it may be convenient to factorize out that step, especially if the model is large or if you want a convenient all-in file to ship somewhere (at the prize of fixing the physics model).\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>I don't think that you can skip the combineCards or equivalent step (either as combineCards or combineHarvester),<br>\nas I doubt that the combineTool (for job submission) allows you to do it on the fly (maybe you can have it as a prepend command, but this will not change a lot ...).<br>\nThe idea behind it is that the card should represent a complete input statistical model.</p>\n<p>Although, (I don't see the full cmd line nor the dc, so you may already do it or may not be in the condition of doing it), if you are interested in a limit on other than 'r' parameters, do you know you can run the 'singlePoint' cls and check only the 'r=1' point to be (&lt;&gt;0.05); with great benefit on the timing for the limit computations, since you ran only two fits? (instead of eg. comparing the limit on r&lt;&gt;1)<br>\nFurthermore, quite a lot of time actually goes into the model building of the workspace creation (text2workspace), so it may be convenient to factorize out that step, especially if the model is large or if you want a convenient all-in file to ship somewhere (at the prize of fixing the physics model).</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "Peter_Major",
+      "name": "Peter Major",
+      "created_at": "2021-09-20T10:48:07.000Z",
+      "updated_at": "2021-11-17T08:39:33.904Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrea,\nthis sounds like an interesting option, as at some point I would like to\nextract the ABCD estimates from Combine, to compare them with the values\nwe get from multiplying and dividing histograms.\nI think I would want to do this with r=0 however.\nDoes your comment refer to this functionality?\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/debugging/#analyzing-the-nll-shape-in-each-parameter",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrea,</p>\n<p>this sounds like an interesting option, as at some point I would like to<br>\nextract the ABCD estimates from Combine, to compare them with the values<br>\nwe get from multiplying and dividing histograms.</p>\n<p>I think I would want to do this with r=0 however.</p>\n<p>Does your comment refer to this functionality?<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/debugging/#analyzing-the-nll-shape-in-each-parameter\" class=\"onebox\" target=\"_blank\" rel=\"noopener\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/debugging/#analyzing-the-nll-shape-in-each-parameter</a></p>"
+    },
+    {
+      "post_number": 6,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-09-20T11:24:39.000Z",
+      "updated_at": "2021-11-17T08:39:34.032Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nthe fast scan option, evaluates the likelihood without profiling it.\n(so it plots L( v, \\hat{theta}), rather than L(v,\\hat{theta}_v) for any parameter v). This can be useful for if 1) minimizing the likelihood is consuming and you want a quick view of its value or 2) there is no other parameters (\\vec{theta}==empty) and thus there is nothing to minimize.\nYou can check the value of the ABCD parameters, by looking at their postfit results (with or without r, accordingly to your preference). If you want to freeze r, you may define a new [set] of POIs, to make sure that r is not float (depending on the method used).\nIn MultiDimFit, if you are interested only in the central value of a parameter, you can use for instance:\n--saveSpecifiedNuis arg               Save specified parameters (default =\nnone)\n--saveSpecifiedFunc arg               Save specified function values (default\n= none)\nor the --saveWorkspace that will save the full workspace with a snapshot ('MultiDimFit) of the fit parameters at the best fit.\nif you want to derive (profiled) likelihood scans on a parameter A, you can use:\n-M MultiDimFit --redefineSignalPOIs A,B,C --algo grid --setParameterRanges A=... [--points 50] [--freezeParameters r=0] -P A --floatOtherPOIs=0/1 [--saveInactivePOIs=1]\nOn your original question, I forgot to mention -- at least if you use bash -- that you could in principle do the combineCards step with process substitution (i.e. bash constructs <(), combine -M ... -d <(combineCards.py ... ) ... ),\nbut I discourage it as the final card represents the inputs to your statistical results and it is useful to have them to debug, to understand what is inside, and to preserve.\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>the fast scan option, evaluates the likelihood without profiling it.<br>\n(so it plots L( v, \\hat{theta}), rather than L(v,\\hat{theta}_v) for any parameter v). This can be useful for if 1) minimizing the likelihood is consuming and you want a quick view of its value or 2) there is no other parameters (\\vec{theta}==empty) and thus there is nothing to minimize.</p>\n<p>You can check the value of the ABCD parameters, by looking at their postfit results (with or without r, accordingly to your preference). If you want to freeze r, you may define a new [set] of POIs, to make sure that r is not float (depending on the method used).</p>\n<p>In MultiDimFit, if you are interested only in the central value of a parameter, you can use for instance:<br>\n\u00a0\u00a0--saveSpecifiedNuis arg               Save specified parameters (default =<br>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0none)<br>\n\u00a0\u00a0--saveSpecifiedFunc arg               Save specified function values (default<br>\n\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0= none)<br>\nor the --saveWorkspace that will save the full workspace with a snapshot ('MultiDimFit) of the fit parameters at the best fit.</p>\n<p>if you want to derive (profiled) likelihood scans on a parameter A, you can use:<br>\n-M MultiDimFit --redefineSignalPOIs A,B,C --algo grid --setParameterRanges A=... [--points 50] [--freezeParameters r=0] -P A --floatOtherPOIs=0/1 [--saveInactivePOIs=1]</p>\n<p>On your original question, I forgot to mention -- at least if you use bash -- that you could in principle do the combineCards step with process substitution (i.e. bash constructs &lt;(), combine -M ... -d &lt;(combineCards.py ... ) ... ),<br>\nbut I discourage it as the final card represents the inputs to your statistical results and it is useful to have them to debug, to understand what is inside, and to preserve.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    }
+  ]
+}

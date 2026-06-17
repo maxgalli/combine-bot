@@ -1,0 +1,48 @@
+TOPIC: Physics model definition for Higgs Combine
+URL: https://cms-talk.web.cern.ch/t/97413
+DATE: 2025-01-15T11:35:41.588Z
+SOLVED: no
+============================================================
+
+QUESTION (by gdamolin @ 2025-01-15T11:35:41.697Z):
+Dear experts,
+I am doing a study on Lepton Flavour Universality in ttbar decays, see the CADI [1] or the AN[2] for more details.
+Overall I am fitting 8 signal strengths to extract 3 observables, which are my POIs
+Outlook-b25bfgeq810×170 11.7 KB
+Outlook-qlfdsjev1222×220 12.2 KB
+Outlook-atb4gm4b1222×220 29.1 KB
+Due to some recursivity in the definitions, I cannot simply define the model via command line (Rtau/mu would require Rtau/e to be defined beforehand and viceversa)[3].
+I tried to implement a physics model
+newversionModel.py (2.9 KB)
+but when I try to create the workspace, I get the following error:
+text2workspace.py All2018M.txt -o workspace_all3Rs.root -P HiggsAnalysis.CombinedLimit.LFU2:LFU
+(most recent call last): File "/afs/cern.ch/user/g/gdamolin/CMSSW_14_1_0_pre4/bin/el9_amd64_gcc12/text2workspace.py", line 104, in <module> MB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel) File "/afs/cern.ch/user/g/gdamolin/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py", line 178, in doModel self.out.var(poi.GetName()).setAttribute("group_POI", True) ReferenceError: attempt to access a null-pointer
+
+Do you know what is the problem?
+Can I use an expression as a POI? If not, how can I solve it without encurring into the recursivity problems[3]?
+Cheers,
+Giacomo
+[1]https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=TOP-24-016
+[2]https://cms.cern.ch/iCMS/jsp/db_notes/noteInfo.jsp?cmsnoteid=CMS%20AN-2023/109
+[3]Basically whatever ordering of definition you do, expressing something like
+self.modelBuilder.factory_('expr::rtt_ee("@0/(@1@1)@2@3",rtt_mm,Rmue,rdy_ee,rdy_mm)')
+self.modelBuilder.factory_('expr::rdy_mm("2/(@0/@1+@2/@3)@4*@5",rtt_et,rtt_em,rtt_mt,rtt_mm,rdy_tt,Rtaumu)')
+
+always incurs that the first expression will require a quantity defined in the second (in this case rdy_mm.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-01-16T10:21:11.613Z):
+Dear Giacomo,
+First of all, let me apologise for sending you on a misleading path. Indeed POIs should be RooRealVars. I thought it was possible to use RooFormulaVar instead but I was mistaken.
+I think the only way out in your case is to expand your formulas to resolve the recursivity. What you need to do is write the relations between your parameters so that for a given signal strength you have rXX_yz = f(Rmue,Ratumu,Rtaue,[all other signal strenghts]). At this point this should work.
+For example resolving for rdy_tt I believe this is correct (assuming of course I did the math correctly, which might or might not be the case):
+rdy_tt = 1/2 * ((rtt_et/rtt_em+rtt_mt/rtt_mm)/2*rtt_mm / rtt_ee * rdy_ee / Rmue /Rtaumu + (rtt_mt/rtt_em+rtt_et/rtt_ee)/2*rdy_ee/Rtaue)
+
+Where the recursivity is gone.
+At this point you just need to modify your model removing the lines 58-59 (where you define rdy_tt), uncommenting lines 61-63 (where you create the POIs) and finally add rdy_tt with
+self.modelBuilder.factory_('expr::rdy_tt("<formula above >",<all the parameters>)')
+
+Before doing any of this please check if my algebra is correct as I might have done some mistakes.
+Best regards,
+Giacomo
+----------------------------------------

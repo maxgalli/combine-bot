@@ -1,0 +1,100 @@
+{
+  "topic_id": 142397,
+  "title": "Significance with multiple POIs",
+  "url": "https://cms-talk.web.cern.ch/t/142397",
+  "category_id": 279,
+  "created_at": "2026-02-25T17:19:57.370Z",
+  "last_posted_at": "2026-03-04T12:22:33.804Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "rkunnila",
+      "name": "Rufa Kunnilan Muhammed Rafeek",
+      "created_at": "2026-02-25T17:19:57.820Z",
+      "updated_at": "2026-02-25T17:19:57.820Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nI am working with a 4-POI model (signal strengths: r_ttZ, r_ttH, r_ttC, r_ttB), for a simultaneous measurement\nI compute the expected significance for r_ttB using:\ncombine -M Significance --setParameterRanges r_ttZ=-10,10:r_ttH=-10,10:r_ttC=-10,10:r_ttB=-10,10 --setParameters r_ttZ=1,r_t\ntH=1,r_ttC=1,r_ttB=1 --redefineSignalPOIs r_ttB --cminDefaultMinimizerTolerance 1e-2 --cminDefaultMinimizerStrategy 0 --rMin=-10 --rMax=10 --X-rtd MINIMIZER_analytic -t -1 --signalForSignificance 0 -n _significance_withSysts_fourDim_r_ttB_grouped_ge5 /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/datacards/grouped_ge5_fourDim_r_ttB.root | tee /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/fits/significances/significance_withSysts_fourDim_r_ttB_grouped_ge5.log\ufffc\n\nThis gives an expected significance of about 35. Does this make sense?\nThe expected best fit value is 1.00 +0.3 -0.26, run with the command\ncombine -M FitDiagnostics -m 125 --setParameterRanges r_ttZ=-10,10:r_ttH=-10,10:r_ttC=-10,10:r_ttB=-10,10 --setParameters r_ttZ=1,r_ttH=1,r_ttC=1,r_ttB=1 --redefineSignalPOIs r_ttB --cminDefaultMi\nnimizerTolerance 1e-2 --cminDefaultMinimizerStrategy 0 --rMin=-10 --rMax=10 --X-rtd MINIMIZER_analytic -t -1 --robustFit 1 --saveShapes --saveWithUnc -n _bestfit_withSysts_fourDim_r_ttB_grouped_ge5 /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/datacards/grouped_ge5_fourDim_r_ttB.root | tee /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx\n_noLF1ZnB/run2/fits/bestfits/bestfit_withSysts_fourDim_r_ttB_grouped_ge5.log\nSo, isn\u2019t the expected significance supposed to be 3\ud835\udf0e? Or is it valid only in case of a single POI setup or when other POIs are fixed? Is this 35\ud835\udf0e because \ud835\udf07\\ttB is entangled with other signal strengths?",
+      "cooked_html": "<p>Hello,</p>\n<p>I am working with a 4-POI model (signal strengths: r_ttZ, r_ttH, r_ttC, r_ttB), for a simultaneous measurement<br>\nI compute the expected significance for <code>r_ttB</code> using:</p>\n<pre><code class=\"lang-auto\">combine -M Significance --setParameterRanges r_ttZ=-10,10:r_ttH=-10,10:r_ttC=-10,10:r_ttB=-10,10 --setParameters r_ttZ=1,r_t\ntH=1,r_ttC=1,r_ttB=1 --redefineSignalPOIs r_ttB --cminDefaultMinimizerTolerance 1e-2 --cminDefaultMinimizerStrategy 0 --rMin=-10 --rMax=10 --X-rtd MINIMIZER_analytic -t -1 --signalForSignificance 0 -n _significance_withSysts_fourDim_r_ttB_grouped_ge5 /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/datacards/grouped_ge5_fourDim_r_ttB.root | tee /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/fits/significances/significance_withSysts_fourDim_r_ttB_grouped_ge5.log\ufffc\n</code></pre>\n<p>This gives an <strong>expected significance of about 35</strong>. Does this make sense?</p>\n<p>The expected best fit value is 1.00 <strong>+0.3 -0.26</strong>, run with the command<br>\n<code>combine -M FitDiagnostics -m 125 --setParameterRanges r_ttZ=-10,10:r_ttH=-10,10:r_ttC=-10,10:r_ttB=-10,10 --setParameters r_ttZ=1,r_ttH=1,r_ttC=1,r_ttB=1 --redefineSignalPOIs r_ttB --cminDefaultMi</code><br>\n<code>nimizerTolerance 1e-2 --cminDefaultMinimizerStrategy 0 --rMin=-10 --rMax=10 --X-rtd MINIMIZER_analytic -t -1 --robustFit 1 --saveShapes --saveWithUnc -n _bestfit_withSysts_fourDim_r_ttB_grouped_ge5 /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/datacards/grouped_ge5_fourDim_r_ttB.root | tee /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx</code><br>\n<code>_noLF1ZnB/run2/fits/bestfits/bestfit_withSysts_fourDim_r_ttB_grouped_ge5.log</code></p>\n<p>So, isn\u2019t the expected significance supposed to be 3\ud835\udf0e? Or is it valid only in case of a single POI setup or when other POIs are fixed? Is this 35\ud835\udf0e because \ud835\udf07\\ttB is entangled with other signal strengths?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "rkunnila",
+      "name": "Rufa Kunnilan Muhammed Rafeek",
+      "created_at": "2026-02-25T17:23:50.891Z",
+      "updated_at": "2026-02-25T17:23:50.891Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I am trying to understand why the significance calculation gives ~35\u03c3.\nAny clarification would be appreciated.",
+      "cooked_html": "<p>I am trying to understand why the significance calculation gives ~35\u03c3.<br>\nAny clarification would be appreciated.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2026-02-26T08:38:48.632Z",
+      "updated_at": "2026-02-26T08:38:48.632Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Rufa,\nCan you please share your log, datacards, and workspaces so that we can have a look?\nThank you,\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Rufa,</p>\n<p>Can you please share your log, datacards, and workspaces so that we can have a look?</p>\n<p>Thank you,<br>\nBest regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "rkunnila",
+      "name": "Rufa Kunnilan Muhammed Rafeek",
+      "created_at": "2026-02-26T16:01:25.041Z",
+      "updated_at": "2026-02-26T16:01:25.041Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Thank you for your reply. I attach the documents here.\ngrouped_ge5_fourDim_r_ttB.root (2.9 MB)\ngrouped_ge5.txt (1.0 MB)\nthis is the workspace.\nDatacards:\ndatacard__ge5_other_Run2.txt (67.6 KB)\ndatacard__ge5_ttB_Run2.txt (67.6 KB)\ndatacard__ge5_ttC_Run2.txt (67.6 KB)\ndatacard__ge5_ttH_Run2.txt (67.6 KB)\ndatacard__ge5_ttZB_Run2.txt (67.6 KB)\ndatacard__ge5_ttZnonB_Run2.txt (67.7 KB)\nOne of the log out files:\nsubmitScript.833556_2.out (224.3 KB)\nThanks!",
+      "cooked_html": "<p>Thank you for your reply. I attach the documents here.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/rrSOERwMVi17TfiqqNUe48NcaW8.root\">grouped_ge5_fourDim_r_ttB.root</a> (2.9 MB)</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/88QrAVb4oNt4P928IAP4ZgbAUuO.txt\">grouped_ge5.txt</a> (1.0 MB)<br>\nthis is the workspace.</p>\n<p>Datacards:</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/q7LYCeX5PgNgd7wtwVMIokNAH8F.txt\">datacard__ge5_other_Run2.txt</a> (67.6 KB)</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/4wkeb684fHp4KjpMv6nZS6Oxwd6.txt\">datacard__ge5_ttB_Run2.txt</a> (67.6 KB)</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/vQbFkjrtlFzh8gZiNVu5b6mXeHm.txt\">datacard__ge5_ttC_Run2.txt</a> (67.6 KB)</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/jULKz6gXnnoib1aWD3YeDFjiFAK.txt\">datacard__ge5_ttH_Run2.txt</a> (67.6 KB)</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/bXPpzwa4Zg6nZuXthzb0CqQ0uox.txt\">datacard__ge5_ttZB_Run2.txt</a> (67.6 KB)</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/6BbqG2toCHa6TfqGTNsICac4nSY.txt\">datacard__ge5_ttZnonB_Run2.txt</a> (67.7 KB)</p>\n<p>One of the log out files:</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/2SpkrvRHN8xqcblIpcKx2aI3AkB.out\">submitScript.833556_2.out</a> (224.3 KB)</p>\n<p>Thanks!</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2026-03-02T09:41:15.236Z",
+      "updated_at": "2026-03-02T09:41:15.236Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Rufa,\nIt seems to me the background-only fit is failing, both for the significance calculation and for the fitDiagnostics step. Did you by any chance run the ValidateDatacards tools? If so, can you post the results here?\nAlso, it would be good if you can give me access to the input files using to create the workspaces, so that I can recreate the workspaces myself.\nThank you,\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Rufa,</p>\n<p>It seems to me the background-only fit is failing, both for the significance calculation and for the fitDiagnostics step. Did you by any chance run the ValidateDatacards tools? If so, can you post the results here?<br>\nAlso, it would be good if you can give me access to the input files using to create the workspaces, so that I can recreate the workspaces myself.</p>\n<p>Thank you,<br>\nBest regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "rkunnila",
+      "name": "Rufa Kunnilan Muhammed Rafeek",
+      "created_at": "2026-03-02T15:49:18.281Z",
+      "updated_at": "2026-03-02T15:49:46.322Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nI am working on naf server, the path to datacards is /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/hogwarts/workdir/run2/glp_run7rep2/rpLFVx_noLF1ZnB/run2/datacards\nI produce these datacards by combining per year datacards (/data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/hogwarts/workdir/run2/glp_run7rep2/rpLFVx_noLF1ZnB//datacards) corresponding to each year from 2016preVFP-2018 of Run2.\nFor eg, combine the datacards corresponding to each event-class as below:\ncombineCards.py \\\ny16pre=../../2016preVFP/datacards/datacard__ge5_ttZB.txt \\\ny16post=../../2016postVFP/datacards/datacard__ge5_ttZB.txt \\\ny17=../../2017/datacards/datacard__ge5_ttZB.txt \\\ny18=../../2018/datacards/datacard__ge5_ttZB.txt \\\n\ndatacard__ge5_ttZB_Run2.txt\nCan you access this? or should i copy this to cern server or so?\n\nvalidateDatacards run on one single datacard for eg, ttB, showed:\nValidateDatacards.py datacard__ge5_ttB_Run2.txt\n[SetFlag] Changing value of flag \"check-negative-bins-on-import\" from 1 to 0\n[SetFlag] Changing value of flag \"workspaces-use-clone\" from 0 to 1\n[#1] INFO:ObjectHandling -- RooWorkspace::import(_rateParams) importing RooRealVar::xsnorm_vx\n[#1] INFO:ObjectHandling -- RooWorkspace::import(_rateParams) importing RooRealVar::xsnorm_ttlf\n================================\n=======Validation results=======\n================================\n>>>There were  10 warnings of type  'up/down templates vary the yield in the same direction'\n>>>There were  184 warnings of type  'up/down templates are identical'\n>>>There were no warnings of type  'At least one of the up/down systematic uncertainty templates is empty'\n>>>There were  75 warnings of type  'Uncertainty has normalisation effect of more than 10.0%'\n>>>There were  275 warnings of type  'Uncertainty probably has no genuine shape effect'\n>>>There were no warnings of type 'Empty process'\n>>>There were no warnings of type 'Bins of the template empty in background'\n>>>There were no alerts of type 'Small signal process'\n\nOn the workspace showed\n``ValidateDatacards.py grouped_ge5_fourDim_r_ttH.root\n[SetFlag] Changing value of flag \u201ccheck-negative-bins-on-import\u201d from 1 to 0\n[SetFlag] Changing value of flag \u201cworkspaces-use-clone\u201d from 0 to 1\n=======Validation results=======\n\nThere were no warnings\n\nThanks and regards,",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>I am working on naf server, the path to datacards is /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/hogwarts/workdir/run2/glp_run7rep2/rpLFVx_noLF1ZnB/run2/datacards</p>\n<p>I produce these datacards by combining per year datacards (/data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/hogwarts/workdir/run2/glp_run7rep2/rpLFVx_noLF1ZnB//datacards) corresponding to each year from 2016preVFP-2018 of Run2.</p>\n<p>For eg, combine the datacards corresponding to each event-class as below:<br>\ncombineCards.py \\<br>\ny16pre=../../2016preVFP/datacards/datacard__ge5_ttZB.txt \\<br>\ny16post=../../2016postVFP/datacards/datacard__ge5_ttZB.txt \\<br>\ny17=../../2017/datacards/datacard__ge5_ttZB.txt \\<br>\ny18=../../2018/datacards/datacard__ge5_ttZB.txt \\</p>\n<blockquote>\n<p>datacard__ge5_ttZB_Run2.txt<br>\nCan you access this? or should i copy this to cern server or so?</p>\n</blockquote>\n<p>validateDatacards run on one single datacard for eg, ttB, showed:</p>\n<pre><code class=\"lang-auto\">ValidateDatacards.py datacard__ge5_ttB_Run2.txt \n[SetFlag] Changing value of flag \"check-negative-bins-on-import\" from 1 to 0\n[SetFlag] Changing value of flag \"workspaces-use-clone\" from 0 to 1\n[#1] INFO:ObjectHandling -- RooWorkspace::import(_rateParams) importing RooRealVar::xsnorm_vx\n[#1] INFO:ObjectHandling -- RooWorkspace::import(_rateParams) importing RooRealVar::xsnorm_ttlf\n================================\n=======Validation results=======\n================================\n&gt;&gt;&gt;There were  10 warnings of type  'up/down templates vary the yield in the same direction'\n&gt;&gt;&gt;There were  184 warnings of type  'up/down templates are identical'\n&gt;&gt;&gt;There were no warnings of type  'At least one of the up/down systematic uncertainty templates is empty'\n&gt;&gt;&gt;There were  75 warnings of type  'Uncertainty has normalisation effect of more than 10.0%'\n&gt;&gt;&gt;There were  275 warnings of type  'Uncertainty probably has no genuine shape effect'\n&gt;&gt;&gt;There were no warnings of type 'Empty process'\n&gt;&gt;&gt;There were no warnings of type 'Bins of the template empty in background'\n&gt;&gt;&gt;There were no alerts of type 'Small signal process'\n</code></pre>\n<p>On the workspace showed<br>\n``ValidateDatacards.py grouped_ge5_fourDim_r_ttH.root<br>\n[SetFlag] Changing value of flag \u201ccheck-negative-bins-on-import\u201d from 1 to 0<br>\n[SetFlag] Changing value of flag \u201cworkspaces-use-clone\u201d from 0 to 1</p>\n<p>=======Validation results=======</p>\n<blockquote>\n<blockquote>\n<blockquote>\n<p>There were no warnings</p>\n</blockquote>\n</blockquote>\n</blockquote>\n<p>Thanks and regards,</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2026-03-04T09:41:25.181Z",
+      "updated_at": "2026-03-04T09:41:25.181Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Rufa,\nUnfortunately I can\u2019t access the naf server.\nMy suggestion would be to test the individual cards to see if the background only fit fails in any of them or only in the combination, and to check some of the warnings you get from the validation. The most critical are probably the up/down templates vary the yield in the same direction ones.\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Rufa,</p>\n<p>Unfortunately I can\u2019t access the naf server.</p>\n<p>My suggestion would be to test the individual cards to see if the background only fit fails in any of them or only in the combination, and to check some of the warnings you get from the validation. The most critical are probably the <em>up/down templates vary the yield in the same direction</em> ones.</p>\n<p>Best regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "rkunnila",
+      "name": "Rufa Kunnilan Muhammed Rafeek",
+      "created_at": "2026-03-04T12:22:33.804Z",
+      "updated_at": "2026-03-04T12:22:33.804Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "ok thank you",
+      "cooked_html": "<p>ok thank you</p>"
+    }
+  ]
+}

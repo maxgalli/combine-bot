@@ -1,0 +1,25 @@
+TOPIC: autoMCstats
+URL: https://cms-talk.web.cern.ch/t/139451
+DATE: 2025-11-28T15:20:06.871Z
+SOLVED: no
+============================================================
+
+QUESTION (by omanzani @ 2025-11-28T15:20:07.070Z):
+Dear combine experts,
+I am performing a shape analysis using combine, fitting the invariant mass distribution (from 300 GeV up to 6 TeV, our signal region is at high energies and the low energy region serves to fix the normalization of the MC).  I  have found that when I use autoMCstats to model the statistical uncertainty, I obtain results with higher statistical significance (but same minimums) than when I remove the autoMCstats datacards line (does this have sense?).
+As I said, only the shape of the signal can be changed during the fit (shape analysis).We manage with the normalization using a rateParam (as suggested in this forum).
+I have tried several things: made a rebin requesting bin_content/bin_error>10 and bin_content>1, to avoid possible problems associated with bins with few events; change the autoMCstats threshold; not use autoMCstats for the MC signal… None of them significantly changes the result. Plotting the pulls and impacts, the nuisance parameters associated with statistical uncertainty for bins with more entries are the most important (among nuisance parameters related with statistical uncertainty): low energy bins with a very high number of events and very low statistical uncertainty (usually lower than 1%).
+My guess is that autoMCStats generates nuisance parameters that can only be moved within a very small range in those low-mass bins. This makes those nuisance parameters very important in the fit, so if there is a slight discrepancy between the data and the MC, combine tries to fit it as if it were a signal with high significance.
+Any suggestion?
+Thanks a lot!
+Greetings
+Oliver
+----------------------------------------
+
+REPLY 2 (by adewit @ 2025-12-01T09:11:30.566Z):
+Hi Oliver,
+Generally we wouldn’t expect the addition of bin-by-bin statistical uncertainties using autoMCStats to increase the sensitivity of the analysis (I think you are saying this is what is happening), so this sounds a bit odd.
+For someone to be able to help you, it would be better if you can share your statistical model (datacards and input shapes, and the commands that you are running), as well as the results that you obtained.
+Best,
+Adinda
+----------------------------------------

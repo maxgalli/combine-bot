@@ -1,0 +1,34 @@
+{
+  "topic_id": 11780,
+  "title": "Background estimation via transfer factors and uncertainty correlations",
+  "url": "https://cms-talk.web.cern.ch/t/11780",
+  "category_id": 279,
+  "created_at": "2022-06-16T15:35:47.562Z",
+  "last_posted_at": "2022-06-16T16:04:03.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mwadud",
+      "name": "Mohammad Abrar Wadud",
+      "created_at": "2022-06-16T15:35:47.978Z",
+      "updated_at": "2023-02-09T15:29:22.390Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nWe are performing a measurement of Z(NuNu)+gamma cross-section. The search observable is photon pT. We have two control regions for W+g (mu and e channels) in order estimate its contribution in the signal region via transfer factors estimated from MC. We followed the recipe given in [1].\nThe the uncertainties on these transfer factors are correlated with the uncertainties of the other backgrounds in both the signal and control regions. For example, the photon ID scale factor uncertainty is fully correlated in all regions.\nWe would like to implement this correlation in our Combine data cards and its not clear to us how to instruct Combine to enforce the correlation. If you have any suggestions, that would be most appreciated.\nThanks.\nMohammad\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes",
+      "cooked_html": "<p>Dear all,</p>\n<p>We are performing a measurement of Z(NuNu)+gamma cross-section. The search observable is photon pT. We have two control regions for W+g (mu and e channels) in order estimate its contribution in the signal region via transfer factors estimated from MC. We followed the recipe given in [1].</p>\n<p>The the uncertainties on these transfer factors are correlated with the uncertainties of the other backgrounds in both the signal and control regions. For example, the photon ID scale factor uncertainty is fully correlated in all regions.</p>\n<p>We would like to implement this correlation in our Combine data cards and its not clear to us how to instruct Combine to enforce the correlation. If you have any suggestions, that would be most appreciated.</p>\n<p>Thanks.</p>\n<p>Mohammad</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2022-06-16T16:04:03.000Z",
+      "updated_at": "2022-06-16T16:06:36.405Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "HI Mohammad,\nthe general gist of combine is that parameters with the same name are treated as fully correlated, while parameters with different names are treated as fully uncorrelated.\nSince this is a combine-specific question, however, it\u2019s probably best if you pose it in the HIG-Combination channel.\nCheers,\nPietro\n\n\u00b7\u00b7\u00b7\nDr. Pietro Vischia\nFNRS Fellow\nhttp://cp3.irmp.ucl.ac.be/Members/pvischia\nmobile: 0034 666 986 616 (ES)\noffice: +32 10 473205\nmail: pietro.vischia@cern.ch pietro.vischia@gmail.com\nskype: rambling_hadron",
+      "cooked_html": "<p>HI Mohammad,</p>\n<p>the general gist of combine is that parameters with the same name are treated as fully correlated, while parameters with different names are treated as fully uncorrelated.</p>\n<p>Since this is a combine-specific question, however, it\u2019s probably best if you pose it in the HIG-Combination channel.</p>\n<p>Cheers,<br>\nPietro</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>Dr. Pietro Vischia</p>\n<p>FNRS Fellow</p>\n<p><a href=\"http://cp3.irmp.ucl.ac.be/Members/pvischia\" rel=\"noopener nofollow ugc\">http://cp3.irmp.ucl.ac.be/Members/pvischia</a><br>\nmobile: 0034 666 986 616 (ES)<br>\noffice: +32 10 473205<br>\nmail: <a href=\"mailto:pietro.vischia@cern.ch\">pietro.vischia@cern.ch</a> <a href=\"mailto:pietro.vischia@gmail.com\">pietro.vischia@gmail.com</a><br>\nskype: rambling_hadron</p>\n</details>"
+    }
+  ]
+}

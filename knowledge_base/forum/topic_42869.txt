@@ -1,0 +1,64 @@
+TOPIC: Segmentation violation with Combine v10.0.1 / Asimov vs identical data with bkgs
+URL: https://cms-talk.web.cern.ch/t/42869
+DATE: 2024-06-28T14:50:37.866Z
+SOLVED: no
+============================================================
+
+QUESTION (by jihunk @ 2024-06-28T14:50:38.208Z):
+Dear experts,
+During our statistical study on the analysis, we had several questions.
+1… While executing FigDiagnostics using the command:
+combine -M FitDiagnostics 2018_MuMu_M1000_syst.root --rMin -10 --rMax 10 --saveShapes --saveWithUncertainties -n 2018_MuMu_M1000_syst --plots -t -1
+
+we encountered a segmentation violation error in Combine v10.0.1 (log attached below).
+NewFitDiag.log (93.6 KB)
+This error was not present when using Combine v8.1.0 (quite old though):
+OldFitDiag.log (96.5 KB)
+The input workspaces are provided in [1], along with the log of text2workspace [2], input datacard [3], and the physics model [4] in case.
+It’d be appreciated if you could give any help on why this occurred.
+2… When running Impacts with Asimov toy option (-t -1), the results show that all best fit nuisances are in a line as expected as below:
+Toy_2018_MuMu_M1000_syst.pdf (33.2 KB)
+Now when we run this without Asimov option, filling in ‘data_obs’ histogram with the sum of total backgrounds, (i.e. running simply e.g.
+combineTool.py -M Impacts -d input --rMin -10 --rMax 10 --robustFit 1 --doInitialFit )
+we see somewhat different result:
+TotBkg_2018_MuMu_M1000_syst.pdf (34.1 KB)
+Our initial guess was that the best fit r should be 0, with the nuisances matching the input value exactly, as the input data and backgrounds are identical.
+Could you help us understand why these results differ?
+3… Finally, we were wondering about interpreting ‘prefit’ (or postfit as well) outcomes when running FitDiagnostics with --saveShapes --saveWithUncertainties.
+A typical example would be shown as:
+sr1_CMS_th1x_prefit696×472 4.33 KB
+How should we interpret those blue/green lines and the yellow band?
+This result is from the Asimov option, so none of these should correspond to an input histogram.
+Thanks in advance,
+Jihun.
+[1] /afs/cern.ch/user/j/jihunk/FitDiag/*Combine_2018_MuMu_M1000_syst.root
+[2] /afs/cern.ch/user/j/jihunk/FitDiag/*Workspace.log
+[3] /afs/cern.ch/user/j/jihunk/FitDiag/card_2018_MuMu_M1000_syst.txt
+[4] /afs/cern.ch/user/j/jihunk/FitDiag/HNDilepModel.py
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-07-03T10:01:13.338Z):
+Hi Jihun,
+Sorry for the delayed response. Right now I don’t have permission to view these files, you could you update the permisions or share them e.g. via cernbox so that I can take a closer look?
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by jihunk @ 2024-07-04T06:42:15.706Z):
+Hi Kyle,
+I uploaded those on cernbox as well, please check below:
+https://cernbox.cern.ch/s/8sA1HLndHNmK5F6
+Let me know if you need anything with more details.
+Thanks in advance,
+Jihun.
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2024-07-08T16:26:45.930Z):
+Hi Jihun,
+I think the seg fault was related to some double deletions that were going on when running the plotting. I’ve opened up a PR to fix it here: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/991
+I’m not sure exactly why in some cases it seg faults and in others it just prints a warning. But in any case, it seems at least to be a simple fix.
+For the asimov fit vs replacing the observed data with the prediction, these should give the same result, and when I did this they did (I did not run the full impacts, but just a quick initial fit). Is it possible the histogram does not exactly match the prefit expectation?
+For the last question, these plots are showing you the data overlaid on top of the prefit (or postfit) expected values from the model, showing the background only and signal+background expectations on the same plot, and including the uncertainty bands. Let me know if there is something unclear about the interpretation.
+Best,
+Kyle
+----------------------------------------

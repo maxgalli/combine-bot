@@ -1,0 +1,108 @@
+TOPIC: Wrong error bar in the binned fit in Combine
+URL: https://cms-talk.web.cern.ch/t/21257
+DATE: 2023-03-09T21:38:05.224Z
+SOLVED: no
+============================================================
+
+QUESTION (by fanx @ 2023-03-09T21:38:05.793Z):
+Dear Combine experts,
+I am doing some test binned fits with weighted MC samples. Although the fit itself looks normal, when I plot the dataset in the bestfit snapshot root file or the datacard.root file that actually got fitted, I see wrong error bars.
+
+Each bin has an error bar as large as the number of events in it. The events are weighted and sumW2() is enable. Even without sumW2(), the error bar shouldn’t look like this. Before the RooDataHist is imported into datacar.root, the error bars are normal.
+Can anyone explain what is happening here? Does it mean Combine uses these uncertainties in the fit?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-03-10T11:22:38.737Z):
+Hi Xingchen,
+I would like to help you out, but I’m not entirely clear on how this plot is being produced. Are you able to provide a minimal working example, linking to relevant info (datacards, input histograms) that reproduces the problem, so that I could take a look?
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by fanx @ 2023-03-10T21:27:34.885Z):
+Hi Kyle,
+Thank you for your help! Here are the datacard and two relevant workspaces. The histogram is stored in the workspace_bkg_pow1.root
+workspace_sig_pow1.root (9.9 KB)
+workspace_bkg_pow1.root (320.7 KB)
+datacard_pow1.txt (604 Bytes)
+To reproduce the problem, just run text2workspace.py datacard_pow1.txt -m 125.
+Xingchen
+----------------------------------------
+
+REPLY 4 (by fanx @ 2023-03-15T19:53:43.615Z):
+Hi Kyle,
+Did you have a chance to look at the files?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 5 (by kcormier @ 2023-03-15T20:02:51.989Z):
+Hi Xingchen,
+Yes, sorry for the delay. I’ve taken a look at the files, and can reproduce the issue you showed.
+I’ve at least partially understood why this is happening. But this touches on some aspects I am not very familiar with, so I have asked for a little feedback from some of the more experienced experts as I try to to understand how some of this is handled. Hence the delay.
+I don’t think that this should actually cause any issues in fits etc., but I am not sure of that yet. So I hope to get back to you soon with more information.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 6 (by kcormier @ 2023-03-16T11:58:33.067Z):
+Hi Xingchen,
+I’ve gotten confirmation that these errors are not used anywhere in the fits, so this shouldn’t cause any problems in the analysis. I also ran a quick test which confirmed this for one simple test case.
+It seems to be an issue with how the RooDataHist is recreated as a RooDataSet in the new workspace. If you run into any further issues that may be related, please let us know – but this shouldn’t effect anything in the fit as these are not actually used.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 8 (by fanx @ 2023-03-16T15:35:27.417Z):
+Hi Kyle,
+Thank you so much to confirm that! We suspect that this is an issue in the conversion of RooDataHist to RooDataSet. If these wrong errors are not used in the analysis, can you confirm that the errors that are used in the fit are actually the ones stored in RooDataHist? The concern we have here is that the error information gets lost during the conversion.
+Best
+Xingchen
+----------------------------------------
+
+REPLY 9 (by kcormier @ 2023-03-16T15:49:58.564Z):
+Hi Xingchen,
+I believe that for the data, the errors are not used directly, rather the likelihood function will assume a Poisson distribution for each bin. Does your input data violate this assumption for some reason?
+I think that the Poisson assumption is always made, and therefore the errors on the observed data are not used directly. But I will follow up to try to make sure.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 10 (by fanx @ 2023-03-17T18:55:44.131Z):
+Hi Kyle,
+The problem is that we are treating the MC samples as data (just for testing). This will not be a problem if we actually fit the data, as you said that the Poisson distribution is always assumed in each bin.
+From your reply, my understanding is that, by default, combine thinks of the input samples as actually data, thus the Poisson distribution assumption is made.
+Is it possible to force combine to discard that assumption, and use the error from RooDataHist instead?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 11 (by kcormier @ 2023-03-20T09:39:35.365Z):
+Hi Xingchen,
+Yes, combine is really designed for fitting Poisson distributed data, so the likelihood model gets built on this assumption. Unfortunately, there is no easy way to discard that assumption. Note that it can still be used for many tests starting from a MC model despite this (e.g. fits to pseudodata generated from the nominal model). Though it depends on exactly what you’re trying to do of course.
+Cheers,
+Kyle
+----------------------------------------
+
+REPLY 12 (by fanx @ 2023-03-20T17:13:13.590Z):
+Hi Kyle,
+Thank you again for your detailed explanation! If it is not easy to change, we will see what we can do under this assumption.
+Best
+Xingchen
+----------------------------------------
+
+REPLY 13 (by agilbert @ 2023-03-20T17:18:08.439Z):
+Hi Xingchen,
+Did you consider just writing a small script in plain RooFit to do this kind of fit (taking into account MC weights)?  This is the typical approach for analyses that need to first build an analytic model by fitting to binned MC templates.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 14 (by fanx @ 2023-03-20T18:27:10.923Z):
+Hi Andrew,
+I did do the fit in plain RooFit before I moved to combine. In the RooFit, I can use the option of SumW2 for the error. Is there anything specific I should take a closer look in the plain RooFit fit?
+Best
+Xingchen
+----------------------------------------

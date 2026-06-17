@@ -1,0 +1,24 @@
+TOPIC: "*" and "!" meanings while doing a s+b fit in combine
+URL: https://cms-talk.web.cern.ch/t/10590
+DATE: 2022-05-18T15:16:45.635Z
+SOLVED: no
+============================================================
+
+QUESTION (by runiyal @ 2022-05-18T15:16:45.896Z):
+Hi Experts,
+I am currently running a b-only and s+b only fit for my analysis, however I am observing “!” and “*” in the output of the pulls
+combine -M FitDiagnostics workspace_ttbare.root  -t -1 --expectSignal 1  --cminDefaultMinimizerStrategy 0 --forceRecreateNLL
+python …/…/…/…/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnosticsTest.root --all
+name                                              b-only fit            s+b fit         rho  approx impact
+pileup2018                                       -0.00, 0.61     * +0.00, 0.67*     +0.40      +3.750
+trig_e2018                                       +0.00, 0.99        +0.00, 0.99       +0.04      +0.510
+id_e2018                                         +0.00, 0.79     * -0.00, 0.79*     -0.04      -0.477
+lumi2018                                         +0.00, 0.68     * +0.00, 0.68*     +0.02      +0.170
+reco_e2018                                       +0.00, 0.96        -0.00, 0.96       +0.01      +0.080
+I looked up the https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/94a7b09745906d7c7eb4bc3b5e60d5a65c741e79/test/diffNuisances.py#L44
+and seems like “*” represent the severe val and sigma changes based on a threshold
+and like wise for “!”
+My questions is: how do I interpret these symbols as to find out what’s wrong in my fitting strategy
+thank you
+Rishabh
+----------------------------------------

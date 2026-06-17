@@ -1,0 +1,45 @@
+{
+  "topic_id": 60373,
+  "title": "Systematic uncertainties at pre-selection",
+  "url": "https://cms-talk.web.cern.ch/t/60373",
+  "category_id": 279,
+  "created_at": "2024-11-09T00:35:55.310Z",
+  "last_posted_at": "2024-11-11T15:35:02.978Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jiyoo",
+      "name": "Jieun Yoo",
+      "created_at": "2024-11-09T00:35:55.773Z",
+      "updated_at": "2024-11-09T00:35:55.773Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nI\u2019m not sure if you help with this. I can plot the final systematic uncertainties for my final fit (take it from combine). But our subgroup convenors would like systematic uncertainties at pre-selection like before we do the final cuts (in our case we have plots before we apply a tagger score).\nI\u2019m a little confused how to do this. I know we have for example lnN uncertainties in our datacard. Also, we have shape uncertainties.\nAre those same uncertainties what convenors want? Is there some rule of thumb that people generally use when they add systematic uncertainties at this pre-selection level? Or do I just choose what I think are some major ones and put some sort of uncertainty?\nThank you very much.\nSincerely,\nJieun",
+      "cooked_html": "<p>Hello,</p>\n<p>I\u2019m not sure if you help with this. I can plot the final systematic uncertainties for my final fit (take it from combine). But our subgroup convenors would like systematic uncertainties at pre-selection like before we do the final cuts (in our case we have plots before we apply a tagger score).</p>\n<p>I\u2019m a little confused how to do this. I know we have for example lnN uncertainties in our datacard. Also, we have shape uncertainties.</p>\n<p>Are those same uncertainties what convenors want? Is there some rule of thumb that people generally use when they add systematic uncertainties at this pre-selection level? Or do I just choose what I think are some major ones and put some sort of uncertainty?</p>\n<p>Thank you very much.</p>\n<p>Sincerely,<br>\nJieun</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "ntrevisa",
+      "name": "Nicolo Trevisani",
+      "created_at": "2024-11-09T19:40:22.358Z",
+      "updated_at": "2024-11-09T19:40:22.358Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi all,\nI am one of the conveners, and what we are requesting is a data/MC comparison where the total uncertainty band is shown for the MC prediction.\nThe approach we typically use is to sum in quadrature all the uncertainties (lnN and shape ones), with the idea of having a meaningful estimate of the prediction agreement with data. This is valid since the nuisances are independent, and allows to produce the plots without using Combine or performing any fit.\nI hope this helps in understanding our request.\nBest,\nNicol\u00f2",
+      "cooked_html": "<p>Hi all,</p>\n<p>I am one of the conveners, and what we are requesting is a data/MC comparison where the total uncertainty band is shown for the MC prediction.</p>\n<p>The approach we typically use is to sum in quadrature all the uncertainties (lnN and shape ones), with the idea of having a meaningful estimate of the prediction agreement with data. This is valid since the nuisances are independent, and allows to produce the plots without using Combine or performing any fit.</p>\n<p>I hope this helps in understanding our request.</p>\n<p>Best,<br>\nNicol\u00f2</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-11-11T15:35:02.978Z",
+      "updated_at": "2024-11-11T15:35:02.978Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Jieun,\nJust wanted to add that you can produce pre-fit and post-fit plots with FitDiagnostics as described here, alternatively you can do it with PostFitShapesFromWorkspace from CombineHarvester with the --prefit option. Anyway for the pre-fit plots both of these methods will sum the uncertainties in quadrature, which is exactly what you want to do, and one can do it relatively easily starting from the datacards.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Jieun,</p>\n<p>Just wanted to add that you can produce pre-fit and post-fit plots with FitDiagnostics as described <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part5/longexercise/?h=post#c-post-fit-distributions\" rel=\"noopener nofollow ugc\">here</a>, alternatively you can do it with <a href=\"https://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html\" rel=\"noopener nofollow ugc\">PostFitShapesFromWorkspace</a> from CombineHarvester with the <code>--prefit</code> option. Anyway for the pre-fit plots both of these methods will sum the uncertainties in quadrature, which is exactly what you want to do, and one can do it relatively easily starting from the datacards.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

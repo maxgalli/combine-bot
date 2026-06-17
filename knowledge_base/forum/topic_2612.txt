@@ -1,0 +1,16 @@
+TOPIC: Re: Toy distributions in goodnesses-of-fit changing between Combine tags version 8.1 and 8.2
+URL: https://cms-talk.web.cern.ch/t/2612
+DATE: 2021-11-23T11:55:52.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by adewit @ 2021-11-23T11:55:52.000Z):
+*** Discussion title: Higgs Combination
+Dear Robert,
+Did you try the toy generation with --X-rtd MINIMIZER_no_analytic as
+well? Perhaps this is causing the difference. If you've tried that and
+it isn't the source of the difference, please provide a minimum working
+example datacard that reproduces the issue, so that we can have a look.
+Best,
+Adinda
+----------------------------------------

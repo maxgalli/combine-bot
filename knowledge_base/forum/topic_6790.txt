@@ -1,0 +1,139 @@
+TOPIC: autoMCStats nuisance parameter constraints smaller than expected
+URL: https://cms-talk.web.cern.ch/t/6790
+DATE: 2022-02-17T23:22:04.820Z
+SOLVED: no
+============================================================
+
+QUESTION (by abrinke1 @ 2022-02-17T23:22:05.192Z):
+Hi all,
+We’re doing some basic tests with a toy datacard, looking at cases where the MC stat uncertainties in the background are much larger than the Poisson “uncertainty” on the data.  In particular, we’re looking at toy data in 10 bins with yields close to 10k per bin, and a background model predicting exactly 10k events per bin, but with a statistical uncertainty of 1000 per bin.  (The code snippet for generating the ROOT file is below.)  We then use the datacard below (with autoMCStats), fit the data, and look at the post-fit nuisance parameter constraints:
+combine -M FitDiagnostics GoFtest.txt --saveShapes --saveWithUncertainties --setParameters r=1 --freezeParameters r
+Since the initial MC stat uncertainty was 1000, and the bin yields in data are around 10k, we would have expected a post-fit uncertainty of 100 on the bin statistics nuisance parameters, or 0.1 times the pre-fit values.  Instead we see the nuisance parameters are constrained only by 50% or so.  Does anyone have a good explanation of why this might be?  Are there any options related to autoMCStats which would result in more expected behavior?  Or are our expectations wrong?
+Best regards,
+Andrew Brinkerhoff and Brooks McMaster
+
+root -l
+TFile * GoF_low_MC_stats = new TFile("GoF_low_MC_stats.root", "NEW")
+TH1F *data = new TH1F("data", "data", 10, 0.5, 10.5)
+data->Sumw2()
+Int_t data_yields[10] = {9800, 9850, 9900, 9950, 10000, 10000, 10050, 10100, 10150, 10200}
+for (Int_t i=0;i<10;i++) { for (Int_t j=0;j<data_yields[i];j++) { data->Fill(i+1); } }
+TH1F *bkg = new TH1F("bkg", "bkg", 10, 0.5, 10.5)
+for (Int_t i=0;i<10;i++) { bkg->SetBinContent(i+1, 10000); bkg->SetBinError(i+1, 1000); }
+TH1F *sig = new TH1F("sig", "sig", 10, 0.5, 10.5)
+for (Int_t i=0;i<10;i++) { sig->SetBinContent(i+1, 0.1); sig->SetBinError(i+1, 0.01); }
+data->Write()
+bkg->Write()
+sig->Write()
+.q
+
+imax 1  number of channels
+jmax 1  number of backgrounds
+kmax 1  number of nuisance parameters (sources of systematical uncertainties)
+shapes * * GoF_low_MC_stats.root $PROCESS $PROCESS_$SYSTEMATIC
+------------
+bin         sig
+observation -1
+------------
+bin             sig         sig
+process         sig         bkg
+process         0           1
+rate            -1          -1
+------------
+test    lnN     1.0001         1.0001
+*           autoMCStats         10          0           1
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-02-18T00:12:54.000Z):
+Hi Andrew,
+I don’t think that FitDiagnostics saveShapes is giving exactly the answer you seek, and it may depend on how you generate the toys.
+I assume you are using prefit toys.
+But yet it is still pretty consistent (~100):
+combine -M FitDiagnostics dc.txt --saveShapes --saveWithUncertainties --setParameters r=1 --freezeParameters r --skipSBFit
+image.png696×250 29.4 KB
+(actually freezeParameter poi will not work with fitdiagnostics as it will by default run two fits, one with and one without the poi.
+Are you sure you don’t get a warning since the s+b fit should fail as you won’t be able to find the minimum within the range?
+)
+The impact plots or a likelihood scan on those parameters will tell you the constraint term (and it seems pretty small, certainly not half).
+image.png1892×1464 163 KB
+-Andrea
+
+···
+On Fri, Feb 18, 2022 at 12:25 AM Andrew Brinkerhoff via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+| Andrew Brinkerhoff abrinke1February 17 |
+
+| - |
+
+Hi all,
+We’re doing some basic tests with a toy datacard, looking at cases where the MC stat uncertainties in the background are much larger than the Poisson “uncertainty” on the data. In particular, we’re looking at toy data in 10 bins with yields close to 10k per bin, and a background model predicting exactly 10k events per bin, but with a statistical uncertainty of 1000 per bin. (The code snippet for generating the ROOT file is below.) We then use the datacard below (with autoMCStats), fit the data, and look at the post-fit nuisance parameter constraints:
+combine -M FitDiagnostics GoFtest.txt --saveShapes --saveWithUncertainties --setParameters r=1 --freezeParameters r
+Since the initial MC stat uncertainty was 1000, and the bin yields in data are around 10k, we would have expected a post-fit uncertainty of 100 on the bin statistics nuisance parameters, or 0.1 times the pre-fit values. Instead we see the nuisance parameters are constrained only by 50% or so. Does anyone have a good explanation of why this might be? Are there any options related to autoMCStats which would result in more expected behavior? Or are our expectations wrong?
+Best regards,
+Andrew Brinkerhoff and Brooks McMaster
+
+root -l
+
+TFile * GoF_low_MC_stats = new TFile("GoF_low_MC_stats.root", "NEW")
+
+TH1F *data = new TH1F("data", "data", 10, 0.5, 10.5)
+
+data->Sumw2()
+
+Int_t data_yields[10] = {9800, 9850, 9900, 9950, 10000, 10000, 10050, 10100, 10150, 10200}
+
+for (Int_t i=0;i<10;i++) { for (Int_t j=0;j<data_yields[i];j++) { data->Fill(i+1); } }
+
+TH1F *bkg = new TH1F("bkg", "bkg", 10, 0.5, 10.5)
+
+for (Int_t i=0;i<10;i++) { bkg->SetBinContent(i+1, 10000); bkg->SetBinError(i+1, 1000); }
+
+TH1F *sig = new TH1F("sig", "sig", 10, 0.5, 10.5)
+
+for (Int_t i=0;i<10;i++) { sig->SetBinContent(i+1, 0.1); sig->SetBinError(i+1, 0.01); }
+
+data->Write()
+
+bkg->Write()
+
+sig->Write()
+
+.q
+
+imax 1  number of channels
+
+jmax 1  number of backgrounds
+
+kmax 1  number of nuisance parameters (sources of systematical uncertainties)
+
+shapes * * GoF_low_MC_stats.root $PROCESS $PROCESS_$SYSTEMATIC
+
+------------
+
+bin         sig
+
+observation -1
+
+------------
+
+bin             sig         sig
+
+process         sig         bkg
+
+process         0           1
+
+rate            -1          -1
+
+------------
+
+test    lnN     1.0001         1.0001
+
+*           autoMCStats         10          0           1
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by ncsmith @ 2022-02-18T15:27:18.270Z):
+Perhaps HESSE failed for one of the fits? For --saveShapes it relies on getting a good Hessian at the minimum. You could check by opening the fitDiagnosticsTest.root and looking at fit_b->Print() to see the minimization status. Also in that printout, you should find the MC stat nuisance params (prop_*) with strong constraints if everything worked as expected.
+----------------------------------------

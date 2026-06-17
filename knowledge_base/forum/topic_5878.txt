@@ -1,0 +1,44 @@
+TOPIC: Questions about discrete profiling method
+URL: https://cms-talk.web.cern.ch/t/5878
+DATE: 2022-02-07T12:22:36.527Z
+SOLVED: no
+============================================================
+
+QUESTION (by mratti @ 2022-02-07T12:22:36.783Z):
+Dear Combine experts,
+I write to ask a couple of questions about the discrete profiling method in combine.
+The first question regards the interpretation of what’s happening in the minimisation when the discrete profiling is activated with the pdf_index free to float.
+I have tried to give an interpretation myself, but I am not sure how realistic it is: in my mind Minuit tries to minimise the NLL in all parameters, including the pdf_index. Say that the pdf_index can take four values, I imagine minuit/combine constructs four NLLs, one for each value of the pdf_index, minimises each separately and looks for the overall minimum. Thus it could find the best-fit value for the pdf_index and for the NPs associated to that pdf.
+The second related question concerns the errors on the fit parameters. Can I assume that they are meaningful? In particular I have run the FitDiagnostics and retrieved the errors with diffNuisances.py (an example output can be found below).
+I ask this because I encountered a warning in the combine documentation that tells:
+“You should be careful since MINOS knows nothing about the discrete nuisances and hence estimations of uncertainties will be incorrect via MINOS. Instead, uncertainties from scans and limits will correctly account for these nuisances.”
+which would make me believe that I should not trust those numbers as meaningful for any of the NPs, despite the fact that they look sensible.
+If that’s the case, would you recommend an alternative method to extract errors and meaningful correlations on the NPs?
+Many thanks for the feedback,
+Maria Giulia
+========================
+Example datacard:
+/afs/cern.ch/user/m/mratti/public/combine/bhnl_m2.75_s0.025_ns5_lxy1to5_SS_datacard.txt
+Example commands:
+$ combine -M FitDiagnostics bhnl_m2.75_s0.025_ns5_lxy1to5_SS_datacard.txt  -m 0 --name _BASICS_lxy1to5_SS  --cminDefaultMinimizerStrategy=0 --X-rtd MINIMIZER_freezeDisassociatedParams  -v 2  --plots --saveNormalizations --saveShapes
+
+$ python test/diffNuisances.py fitDiagnostics_BASICS_lxy1to5_SS.root --all --abs
+
+name                                                 pre fit                        b-only fit                           s+b fit         rho  approx impact
+r                                              [0.00, 20.00]                              n/a                  +0.00 +6.00 14.86       +1.00    +220.885
+shapeBkg_background_lxy1to5_SS__norm          [0.00, 819.00]                 +273.00 +/- 16.52                 +273.00 +/- 16.52       -0.00      -0.124
+lumi                                         0.000000 +/- 1.000000    +0.00 +/- 1.00 (+0.00sig, 1.00)    -0.00 +/- 1.00 (-0.00sig, 1.00)       -0.00      -0.000
+env_pdf_3_2018_13TeV_pow1_p1                   [-9.00, 4.00]                    -0.25 +/- 2.25                    -0.25 +/- 2.25       +0.00      +0.000
+env_pdf_3_2018_13TeV_lau1_l1                    [0.00, 1.00]                    +1.00 +/- 0.00                    +1.00 +/- 0.00       +0.00      +0.000
+env_pdf_3_2018_13TeV_exp1_p1                   [-4.00, 0.00]                    -0.09 +/- 0.00                    -0.09 +/- 0.00       +0.00      +0.000
+env_pdf_3_2018_13TeV_bern1_p0                [-15.00, 15.00]                    +0.99 +/- 0.00                    +0.99 +/- 0.00       +0.00      +0.000
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-02-16T13:11:51.172Z):
+Hi Maria Giulia,
+Apologies for the slow reply. Others can comment better on the exact implementation (in particular optimizations to ensure the runtime of this procedure does not blow up) of the discrete profiling, but broadly speaking yes, for each fit point we loop through the different pdf indices, minimize with the other parameters, and find the overall minimum.
+I mainly wanted to comment on the uncertainties on the fit parameters. I believe the statement in the documentation is about the confidence interval on the POI, which you should extract from an explicit scan  (e.g. with MultiDimFit). This is always the recommended procedure but even more important for this case. For the NP’s, generally when you run FitDiagnostics on a model that uses discrete profiling, there will be parameters that don’t affect the likelihood around the minimum and so inverting the Hessian matrix (which is done here to get the covariance matrix) does not work properly. You should run the nuisance parameter impacts (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#nuisance-parameter-impacts) instead to get the nuisance parameter constraints.
+Finally, not related to your question, but given that it looks like you’re starting to set up the datacards, remember to keep the analysis blinded (running on the pre-fit asimov dataset with -t -1) during the design stage.
+Hope this helps,
+Adinda
+----------------------------------------

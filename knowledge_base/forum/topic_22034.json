@@ -1,0 +1,56 @@
+{
+  "topic_id": 22034,
+  "title": "Question on how to veto within combine",
+  "url": "https://cms-talk.web.cern.ch/t/22034",
+  "category_id": 279,
+  "created_at": "2023-03-29T20:44:28.531Z",
+  "last_posted_at": "2023-03-31T12:52:34.689Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anlyon",
+      "name": "Anne-Mazarine Lyon",
+      "created_at": "2023-03-29T20:44:28.862Z",
+      "updated_at": "2023-03-29T20:44:28.862Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am contacting you to ask how to correctly veto a mass region within combine.\nI would like to perform a fit on a mass spectrum with a veto on a region with a SM resonance. In the example below, we consider the J/psi resonance around mass 3.1 GeV.\nPrior to the combine fit, the mass distribution is modeled with a set of functions (envelope method), using as an input a workspace containing a histogram depleted from the vetoed events [1]. As can be seen in [2], the functions and their normalisation behave well. The content of the envelope is saved together with the histogram in an output workspace [3], that is then given to combine.\nThe combine fit is run using the FitDiagnostics method with the datacard [4] and command [5]. The obtained background-only postfit plot is shown in [6]. It is clear from this plot that the vetoed region is not ignored and rather influences the fit.\nMy question is therefore how to avoid this situation, and implement correctly a veto within combine?\nThank you very much in advance for your help!\nBest,\nAnne-Mazarine\n[1] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/input_workspace.root\n[2] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/multipdf.png\n[3] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/output_workspace.root\n[4] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/datacard.txt\n[5] combine -M FitDiagnostics datacard.txt --cminDefaultMinimizerStrategy=0 --X-rtd MINIMIZER_freezeDisassociatedParams --plots\n[6] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/postfit_bonly.png",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am contacting you to ask how to correctly veto a mass region within combine.</p>\n<p>I would like to perform a fit on a mass spectrum with a veto on a region with a SM resonance. In the example below, we consider the J/psi resonance around mass 3.1 GeV.</p>\n<p>Prior to the combine fit, the mass distribution is modeled with a set of functions (envelope method), using as an input a workspace containing a histogram depleted from the vetoed events [1]. As can be seen in [2], the functions and their normalisation behave well. The content of the envelope is saved together with the histogram in an output workspace [3], that is then given to combine.</p>\n<p>The combine fit is run using the FitDiagnostics method with the datacard [4] and command [5]. The obtained background-only postfit plot is shown in [6]. It is clear from this plot that the vetoed region is not ignored and rather influences the fit.</p>\n<p>My question is therefore how to avoid this situation, and implement correctly a veto within combine?</p>\n<p>Thank you very much in advance for your help!</p>\n<p>Best,</p>\n<p>Anne-Mazarine</p>\n<p>[1] <a href=\"https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/input_workspace.root\" rel=\"noopener nofollow ugc\">https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/input_workspace.root</a><br>\n[2] <a href=\"https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/multipdf.png\" rel=\"noopener nofollow ugc\">https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/multipdf.png</a><br>\n[3] <a href=\"https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/output_workspace.root\" rel=\"noopener nofollow ugc\">https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/output_workspace.root</a><br>\n[4] <a href=\"https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/datacard.txt\" rel=\"noopener nofollow ugc\">https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/datacard.txt</a><br>\n[5] combine -M FitDiagnostics datacard.txt --cminDefaultMinimizerStrategy=0 --X-rtd MINIMIZER_freezeDisassociatedParams --plots<br>\n[6] <a href=\"https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/postfit_bonly.png\" rel=\"noopener nofollow ugc\">https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/postfit_bonly.png</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-03-30T13:49:38.302Z",
+      "updated_at": "2023-03-30T13:50:37.699Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Anne-Mazarine,\nIt is true that the bins with 0 data events are not removed from the likelihood. If you want to run the fits on data in side-band regions with combine you should split events into signal and side-band categories \u2013 \u201cbins\u201d in combine language with common parametric pdf for background. Then you can run simultaneous fits with masked signal categories.\nIn principle I think there is usually no need to do this, since to keep data blinded you can use toys generated according to background-only or signal+background hypothesis, with background model  extracted from sidebands, the same way you do it now. See detailed instructions on this topic here.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Anne-Mazarine,</p>\n<p>It is true that the bins with 0 data events are not removed from the likelihood. If you want to run the fits on data in side-band regions with combine you should split events into signal and side-band categories \u2013 \u201cbins\u201d in combine language with common parametric pdf for background. Then you can run simultaneous fits with <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#channel-masking\" rel=\"noopener nofollow ugc\">masked</a> signal categories.<br>\nIn principle I think there is usually no need to do this, since to keep data blinded you can use toys generated according to background-only or signal+background hypothesis, with background model  extracted from sidebands, the same way you do it now. See detailed instructions on this topic <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#background-modelling\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-03-30T13:59:24.827Z",
+      "updated_at": "2023-03-30T13:59:24.827Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Just adding the link to the instructions for fits with toys [1].\nLet me know if you have questions,\nAliya\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation",
+      "cooked_html": "<p>Just adding the link to the instructions for fits with toys [1].<br>\nLet me know if you have questions,<br>\nAliya</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation</a></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-03-31T12:52:34.689Z",
+      "updated_at": "2023-03-31T12:52:34.689Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Anne-Mazarine,\nI just wanted to strengthen Aliya\u2019s second suggestion - ie using the background parameterization that you extracted with RooFit before passing the workspace to combine, and then using this to generate an asimov dataset (adding -t -1 to the command) or toys if needed.\nI am not aware of any analyses where this was not sufficient.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Anne-Mazarine,</p>\n<p>I just wanted to strengthen Aliya\u2019s second suggestion - ie using the background parameterization that you extracted with RooFit before passing the workspace to combine, and then using this to generate an asimov dataset (adding -t -1 to the command) or toys if needed.</p>\n<p>I am not aware of any analyses where this was not sufficient.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

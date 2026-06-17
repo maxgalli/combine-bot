@@ -1,0 +1,68 @@
+TOPIC: Problematic Post fit normalisations
+URL: https://cms-talk.web.cern.ch/t/143770
+DATE: 2026-04-06T13:25:28.955Z
+SOLVED: no
+============================================================
+
+QUESTION (by gmelachr @ 2026-04-06T13:25:29.478Z):
+Dear experts,
+I am working on a simultaneous fit which has two channels. The two channels using roofit are like this:
+fit_with_components_Kstar0q11696×750 15.6 KB
+fit_with_components_phiq11696×750 15.3 KB
+For each channel, the blue distribution is the magenta distribution for the other channel. The normalisations for the blue distributions are RooRealVar’s while the normalisations for the magenta distributions are RooFormulaVar’s, which are the product of the RooRealVar times an efficiency factor, which at this stage is calculated from MC and it is fixed.
+Given the output of RooFit, I tried to put this fit in COMBINE. This is the
+q12.txt (3.1 KB)
+datacard and this is the root file
+q12.root (282.0 KB)
+that is produced once I compile the datacard. I read the workspace and it seems that everything is created fine.
+I run combine with:
+combine -M MultiDimFit q12.txt --freezeParameters r --redefineSignalPOIs normalisation_Kstar0Signal_Kstar0q12,normalisation_PhiSignal_phiq12 --saveWorkspace -n .bestfit
+and the fit converges. But:
+I am using a very simple plotter and I see that the postfit pdfs are completely off for both channels, while the prefit pdfs are fine. So, I understand that the datacard and the injection into combine is safe. The pull distribution (which is calculated wrt the postfit pdf) shows again that something is going very wrong with the postfit normalisations.
+prefit_postfit_phiq12796×772 12.7 KB
+prefit_postfit_Kstar0q12796×772 12.1 KB
+The shapes (both for the signals and the backgrounds) are frozen and actually only the normalisations are let to float.
+This is the rootfile which has the pre and post fit snapshots from combine. The values of all the normalisations are very different in the two snapshots.
+higgsCombine.bestfit.MultiDimFit.mH120.root (304.8 KB)
+One of the things that I don’t understand is what is happening with this
+prefit_postfit_phiq12796×772 12.7 KB
+plot, where the sum of the normalisations seems to be much smaller with respect to the entries of the dataset, but however, none of the normalisations are hitting the ranges of the RooRealVar’s.
+For the postfit case, I also plotted the signal and background components, but I didn’t really understand something new.
+prefit_postfit_phiq12796×772 12.4 KB
+prefit_postfit_Kstar0q12796×772 11.9 KB
+I also tried to use the FitDiagnostics
+combine -M FitDiagnostics q12.txt --freezeParameters r --redefineSignalPOIs normalisation_Kstar0Signal_Kstar0q12,normalisation_PhiSignal_phiq12 --saveWorkspace -n .bestfit
+But again, the normalisations are wrong.
+image1004×665 83.5 KB
+Could you please help me understand what is happening here? I have some other channels where the post fit and prefit are in remarkable agreement but in this case (and in some other cases as well) the postfit normalisations don’t make any sense and I can’t really understand why.
+Thank you,
+Giorgos
+----------------------------------------
+
+REPLY 2 (by gmelachr @ 2026-04-06T23:01:03.869Z):
+Hello,
+I kept investigating the situation and I think I understood what is happening. I noticed that all the bins that suffer from this behavior have the same functional form for the background component, which is a single-sided crystal ball. I opened the workspace and I noticed this:
+image1071×354 214 KB
+All the other pdfs are defined in their classes as f(x,p1,p2…) while the single-sided CB is f(m,p1,p2…), So, in the same bin some pdfs are f(x) and one pdf is f(m). Therefore, I replaced the single-sided CB with a double-sided CB (which depends on x) and the pre-fit and the post-fit pdfs and normalisations are in agreement.
+image1052×1071 113 KB
+Therefore, in order to avoid similar confusions in the future, I would propose to update the class of the RooCBShape and replace the dependense on m with a dependence on  x.
+Best,
+Giorgos
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2026-04-07T08:15:01.627Z):
+Hi Giorgos,
+Maybe I’m missing something, but in principle the label “m” in RooCBShape is just a dummy internal label for the observable, it shouldn’t make any difference whether it is “x” or “m”. What matters is that it maps on to the same RooRealVar, which seems like it in your case.
+If you have a minimal failing example (including plotting script), I could try to take a look at it.
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 4 (by gmelachr @ 2026-04-07T09:03:00.370Z):
+Dear Andrew,
+the datacard, the workspace and the commands that I used are available in the initial message.
+I attached here the plotting script.
+plotter_channels.py (8.1 KB)
+Best,
+Giorgos
+----------------------------------------

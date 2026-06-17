@@ -1,0 +1,48 @@
+TOPIC: Using transfer function to constrain QCD background: how to include other backgrounds in the fit?
+URL: https://cms-talk.web.cern.ch/t/22878
+DATE: 2023-04-18T17:22:54.269Z
+SOLVED: no
+============================================================
+
+QUESTION (by hnguyen @ 2023-04-18T17:22:54.534Z):
+Dear all,
+I am trying to build a fit model including a signal region and a control region of QCD multijet background. In this model the QCD background in the signal region correlates with QCD in the control region using a transfer function so that QCD background in the signal region can be estimated from data in the control region.
+I followed the example here:
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/ (RooParametricHist gammaN for shapes)
+At first, in other to follow as close as possible this example, I subtracted all other backgrounds (top, V+jets …) from data and fit the fit model of signal and only QCD background to this non-QCD background subtracted data. The fit converges using MultiDimFit method.
+However, when I do not subtract non-QCD backgrounds from data but include them in the fit, the fit produces unreasonable values (~0) with some messages as seen in [1]. Since the above example does not show explicitly how to include other backgrounds in the fit model, I am not sure what I am doing is correct. Can you please take a look at the data card to see if this is the right way to include other backgrounds in the fit (dataCard_allBkgr.txt)? If the fit works when other backgrounds are subtracted from data, why doesn’t it when they are included in the fit model?
+In the fit_QCD.tar you can find two data cards and supported files to perform the fits (combine -M MultiDimFit -v 3):
+
+dataCard_allBkgr.txt: data card includes all backgrounds
+dataCard_onlyQCD.txt: data card includes only QCD. Other backgrounds are subtracted from data
+
+Thank you in advance for your help,
+Duong
+[1] INFO: (function: evaluate) CachingNLL.cc: 707 – underflow (expected events <=0) in total event yield for pdf_binSR_obsOnly, expected yield = -13943.3 (observed: 3330)
+INFO: (function: anyParameterAtBoundaries) utils.cc: 1039 – Found parameter qcd_CR_bin0 at boundary (within ~1sigma): 7.64209e-08+/-0.398997
+dataCard_allBkgr.txt (2.6 KB)
+fit_QCD.tar (50 KB)
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-04-19T15:18:27.860Z):
+Dear Duong,
+Can you try including the other backgrounds in the same way you did it for the signal? Ie, convert the TH1F to a RooDataHist, and see if that helps?
+If that doesn’t work, maybe others have better suggestions.
+Best,
+Adinda
+PS By the way, are you including real data in the signal region? If so remember that you should run MultiDimFit on an asimov dataset (-t -1) - you can also use channel masking to fit the control region by itself, if you need to.
+----------------------------------------
+
+REPLY 3 (by hnguyen @ 2023-04-21T02:26:01.863Z):
+Dear Adinda,
+Thank you for your suggestion. It works! I added
+
+qcd_estimate_ws_preparation.C  → script to prepare workspace using RooDataHist for non-QCD backgrounds
+dataCard_allBkgr_usingRooDataHist.txt → data card
+
+to the tar file attached here (This file is the same as fit_QCD.tar in the previous message but containing above script and data card). Why it works for RooDataHist but not for TH1 as usual is out of my knowledge.
+The signal region in this fit is actually validation region (I still keep thing blinded).
+Best,
+Duong
+fit_QCD_1.tar (90 KB)
+----------------------------------------

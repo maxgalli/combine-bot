@@ -1,0 +1,48 @@
+TOPIC: Understanding very tiny impacts
+URL: https://cms-talk.web.cern.ch/t/2197
+DATE: 2021-11-04T01:32:58.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Ka_Wa_Ho @ 2021-11-04T01:32:58.000Z):
+*** Discussion title: Higgs Combination
+Hi combine experts,
+I am doing an impact study on my analysis with Asimov data with
+expectedSignal = 0. The signal is modeled with a pdf fitted to MC and
+background is modeled from a pdf fitted to data. I noticed only the
+background pdf parameters and normalization have a significant impact
+(see /afs/cern.ch/user/k/kaho/SmallImpact/impacts_ggcat0.pdf or
+impacts_ggcat0.json). All nuisance parameters basically are < 10^-4 and
+one-sided, which I assume is coming from the insufficient crossing
+tolerance. But I struggle to understand why the impacts are so tiny. I
+think I might have done something wrong.
+I have put all the datacards, root files, the impact plot, as well as
+the script to run the impact at /afs/cern.ch/user/k/kaho/SmallImpact . I
+am also using a custom pdf for the signal outside of combine defined in
+/afs/cern.ch/user/k/kaho/SmallImpact/RooCBExp.cc and RooCBExp.h. It
+should run with "source Impacts.sh" within combine.
+Any suggestions are appreciated.
+Thanks a lot,
+Ka Wa
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-11-04T06:12:06.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+Unfortunately, I'm unable to look at the material you linked, because I don't have enough privileges (read) to do so: "Permission denied".
+From the file name, 'CMS_Hemu_13TeV_multipdf.root', I believe you are looking at the H->emu, which is likely a search for tiny signal over a moderate background.
+Usually, in this type of searches the signal systematics will be small or negligible, wrt the statistical component of the signal. For what concern the background, the emu final state should prefer functional forms with a small number of degrees of freedom to be model, potentially being linear. In this regime the only relevant nuisance left is the background normalization.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by Ka_Wa_Ho @ 2021-11-04T06:43:35.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrea,
+Thanks a lot for the reply. Indeed we are searching for a very small
+signal of H to emu. I forgot to put the files in a public directory.
+They should be accessible here:
+/afs/cern.ch/work/k/kaho/public/SmallImpact/ . But base on your comments
+I guess the small impacts are not too worrying.
+Thanks, Ka Wa
+----------------------------------------

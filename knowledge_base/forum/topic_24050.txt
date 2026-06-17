@@ -1,0 +1,109 @@
+TOPIC: Issue with Combine fit of DY->MuMu
+URL: https://cms-talk.web.cern.ch/t/24050
+DATE: 2023-05-12T17:37:51.957Z
+SOLVED: no
+============================================================
+
+QUESTION (by gdamolin @ 2023-05-12T17:37:52.685Z):
+Dear Combine experts,
+I am studying LFU in TTbar pair production events by studying the ratio:
+
+Schermata da 2023-05-03 10-30-141066×200 20.5 KB
+
+At the moment I am using NanoAODv9 to study UL2018. I am still not looking at the data in the combine fits, but using the -t -1 option.
+Before extracting R tau/mu from the simultaneous fit of the 4 channels, I am doing some tests by fitting each channel individually and then fitting only the ratio of TTbar channels and of DY channels. I am doing a preliminary rough estimation, so I am considering as systematics only the ones I expect to dominate in the double ratio: the ones on the leptons and on the cross sections of the processes.
+Everything works well on the TTbar channels and their ratio.
+Some parameters are slightly over-constrained in the DY->TauMu, but the fit  does not fail and is consistent if I change --stepSize or other settings.
+My problem is, oddly enough, in the DY->MuMu sample, where the signal greatly dominates and has order 10^7 events. The fit does not converge unless I surgically tune the settings (RobustFit,rMin,rMax,stepSize and others) and even so:
+
+the extracted uncertainty (which is very tiny(order 0.001)) changes if I change just a bit the starting settings
+the impacts show huge overconstraints (in both systematics and statisical uncertainty of the bins)
+Even if I Ignore the previous problems and proceed with the fit of DY->MuMu/DY->TauMu the impacts I get are non-sensical, so I cannot for sure proceed to study the double ratio.
+
+I tried the ease Combine in the fit by combining bins (from 40 to 15 and then to 1), to remove the systematics, but it is till very inconsistent. Even with 1 bin and a simple:
+combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r --robustFit 1 -t -1 --expectSignal 1 -m 120 -d DYM.root
+I get: Warning - No valid high-error found, will report difference to maximum of range for : r
+r :    +1.000   -0.008/+19.000 (68%)
+The only way I can make the fit consistently converge is if I divide the yield of my one bin histograms by a factor 1000.
+I wanted to ask, dear experts, if Combine has issues dealing with large yield histograms, and, in general, how the issues I find can be overcome.
+Thanks,
+Giacomo
+P.s. I attach here my datacard.
+DYM_v2.txt (2.7 KB)
+----------------------------------------
+
+REPLY 2 (by clange @ 2023-05-12T22:51:12.274Z):
+Hi Giacomo,
+I’ve moved your post to the appropriate category (which is Statistical Interpretation Tools and not the general Common Analysis Tools category).
+Cheers,
+Clemens
+----------------------------------------
+
+REPLY 3 (by kcormier @ 2023-05-19T08:34:54.241Z):
+Hi Giacomo,
+Sorry for the slow response. I do find that with large enough bin contents, fits start to fail. In a very simple test I did, this happened around 10^9 events, but I would certainly expect this to depend on the details of the model and fit being done.
+Unfortunately, I don’t currently have a good recommendation on how to overcome this limitation. Maybe someone else knows better and can contribute something more helpful.
+If you put the input root files somewhere publicly accessible, I can try to play around a little bit. But it’s not an area that I have particular expertise in at the moment. I will try to ask some the experts to see if someone else knows.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 4 (by gdamolin @ 2023-05-19T11:32:56.904Z):
+Dear Kyle,
+Thanks for the answer!
+My input file is /afs/cern.ch/user/g/gdamolin/public/CombineImputs/DYMuMu.root. I always used the pT distribution, which is now binned in 12 variable size bins.
+Do you think the issue is coming from the large yield of the total histogram or for the large yield of some bins?
+In the second case, I can try to use a very thin binning in the most populated region of the histogram and see if the situation somewhat improves.
+Bests,
+Giacomo
+----------------------------------------
+
+REPLY 5 (by kcormier @ 2023-05-19T12:53:09.126Z):
+Hi Giacomo,
+Thanks. I’m not sure if splitting into finer bins will improve the situation, but I think its at least worth testing.
+Kyle
+----------------------------------------
+
+REPLY 6 (by vischia @ 2023-05-19T13:04:52.000Z):
+Hi Giacomo,
+if you have a uniform very fine binning you could have problems in the least populated bins because of the limited number of events.
+I would suggest a non-uniform binning where the lower-stat bins (deciding in advance some threshold) are kept merged together (in practice, this results in finer binning in the bulk of the distribution, and coarser in the tails).
+Cheers,
+Pietro
+
+···
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 7 (by gdamolin @ 2023-05-29T13:04:43.168Z):
+Hello Pietro,
+I tried to use 1 GeV bins in the peak of the distribution and larger in the tail, but it still doesn’t work. I’ll try even smaller bins in the peak.
+Do you have any other suggestion?
+Bests,
+Giacomo
+----------------------------------------
+
+REPLY 8 (by vischia @ 2023-05-29T13:31:26.000Z):
+Hello Giacomo,
+there is a minimum to the meaningful bin width, though, you cannot go infinitely narrow because of experimental resolution.
+I don’t have any other suggestions, I am afraid  Maybe splitting by some physically-motivated subchannel or subcategory?
+Cheers,
+Pietro
+
+···
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------

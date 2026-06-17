@@ -1,0 +1,64 @@
+TOPIC: Issue fitting signal over resonant background
+URL: https://cms-talk.web.cern.ch/t/129139
+DATE: 2025-08-14T15:50:06.477Z
+SOLVED: no
+============================================================
+
+QUESTION (by npalmeri @ 2025-08-14T15:50:06.688Z):
+Dear all,
+I am encountering some issues while estimating sensitivity limits when performing a bump hunt over a dielectron mass spectrum which includes resonant background.
+I am fitting a minimum bias dilepton MC sample in the [2, 4.2] GeV region, which includes the J/psi and psi(2S) peaks, in 4 categories using Combine. I am using a background model composed of a non-resonant background (4th degree Bernstein function) and two resonant backgrounds (double Crystal Ball), fully floating in shape and normalization; the signal model is a double Crystal Ball with fixed shape. The only systematics are a rateParam for each of the three background components (background estimation is data-driven). I am performing a mass scan in 0.1 GeV steps. The dataset is unbinned and weighted (each category has ~1e4 actual MC events, but the reweighted total yield is ~1e7). Another possibly relevant fact is that the number of expected events for the signal is significantly smaller than the background ones (for reference, #signal is of order 1e4, #jpsi 1e6).
+When running FitDiagnostics, both the B-only and S+B fits give satisfactory results with good Chi2 values, also when fitting the 3.1 and 3.7 GeV mass points (i.e. at the center of each resonant background peak). However, in certain cases, the AsymptoticLimits method fails to produce expected limits at those two mass points.
+Whe running AsymptoticLimits with all default settings, only 1 out of 4 categories produces expected limits – all the other ones complain about failing to find NLL crossings for the expected limits at different CLs. Switching to --minosAlgo bisection makes the estimation converge, but 2/4 categories get nonsensical lower bounds (too small and close to 0); using --minosAlgo minos yields only median values (which seem to make sense), but with completely collapsed uncertainty bands.
+I tried playing around with fit options to no avail. The only thing that fixed the issue was freezing the J/psi rateParam to its post-B-only fit value. However, I still have a couple of doubts left:
+
+is the issue due to the interplay between r and J/psi normalization, then? In all categories the J/psi rateParam gets a post-S+B fit value (slightly) smaller than the B-only one, which is then compensated by a higher r – could this cause trouble as the algorithm probes smaller and smaller r values?
+I also feel this poses a conceptual issue: how can I get a proper estimate of the measured signal strength if I have a parameter that can get arbitrarily smaller to leave room for larger and larger values of r? Is freezing the yield of resonant backgrounds to their B-only fit values a sensible way to go about it?
+…unfortunately, when applying the same freeze to the psi(2S) rateParam (for consistency), the limit gets worse instead (meaning I don’t see as large a drop in sentivity as before, which I would expect to see since we’re near a background peak though).
+
+Do any of the the issues sound familiar? Is there some canonical way of fitting resonant backgrounds?
+Cheers,
+Noemi
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-08-14T16:55:52.000Z):
+Dear Noemi,
+I managed give only a very quick read to the mail, but since I will be off until Thursday I will post some initial comments. Please feel free to reply if the answer is not exhaustive.
+A first issue could be that the internal parameters of Combine are optimised for values of r of order O(1). adding a (frozen) rateParam of 100 to your signal might help the fit converge
+A second issue, kind of related to the first one, is that by default r is limited to the range [0:20]. You can try to adapt it to your case with the rMin/rMax options. For example, if you expect r to be small, you can set —rMax=0.1 and this will make combine use a smaller stepping.
+Now to the real problem: if you have a parameter strongly correlated with the signal strength and no way to distinguish between the two, then the problem is not well defined. Strongly correlated parameters are always a problem for the fitting procedure, but more importantly, as you said if you can arbitrarily change your background in order to accomodate the data without any need for signal, than there’s not very much you can do to extract a reasonable r.
+The way out is to introduce some external constraints in your model. For example, can you make any assumptions to limit the range of the J/psi rateParam? Can you recast your problem in order to extract a combination of the r and r(J/psi) parameters? Or can you identify some control regions to constraint that normalisation? Or as you suggest can you freeze the background yield to its post-fit B-only value? My feeling is that this last assumption is a bit extreme, but in any case I think these and other strategies should be discussed within the analysis team and the ARC as are more physics than technical in nature.
+Best,
+Giacomo
+
+On 14 Aug 2025, at 17:51, Noemi Palmeri via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Noemi Palmeri npalmeriAugust 14
+
+Dear all,
+I am encountering some issues while estimating sensitivity limits when performing a bump hunt over a dielectron mass spectrum which includes resonant background.
+I am fitting a minimum bias dilepton MC sample in the [2, 4.2] GeV region, which includes the J/psi and psi(2S) peaks, in 4 categories using Combine. I am using a background model composed of a non-resonant background (4th degree Bernstein function) and two resonant backgrounds (double Crystal Ball), fully floating in shape and normalization; the signal model is a double Crystal Ball with fixed shape. The only systematics are a rateParam for each of the three background components (background estimation is data-driven). I am performing a mass scan in 0.1 GeV steps. The dataset is unbinned and weighted (each category has ~1e4 actual MC events, but the reweighted total yield is ~1e7). Another possibly relevant fact is that the number of expected events for the signal is significantly smaller than the background ones (for reference, #signal is of order 1e4, #jpsi 1e6).
+When running FitDiagnostics, both the B-only and S+B fits give satisfactory results with good Chi2 values, also when fitting the 3.1 and 3.7 GeV mass points (i.e. at the center of each resonant background peak). However, in certain cases, the AsymptoticLimits method fails to produce expected limits at those two mass points.
+Whe running AsymptoticLimits with all default settings, only 1 out of 4 categories produces expected limits – all the other ones complain about failing to find NLL crossings for the expected limits at different CLs. Switching to --minosAlgo bisection makes the estimation converge, but 2/4 categories get nonsensical lower bounds (too small and close to 0); using --minosAlgo minos yields only median values (which seem to make sense), but with completely collapsed uncertainty bands.
+I tried playing around with fit options to no avail. The only thing that fixed the issue was freezing the J/psi rateParam to its post-B-only fit value. However, I still have a couple of doubts left:
+
+is the issue due to the interplay between r and J/psi normalization, then? In all categories the J/psi rateParam gets a post-S+B fit value (slightly) smaller than the B-only one, which is then compensated by a higher r – could this cause trouble as the algorithm probes smaller and smaller r values?
+I also feel this poses a conceptual issue: how can I get a proper estimate of the measured signal strength if I have a parameter that can get arbitrarily smaller to leave room for larger and larger values of r? Is freezing the yield of resonant backgrounds to their B-only fit values a sensible way to go about it?
+…unfortunately, when applying the same freeze to the psi(2S) rateParam (for consistency), the limit gets worse instead (meaning I don’t see as large a drop in sentivity as before, which I would expect to see since we’re near a background peak though).
+
+Do any of the the issues sound familiar? Is there some canonical way of fitting resonant backgrounds?
+Cheers,
+Noemi
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by amarini @ 2025-09-12T17:35:42.099Z):
+Hi Noemi,
+did you run the grid for the Asymptotic?
+It may be just a couple of points in which fails, that we can identify.
+Did you try to run from the best fit workspace?
+-Andrea
+----------------------------------------

@@ -1,0 +1,33 @@
+TOPIC: Parameter and its error
+URL: https://cms-talk.web.cern.ch/t/52093
+DATE: 2024-10-07T13:46:27.201Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-10-07T13:46:27.281Z):
+Dear experts,
+following Aliya’s suggestion I have three parameters and its errors  in my data cards connecting signal event yields between 2017 and 2018 data (obtained from sideband data):
+Rsr1_2018_2017  param  1.53 0.04
+Rsr2_2018_2017  param  1.52 0.11
+Rsr3_2018_2017  param  1.50 0.04
+my question is:  does it apply in the fit a Gaussian variation of the parameter with the corresponding sigma I have put in above ?
+It was a question of one of authors of our analysis.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-10-08T09:53:35.350Z):
+Dear Sasha,
+This instruct combine to apply on those parameters a Gaussian uncertainty, where the mean and sigma of the Gaussian are the values you specified. Be careful that the mean value you put is the mean value of the Gaussian you use to estimate the uncertainty. Depending on the details of your implementation, this is likely different from the mean value of the parameter you have in the model.
+The details of this sintax can be found here:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analyses
+and some examples of its usage here:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#parametric-shape-uncertainties
+I hope it helps,
+Best,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-10-09T08:49:49.234Z):
+Thanks, Giacomo !
+Cheers, Sasha.
+----------------------------------------

@@ -1,0 +1,119 @@
+TOPIC: Limits from Simplified Likelihood
+URL: https://cms-talk.web.cern.ch/t/2146
+DATE: 2021-08-12T13:46:34.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by mheindl @ 2021-08-12T13:46:34.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+I am running the procedure to produce and validate the Simplified Likelihood [1]. When checking these limits against the one we get from the actual AsymptoticLimit method, we see some unexpected behavior:
+-- Simplified Likelihood --
+(With Correlation Matrix)
+Observed Upper Limit 95% 77.1835
+Expected Upper Limit 95% 88.3053
+(Without Correlation Matrix)
+Observed Upper Limit 95% 81.8273
+Expected Upper Limit 95% 122.222
+-- Asymptotic Limits --
+Observed Limit: r < 82.0143
+Expected  2.5%: r < 54.1729
+Expected 16.0%: r < 75.6816
+Expected 50.0%: r < 112.7500
+Expected 84.0%: r < 172.9731
+Expected 97.5%: r < 257.2511
+One can see that the limit without the correlation matrix are actually closer to the original ones than the ones without the matrix. We were expecting to see that the correlation matrix should improve the agreement between the SL and the asymptotic CLs limit.
+All input/output files are stored here [2]. We would appreciate if you can help us understand those results better!
+Thank you so much!
+Maxi
+[1] https://twiki.cern.ch/twiki/bin/view/CMS/SimplifiedLikelihood
+[2] https://drive.google.com/drive/folders/1zULre5e2Ifid9_Pd5ZBGqe_Zy_mrYAYJ?usp=sharing
+----------------------------------------
+
+REPLY 2 (by nckw @ 2021-08-12T14:34:14.000Z):
+*** Discussion title: Higgs Combination
+Dear Maxi,
+First, just a couple of clarifying questions
+1. Which kind of datacards do you have? Its important to generate the
+right inputs depending on whether you're including all of the background
+constraining data in combine or not (we call this Type A and Type B in
+the Twiki - which one is yours?)
+2. I took the inputs you produced but similar to the above which
+histograms are you using as inputs in the Validation step? I would
+assume that if you are of Type B they you should use the prefit results
+everywhere
+I think also it makes sense to first try to compare a simple likelihood
+scan rather than the limits to see what is going on - to do that you can
+use the instructions here :
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/SimplifiedLikelihood#Validating_the_simplified_likeli
+(you need to use python3 for this but its much faster than the ROOT
+based code)
+Best, Nick
+----------------------------------------
+
+REPLY 3 (by mheindl @ 2021-08-12T14:38:49.000Z):
+*** Discussion title: Higgs Combination
+Dear Nick,
+indeed, I forgot to mention that I am using the Type B setup.
+Okay, so I should follow the python validation steps (converting ROOT to
+python model & then plotting the model) as described and recommended on
+the TWiki [1], correct?
+Cheers, Maxi
+[1] https://twiki.cern.ch/twiki/bin/view/CMS/SimplifiedLikelihood
+----------------------------------------
+
+REPLY 4 (by mheindl @ 2021-08-13T07:42:51.000Z):
+*** Discussion title: Higgs Combination
+Dear Nick,
+I have produced the likelihood scans as follows:
+- Simplified: First produced the python model with [1] and I got [2] by using the example plotter on the TWiki
+- MultiDimFit: First produced the MultiDimFit with [3] and I got [4] by using the 1D scan plotter from the CH
+I would appreciate if you could put those in context, as they look not exactly the same, but rather similar.
+Thank you so much!
+Maxi
+[1] python convertSLRootToPython.py -O SL_model.py -s SLinput_Quad_Sig.root:shapes_prefit/total_signal -b SLinput_Quad_Bkg.root:shapes_prefit/total_background -d SLinput_Quad_Bkg.root:shapes_prefit/total_data -c SLinput_Quad_Bkg.root:shapes_prefit/total_covar
+[2] https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/08/13/09:38:41-62528-MultiDimFit_Scan.pdf
+[3] combine shape_Seesaw1000_Quadlep_2018_BasicLTMET_SL.root -M MultiDimFit --algo grid --points 300 --rMin -60 --rMax -30
+[4] https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/08/13/09:38:41-78967-SL_Scan.pdf
+----------------------------------------
+
+REPLY 5 (by mheindl @ 2021-08-13T08:11:45.000Z):
+*** Discussion title: Higgs Combination
+Addendum: I overlaid the two curves for better comparison
+https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/08/13/10:10:34-76251-Bildschirmfoto_2021-08-13_um_10.02.15.png
+Cheers, Maxi
+----------------------------------------
+
+REPLY 6 (by nckw @ 2021-08-16T09:50:09.000Z):
+Hi Maxi,
+Ok, at least it is encouraging to see that the likelihoods are not too dissimilar. Can you extend the range? In order to get an idea about how the limits will agree, we need to see where in mu is the the crossing between the likelihood value at mu=0 and ~3.
+With the limit calculation, there is the complication of calculating the “p_b” part and I am not sure the code provided in the Twiki (the RooFit based one) is validated for cases where the signal strength best fit is very negative.
+So in short, I would extend the range to see at least approximately where a limit would be placed and if the likelihood scans agree well in the region crossing 2*deltaNLL = 2-4, then I think the closure is ok.
+Best,
+Nick
+----------------------------------------
+
+REPLY 7 (by mheindl @ 2021-08-16T12:46:14.000Z):
+*** Discussion title: Higgs Combination
+Hi Nick,
+I extended the range of both scans [1,2]. The crossings happen at the following r-values:
+- SL -2*deltaNLL = 4: ---, 60
+- SL -2*deltaNLL = 1: ---, 1
+- MultiDim -2*deltaNLL = 4: -97, 58
+- MultiDim -2*deltaNLL = 1: 72.5, 1.4
+I have a problem with the negative values for the SL approach: when running the python model, all values smaller than -58 are ill-defined (nan). Is this a mistake in the generation of my model, or a problem with the SL approach for such big negative values?
+Thank you so much again!
+Cheers,
+Maxi
+[1] https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/08/16/14:43:58-45030-MultiDimScan_Seesaw1000_Quadlep_2018_BasicLTMET.pdf
+
+[2] https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/08/16/14:43:58-59952-Seesaw1000_Quadlep_2018_BasicLTMET_SL.pdf
+----------------------------------------
+
+REPLY 8 (by nckw @ 2021-09-14T11:03:05.000Z):
+Hi Maximilian,
+In principle, the SL shouldn’t have an issue with -ve signal (since the backgrounds are allowed to be as positive as necessary).
+At least what the scan tells me is that is that for *limits* (where we don’t need the very -ve side since you only care that we have a sensible minimum), I think that the agreement  is quite good looking at the +ve side. So I would say that in terms of setting limits, everything is ok.
+All thee best,
+Nick
+----------------------------------------

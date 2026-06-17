@@ -1,0 +1,28 @@
+TOPIC: A question on how to implement Hessian PDF uncertainty
+URL: https://cms-talk.web.cern.ch/t/2198
+DATE: 2021-11-04T08:51:14.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Byeonghak_Ko @ 2021-11-04T08:51:14.000Z):
+*** Discussion title: Higgs Combination
+Hi experts,
+I'm trying to insert the uncertainty from PDF of which the PDF set is NNPDF31_nnlo_hessian_pdfas (306000), a symmetric Hessian type (100 eigenvector) + two sets of alpha_S variation.* According to [1] it seems easy to implement, just adding the variations in quadrature.
+But it is somewhat still questionable to me, especially putting the variations into the profile likelihood of Higgs Combine Tool. First of all, the instruction in [1] also derives variations on each bin of a histogram of a variable, especially a template variable, by the adding in quadrature. Now I'm trying to fit and estimate with distributions of a template variable to perform an unfold. And to insert the uncertainty into the profile likelihood two directions of shifts are needed. But it is vague to me how to obtain the two direction shifts from the quadrature summation on each bins. I considered to employ x_i + sigma_i as the up shift and x_i - sigma_i as the down shift, where x_i is the nominal yield of the i-th bin of the template variable and sigma_i is the quadrature-added PDF uncertainty in the i-th bin. But I'm worried if it is too naive...
+(FYI, some studies considered a half of the PDF sets as up shifts and the other half as the down shifts and then added them in quadrature to obtain the total up/down shifts from PDF. But I think it makes sense only when the PDF set is in "Hessian type", not "symmetric Hessian type (symmhessian)", and my case is with symmhessian type unfortunately.)
+Is there any idea to assign the PDF uncertainty properly via Higgs Combine Tool? Of course I'm also considering to use the envelope method, but I guess there would be a better way to implement the PDF uncertainty well.
+Best regards,
+Byeonghak Ko
+[1] NNPDF Collaboration, âParton distributions for the LHC Run IIâ, JHEP 04 (2015) 040, doi:10.1007/JHEP04(2015)040, arXiv:1410.8849.
+* There is no question on the treatment of the extra two sets of alpha_S variation. So in this message I'll ignore about them.
+----------------------------------------
+
+REPLY 2 (by Byeonghak_Ko @ 2021-11-04T09:03:04.000Z):
+*** Discussion title: Higgs Combination
+Sorry for my spamming, I found a mistake on the reference. [1] in the
+main message should be the follow:
+[1] J. Butterworth et al., "PDF4LHC recommendations for LHC Run II", J.
+Phys. G 43 (2016) 023001, doi:10.1088/0954-3899/43/2/023001,
+arXiv:1510.03865.
+Best regards, Byeonghak Ko
+----------------------------------------

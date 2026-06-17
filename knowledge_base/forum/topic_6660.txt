@@ -1,0 +1,12 @@
+TOPIC: GoF equivalent test for unbinned fits
+URL: https://cms-talk.web.cern.ch/t/6660
+DATE: 2022-02-16T14:04:49.407Z
+SOLVED: no
+============================================================
+
+QUESTION (by lata @ 2022-02-16T14:04:49.593Z):
+Dear experts,
+For HIG-21-011, we are using an unbinned fit with envelop method. As you know that at the unblinding stage, we also perform Goodness-of-fit (GoF) test but it is not possible in our case. Could you please let me know if there is any test equivalent to GoF for such cases?
+Thanks,
+Lata
+----------------------------------------

@@ -1,0 +1,64 @@
+TOPIC: FitDiagnostics output file missing a tree
+URL: https://cms-talk.web.cern.ch/t/131325
+DATE: 2025-09-09T16:39:46.573Z
+SOLVED: no
+============================================================
+
+QUESTION (by fanx @ 2025-09-09T16:39:46.723Z):
+Dear combine experts,
+I am using combine v10.1.0. And want to do a bias study. I use GenerateOnly generates 1000 toys. I run FitDiagnosticsover them and want to check the fitting result of them, following the instruction here. First of all, I don’t see atree_fit_sb tree in the output file, and there is no r branch. Secondly, there are 2816 entries in the limit tree which is way more than the number of toys I fit (given some toys fails in the fitting).
+Can anyone explain how to access the post-fit signal strength of toys and why there are more entries than my toys in the output file?
+Thank you in advance!
+Xingchen
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-09-09T17:46:12.000Z):
+Hi,
+Are you sure you’re checking the right output file? As in the docs
+“In the output file fitDiagnostics.root there is a tree that contains the best fit results under the signal+background hypothesis.” So you need that one, not the usual higgsCombineBlah.root one
+Best
+Nick
+
+| Xingchen Fan fanxSeptember 9 |
+
+| - |
+
+Dear combine experts,
+I am using combine v10.1.0. And want to do a bias study. I use GenerateOnly generates 1000 toys. I run FitDiagnosticsover them and want to check the fitting result of them, following the instruction here. First of all, I don’t see atree_fit_sb tree in the output file, and there is no r branch. Secondly, there are 2816 entries in the limit tree which is way more than the number of toys I fit (given some toys fails in the fitting).
+Can anyone explain how to access the post-fit signal strength of toys and why there are more entries than my toys in the output file?
+Thank you in advance!
+Xingchen
+
+···
+On 9 Sept 2025 17:45, Xingchen Fan via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------
+
+REPLY 4 (by fanx @ 2025-09-09T17:56:10.837Z):
+Hi Nicholas,
+Yes! Thank you! I was looking at the wrong output file.
+I find the tree_fit_sb tree in the correct file. I have one more question. From some printouts, I know that some toys fail the fitting. Does the branch numbadnll record whether a toy is good or not? Otherwise, what is the way to rule out the failing toys?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 5 (by nckw @ 2025-09-09T18:10:17.000Z):
+If I remember right there should be a fit status branch in there that you can use - some info on what this means is given here :https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=fit_st#fit-diagnostics
+Best
+Nick
+On 9 Sept 2025 18:57, Xingchen Fan via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Xingchen Fan fanxSeptember 9
+
+Hi Nicholas,
+Yes! Thank you! I was looking at the wrong output file.
+I find the tree_fit_sb tree in the correct file. I have one more question. From some printouts, I know that some toys fail the fitting. Does the branch numbadnll record whether a toy is good or not? Otherwise, what is the way to rule out the failing toys?
+Best
+Xingchen
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by fanx @ 2025-09-09T19:31:22.505Z):
+Thank you! I find it. It is very helpful!
+----------------------------------------

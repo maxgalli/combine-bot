@@ -1,0 +1,34 @@
+TOPIC: Question about JER on mass histogram
+URL: https://cms-talk.web.cern.ch/t/43615
+DATE: 2024-07-15T17:38:12.508Z
+SOLVED: yes (reply 4)
+============================================================
+
+QUESTION (by jiyoo @ 2024-07-15T17:38:12.700Z):
+Dear CAT tools experts,
+I have a basic question about combine. We are fitting the soft drop jet mass in combine and have up and down shapes for uncertainties (JMR,JMS). I have up and down shapes for JER on the jet pT. But, we are fitting in combine the mass, not the pT. Sorry if this is obvious but do I pass these jet pT histograms and shapes to combine? I thought I could only pass the fit variable (mass) one. I am not sure. Can you please help on how to pass these JERs/what kind of histogram I need or the general idea and I can try to implement? Thank you.
+Sincerely,
+Jieun
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-07-16T11:45:33.410Z):
+Dear Jieun,
+You should make histograms of the mass with the JMR and JMS uncertainties varied (each uncertainty independently) - even if the JMR and JMS only modify the pT directly, this can have an effect on other variables (such as the mass that you reconstruct).
+Hope that helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by jiyoo @ 2024-07-16T12:22:26.030Z):
+Dear Adinda,
+Hello. Thank you. It sounds like JMR and JMS then is only what we need, and we are not sensitive to things like “reduced set of uncertainty sources” such as Absolute’, ‘Absolute_2018’, ‘BBEC1’, ‘BBEC1_2018’, etc. Although we look for boosted jets at pT > 250 GeV, that pT cut would show minimal effect I guess? (If I am mistaken, please could you correct me?)
+Thank you again!
+Sincerely,
+Jieun
+----------------------------------------
+
+REPLY 4 [ACCEPTED ANSWER] (by adewit @ 2024-07-16T15:10:47.591Z):
+Dear Jieun,
+I’m not sure about whether the reduced set of sources are relevant here; my response was simply on how the model would be set up, given some set of uncertainties. Which uncertainties should be applied is a question that you should discuss with the JetMET POG.
+Best,
+Adinda
+----------------------------------------

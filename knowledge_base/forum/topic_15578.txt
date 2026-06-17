@@ -1,0 +1,87 @@
+TOPIC: Parameter values in toys with toysFrequentist option
+URL: https://cms-talk.web.cern.ch/t/15578
+DATE: 2022-09-28T12:54:32.132Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2022-09-28T12:54:32.328Z):
+Hi experts,
+I am trying to understand the following remark [1] in [2]. However I struggle with the following bit:
+“the nuisance parameter […] set to their nominal values which are obtained after fitting first to the data, with POIs fixed […]”
+To what are the POIs fixed in this case? Their best fit values?
+I’m asking mainly because this bit here:
+“If you are using toysFrequentist, be aware that the values set by --setParameters will be ignored for the toy generation as the post-fit values will instead be used (except for any parameter which is also a parameter of interest).”
+Running command [3] for two different POI values --setParameters (0, 0) and (2, 2), in both cases the “data” being sum of SM prediction prefit, and looking at the nuisance parameter values, I end up with very different nuisance parameter ranges [4] and [5]. Here I’m picking tmass only as an example, but almost all nuisances behave like this, particularly signal-sensitive ones.
+Clearly there is a strong dependence on --setParameters, but if I’m understanding the manual correctly there should not be. What am I missing here?
+Cheers,
+Afiq
+[1]
+* `--toysFrequentist` the nuisance parameters in each toy are set to their nominal values which are obtained *after fitting first to the data*, with POIs fixed, before generating the data. For evaluating likelihoods, the constraint terms are instead randomised within their Gaussian constraint pdfs around the post-fit nuisance parameter values.
+
+If you are using `toysFrequentist`, be aware that the values set by `--setParameters` will be *ignored* for the toy generation as the *post-fit* values will instead be used (except for any parameter which is also a parameter of interest). You can override this behaviour and choose the nominal values for toy generation for any parameter by adding the option `--bypassFrequentistFit` which will skip the initial fit to data or by loading a snapshot (see below).
+
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation
+[3] combine -v -1 --algo fixed --fixedPointPOIs g_A_m400_w4p0=0,g_H_m425_w2p0=0 --setParameters g_A_m400_w4p0=0,g_H_m425_w2p0=0 --toysFrequentist -t 10 --X-rtd MINIMIZER_analytic -M MultiDimFit -m 400 -s -1 -d workspace.root --saveToys
+[4] for (0, 0)
+113) RooRealVar::                              tmass_TT_In = 0.620757
+113) RooRealVar::                              tmass_TT_In = -0.703479
+113) RooRealVar::                              tmass_TT_In = 1.38229
+113) RooRealVar::                              tmass_TT_In = -1.54073
+113) RooRealVar::                              tmass_TT_In = 0.902938
+113) RooRealVar::                              tmass_TT_In = 0.910701
+113) RooRealVar::                              tmass_TT_In = 0.214368
+113) RooRealVar::                              tmass_TT_In = 1.03585
+113) RooRealVar::                              tmass_TT_In = 1.7518
+113) RooRealVar::                              tmass_TT_In = 0.472321
+
+[5] for (2, 2)
+113) RooRealVar::                              tmass_TT_In = 3.23611
+113) RooRealVar::                              tmass_TT_In = 3.47994
+113) RooRealVar::                              tmass_TT_In = 3.41533
+113) RooRealVar::                              tmass_TT_In = 3.60152
+113) RooRealVar::                              tmass_TT_In = 3.03467
+113) RooRealVar::                              tmass_TT_In = 3.43809
+113) RooRealVar::                              tmass_TT_In = 3.86616
+113) RooRealVar::                              tmass_TT_In = 2.70917
+113) RooRealVar::                              tmass_TT_In = 3.79379
+113) RooRealVar::                              tmass_TT_In = 3.11623
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-09-29T08:18:03.488Z):
+Hi Afiq,
+The POIs will be fixed to the value you set it to by passing --setParameters  for the POIs, or the initial value in case they are not set.
+This is what is meant by the comment in parentheses in the text you quoted: “If you are using toysFrequentist , be aware that the values set by --setParameters will be ignored for the toy generation as the post-fit values will instead be used (except for any parameter which is also a parameter of interest).” - ie values set by setParameters are ignored when you use toysFrequentist, except values set for POIs.
+Hope this helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by afiqaize @ 2022-09-29T08:46:05.127Z):
+Hi Adinda,
+Thanks a lot. So it was my reading of the sentence that is problematic.
+I have a follow up question then, on the remark in [1]:
+If you include [the --saveToys] option, the `limit` TTree in the output will have an entry corresponding to the state of the POI used for the generation of the toy, with the value of **`quantileExpected`** set to **-2**.
+
+When I generate toys, and inspect the values of the POIs at quantileExpected == -2, I see that they are nonzero. This is not what I would expect, if the parameters are “fixed”. Maybe this is yet another issue with different ways of reading the sentence, I guess “fixed” here means only --setParameters, but not --freezeParameters in combine language?
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 4 (by adewit @ 2022-09-30T16:45:40.449Z):
+Hi Afiq,
+From a very quick look it seems like a bug to me: I see the fitted value (after fitting to the toy data set) stored twice. I’ve made an issue here: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues/797 so we don’t forget to look into this at some point. In the meantime you can run with high verbosity and check in the combine logger output that the toy was indeed generated with the POI values set to those specified via --setParameters.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by afiqaize @ 2022-09-30T20:22:29.259Z):
+Hi Adinda,
+Great, so it is just a visual bug. No problem, I can certainly do the high verbosity check to ensure frozen POI toys.
+Thanks!
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 6 (by afiqaize @ 2022-10-07T13:26:03.953Z):
+Coming back to this topic just to mention that indeed the bug is purely visual; POIs in toys are generated according to --setParameter values.
+----------------------------------------

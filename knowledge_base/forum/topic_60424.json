@@ -1,0 +1,56 @@
+{
+  "topic_id": 60424,
+  "title": "Question regarding FAQ: Why does Combine have trouble with bins that have zero expected content",
+  "url": "https://cms-talk.web.cern.ch/t/60424",
+  "category_id": 279,
+  "created_at": "2024-11-09T03:33:12.791Z",
+  "last_posted_at": "2024-11-11T15:46:02.258Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jiyoo",
+      "name": "Jieun Yoo",
+      "created_at": "2024-11-09T03:33:13.095Z",
+      "updated_at": "2024-11-09T03:33:13.095Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nIn the combine FAQ, it says:\nIf you are computing anything else, e.g. p-values, or if your zero-prediction bins are not empty in data, you\u2019re out of luck, and you should find a way to get a reasonable background prediction there (and set an uncertainty on it, as per the point above).\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/#cms-statistics-committee\nI have a case where a single MC background has zero events in a bin (e.g., see plot). I can rebin, but people have asked why I don\u2019t try smaller bins.\nWas the FAQ talking about a single bin in a single background that has a zero prediction, or was the FAQ talking about total background prediction of zero in one bin?\nAre there any slides somewhere that give advice on how to \u201cfind a way to get a reasonable background prediction there.\u201d\nThanks,\nJieun",
+      "cooked_html": "<p>Hello,</p>\n<p>In the combine FAQ, it says:<br>\nIf you are computing anything else, e.g. p-values, or if your zero-prediction bins are not empty in data, you\u2019re out of luck, and you should find a way to get a reasonable background prediction there (and set an uncertainty on it, as per the point above).<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/#cms-statistics-committee\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/#cms-statistics-committee</a></p>\n<p>I have a case where a single MC background has zero events in a bin (e.g., see plot). I can rebin, but people have asked why I don\u2019t try smaller bins.</p>\n<p>Was the FAQ talking about a single bin in a <strong>single</strong> background that has a zero prediction, or was the FAQ talking about total background prediction of zero in one bin?</p>\n<p>Are there any slides somewhere that give advice on how to \u201cfind a way to get a reasonable background prediction there.\u201d</p>\n<p>Thanks,</p>\n<p>Jieun</p>\n<p><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/9747787816b60d3d2fdf036f7146ac1f4b4f2e15.png\" alt=\"plot\" data-base62-sha1=\"lAhdPq6W5LAnDYo5Y7QQfDMRj6t\" width=\"608\" height=\"416\"></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-11-09T08:37:01.111Z",
+      "updated_at": "2024-11-09T08:37:01.111Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jieun,\nThe documentation is talking about the total expected background being 0. The problem then is that if your model says the total expectation of exactly 0, observing 1 event is simply impossible, so you can\u2019t e.g. compute a p-value for it. Its not a problem if a particular process doesn\u2019t contribute any expected events to some bin.\nI don\u2019t think there is any general answer to how to find a way to get a reasonable background prediction in cases where you have exactly 0 predicted events. Methods can include rebinning, smoothing, generating more MC, data-driven estimation etc. But what will work best for you all depends on the problem you\u2019re considering and the constraints you have.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Jieun,</p>\n<p>The documentation is talking about the total expected background being 0. The problem then is that if your model says the total expectation of exactly 0, observing 1 event is simply impossible, so you can\u2019t e.g. compute a p-value for it. Its not a problem if a particular process doesn\u2019t contribute any expected events to some bin.</p>\n<p>I don\u2019t think there is any general answer to how to find a way to get a reasonable background prediction in cases where you have exactly 0 predicted events. Methods can include rebinning, smoothing, generating more MC, data-driven estimation etc. But what will work best for you all depends on the problem you\u2019re considering and the constraints you have.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "ntrevisa",
+      "name": "Nicolo Trevisani",
+      "created_at": "2024-11-11T09:27:08.739Z",
+      "updated_at": "2024-11-11T09:27:08.739Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jieun,\nTo add one detail, VV seems to be a very minor - if not negligible - background in your analysis. I would not be worried about having bins with no MC prediction for that particular process in your template.\nBest,\nNicol\u00f2",
+      "cooked_html": "<p>Hi Jieun,</p>\n<p>To add one detail, VV seems to be a very minor - if not negligible - background in your analysis. I would not be worried about having bins with no MC prediction for that particular process in your template.</p>\n<p>Best,<br>\nNicol\u00f2</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "lmoureau",
+      "name": "Louis Moureaux",
+      "created_at": "2024-11-11T15:46:02.258Z",
+      "updated_at": "2024-11-11T15:46:02.258Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Let\u2019s add Kyle\u2019s explanation to the docs: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1016",
+      "cooked_html": "<p>Let\u2019s add Kyle\u2019s explanation to the docs: <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1016\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1016</a></p>"
+    }
+  ]
+}

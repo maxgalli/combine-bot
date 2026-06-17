@@ -1,0 +1,106 @@
+{
+  "topic_id": 24050,
+  "title": "Issue with Combine fit of DY->MuMu",
+  "url": "https://cms-talk.web.cern.ch/t/24050",
+  "category_id": 279,
+  "created_at": "2023-05-12T17:37:51.957Z",
+  "last_posted_at": "2023-05-29T13:31:26.000Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "gdamolin",
+      "name": "Giacomo Da Molin",
+      "created_at": "2023-05-12T17:37:52.685Z",
+      "updated_at": "2023-05-12T22:49:10.127Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI am studying LFU in TTbar pair production events by studying the ratio:\n\nSchermata da 2023-05-03 10-30-141066\u00d7200 20.5 KB\n\nAt the moment I am using NanoAODv9 to study UL2018. I am still not looking at the data in the combine fits, but using the -t -1 option.\nBefore extracting R tau/mu from the simultaneous fit of the 4 channels, I am doing some tests by fitting each channel individually and then fitting only the ratio of TTbar channels and of DY channels. I am doing a preliminary rough estimation, so I am considering as systematics only the ones I expect to dominate in the double ratio: the ones on the leptons and on the cross sections of the processes.\nEverything works well on the TTbar channels and their ratio.\nSome parameters are slightly over-constrained in the DY->TauMu, but the fit  does not fail and is consistent if I change --stepSize or other settings.\nMy problem is, oddly enough, in the DY->MuMu sample, where the signal greatly dominates and has order 10^7 events. The fit does not converge unless I surgically tune the settings (RobustFit,rMin,rMax,stepSize and others) and even so:\n\nthe extracted uncertainty (which is very tiny(order 0.001)) changes if I change just a bit the starting settings\nthe impacts show huge overconstraints (in both systematics and statisical uncertainty of the bins)\nEven if I Ignore the previous problems and proceed with the fit of DY->MuMu/DY->TauMu the impacts I get are non-sensical, so I cannot for sure proceed to study the double ratio.\n\nI tried the ease Combine in the fit by combining bins (from 40 to 15 and then to 1), to remove the systematics, but it is till very inconsistent. Even with 1 bin and a simple:\ncombine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r --robustFit 1 -t -1 --expectSignal 1 -m 120 -d DYM.root\nI get: Warning - No valid high-error found, will report difference to maximum of range for : r\nr :    +1.000   -0.008/+19.000 (68%)\nThe only way I can make the fit consistently converge is if I divide the yield of my one bin histograms by a factor 1000.\nI wanted to ask, dear experts, if Combine has issues dealing with large yield histograms, and, in general, how the issues I find can be overcome.\nThanks,\nGiacomo\nP.s. I attach here my datacard.\nDYM_v2.txt (2.7 KB)",
+      "cooked_html": "<p>Dear Combine experts,<br>\nI am studying LFU in TTbar pair production events by studying the ratio:<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/b/b71bd61b64a198acf18d118256c476c4ccb64aff.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/b71bd61b64a198acf18d118256c476c4ccb64aff\" title=\"Schermata da 2023-05-03 10-30-14\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/b/b71bd61b64a198acf18d118256c476c4ccb64aff_2_345x64.png\" alt=\"Schermata da 2023-05-03 10-30-14\" data-base62-sha1=\"q7R10iZXol8r2Qp0FGmpzGMUYwf\" width=\"345\" height=\"64\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/b/b71bd61b64a198acf18d118256c476c4ccb64aff_2_345x64.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/b/b71bd61b64a198acf18d118256c476c4ccb64aff_2_517x96.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/b/b71bd61b64a198acf18d118256c476c4ccb64aff_2_690x128.png 2x\" data-dominant-color=\"EBEBEB\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Schermata da 2023-05-03 10-30-14</span><span class=\"informations\">1066\u00d7200 20.5 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div><br>\nAt the moment I am using NanoAODv9 to study UL2018. I am still not looking at the data in the combine fits, but using the -t -1 option.<br>\nBefore extracting R tau/mu from the simultaneous fit of the 4 channels, I am doing some tests by fitting each channel individually and then fitting only the ratio of TTbar channels and of DY channels. I am doing a preliminary rough estimation, so I am considering as systematics only the ones I expect to dominate in the double ratio: the ones on the leptons and on the cross sections of the processes.<br>\nEverything works well on the TTbar channels and their ratio.<br>\nSome parameters are slightly over-constrained in the DY-&gt;TauMu, but the fit  does not fail and is consistent if I change --stepSize or other settings.</p>\n<p>My problem is, oddly enough, in the DY-&gt;MuMu sample, where the signal greatly dominates and has order 10^7 events. The fit does not converge unless I surgically tune the settings (RobustFit,rMin,rMax,stepSize and others) and even so:</p>\n<ol>\n<li>the extracted uncertainty (which is very tiny(order 0.001)) changes if I change just a bit the starting settings</li>\n<li>the impacts show huge overconstraints (in both systematics and statisical uncertainty of the bins)</li>\n<li>Even if I Ignore the previous problems and proceed with the fit of DY-&gt;MuMu/DY-&gt;TauMu the impacts I get are non-sensical, so I cannot for sure proceed to study the double ratio.</li>\n</ol>\n<p>I tried the ease Combine in the fit by combining bins (from 40 to 15 and then to 1), to remove the systematics, but it is till very inconsistent. Even with 1 bin and a simple:</p>\n<p><em>combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r --robustFit 1 -t -1 --expectSignal 1 -m 120 -d DYM.root</em><br>\nI get: Warning - No valid high-error found, will report difference to maximum of range for : r<br>\nr :    +1.000   -0.008/+19.000 (68%)</p>\n<p>The only way I can make the fit consistently converge is if I divide the yield of my one bin histograms by a factor 1000.</p>\n<p>I wanted to ask, dear experts, if Combine has issues dealing with large yield histograms, and, in general, how the issues I find can be overcome.<br>\nThanks,<br>\nGiacomo<br>\nP.s. I attach here my datacard.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/2Pa5tWgONMxMzl9CAltMdWrli99.txt\">DYM_v2.txt</a> (2.7 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "clange",
+      "name": "Clemens Lange",
+      "created_at": "2023-05-12T22:51:12.274Z",
+      "updated_at": "2023-05-12T22:51:12.274Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nI\u2019ve moved your post to the appropriate category (which is Statistical Interpretation Tools and not the general Common Analysis Tools category).\nCheers,\nClemens",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>I\u2019ve moved your post to the appropriate category (which is <a href=\"https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279\">Statistical Interpretation Tools</a> and not the general <a href=\"https://cms-talk.web.cern.ch/c/physics/cat/274\">Common Analysis Tools</a> category).</p>\n<p>Cheers,<br>\nClemens</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-05-19T08:34:54.241Z",
+      "updated_at": "2023-05-19T08:34:54.241Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nSorry for the slow response. I do find that with large enough bin contents, fits start to fail. In a very simple test I did, this happened around 10^9 events, but I would certainly expect this to depend on the details of the model and fit being done.\nUnfortunately, I don\u2019t currently have a good recommendation on how to overcome this limitation. Maybe someone else knows better and can contribute something more helpful.\nIf you put the input root files somewhere publicly accessible, I can try to play around a little bit. But it\u2019s not an area that I have particular expertise in at the moment. I will try to ask some the experts to see if someone else knows.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>Sorry for the slow response. I do find that with large enough bin contents, fits start to fail. In a very simple test I did, this happened around 10^9 events, but I would certainly expect this to depend on the details of the model and fit being done.</p>\n<p>Unfortunately, I don\u2019t currently have a good recommendation on how to overcome this limitation. Maybe someone else knows better and can contribute something more helpful.</p>\n<p>If you put the input root files somewhere publicly accessible, I can try to play around a little bit. But it\u2019s not an area that I have particular expertise in at the moment. I will try to ask some the experts to see if someone else knows.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "gdamolin",
+      "name": "Giacomo Da Molin",
+      "created_at": "2023-05-19T11:32:56.904Z",
+      "updated_at": "2023-05-19T11:32:56.904Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Kyle,\nThanks for the answer!\nMy input file is /afs/cern.ch/user/g/gdamolin/public/CombineImputs/DYMuMu.root. I always used the pT distribution, which is now binned in 12 variable size bins.\nDo you think the issue is coming from the large yield of the total histogram or for the large yield of some bins?\nIn the second case, I can try to use a very thin binning in the most populated region of the histogram and see if the situation somewhat improves.\nBests,\nGiacomo",
+      "cooked_html": "<p>Dear Kyle,<br>\nThanks for the answer!<br>\nMy input file is /afs/cern.ch/user/g/gdamolin/public/CombineImputs/DYMuMu.root. I always used the pT distribution, which is now binned in 12 variable size bins.</p>\n<p>Do you think the issue is coming from the large yield of the total histogram or for the large yield of some bins?<br>\nIn the second case, I can try to use a very thin binning in the most populated region of the histogram and see if the situation somewhat improves.</p>\n<p>Bests,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-05-19T12:53:09.126Z",
+      "updated_at": "2023-05-19T12:53:09.126Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nThanks. I\u2019m not sure if splitting into finer bins will improve the situation, but I think its at least worth testing.\nKyle",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>Thanks. I\u2019m not sure if splitting into finer bins will improve the situation, but I think its at least worth testing.</p>\n<p>Kyle</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2023-05-19T13:04:52.000Z",
+      "updated_at": "2023-05-19T13:06:59.438Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nif you have a uniform very fine binning you could have problems in the least populated bins because of the limited number of events.\nI would suggest a non-uniform binning where the lower-stat bins (deciding in advance some threshold) are kept merged together (in practice, this results in finer binning in the bulk of the distribution, and coarser in the tails).\nCheers,\nPietro\n\n\u00b7\u00b7\u00b7\nPlease note that, regardless of when I sent this email, I don\u2019t expect you to answer me outside of the regular working hours of your local time zone.\nDr. Pietro Vischia\nRam\u00f3n y Cajal Senior Researcher, Universidad de Oviedo\nhttps://vischia.github.io\nmobile: +34 666 986 616\noffice: +34 985 106 252\nmail: pietro.vischia@cern.ch pietro.vischia@gmail.com\nskype: rambling_hadron",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>if you have a uniform very fine binning you could have problems in the least populated bins because of the limited number of events.</p>\n<p>I would suggest a non-uniform binning where the lower-stat bins (deciding in advance some threshold) are kept merged together (in practice, this results in finer binning in the bulk of the distribution, and coarser in the tails).</p>\n<p>Cheers,</p>\n<p>Pietro</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p><em>Please note that, regardless of when I sent this email, I don\u2019t expect you to answer me outside of the regular working hours of your local time zone.</em></p>\n<p>Dr. Pietro Vischia</p>\n<p>Ram\u00f3n y Cajal Senior Researcher, Universidad de Oviedo</p>\n<p><a href=\"https://vischia.github.io\" rel=\"noopener nofollow ugc\">https://vischia.github.io</a><br>\nmobile: +34 666 986 616<br>\noffice: +34 985 106 252<br>\nmail: <a href=\"mailto:pietro.vischia@cern.ch\">pietro.vischia@cern.ch</a> <a href=\"mailto:pietro.vischia@gmail.com\">pietro.vischia@gmail.com</a><br>\nskype: rambling_hadron</p>\n</details>"
+    },
+    {
+      "post_number": 7,
+      "username": "gdamolin",
+      "name": "Giacomo Da Molin",
+      "created_at": "2023-05-29T13:04:43.168Z",
+      "updated_at": "2023-05-29T13:04:43.168Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hello Pietro,\nI tried to use 1 GeV bins in the peak of the distribution and larger in the tail, but it still doesn\u2019t work. I\u2019ll try even smaller bins in the peak.\nDo you have any other suggestion?\nBests,\nGiacomo",
+      "cooked_html": "<p>Hello Pietro,<br>\nI tried to use 1 GeV bins in the peak of the distribution and larger in the tail, but it still doesn\u2019t work. I\u2019ll try even smaller bins in the peak.</p>\n<p>Do you have any other suggestion?<br>\nBests,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2023-05-29T13:31:26.000Z",
+      "updated_at": "2023-05-29T13:35:10.865Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Hello Giacomo,\nthere is a minimum to the meaningful bin width, though, you cannot go infinitely narrow because of experimental resolution.\nI don\u2019t have any other suggestions, I am afraid  Maybe splitting by some physically-motivated subchannel or subcategory?\nCheers,\nPietro\n\n\u00b7\u00b7\u00b7\nPlease note that, regardless of when I sent this email, I don\u2019t expect you to answer me outside of the regular working hours of your local time zone.\nDr. Pietro Vischia\nRam\u00f3n y Cajal Senior Researcher, Universidad de Oviedo\nhttps://vischia.github.io\nmobile: +34 666 986 616\noffice: +34 985 106 252\nmail: pietro.vischia@cern.ch pietro.vischia@gmail.com\nskype: rambling_hadron",
+      "cooked_html": "<p>Hello Giacomo,</p>\n<p>there is a minimum to the meaningful bin width, though, you cannot go infinitely narrow because of experimental resolution.</p>\n<p>I don\u2019t have any other suggestions, I am afraid <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/frowning.png?v=12\" title=\":frowning:\" class=\"emoji\" alt=\":frowning:\" loading=\"lazy\" width=\"20\" height=\"20\"> Maybe splitting by some physically-motivated subchannel or subcategory?</p>\n<p>Cheers,</p>\n<p>Pietro</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p><em>Please note that, regardless of when I sent this email, I don\u2019t expect you to answer me outside of the regular working hours of your local time zone.</em></p>\n<p>Dr. Pietro Vischia</p>\n<p>Ram\u00f3n y Cajal Senior Researcher, Universidad de Oviedo</p>\n<p><a href=\"https://vischia.github.io\" rel=\"noopener nofollow ugc\">https://vischia.github.io</a><br>\nmobile: +34 666 986 616<br>\noffice: +34 985 106 252<br>\nmail: <a href=\"mailto:pietro.vischia@cern.ch\">pietro.vischia@cern.ch</a> <a href=\"mailto:pietro.vischia@gmail.com\">pietro.vischia@gmail.com</a><br>\nskype: rambling_hadron</p>\n</details>"
+    }
+  ]
+}

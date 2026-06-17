@@ -1,0 +1,56 @@
+{
+  "topic_id": 5092,
+  "title": "An unfolding problem with combination tools",
+  "url": "https://cms-talk.web.cern.ch/t/5092",
+  "category_id": 279,
+  "created_at": "2022-01-24T17:59:57.000Z",
+  "last_posted_at": "2022-01-26T15:57:08.493Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "heyang",
+      "name": "Heng Yang",
+      "created_at": "2022-01-24T17:59:57.000Z",
+      "updated_at": "2023-02-07T10:58:07.374Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear expert,\nI am trying to use combination tools to do unfolding.\nAt the beginning, I only wrote the statistic uncertainty in the datacard, then it succeeded.\nBut after I added more uncertainties on the datacards, such as the pileup and prefile uncertainties, and then it failed.\nThe cards without pileup and prefile uncertainties which succeeded are :/afs/desy.de/user/h/hengyang/public/combination/successcard/z_pt_bin_*.txt\nand the output is : /afs/desy.de/user/h/hengyang/public/combination/successcard/output.txt\nThe cards with more uncertainties which failed are :/afs/desy.de/user/h/hengyang/public/combination/failcard/z_pt_bin_*.txt\nand the error is: /afs/desy.de/user/h/hengyang/public/combination/failcard/error.txt\nthe command I ran for both is : /afs/desy.de/user/h/hengyang/public/combination/run.sh\nDo you have some suggestions?\nCheers,\nHeng",
+      "cooked_html": "<p>Dear expert,</p>\n<p>I am trying to use combination tools to do unfolding.</p>\n<p>At the beginning, I only wrote the statistic uncertainty in the datacard, then it succeeded.</p>\n<p>But after I added more uncertainties on the datacards, such as the pileup and prefile uncertainties, and then it failed.</p>\n<p>The cards without pileup and prefile uncertainties which succeeded are :/afs/desy.de/user/h/hengyang/public/combination/successcard/z_pt_bin_*.txt<br>\nand the output is : /afs/desy.de/user/h/hengyang/public/combination/successcard/output.txt</p>\n<p>The cards with more uncertainties which failed are :/afs/desy.de/user/h/hengyang/public/combination/failcard/z_pt_bin_*.txt<br>\nand the error is: /afs/desy.de/user/h/hengyang/public/combination/failcard/error.txt</p>\n<p>the command I ran for both is : /afs/desy.de/user/h/hengyang/public/combination/run.sh</p>\n<p>Do you have some suggestions?</p>\n<p>Cheers,<br>\nHeng</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "heyang",
+      "name": "Heng Yang",
+      "created_at": "2022-01-25T15:58:00.548Z",
+      "updated_at": "2022-01-25T15:58:00.548Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I was wondering does anyone have some suggestions?",
+      "cooked_html": "<p>I was wondering does anyone have some suggestions?</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-01-25T17:54:09.202Z",
+      "updated_at": "2022-01-25T17:54:09.202Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Heng,\nThe error message (\u201cno observed data data_obs in the workspace\u201d) suggests that the combined datacard did not get produced correctly. Indeed, running your command I see, in all.txt: \"   if pdf not in [\u201ctrG\u201d, \u201cdFD\u201d, \u201cdFD2\u201d] and errline[b][p] < 0: raise ValueError(\u2018Found \u201c%s\u201d in the nuisances affecting %s in %s. This would lead to NANs later on, so please fix it.\u2019%(r,p,b))\nValueError: Error reading line 18 of file z_pt_bin_6.txt: Found \u201c-0.0717523847642\u201d in the nuisances affecting genbin4 in recobin6. This would lead to NANs later on, so please fix it.\"\nSo I think you have a typo in z_pt_bin_6.txt - that part of the line was probably supposed to say \u201c- 0.0717523847642\u201d.\nI note that this would correspond to a very large uncertainty, which I don\u2019t think you would expect for this uncertainty source, but that is of course another matter.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Heng,</p>\n<p>The error message (\u201cno observed data data_obs in the workspace\u201d) suggests that the combined datacard did not get produced correctly. Indeed, running your command I see, in all.txt: \"   if pdf not in [\u201ctrG\u201d, \u201cdFD\u201d, \u201cdFD2\u201d] and errline[b][p] &lt; 0: raise ValueError(\u2018Found \u201c%s\u201d in the nuisances affecting %s in %s. This would lead to NANs later on, so please fix it.\u2019%(r,p,b))<br>\nValueError: Error reading line 18 of file z_pt_bin_6.txt: Found \u201c-0.0717523847642\u201d in the nuisances affecting genbin4 in recobin6. This would lead to NANs later on, so please fix it.\"</p>\n<p>So I think you have a typo in z_pt_bin_6.txt - that part of the line was probably supposed to say \u201c- 0.0717523847642\u201d.</p>\n<p>I note that this would correspond to a very large uncertainty, which I don\u2019t think you would expect for this uncertainty source, but that is of course another matter.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "heyang",
+      "name": "Heng Yang",
+      "created_at": "2022-01-26T15:57:08.493Z",
+      "updated_at": "2022-01-26T15:57:08.493Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nIt is exactly like what you said. It works after I change the negative number.\nThanks a lot.\nCheers,\nHeng",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>It is exactly like what you said. It works after I change the negative number.</p>\n<p>Thanks a lot.</p>\n<p>Cheers,<br>\nHeng</p>"
+    }
+  ]
+}

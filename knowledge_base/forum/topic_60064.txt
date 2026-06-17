@@ -1,0 +1,186 @@
+TOPIC: Cannot get fit over Measurement Regions to converge
+URL: https://cms-talk.web.cern.ch/t/60064
+DATE: 2024-11-08T05:19:10.648Z
+SOLVED: yes (reply 9)
+============================================================
+
+QUESTION (by maabbott @ 2024-11-08T05:19:11.055Z):
+Hello,
+I am unable to get Combine to converge.
+I can get it to converge ok when running over blinded ASIMOV All Regions.
+This is a Full Run2 UL Analysis, an all hadronic search for pair produced VLQs. (twiki).
+We have 120 Signal Regions (SRs) and 6 Validation Regions (VRs) for each Run2 data taking year (2016_APV, 2016, 2017, 2018). A region is defined as some combination of four hadronic jets tagged as W, Z, Higgs, top, bottom, QCD. The regions with 3 or 4 QCD tagged jets are the unblinded Validation Regions. Each region, in each year, is a datacard with a single channel.
+Each region has signal MC, DataDriven QCD background, and various contributing background processes.
+I am using Combine v10.0.2, CMSSW_14_1_0_pre4.
+We produce ROOT Ntuples using CMSSW_10_6_29 (Run2 UL recommendation), but preprocess those ROOT files on CMSSW_14_1_0_pre4.
+Preprocessing includes rebinning all histograms in a datacard such that the sum of backgrounds for that data card has no empty bins, reorganizing histograms, and JERC smoothing.
+We have many shape systematics and a few normalization systematics. I always run ValidateDatacards.py on the merged datacards, and it shows no issues. I use combineCards.py and text2workspace.py with no issues.
+Initially, I got this error when fitting (Impacts, AsymtoticLimits, GoF, etc.) either asimov All Regions (ARs) or unblinded VRs:
+FASTEXIT from pdf_bin{region}_obsOnly
+WARNING: underflow to {small or large negative number} in pdf_bin{region}_obsOnly for bin {integer}, weight {small or large number}
+
+Then the Minimization would fail. I fixed this by masking the problematic channels (regions) listed in the warnings. All were regions with very low scaled events, on the order of 10^-3. Then it was able to find an upper bound for the asimov ARs, but not a lower bound.
+However, when fitting to the unblinded VRs, it couldn’t find an upper or lower bound. I have been unable to overcome this.
+I have tried these things, in various combinations with each other:
+
+With and without JERC smoothing
+With and without rebinning to remove empty bins
+Rebinning to a single bin
+Tried running over just one year, tried with full Run2.
+Introducing rateParams to scale up the rates for different processes.
+
+Tried constraining it to a number, tried letting it float.
+Tried assigning one rateParam per datacard, tried assigning unique rateParams for each process.
+Tried different values.
+
+Tried with and without --X-rtd FAST_VERTICAL_MORPH.
+Tried with and without --robustFit. Tried adjusting the tolerance and strategy as well.
+Tried converting all shape systematics to normalization ones with lnN, initialized to 5% (1.05).
+Tried freezing out different groups of systematics, including trying to freeze all of them.
+Tried dumping all regions that did not have enough scaled events (rate was too small). Tried dropping all rates below 0.1, tried with 10.0.
+
+Note that the rates for the signal MC for the VRs are around 0.05, while the background rates range from 5 to 5000. data_obs rates range from a 300 to 3000. I tried introducing rateParams to scale up the signalMC rate, but got errors from NaNs in the pdfs.
+
+When I tried this, I had everything binned to one bin and dropped all processes with a rate less than 10. See attached files[1]. The command I ran:
+
+{path}/combineTool.py -M Impacts -d {path}/VRs_TTm1300_2017.root -m 120 -v 1 --robustFit 1 --expectSignal 0 --doInitialFit --X-rtd FAST_VERTICAL_MORPH --rMin -3 --rMax 3 > combinelog.log
+
+At this point, I don’t know how to simplify the model further. I suspect that there is some much deeper issue at play.
+For comparison, I will also include the results from trying to fit to a model that better matches the full model. This is unblinded VRs, full Run2, rebinned (but not to a single bin), JERC smoothing. See the attached files [2].
+The command I ran:
+{path}/combineTool.py -M Impacts -d {path}/VRs_TTm1300_Run2.root -m 120 -v 10 --robustFit 1 --expectSignal 0 --doInitialFit --X-rtd FAST_VERTICAL_MORPH --rMin -3 --rMax 3 > combine2.log
+
+Notably, I get a weird set of automatic ROOT notifications; example:
+Found a parameter named n_exp_binVR_QQQQ_2018_proc_DDQCD infinite in ROOT versions < 6.30, going to update the ranges to take into account the new definition of infinity in ROOT v6.30
+Found a parameter named mask_VR_WQQQ_2016_APV infinite in ROOT versions < 6.30, going to update the ranges to take into account the new definition of infinity in ROOT v6.30
+
+There are many of these, across the other regions and years. Both of these types of variables are created by text2workspace.py, but they don’t seem to be actually be infinite when I poke around elsewhere. Literally half of them are the boolean variables for channel masking.
+If you are curious, you can check out my workspace on the CMS LPC nodes at: /uscms/home/msabbott/newCombine/.
+Datacards are located at /uscms/home/msabbott/newCombine/vlq_combine_analysis/preprocess/combineFiles/.
+Datacards and Higgs Combine Input Root files are generated by /uscms/home/msabbott/newCombine/vlq_combine_analysis/preprocess/ManualDataCardWriter.py. (This script takes input root files from CMSSW_10_6_29 that are located at /uscms/home/msabbott/newCombine/vlq_combine_analysis/preprocess/samples/.)
+Datacards are merged by /uscms/home/msabbott/newCombine/vlq_combine_analysis/preprocess/mergeDatacards.sh.
+Combine fit outputs are located at /uscms/home/msabbott/newCombine/HiggsAnalysis/CombinedLimit/higgsCombine*.
+Linearized systematic comparisons are located at /uscms/home/msabbott/newCombine/vlq_combine_analysis/preprocess/plots/.
+I’m at a loss as to how to move forward, any advice is very welcome. Apologies for the MEGA POST, but hopefully this provides enough of a picture to diagnose the issue. Thank you for your time!
+[1] VRs_2017_simpleModel.zip (68.4 KB)
+[2] VRs_Run2_fullModel.zip (2.0 MB)
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2024-11-08T11:56:21.892Z):
+Hi Samantha,
+thank you for these detailed explanations and for providing the inputs. I’ll try to have a look asap.
+In the mean while, I have one quick question that I hope you can answer: When you do the preprocessing, do you also ensure that there is in fact observed data in all bins? You just talkked about the sum of backgrounds (which is also very important), but you should also have observed data entries in all bins.
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 3 (by maabbott @ 2024-11-08T19:11:37.380Z):
+I hadn’t, but I just implemented that and am still getting the same issue. Thanks for pointing that out, it shouldn’t be a problem later.
+I had also already tried rebinning down to a single bin for all histograms, which I think would meet the same condition too.
+----------------------------------------
+
+REPLY 4 (by pkeicher @ 2024-11-11T18:24:56.057Z):
+Hi @maabbott ,
+thanks for the fast reply. Indeed, you should make sure that all your bins actually contain observed data events. But as you already pointed out, your test with one-bin distributions should have cured any such occurrences.
+I started looking into the workspaces that you shared here.
+To get a better feeling of what going on, I first tried to run a MultiDimFit with the following command:
+combine -M MultiDimFit -m 120 -v 1 --expectSignal 0 --X-rtd FAST_VERTICAL_MORPH --rMin LOW_RANGE --rMax MAX_RANGE VRs_TTm1300_Run2.root
+
+and tried different ranges for the POI for both the 2017 and the full Run2 workspace. I wasn’t able to reproduce your fast exit error – for me the fit ran through fine. However, the result of the fit is extremely negative, which is somewhat surprising to me. Is that expected with your model? Then again, I guess you’re more interested in limits at the end, so that might not be a big issue. Can you try if this kind of command works in your setup?
+I’ll try to dig in deeper in the next few days, and will specifically try to run the impact routine that failed for you (thought the initial fit that you posted is really just a command that is very similar to mine under the hood).
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 5 (by maabbott @ 2024-11-14T20:46:27.152Z):
+Hi Philip,
+Sorry for the delay in replying, I have been sick this past week.
+My setup has changed at bit, with some issues persisting and some fixed. I ask that you try to recreate my fit using the updated setup, as it isolated a bug.
+I got the fit over unblinded Validation Regions to converge when using a single, fixed rateParam to scale up all of the signal MC by  1000. The fit result for unblinded VR data is around r = -0.6, which is unphysical but not a huge issue (I think). I am able to get the asimov fit over the VRs to converge, and that converges at r = 0 as expected (using --expectSignal 0).
+One bug fixed, but another persists:
+I am still getting the FASTEXIT underflow error when trying to perform the initial asimov fit over All Regions (120 Signal Regions + 6 Validation Regions).
+Check out [1] for the root files, datacards, and combine outputs. I ran this command:
+{path}/combineTool.py -M Impacts -d {path}/ARs_TTm1300_2017.root -m 120 -v 1 -t -1 --robustFit 1 --expectSignal 0 --doInitialFit --X-rtd FAST_VERTICAL_MORPH --rMin -3 --rMax 3 > combinelog.log
+
+This includes the rateParam to scale up all signal MC by a factor of 1000. The error persists both with and without the rateParam.
+Info about [1]:
+
+The 2017/ directory contains the datacards for each region and their input histograms for Combine.
+The mergedDataCards/ directory contains the merged datacard from combineDataCards.py for all 2017 regions, and the corresponding root workspace file from text2workspace.py.
+combinelog.log contains the direct output from running the above command. Here is a sample of the errors contained in the log file (the last 20 lines of the log file):
+
+WARNING: underflow to -0.0285464 in pdf_binSR_HHtQ_obsOnly for bin 7, weight 0.173392
+FASTEXIT from pdf_binSR_HHtQ_obsOnly
+WARNING: underflow to -0.00165347 in pdf_binSR_HHbb_obsOnly for bin 23, weight 0.00390251
+FASTEXIT from pdf_binSR_HHbb_obsOnly
+WARNING: underflow to -1.58559 in pdf_binSR_Httt_obsOnly for bin 0, weight 0.306857
+FASTEXIT from pdf_binSR_Httt_obsOnly
+WARNING: underflow to -0.00940964 in pdf_binSR_Httb_obsOnly for bin 4, weight 0.100214
+FASTEXIT from pdf_binSR_Httb_obsOnly
+WARNING: underflow to -0.0487946 in pdf_binSR_HttQ_obsOnly for bin 10, weight 0.348872
+FASTEXIT from pdf_binSR_HttQ_obsOnly
+WARNING: underflow to -0.000807053 in pdf_binSR_Htbb_obsOnly for bin 27, weight 0.0107323
+FASTEXIT from pdf_binSR_Htbb_obsOnly
+Maximum failed steps (max=5) reached and minimization failed at r = -0.01875
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error found, will report difference to maximum of range for : r
+Warning - No valid low-error found, will report difference to minimum of range for : r
+r : +0.000 -3.000/+3.000 (68%)
+Done in 0.11 min (cpu), 0.11 min (real)
+309 log messages saved to combine_logger.out
+>> combine -M MultiDimFit -n _initialFit_Test --algo singles --redefineSignalPOIs r -v 1 -t -1 --robustFit 1 --expectSignal 0 --X-rtd FAST_VERTICAL_MORPH --rMin -3 --rMax 3 -m 120 -d /uscms/home/msabbott/newCombine/vlq_combine_analysis/preprocess/combineFiles/blinded_rebin_scaled_TOL_0.1_test/mergedDataCards/ARs_TTm1300_2017.root
+
+Thank you again for your time!
+Cheers,
+Samantha
+[1] ARs_2017_FASTEXIT_underflow.zip (6.0 MB)
+----------------------------------------
+
+REPLY 6 (by maabbott @ 2024-11-18T22:49:37.319Z):
+Hi @pkeicher ,
+Have you had a chance to look at my setup again? Any advice is much appreciated, I am still struggling with these errors.
+Thank you,
+Samantha
+----------------------------------------
+
+REPLY 7 (by anigamov @ 2024-11-21T18:20:56.315Z):
+Dear Samantha,
+I would suggest to run the ValidateDatacards.py script, it should help to understand if the input shapes are bugged, the usage is described in the docs.
+The warnings like this one mentioned in the earlier messages are expected when you run with -v 10
+Found a parameter named n_exp_binVR_QQQQ_2018_proc_DDQCD infinite in ROOT versions < 6.30, going to update the ranges to take into account the new definition of infinity in ROOT v6.30
+
+Best,
+Aliya
+----------------------------------------
+
+REPLY 8 (by maabbott @ 2024-11-21T18:50:31.194Z):
+Hi Aliya,
+As I wrote in my first post, I always run ValidateDatacards.py on my datacards with no issues. This error is something that validateCards.py is not catching.
+Thank you,
+Samantha
+----------------------------------------
+
+REPLY 9 [ACCEPTED ANSWER] (by adewit @ 2024-11-22T08:55:37.250Z):
+Hi Samantha,
+From having a quick look I don’t see anything obviously wrong with your fit, it just looks like you have very small numbers of background events in some of the bins, and then for negative values of the signal strength mu*S+B in some of the bins becomes <0, thus leading to the FASTEXITs that you see.
+For the impacts, I think you have two options:
+
+Set --rMin to 0. The impacts routine should still work, but all the impacts will be one-sided (you nevertheless get an idea of which uncertainties are important, of course)
+Evaluate the expected impacts for a positive value of the signal strength (e.g. the value of the expected limit, or some other choice).
+
+I note that while running your fit, I wasn’t able to get sensible results for the initial fit in option 1) with the signal scaled by a factor 1000, so I would use the version where you do not scale the signal for future checks. If I set this scaling back to 1 I see that the crossing for the 68% confidence interval is at around 0.8. The ‘no valid low-error found’ that you see in your output is related to this - if you scale by 1000, you’d expect the crossing to be at 0.0008 and the +ve range of +3 is too wide for the crossing to be found (and even if you reduce the range by a factor 1000, Combine only reports 3 digits after the decimal point, so you would still not be able to get an accurate interval from this).
+I hope this helps a bit!
+Best,
+Adinda
+----------------------------------------
+
+REPLY 10 (by maabbott @ 2024-12-20T22:46:08.895Z):
+Hi Adinda,
+Sorry for the late reply – the past few weeks have been hectic.
+Thank you for your response, you were exactly right!
+I’m working on debugging other issues in the fit now, but the issues in this thread have been resolved. I’ll close it now
+Thank you,
+Samantha
+----------------------------------------

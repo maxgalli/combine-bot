@@ -1,0 +1,44 @@
+TOPIC: Upper Limits with partially correlated measurements
+URL: https://cms-talk.web.cern.ch/t/19401
+DATE: 2023-01-20T09:37:41.098Z
+SOLVED: no
+============================================================
+
+QUESTION (by jspah @ 2023-01-20T09:37:41.674Z):
+Hi!
+I want to study the sensitivity of differential distributions / differential cross sections to new physics effects. In my case, it is beneficial to consider a normalised differential distribution, which is obtained by dividing the bin contents of the differential measurement by the total measured cross section. This introduces (partial) negative correlations because of the sum constraints.
+I already implemented a simple algorithm in Python to compare the normalised SM distribution x to a normalised SM+BSM distribution y (shape depends on a new physics coupling) with a binned chi-squared statistic. The statistic is defined as (x-y)^T Sigma^{-1} (x-y), where Sigma is the covariance matrix. Here, I just assume one source of uncertainty for simplicity. Then, we can find upper limits by increasing the coupling until we pass the critical value (depending on the desired significance level).
+Is it possible to do such a thing in Combine? In principle, the manual method works but it would be great to use Combine as a validated and accepted tool inside CMS for this. However, I did not find a way to include partial correlations for the measurements and I have not found information in the documentation about this.
+Thanks a lot!
+Jan Lukas
+----------------------------------------
+
+REPLY 2 (by amarini @ 2023-01-20T10:22:02.000Z):
+Hi Lukas,
+combine describe the data statistics with a likelihood function based on reconstruction models (i.e., MC) that compares to data events.
+You can have sensitivity on a particular distribution (e.g., pT of something) wrt SM + BSM by including in the likelihood both SM and BSM contributions and having a parameter of interest that scales your signal (BSM).
+If you are not interested in the overall constraint on the global normalization of that distribution, you can add a freely floating nuisance parameter on that (rateParameter).
+This is in general more accurate but more involved with what you described, especially if you have a single covariance matrix out of a publication without all the information to construct the likelihood function. If you want to derive a first sensitivity to understand if it is worth doing a real analysis in this way or not, probably a small script in python will serve you better. If you want to start accounting for all possible effects, implementing a full likelihood may be more accurate and can give you more handles in estimation of nuisance parameters as well as adding constraints from control regions.
+Cheers,
+-Andrea
+On Fri, Jan 20, 2023 at 10:39 AM Jan Lukas Spah via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Jan Lukas Spah jspahJanuary 20
+
+Hi!
+I want to study the sensitivity of differential distributions / differential cross sections to new physics effects. In my case, it is beneficial to consider a normalised differential distribution, which is obtained by dividing the bin contents of the differential measurement by the total measured cross section. This introduces (partial) negative correlations because of the sum constraints.
+I already implemented a simple algorithm in Python to compare the normalised SM distribution x to a normalised SM+BSM distribution y (shape depends on a new physics coupling) with a binned chi-squared statistic. The statistic is defined as (x-y)^T Sigma^{-1} (x-y), where Sigma is the covariance matrix. Here, I just assume one source of uncertainty for simplicity. Then, we can find upper limits by increasing the coupling until we pass the critical value (depending on the desired significance level).
+Is it possible to do such a thing in Combine? In principle, the manual method works but it would be great to use Combine as a validated and accepted tool inside CMS for this. However, I did not find a way to include partial correlations for the measurements and I have not found information in the documentation about this.
+Thanks a lot!
+Jan Lukas
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by jspah @ 2023-01-22T12:38:06.473Z):
+Hi Andrea,
+thank you so much for this detailed explanation. Indeed, it makes sense to assess the sensitivity using some rough approximations and a small python script first. I will start with this and take a look at using Combine for the final interpretation inside the analysis when more progress has been made.
+Best,
+Jan Lukas
+----------------------------------------

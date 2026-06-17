@@ -1,0 +1,84 @@
+TOPIC: Re: Question on template morphing algorithm
+URL: https://cms-talk.web.cern.ch/t/2162
+DATE: 2021-09-14T22:04:31.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by andrea_marini @ 2021-09-14T22:04:31.000Z):
+Dear Lucas,
+It’s slightly more complicated.
+Please, refers as well to http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rates-for-shape-analysis
+First of all the normalization of each shape is accounted separately as an asymmetric logNormal (correlated with the shape variation).
+In a single bin example, that corresponds to a asymm. logNormal uncertainty (which is multiplicative, see http://www.physics.ucla.edu/~cousins/stats/cousins_lognormal_prior.pdf).
+The kappas in the asymmetric log normal will be interpolated in a similar way. (here https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/ProcessNormalization.cc#L87) (IIRC, it is slightly different in the sense that the low/up value are flatten at the value of +/-0.5 of the nuisance parameter, rather than +/- 1, but similar concept)
+kappa = f( kappa_low, kappa_high, theta)
+L (r, theta) = Pois( data | r*sig + bkg * kappa^theta) N(theta) ## if eg the asymm logN is on bkg., where N is a normal distribution (0,1)
+If you have two nuisances (n1, and n2)
+L (r, n1,n2) = P( data | … bkgX * kappa1 ^ n1 * kappa2^n2) N(n1) N(n2), where in your example, log kappa1 ~ 10% and log kappa2 ~ 20%
+In a multi bin example, the interpolation happens on the fractions(*). The algorithm ‘shape’ at the moment interpolates the fractions from [-1,0,+1] → [low, nom, high] imposing the three points, and smoothness in the first and second derivatives, in order to have those properties passed to the negative log-likelihood.
+A second algorithm is present, shapeN, in which the interpolation happens with the same algorithm but on the logarithm of the fractions, and thus ending up being multiplicative.
+So if you have two bins with 9 and 1 expected events, (10 total), the fractions are:
+f _nom= 90%, 10%.
+If you have a template with up yields of 9,2 . The total is 11. The fractions are
+f1_up = 82% and 18%
+The kappa1_up (for the process log normal) is 11/10. (I assumed you used 1 to activate them, otherwise this number is scaled)
+…
+If you have a second template with up yields of 6, 4. The total is 10. and the fractions are:
+f2_up = 60% and 40% . kappa2_up is 1 (no change)
+…
+your backgrounds will be with ‘shape’:
+bin1: nominal
+
+kappa1(kappa1_up, kappa1_dn, n1) ^n1 *kappa2(kappa2_up,kappa2_dn,n2)^n2 ### lognormal on the normalization
+[ f_nom_bin1 + df1(f1_nom,f1_dn,f1_up,theta) + df2 …] ## interpolation on the fractions
+…
+alternatively with shapeN should be:
+
+bin1: nominal
+
+kappa1^n1 * kappa2^n2 ## as above
+exp( log_f_nom_bin1 + d_log_f1_bin1 + d_log_f2_bin2 …) ### interpolation on the log of the fractions, which end up being multiplicative for the log-exp properties.
+
+[plus some additional checks for positiveness, boundaries … in both cases. ]
+Probably a similar approach to shapeN may be considering N single bin channels affected by logNormals.
+In practice,
+
+for most of the variations we see similar behavior for shape and shapeN
+
+shape should be faster than shapeN as exp functions in double precision are expensive (if not approximated heavily)
+
+both have disadvantages and pathological cases.
+
+if they yield very different results, likely none of them is correct. (as always with systematic uncertainties)
+
+Cheers,
+-Andrea
+(*) this treatment of separating normalization and PDF is a general ‘feature’ of RooFit.
+For template analysis may be a bit counterintuitive but it allows to use the same formalism for parametric and template, and
+thus is able to treat very different forms of likelihoods (binned, unbinned …) .
+----------------------------------------
+
+REPLY 2 (by lcorcodi @ 2021-09-15T00:02:58.000Z):
+Hi Andrea,
+Thanks for the many details! I had seen separate pieces of these explanations and forgot about some of these moving parts so it’s nice to see everything together.
+Perhaps I should also explain the origin of my question since now I’m wondering a bit how to proceed. My current goal is to implement shape uncertainties for a 2D version of RooParametricHist (RooParametricHist2D). I’m aware of this commit [1] and the corresponding documentation [2] about how to do things with the 1D version available in Combine but it would take some hacking for me to get the 2D going which I’ve been hesitant to do (though that may be the best path forward).
+Instead, I thought to build it per-bin “manually” with the associated nuisances being declared in the card as a “param nuis 0 1” as is being done with the “efficiency” and “acceptance” terms in [2]. In fact, I came up with the formulation before I saw [2] (I only went looking after your message) and after reading your response and [2], I think this could get things working correctly.
+Could I setup a bin with two shape nuisances as a RooFormulaVar with formula
+“{nom} * TMath::Power({f1},@0) * TMath::Power({f2},@1)”
+where {f1} and {f2} are following the interpolation scheme from ProcessNormalization.cc? (as a function of @0/@1 and interpolating kappaLow and kappaHigh)
+Or maybe this is too round-about and I should just modify my RooParametricHist2D?
+Thanks for your help,
+Lucas
+[1] - https://github.com/lcorcodilos/HiggsAnalysis-CombinedLimit/commit/f8188f8a5b03cfba50583187658ea558221f0036#diff-71b5d8f15ec0259102ebc581e4cecf4c723924892ab69c443b6a5a86fb003043
+[2] - https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes
+----------------------------------------
+
+REPLY 3 (by amarini @ 2021-09-15T10:35:05.000Z):
+*** Discussion title: Higgs Combination
+Hi Lucas,
+I'm not expert on RooParametricHist, somebody else may step in to correct me.
+Ideally, you would like to implement a 2D version on top of the 1D version.
+If you do so, you should be able to recycle most of the 1D development, and very likely very little to do on top, since the RooDataHist passed will be automatically multiD and there shouldn't be a difference between the treatment of 1D and ND, in any templated procedure.
+Cheers,
+-Andrea
+----------------------------------------

@@ -1,0 +1,34 @@
+{
+  "topic_id": 40933,
+  "title": "Understanding signal strength for a given signal normalization",
+  "url": "https://cms-talk.web.cern.ch/t/40933",
+  "category_id": 279,
+  "created_at": "2024-05-08T07:32:03.099Z",
+  "last_posted_at": "2024-05-10T10:24:26.370Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "castells",
+      "name": "Sergi Castells",
+      "created_at": "2024-05-08T07:32:03.274Z",
+      "updated_at": "2024-05-08T07:32:03.274Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI am trying to extract limits for a BSM process and do not understand how to interpret the limits as \\sigma \\times BR. I understand that r is a multiplier on signal normalization s_i, but don\u2019t see how to convert the limits reported in r to a \\sigma \\times BR. I am able to extract the limits, but this last step eludes me. Could anyone help clarify?\nFor context, I have been floating my background normalization (as the bkg is data driven) and setting the signal normalization to a constant N = \\frac{lumi * \\sigma(ggH) * BR(H\\rightarrow aa\\rightarrow 4\\gamma)}{\\Sigma(weights)}, where BR(H\\rightarrow aa\\rightarrow 4\\gamma) is set to an arbitrary value such that r \\sim 1 when running a FitDiagnostic.\nMany thanks!",
+      "cooked_html": "<p>Hi,</p>\n<p>I am trying to extract limits for a BSM process and do not understand how to interpret the limits as <span class=\"math\">\\sigma \\times BR</span>. I understand that <span class=\"math\">r</span> is a multiplier on signal normalization <span class=\"math\">s_i</span>, but don\u2019t see how to convert the limits reported in <span class=\"math\">r</span> to a <span class=\"math\">\\sigma \\times BR</span>. I am able to extract the limits, but this last step eludes me. Could anyone help clarify?</p>\n<p>For context, I have been floating my background normalization (as the bkg is data driven) and setting the signal normalization to a constant <span class=\"math\">N = \\frac{lumi * \\sigma(ggH) * BR(H\\rightarrow aa\\rightarrow 4\\gamma)}{\\Sigma(weights)}</span>, where BR(<span class=\"math\">H\\rightarrow aa\\rightarrow 4\\gamma</span>) is set to an arbitrary value such that <span class=\"math\">r \\sim 1</span> when running a FitDiagnostic.</p>\n<p>Many thanks!</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-05-10T10:24:26.370Z",
+      "updated_at": "2024-05-10T10:24:26.370Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sergi,\nIf the signal is normalized to xsnorm*brnorm*lumi/Nevts (NB this is equivalent to what you wrote, assuming that you applied the MC event weight to your events as well), then the cross section times branching fraction that a given value of r corresponds to is r*xsnorm*BRnorm. So, to convert between a limit on r and on xs*BR, all you need to do is multiply r by the xsnorm*BRnorm that you used to normalize the signal. In this case that might not be exactly what you want, since you are probably more interested in the upper limit on the branching fraction, but the principle for the conversion remains the same.\nI hope this helps,\nAdinda",
+      "cooked_html": "<p>Hi Sergi,</p>\n<p>If the signal is normalized to <code>xsnorm*brnorm*lumi/Nevts</code> (NB this is equivalent to what you wrote, assuming that you applied the MC event weight to your events as well), then the cross section times branching fraction that a given value of r corresponds to is <code>r*xsnorm*BRnorm</code>. So, to convert between a limit on r and on <code>xs*BR</code>, all you need to do is multiply r by the <code>xsnorm*BRnorm</code> that you used to normalize the signal. In this case that might not be exactly what you want, since you are probably more interested in the upper limit on the branching fraction, but the principle for the conversion remains the same.</p>\n<p>I hope this helps,</p>\n<p>Adinda</p>"
+    }
+  ]
+}

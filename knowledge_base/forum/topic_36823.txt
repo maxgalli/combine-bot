@@ -1,0 +1,489 @@
+TOPIC: Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+URL: https://cms-talk.web.cern.ch/t/36823
+DATE: 2024-03-14T11:04:34.373Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-14T11:04:34.567Z):
+Dear experts,
+I have to ask again this question, since I have some doubts.
+I combine two years 2017 and 2018 and three Search Regions (SR1, SR2,SR3)
+and assume the same mass and width for the signal model.
+The signal event yields in 2017 and 2018 are connected using a nuisance parameter (the ratio of event yields in sidebands). Thanks to Nick and Alyia
+I got a cards combining 2017 and 2018 for each SR
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test
+SR1_2017+2018.txt
+SR2_2017+2018.txt
+SR3_2017+2018.txt
+where three lines (for SR1 for example):
+mu_sr1_2017 rateParam SR1_2017 sig 1.0
+Rsr1_2018_2017 param 1.54 0.05
+mu_sr1_2018 rateParam SR1_2018 sig @0*@1 mu_sr1_2017,Rsr1_2018_2017
+connect the signal event yields in 2017 and 2018, so I have one signal strength for combination of two years.
+Having these three datacards I now want to combine SR1, SR2, SR3.  According
+to Alyia prescription I do
+
+combineCards.py SR3_2017+2018.txt SR2mod13_2017+2018.txt  SR1_2017+2018.txt > combined.txt
+
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017
+So, my doubts are about “–freezeParameters r” option. Is not it that it should
+be “–algo fixed --fixedPointPOIs r=0” or something like that ?
+Also the step I normally used before MultiDimFit was to set up  Physics model with
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel …
+Please, advice.  It is the last step of our combination and depending on the result
+we have either observation or discovery
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-03-14T15:29:32.026Z):
+Dear Sasha,
+The way I proposed to implement the signal model earlier allows you to run the fits without applying physics model on top of the datacard. In particular the option  --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017 freezes the default signal strength parameter r and defines new POIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017.
+Alternatively, you can implement something similar with the multiSignalModel. This is perhaps a bit better because you don’t have to keep in mind that you have to freeze a default signal strength parameter (--freezeParameters r).  You would have to slightly modify the datacards if you prefer to go this way and remove the lines defining the rateParam’s, but the ratio parameters should stay.
+From the datacard block in your previous message you should only have this line:
+Rsr1_2018_2017 param 1.54 0.05
+
+After all of the cards are combined you can define the signal process scaling parameters with multiSignalModel:
+text2workspace.py -d combined.txt -o ws_run2_3SRs.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose  --PO 'map=SR1_2017/sig:r_sr1_2017[100,0,500]'  --PO 'map=SR1_2018/sig:r_sr1_2018=expr;;r_sr1_2018("@0*@1", r_sr1_2017, Rsr1_2018_2017[1,0,2])' --PO 'map=SR2_2017/sig:r_sr2_2017[100,0,500]'  --PO 'map=SR2_2018/sig:r_sr2_2018=expr;;r_sr2_2018("@0*@1", r_sr2_2017, Rsr2_2018_2017[1,0,2])'  --PO 'map=SR3_2017/sig:r_sr3_2017[100,0,500]'  --PO 'map=SR3_2018/sig:r_sr3_2018=expr;;r_sr3_2018("@0*@1", r_sr3_2017, Rsr3_2018_2017[1,0,2])'
+
+where Rsr3_2018_2017, Rsr2_2018_2017 and Rsr2_2018_2017 are constrained ratio parameters defined as param in the datacards for each region.
+Let me know if something is unclear or not working properly, I could not test it with the cards from your afs area because the 2018 workspaces are missing.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-03-14T15:51:36.000Z):
+Dear Alyia,
+thank you for your answer ! But how I tell to combine that
+it has to run also second time the fit with zero signal strengths ?
+I will put Workspaces for 2018 tomorrow and let you know.
+Thanks, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, March 14, 2024 16:30
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Aliya Nigamova anigamovMarch 14
+
+Dear Sasha,
+The way I proposed to implement the signal model earlier allows you to run the fits without applying physics model on top of the datacard. In particular the option --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017 freezes the default signal strength parameter r and defines new POIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017.
+Alternatively, you can implement something similar with the multiSignalModel. This is perhaps a bit better because you don’t have to keep in mind that you have to freeze a default signal strength parameter (--freezeParameters r). You would have to slightly modify the datacards if you prefer to go this way and remove the lines defining the rateParam’s, but the ratio parameters should stay.
+From the datacard block in your previous message you should only have this line:
+Rsr1_2018_2017 param 1.54 0.05
+
+After all of the cards are combined you can define the signal process scaling parameters with multiSignalModel:
+text2workspace.py -d combined.txt -o ws_run2_3SRs.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose  --PO 'map=SR1_2017/sig:r_sr1_2017[100,0,500]'  --PO 'map=SR1_2018/sig:r_sr1_2018=expr;;r_sr1_2018("@0*@1", r_sr1_2017, Rsr1_2018_2017[1,0,2])' --PO 'map=SR2_2017/sig:r_sr2_2017[100,0,500]'  --PO 'map=SR2_2018/sig:r_sr2_2018=expr;;r_sr2_2018("@0*@1", r_sr2_2017, Rsr2_2018_2017[1,0,2])'  --PO 'map=SR3_2017/sig:r_sr3_2017[100,0,500]'  --PO 'map=SR3_2018/sig:r_sr3_2018=expr;;r_sr3_2018("@0*@1", r_sr3_2017, Rsr3_2018_2017[1,0,2])'
+
+where Rsr3_2018_2017, Rsr2_2018_2017 and Rsr2_2018_2017 are constrained ratio parameters defined as param in the datacards for each region.
+Let me know if something is unclear or not working properly, I could not test it with the cards from your afs area because the 2018 workspaces are missing.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-03-14T17:03:10.807Z):
+It is still possible to run MultiDimFit --algo fixed for multiple POIs if you’d like to do this, one just has to set the fixed points for all of them, i.e. --fixedPointPOIs r_sr1_2017=0,r_sr2_2017=0, r_sr3_2017=0.  One has to make sure that if the negative log likelihood is used for the significance calculation the correct ndof is used.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2024-03-14T17:37:17.000Z):
+Dear Alyia,
+I like more the first way you proposed with
+–freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017
+so, how to force combine in this was to do a second fit with zero strengths ? And will I have in the way output root file with the difference NLL - NLL0
+to make me possible for significance calculation ?
+Thanks, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, March 14, 2024 18:04
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Aliya Nigamova anigamovMarch 14
+
+It is still possible to run MultiDimFit --algo fixed for multiple POIs if you’d like to do this, one just has to set the fixed points for all of them, i.e. --fixedPointPOIs r_sr1_2017=0,r_sr2_2017=0, r_sr3_2017=0. One has to make sure that if the negative log likelihood is used for the significance calculation the correct ndof is used.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2024-03-15T08:53:57.355Z):
+Dear Alyia,
+I will use the first way you proposed:
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2mod13_2017,mu_sr3_2017
+and do not change my datacards.   How can I force combine to do in this waa a second fit with zero signal strengths and also get output root file with DeltaNLL ?
+I have now all RooFitWorkspace files for 2017 and 2018 at my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test
+So you can give it try for testing.
+Thank you very much, Sasha.
+----------------------------------------
+
+REPLY 7 (by anigamov @ 2024-03-15T11:13:35.896Z):
+Dear Sasha,
+The MultiDimFit with addition --algo fixed --fixedPointPOIs mu_sr1=0,mu_sr2...  as I suggested above should still work.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2024-03-15T11:47:35.000Z):
+Dear Alyia,
+do you mean
+mu_sr1_2017=0,mu_sr2_2017=0, mu_sr3_2017=0
+? according to what we have in SR1_2017+2018.txt,…
+lines:
+mu_sr1_2017 rateParam SR1_2017 sig 1.0
+Rsr1_2018_2017 param 1.53 0.04
+mu_sr1_2018 rateParam SR1_2018 sig @0*@1 mu_sr1_2017,Rsr1_2018_2017
+Many thanks !
+Cheers, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Friday, March 15, 2024 12:14
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Aliya Nigamova anigamovMarch 15
+
+Dear Sasha,
+The MultiDimFit with addition --algo fixed --fixedPointPOIs mu_sr1=0,mu_sr2... as I suggested above should still work.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 9 (by anigamov @ 2024-03-15T13:01:15.041Z):
+yes, exactly, basically assign fixed point values for all the of the POIs in your model.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 10 (by anikiten @ 2024-03-16T13:41:33.000Z):
+Dear Alyia,
+for combining SR1, SR2 and SR3 2017 data only I use
+combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0 --redefineSignalPOIs r_sig1,r_sig2,r_sig3 --setParameters mean=27.23,width=2.1 --freezeParameters mean,width 2017UL_dimuon_SR1SR2SR3.root -v 3
+My question is - how can I have a scan of signal strengths r_sig1, r_sig2.r_sig3 and have these nice plots: signal strength vs NLL with a horisontal line at 1 and printed r_sig ± error ?
+Many thanks for all your help, really appreciated very much.
+Cheers, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Friday, March 15, 2024 14:02
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Aliya Nigamova anigamovMarch 15
+
+yes, exactly, basically assign fixed point values for all the of the POIs in your model.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 11 (by amarini @ 2024-03-16T20:27:18.882Z):
+Hi Sasha,
+Generally, it would be something like:
+--algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0  → --algo grid -P ??? [-P ???] --floatOtherPOIs=[0 or 1] and after you can use a plotting tool (e.g., plot1DScan.py)
+You will have to decide what to do with the POIs you don’t scan, if you want a 1D/2D/3D grid, the parameters they are fixed to or if they are profiled.
+I strongly suggest the following tutorial and the documentation page:
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#e-signal-strength-measurement-and-uncertainty-breakdown
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+-Andrea
+----------------------------------------
+
+REPLY 12 (by anikiten @ 2024-03-17T08:27:30.000Z):
+Dear Alyia, Andrea,
+with the help of Alyia I cooked up the following combine command
+to combine three SRs and two years and force fit to run second time
+with zero signal strengths:
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0, mu_sr3_2017=0
+it tells me
+Invalid options: option ‘–datacard’ cannot be specified more than once
+Invalid options: option ‘–datacard’ cannot be specified more than once
+what I do wrong ?
+Thanks, Sasha.
+
+···
+
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Saturday, March 16, 2024 21:28
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Andrea Carlo Marini amariniMarch 16
+
+Hi Sasha,
+Generally, it would be something like:
+--algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0 → --algo grid -P ??? [-P ???] --floatOtherPOIs=[0 or 1] and after you can use a plotting tool (e.g., plot1DScan.py)
+You will have to decide what to do with the POIs you don’t scan, if you want a 1D/2D/3D grid, the parameters they are fixed to or if they are profiled.
+I strongly suggest the following tutorial and the documentation page:
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#e-signal-strength-measurement-and-uncertainty-breakdown
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+-Andrea
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 13 (by amarini @ 2024-03-17T09:18:21.058Z):
+Hi,
+you have an extra space, here:
+=0, mu_sr3_2017
+and combine interpret the last argument as a second datacard spec.
+-A
+----------------------------------------
+
+REPLY 14 (by anikiten @ 2024-03-17T12:36:17.000Z):
+ah, thank you Andrea !
+Sasha.
+
+···
+
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Sunday, March 17, 2024 10:19
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Andrea Carlo Marini amariniMarch 17
+
+Hi,
+you have an extra space, here:
+=0, mu_sr3_2017
+and combine interpret the last argument as a second datacard spec.
+-A
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 15 (by anikiten @ 2024-03-17T12:40:59.000Z):
+it tells now
+[anikiten@lxplus802 test]$ combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0
+<<< Combine >>>
+
+random number generator seed is 123456
+method used is MultiDimFit
+Warning! – You haven’t picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the ‘B-only’ ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 6 channels, 0 generic constraints, 3 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[WARNING] Found [a1_17sr3] at boundary.
+[WARNING] Found [a1_18sr3] at boundary.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Sunday, March 17, 2024 13:36
+To: CMS talk cmstalk+d13a2f60a07869ac4b008c351525ff26@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+ah, thank you Andrea !
+Sasha.
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Sunday, March 17, 2024 10:19
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Andrea Carlo Marini amariniMarch 17
+
+Hi,
+you have an extra space, here:
+=0, mu_sr3_2017
+and combine interpret the last argument as a second datacard spec.
+-A
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 16 (by anikiten @ 2024-03-17T12:45:14.000Z):
+forgot to copy the last printout after
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Sunday, March 17, 2024 13:40
+To: CMS talk cmstalk+d13a2f60a07869ac4b008c351525ff26@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+it tells now
+[anikiten@lxplus802 test]$ combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0
+<<< Combine >>>
+
+random number generator seed is 123456
+method used is MultiDimFit
+Warning! – You haven’t picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the ‘B-only’ ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 6 channels, 0 generic constraints, 3 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[WARNING] Found [a1_17sr3] at boundary.
+[WARNING] Found [a1_18sr3] at boundary.
+
+WARNING: MultiDimFit failed
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Sunday, March 17, 2024 13:36
+To: CMS talk cmstalk+d13a2f60a07869ac4b008c351525ff26@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+ah, thank you Andrea !
+Sasha.
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Sunday, March 17, 2024 10:19
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Andrea Carlo Marini amariniMarch 17
+
+Hi,
+you have an extra space, here:
+=0, mu_sr3_2017
+and combine interpret the last argument as a second datacard spec.
+-A
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 17 (by anikiten @ 2024-03-17T15:42:50.000Z):
+Hi Andrea, Alyia,
+forgot about two previous emails. I got it running thank to you !
+Cheers, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Sunday, March 17, 2024 13:45
+To: CMS talk cmstalk+d13a2f60a07869ac4b008c351525ff26@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+forgot to copy the last printout after
+
+WARNING: MultiDimFit failed
+
+Set Default Value of Parameter mu_sr1_2017 To : 0
+Set Default Value of Parameter mu_sr2_2017 To : 0
+Set Default Value of Parameter mu_sr3_2017 To : 0
+Evaluating fixed point with mu_sr1_2017= 0
+Evaluating fixed point with mu_sr2_2017= 0
+Evaluating fixed point with mu_sr3_2017= 0
+Done in 0.08 min (cpu), 0.08 min (real)
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Sunday, March 17, 2024 13:40
+To: CMS talk cmstalk+d13a2f60a07869ac4b008c351525ff26@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+it tells now
+[anikiten@lxplus802 test]$ combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0
+<<< Combine >>>
+
+random number generator seed is 123456
+method used is MultiDimFit
+Warning! – You haven’t picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the ‘B-only’ ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 6 channels, 0 generic constraints, 3 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[WARNING] Found [a1_17sr3] at boundary.
+[WARNING] Found [a1_18sr3] at boundary.
+
+WARNING: MultiDimFit failed
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Sunday, March 17, 2024 13:36
+To: CMS talk cmstalk+d13a2f60a07869ac4b008c351525ff26@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+ah, thank you Andrea !
+Sasha.
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Sunday, March 17, 2024 10:19
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Andrea Carlo Marini amariniMarch 17
+
+Hi,
+you have an extra space, here:
+=0, mu_sr3_2017
+and combine interpret the last argument as a second datacard spec.
+-A
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 18 (by anikiten @ 2024-03-18T15:36:30.803Z):
+Hi Andrea,
+to plot one of three signal strenghts I used:
+combine -M MultiDimFit --rMin 0 --rMax 100 --algo grid --points 100 -P r_sig1 --floatOtherPOIs=0 --setParameters mean=27.3,width=5.1 --freezeParameters mean,width 2017UL_dimuon_SR1SR2SR3.root -v 3
+and then run
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root
+I got errors:
+
+scan
+Error in TTreeFormula::Compile:  Bad numerical expression : “r”
+Info in TSelectorDraw::AbortProcess: Variable compilation failed: {r:2deltaNLL,quantileExpected > -1.5}
+Traceback (most recent call last):
+File “plot1DScan.py”, line 127, in
+main_scan = BuildScan(args.output, args.POI, [args.main], args.main_color, yvals, args.y_cut)
+File “plot1DScan.py”, line 39, in BuildScan
+graph = read(scan, param, files, ycut)
+File “plot1DScan.py”, line 25, in read
+graph = plot.TGraphFromTree(limit, param, '2deltaNLL’, ‘quantileExpected > -1.5’)
+File “/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/python/CombineHarvester/CombineTools/plotting.py”, line 584, in TGraphFromTree
+gr = R.TGraph(tree.GetSelectedRows(), tree.GetV1(), tree.GetV2())
+TypeError: none of the 11 overloaded methods succeeded. Full details:
+TGraph::TGraph(const TGraph& gr) =>
+TypeError: takes at most 1 arguments (3 given)
+TGraph::TGraph(const TH1* h) =>
+TypeError: takes at most 1 arguments (3 given)
+TGraph::TGraph(const TF1* f, const char* option = “”) =>
+TypeError: takes at most 2 arguments (3 given)
+TGraph::TGraph(const TVectorT& vx, const TVectorT& vy) =>
+TypeError: takes at most 2 arguments (3 given)
+TGraph::TGraph(const TVectorT& vx, const TVectorT& vy) =>
+TypeError: takes at most 2 arguments (3 given)
+TGraph::TGraph() =>
+TypeError: takes at most 0 arguments (3 given)
+TGraph::TGraph(int n) =>
+TypeError: takes at most 1 arguments (3 given)
+TGraph::TGraph(const char* filename, const char* format = “%lg %lg”, const char* option = “”) =>
+TypeError: could not convert argument 1 (expected string or Unicode object, long found)
+TGraph::TGraph(int n, const int* x, const int* y) =>
+TypeError: could not convert argument 2 (could not convert argument to buffer or nullptr)
+TGraph::TGraph(int n, const float* x, const float* y) =>
+TypeError: could not convert argument 2 (could not convert argument to buffer or nullptr)
+TGraph::TGraph(int n, const double* x, const double* y) =>
+TypeError: could not convert argument 2 (could not convert argument to buffer or nullptr)
+What I did wrong ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 19 (by anigamov @ 2024-03-18T15:56:57.537Z):
+Hi Sasha,
+you should specify the parameter of interest name with --POI <name> option since you are not using the default POI r.
+something like this:
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI r_sig1
+
+should work.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 20 (by anikiten @ 2024-03-18T16:40:45.000Z):
+Hi Alyia,
+yes, it works !
+Thank you very much, Sasha.
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, March 18, 2024 16:58
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+Aliya Nigamova anigamovMarch 18
+
+Hi Sasha,
+you should specify the parameter of interest name with --POI <name> option since you are not using the default POI r.
+something like this:
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI r_sig1
+
+should work.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

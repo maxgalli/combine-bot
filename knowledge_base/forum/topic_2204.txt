@@ -1,0 +1,142 @@
+TOPIC: Re: Unbinned Fit - POI Interpolation and Systematics
+URL: https://cms-talk.web.cern.ch/t/2204
+DATE: 2021-11-08T11:25:21.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Samuel_Higginbotham @ 2021-11-08T11:25:21.000Z):
+*** Discussion title: Higgs Combination
+Hello Combine Experts,
+I am reviving this post to complete the discussion of systematics for the model.
+There are two problems that persist in my model:
+1. ridiculous values on the error for the initial fit
+2. impacts are one-sided
+There are two images attached, I'm focusing on the main background in the model which I notate as FF. DiMuonMass_full_FF_Nominal2017_mmmt.png shows a Bernstein polynominal defined like https://github.com/samhiggie/RunII_HExo_StatInference/blob/main/hToaaFitter_interpolation_systematics_full.py#L249-L261
+Why are the errors on the fit values so large? When I change the fit range for the RooRealVars it also changes these errors bars and the visualization band in the plot.
+Another iteration I try with a RooPolynominal without squaring the coefficients. There are plenty of warnings showing that the normalization goes negative during the fit. The principle values and the errors look better but the fit band is strange - please see DiMuonMass_full_FF_Nominal2017_mmmt_poly.png.
+The fit parameters are:
+Floating Parameter    FinalValue +/-  Error
+--------------------  --------------------------
+c1_bkg_Nominal   -6.8891e-03 +/-  5.21e-02
+c2_bkg_Nominal    2.9853e-04 +/-  1.50e-03
+c3_bkg_Nominal   -6.0275e-06 +/-  1.47e-05
+FF fit correlation matrix:
+3x3 matrix is as follows
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-11-08T13:28:09.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+There is an hands-on excercise on the last tutorial on parametric workspaces here Tutorials can also be reached from the main page of the documentation under the 'tutorials' section:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2020/exercise/
+For adding nuisance parameters to a parametric model, you can have any parameters constrained to a particular value + uncertainty (with the param keyword). You can see the description here.
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analysis
+(please read also the warning inside on extended pdfs and add pdfs, if you use them).
+For what concern the description of each class, we refer to the corresponding roofit page. In general, you should remember that normalization and shape are treat differently in combine (and roofit). If your uncertainty is unconstrained (as you probably want in an extended ML fit), RooBernstein polynomial as implemented in RooFit have one more d.o.f. than needed.
+https://root.cern.ch/doc/master/classRooBernstein.html
+For this reason, and in order to have analytical integrals, a faster version of the bernstein polynomials has been implemented here
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/interface/RooBernsteinFast.h
+
+/*****************************************************************************
+* RooBernsteinFast
+* Josh Bendavid (CERN)
+* Fast templated version of RooBernstein class using SMatrices
+*
+*
+*
+*
+*****************************************************************************/
+#ifndef ROO_BERNSTEINFAST
+#define ROO_BERNSTEINFAST
+
+#include "RooAbsPdf.h"
+#include "RooRealProxy.h"
+#include "RooListProxy.h"
+#include "RooChangeTracker.h"
+#include "TMath.h"
+#include "Math/SMatrix.h"
+
+class RooRealVar;
+
+This file has been truncated. show original
+
+with the first coefficient fixed to 1.
+Why are the errors on the fit values so large?
+my first guess is that for the reason above you may have instabilities. The error on the fit is the band which is obtained from resampling toys. This depends on the parameters you have and they interplay.
+
+When I change the fit range for the RooRealVars it also changes these errors bars and the visualization band in the plot.
+
+RooRealVars freely floating are constrained by the observation and allowed to vary only in their range. If the value of the fit would try to probe that variable outside the given range it stops.  This is why the errors bars changes. It may not be correct to force the fit in a particular region.
+
+Another iteration I try with a RooPolynominal without squaring the coefficients. There are plenty of warnings showing that the normalization goes negative during the fit.
+
+The fit is not bounded to be in the positive range, unless there are events in the observation that protects this to happen. Unfortunately, probability density functions are define only on the positive domain.  I saw in the past squaring the coefficients of the bernstein representation of the polynomial, but not of the polynomial themselves.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by Samuel_Higginbotham @ 2021-11-10T13:39:46.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrea,
+Many thanks for your response. I've combed through the tutorial and I've already been in close contact with the combine.io site - it is extraordinarily helpful overall!
+I'm still struggling with one-sided impacts and issues with the fit. Squared coefficents although get close to a more reasonable fit + range after playing with the RooRealVar ranges STILL give me one sided impacts. And even non-squared ones do as well for most of my nuissances.
+However, maybe I should ask a question that should solve my problems more directly if answered.
+How do I implement a Roo polynomial model (Bernstein, Chebyshev etcâ¦ ) AND it's coefficients/d.o.f. into a workspace that combine will use and interpret correctly for a parametric analysis?
+In the tutorial, there are no examples of the Roo"Model" + fit ranges for it's parameters that are THEN used for combine methods for analysis (ML fit, Impacts, etcâ¦).
+In Hgg examples, they only discuss the datacard and say sort of what should be in the workspace - they don't demonstrate how to make the shapes and create the workspace (same for the combine.io website)
+The tutorial seems to have a bit more information but it doesn't show how to prepare the RooWorkspace and contained functions to interface with combine. I see that there is a factory with a likelihood that is created by the user and one can create a NLL etcâ¦ but from what I understand, combine is suppose to construct the likelihood, NLL, guassian constraints FROM the PDFs, rates, and things contained in the workspace and guided by the datacard. So I find this information pedagogical, but not super helpful in conducting the CMS approved statistical inference for my analysis.
+Would you or other combine experts have time to chat about this or is there a mattermost where I can table my analysis and concerns?
+Thank you for your time and help!
+Sam
+----------------------------------------
+
+REPLY 4 (by amarini @ 2021-11-10T16:11:54.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+All the generalizations that I specify below, may be really situational to the details of the analysis.
+For implementing a polynomial (or other roofit functions), background (pyroot):
+# load combine library, if you used pdfs defined in combine, eg RooBernsteinFast
+ROOT.gSystem.Load("libHiggsAnalysisCombinedLimit.so")
+# declare a workspace
+w = ROOT.RooWorkspace("w","w")
+#make a variable and get it
+w.factory("xobs[130,1000]"); # RooRealVar
+xobs=w.var("xobs")
+## or create a variable and import it in the ws
+## xobs=ROOT.RooRealVar("xobs","xobs",130,1000)
+## getattr(w,'import')(xobs,ROOT.RooCmdArg()) ## import is a python keyword.
+#define a set of coefficients and the pdf for each category in your fit. Each with a different name.
+coeff = ROOT.RooArgList("bern_coeff_catX")
+for i in range(0,order+1):
+b = ROOT.RooRealVar("bern_catX_%d"%(i),"bern_coeff",0.1*(i+1),-10.,10.)
+## values and range are completely arbitrary here. They depends on your shape, order, normalization and sensitivity.
+coeff.add( b ) # if you want them squared, make a RooFormulaVar that squares them here, and add them instead
+g.extend([b]) # make sure it is not deleted by pyroot
+# this is templated on order
+bern = ROOT.RooBernsteinFast(order)("pdf_bern_catX","bernstein",xobs, coeff)
+#create a normalization for the pdf
+bern_norm = ROOT.RooRealVar(bern.GetName()+"_norm","",data[cat].sumEntries(),data[cat].sumEntries()*.5,data[cat].sumEntries()*2.0) # put a reasonable range, x2,/2 of the data entries is mostly fine as long as you start to have data (N>3) in the category.
+#if you want reasonable starting value to have the prefit Asimov somehow meaningful, you can start to fit to each category to get a starting point. This will also help the fit to converge. for this purpose a model.fitTo(data) with some option should be enough here.
+#import in the ws
+getattr(w,'import')(bern,ROOT.RooCmdArg())
+getattr(w,'import')(bern_norm,ROOT.RooCmdArg())
+## you may want also to create and import the RooDataHist on the same observable, if you have a TH1 the following code should work.
+arglist_obs = ROOT.RooArgList(xobs)
+roo_data= ROOT.RooDataHist("data_obs_catX","xobs",arglist_obs,h_data)
+getattr(w,'import')(roo_data,ROOT.RooCmdArg()) ##
+## RooDataHist -> corresponds to binned likelihood.
+## RooDataSet (from a tree) -> unbinned (you will need to be careful in the definition of the asimov). My advice is to start to set up the binned fit, and later if needed try to switch to the unbinned one.
+## notice that the signal as well will need to be on the same obs.
+## for the signal (and the bkg) remember that all the things that you make float in the workspace, they'll float in the fit, and all the things that you declare constant will be constant. In general, (but this may be situational), all or most of the background parameters should be floating, and all the signal related ones should be constant or constraint to some value (except r, that is added by combine).
+# save the workspace
+w.writeToFile("workspace.root")
+Your datacard will contain the sig, bkg, and data specifications, and combine will construct the likelihood for you of the form:
+L = L ( r*S+B|data)
+On the one side impacts, double check the model first. If you expect that a variation on a parameter changes the yields in the same direction, than you may have the one sided impact. (Eg, for squared coefficients if they fit around 0). All other cases, may be suspicious and should be investigated/understood.
+Let me also add that we have contacts for each PAG that should also help you constructing the datacard. https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/HiggsCombination
+Cheers,
+-Andrea
+----------------------------------------

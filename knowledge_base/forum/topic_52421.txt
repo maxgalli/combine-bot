@@ -1,0 +1,65 @@
+TOPIC: B-only fit
+URL: https://cms-talk.web.cern.ch/t/52421
+DATE: 2024-10-09T15:42:02.763Z
+SOLVED: no
+============================================================
+
+QUESTION (by rgoldouz @ 2024-10-09T15:42:02.851Z):
+Dear Experts,
+I want to perform a BG only fit in my control region and make pull plots. I used cards that include my signal and BG process information. My signal is small but it is not zero. I froze the r parameter to zero to remove its effects from the fit. But I found that the effects of signal uncertainties are still available in my fit.
+So my questions are the following,
+What is the command to do a BG only fit? and then making the pull plots?
+How can I freeze nuisances only for one process? (I know how to do that for all processes)
+Thanks,
+-Reza
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2024-10-10T08:22:48.179Z):
+Hi Reza,
+let me try to understand your setup a little better. Do you use one single category in your fit, or do you have multiple categories and want to consider only a subset of them for your b-only fit? What are the exact commands you use?
+In case you want to use all categories that are defined in your datacard, freezing r to zero with --setParameters r=0 --freezeParameters r should do the trick. Note that this will probably not work as intended if you use the FitDiagnostics method, since here you perform two fits to start with - a signal+background fit (stored in the fit_s RooFitResult object) and a b-only fit where r is indeed frozen to 0 (which is stored in the fit_b object). If you just need a b-only fit, using the MultiDimFit method with the options above should work.
+How do you create the pull plot? If you follow these instructions, remember to use the --skipFitS option to ignore any s+b fit.
+To answer your other question: there isn’t a way to freeze parameters for a single process only, it’s always all or nothing. But so long as your parameters aren’t correlated to other processes, setting the signal strength modifier to zero should essentially deactivate these nuisances (i.e. they don’t have any effect in the fit). If there are correlations, you might see some pulls, depending on the (pseudo) data you use in the fit. But the yield of your signal process should still be zero.
+Hope this helps! Best,
+Philip
+----------------------------------------
+
+REPLY 3 (by rgoldouz @ 2024-10-10T09:09:43.513Z):
+Hi Philip,
+Thanks a lot for your reply.
+I want to do a BG only fit in one control region, combining all eras.
+The commands that I used are the following;
+‘combineTool.py -M Impacts -d com.root -m 125 --doInitialFit --robustFit 1 --setParameters r=0 --freezeParameters r --skipFitS’
+‘combineTool.py -M Impacts -d com.root -m 125 --robustFit 1 --doFits --parallel 8 --setParameters r=0 --freezeParameters r’
+‘combineTool.py -M Impacts -d com.root -m 125 -o impacts.json --setParameters r=0 --freezeParameters r’
+I have already used  “–setParameters r=0 --freezeParameters r” in my commands. I expect to see the BG only fit results independent of the signal contribution. But when I perform the fit with signal mass 1TeV and 1.5 TeV, I find different pull plots. As you can see in the attachment, signal uncertainty matters. For example, PDF is correlated between my signal and TTBAR. For high masses the signal PDF uncertainty is larger. So it ranked higher when I do the BG only fit with signal 1.5 TeV.
+Many of the uncertainty sources are correlated between the signal and other Bgs (e.g. JES, JER, PU, …)
+In addition, the --skipFit option is not known by combine. I see the following error;
+<<< Combine >>>
+Invalid options: unrecognised option ‘–skipFitS’
+Maybe I am using an old version of the combine (CMSSW10X).
+I put my cards in https://www.crc.nd.edu/~rgoldouz/ETopCards/
+I hope I was clear enough. So I would like to check the behaviour of nuisance in BG-only fit in the control region.
+Thanks a lot,
+-Reza
+TTgaSpin32_M1000_2016preVFP_2016postVFP_2017_2018_nAk81nTtag1_Observed_mu0_impacts.pdf (18.0 KB)
+TTgaSpin32_M1500_2016preVFP_2016postVFP_2017_2018_nAk81nTtag1_Observed_mu0_impacts.pdf (18.2 KB)
+----------------------------------------
+
+REPLY 4 (by pkeicher @ 2024-10-10T09:34:34.594Z):
+Hi Reza,
+Ah, I see you don’t mean the pull plots, but impact plots! That explains why --skipFitS doesn’t do anything, it’s meant for the diffNuisances.py script (which produces pull plots).
+You can’t freeze r in the impact routine because the impacts are all about fitting r for different parameter configurations. More specifically, you first perform a global fit including all parameters, then you set each nuisance parameter to it’s +/-1 sigma post-fit values and recalculate the signal strength at this point. While you can freeze r=0 in the first step, the subsequent steps will ignore this since the objective there is to really fit r.
+If you’re only interested in the pulls of your nuisance parameters, I would recommend using the workflow in the instructions I’ve linked above. This will essentially produce a plot with the pad in the middle of the impact plot you sent earlier.
+Let me know if I misunderstood what you really want to look at, sorry for any confusion!
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 5 (by rgoldouz @ 2024-10-10T09:57:10.235Z):
+Hi Philip,
+Thanks a lot. I got your point.
+So the ranking is done based on the right column which is related to the nuisance effects on r and depends on r. But if I look at the left column, it is the same for M=1TeV and 1.5 TeV uncertainty by uncertainty. it is the case indeed. Everything is clear now.
+Thanks,
+-Reza
+----------------------------------------

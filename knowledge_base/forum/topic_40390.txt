@@ -1,0 +1,37 @@
+TOPIC: Inconsistency between the Higgs combine and the Roofit
+URL: https://cms-talk.web.cern.ch/t/40390
+DATE: 2024-05-01T13:54:10.429Z
+SOLVED: no
+============================================================
+
+QUESTION (by mikumar @ 2024-05-01T13:54:10.661Z):
+Dear experts,
+I am running Higgs combine to perform parametric fits using binned histograms. I have noticed an inconsistency between the results provided by the Higgs combine and the Roofit local fit performed by python scripts. I have compared the fit results in the slides at the following link:
+https://cernbox.cern.ch/s/MZX8RSZKvkvn324
+I would like to understand the origin of these inconsistencies and fix them if possible.
+Please find the test Datacard and Python script, which writes all the required parametric shapes in the “workspace.root” file and the run Higgs combine commands to perform the fits as well as the local fit at the link below.
+https://cernbox.cern.ch/s/xmbPORr788z4Fm5
+The local fit using Roofit uses precisely the same shapes as those written in the workspace.root file to perform the fit using Higgs combine.
+One can run the Python script to perform the local fit using Roofit as follows:
+​python Create_Workspace_Higgs_tutorial.py -m 1725 -y UL2018  -f final
+&&
+One can run the Python script to perform the fit with the Higgs Combine tool as follows:
+​python Create_Workspace_Higgs_tutorial.py -m 1725 -y UL2018
+I am running the combine with the following commands;
+​text2workspace.py datacard_top_shape_comb_para.txt -o workspace_top_Mass_1725_shape_comb_para.root
+​combine -M FitDiagnostics workspace_top_Mass_1725_shape_comb_para.root -n _M1725 --redefineSignalPOIs sigmaG,mean --setParameters mean=5.1,r=1,sigmaG=0.15 --X-rtd ADDNLL_CBNLL=0 --trackParameters r,mean,sigmaG --trackErrors r,mean,sigmaG --freezeParameters r --plots --saveShapes --saveWithUncertainties --saveWorkspace
+One can notice that I have fixed of signal strength at 1 since r is not parameter of interest in my case and I want to put lognormal constraint on signal and background normalisation at letter stage. It is very important to understand the mismatch (specifically for the POI) between the Higgs combine and Roofit before I start a discussion about more complicated datacards with lognormal constraints.
+Please let me know if you have any questions or if you think I need to include something more which I missed.
+Thank you very much in advance for your help and support.
+Thanks,
+Mintu Kumar
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-05-13T10:13:53.083Z):
+Hi Mintu,
+I would look into the RooFit results more because the estimated distance to minimum value seems too large (10^6) to consider the fit results from RooFit satisfactory (in Combine it is required to be < 1e-4).
+I think you are just comparing different points in the minimization process.
+In general Combine minimization routine uses sequential algorithm and is more complex than fitTo method, you can find more information here.
+Best,
+Aliya
+----------------------------------------

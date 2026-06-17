@@ -1,0 +1,55 @@
+TOPIC: Signal scaling with different function but same POI
+URL: https://cms-talk.web.cern.ch/t/14109
+DATE: 2022-08-20T01:20:41.926Z
+SOLVED: no
+============================================================
+
+QUESTION (by jihunk @ 2022-08-20T01:20:42.159Z):
+Dear Combine experts,
+I have short questions regarding constructing a physics model.
+In my analysis, I have two signal processes(say S1, S2), and I’d like to scale S1 with r, S2 with r^2.
+By following the tutorial in https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/#multisignalmodel-ready-made-model-for-multiple-signal-processes, I could easily understand how to assign two independent POIs, or even how to assign a POI to one signal while treating the other signal as a background, etc.
+But I’m unsure if I understand all the functionalities and having trouble in assigning r to S1, while r^2 to S2.
+This is a little bit different situation with the tutorial as I’d like to set the limit on the POI ‘r’ only, while r scales S1 linearly and S2 quadratically.
+My first trial was something like this:
+from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+
+class MyModel(PhysicsModel):
+def doParametersOfInterest(self):
+self.modelBuilder.doVar("r[0,0,10]")
+self.modelBuilder.doSet("POI", ",".join(['r']))
+self.modelBuilder.factory_("expr::r2(\"(@0)*(@0)\", r)")
+
+def getYieldScale(self,bin,process):
+if "S1" in process:
+return 'r'
+elif "S2" in process:
+return 'r2'
+else:
+return 1
+
+myModel = MyModel()
+
+with this model, I could run
+text2workspace.py -P HiggsAnalysis.CombinedLimit.MyModel:myModel mycard.txt
+and got the result.
+Could you confirm if this is the correct usage or there are any concerns with this?
+And It would be appreciated if you let me know any further literature or old hypernews thread for reference.
+Many thanks!
+Jihun.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-08-20T17:29:51.278Z):
+Seems correct.
+You can also add some print() to be convinced.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by woodson @ 2022-08-20T21:12:16.005Z):
+Hi Jihun,
+You can also add --PO verbose to the text2workspace command to print out the scaling factors for each process to confirm the correct scaling.
+(see: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/)
+Thanks,
+Javier
+----------------------------------------

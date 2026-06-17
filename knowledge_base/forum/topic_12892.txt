@@ -1,0 +1,105 @@
+TOPIC: Negative significance with toys
+URL: https://cms-talk.web.cern.ch/t/12892
+DATE: 2022-07-14T15:02:37.279Z
+SOLVED: no
+============================================================
+
+QUESTION (by lguzzi @ 2022-07-14T15:02:37.479Z):
+Dear experts,
+I want to compute the signifficance of observing a signal for some data in the tau->3mu analysis. To do so, I run
+combine -M HybridNew -d /path/to/datacard.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult  -T 1000  --setParameterRanges $PARS
+
+The data I am fitting are shown in Fig. 48 of [1] (page 59) in the upper-right plot. As you see, there is a fluctuation of the background which yields a negative signal. The significance I get with toys is -0.8. Is this expected in case of a negative value of r or should I look for errors? The asymptotic significance is zero.
+Also, I would expect to have an observed upper limit lower than the expected upper limit on the signal process in this case, but I found the contrary (see Tab. 12 of [1] at page 57). Am I wrong?
+thank you,
+Luca
+[1] https://gitlab.cern.ch/tdr/notes/AN-20-127/-/raw/master/build/AN-20-127_temp.pdf
+----------------------------------------
+
+REPLY 2 (by nckw @ 2022-07-14T15:18:18.000Z):
+Hi Luca,
+Just to be sure, the command you pasted looks like the one needed to generate the distribution of the test-statistic that we use to calculate significances. This is only the first part since you also need to calculate the observed test-statistic (see http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#observed-significance ).
+For a -ve best fitted signal (which is what I assume happens since you get 0 for the asymptotic), you should also get 0 for the observed test statistic (by definition of the test statistic). Are you using the instructions from the link above to get -0.8?
+Best,
+Nick
+
+On 14 Jul 2022, at 16:04, Luca Guzzi via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Luca Guzzi lguzziJuly 14
+
+Dear experts,
+I want to compute the signifficance of observing a signal for some data in the tau->3mu analysis. To do so, I run
+combine -M HybridNew -d /path/to/datacard.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult  -T 1000  --setParameterRanges $PARS
+
+The data I am fitting are shown in Fig. 48 of [1] (page 59) in the upper-right plot. As you see, there is a fluctuation of the background which yields a negative signal. The significance I get with toys is -0.8. Is this expected in case of a negative value of r or should I look for errors? The asymptotic significance is zero.
+Also, I would expect to have an observed upper limit lower than the expected upper limit on the signal process in this case, but I found the contrary (see Tab. 12 of [1] at page 57). Am I wrong?
+thank you,
+Luca
+[1] https://gitlab.cern.ch/tdr/notes/AN-20-127/-/raw/master/build/AN-20-127_temp.pdf
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by lguzzi @ 2022-07-14T15:41:58.555Z):
+Hi Nick,
+
+Nicholas Wardle:
+
+Are you using the instructions from the link above to get -0.8?
+
+probably not, as I run one single command with -T 1000, but I don’t understand a few things of this command. Should I run it explicitly 1000 times? (like
+for j in range(1000):
+combine -M etc.
+
+)?
+I see a single command run with -T 1000 produces one file, so there is nothing to hadd here. If so, what is the use of -T and what is the difference with -i? I see in other sections that the number of produced toys is i*T, then why are there two options?
+l.
+ps. the significance I get is actually -3, not -0.8 (which is the best fit)
+----------------------------------------
+
+REPLY 4 (by nckw @ 2022-07-14T15:52:11.000Z):
+Hi Luca,
+Ah ok, sorry, I misunderstood the -3.
+The -T tells combine how many toys run inside the -M Significance command. Under the hood it is using a RooStats class and the -i tells combine how many instances of that class to make (so the total number of toys in the end will be i*T). I wouldn’t worry too much about the details there,
+If you need lots of toys and find each run rather slow, its portable to run many jobs in the batch/grid and hence this is why the hadd command is there. If you don’t need multiple jobs however, just use the one output file as the input to the observed calculation.
+Best,
+Nick
+
+On 14 Jul 2022, at 16:43, Luca Guzzi via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Luca Guzzi lguzziJuly 14
+
+Hi Nick,
+
+Nicholas Wardle:
+Are you using the instructions from the link above to get -0.8?
+
+probably not, as I run one single command with -T 1000, but I don’t understand a few things of this command. Should I run it explicitly 1000 times? (like
+for j in range(1000):
+combine -M etc.
+
+)?
+I see a single command run with -T 1000 produces one file, so there is nothing to hadd here. If so, what is the use of -T and what is the difference with -i? I see in other sections that the number of produced toys is i*T, then why are there two options?
+l.
+ps. the significance I get is actually -3, not -0.8 (which is the best fit)
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by lguzzi @ 2022-08-09T13:47:48.948Z):
+Dear Nick,
+thank you for your explanation. I tried to investigate a little further what is happening in my combine model and found some discrepancies upstream. I opened another thread, as the topic is different from this one, however I think it may be related to my issue here.
+If you have time to have a look, the topic is
+
+Expected upper limit with toys Statistical Interpretation Tools
+
+Dear combine and stat experts,
+I am working on the \tau\to3\mu analysis, which looks for the BS \tau\to3\mu process as an accumulation of events in the 3-muon invariant mass distribution. The result of the analysis will be an upper limit on the \tau\to3\mu branching fraction.
+At the moment, I want to compute expected limits based on the expected number of background and signal events.
+The number of expected signal events is computed on a MC signal sample, the number of expected background eve…
+
+best,
+Luca
+----------------------------------------

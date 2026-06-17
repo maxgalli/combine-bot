@@ -1,0 +1,127 @@
+TOPIC: Error in combine FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/52423
+DATE: 2024-10-09T15:49:56.993Z
+SOLVED: yes (reply 5)
+============================================================
+
+QUESTION (by yian @ 2024-10-09T15:49:57.092Z):
+Dear combine experts,
+I am performing a differential fit and there are 8 POIs in the workspace.
+I first ran the combine -M MultiDimFit, and it looks good without any warning or errors.
+Then I wanted to know the uncertainties for every single process, so I ran combine -M FitDiagnostics. In this case, the fit told me
+[ERROR] Closed range without finding crossing!
+And if I print the norm_prefit, for one background it gives me 38.2497 +/- 12567.4, which is so dramatic and not trustworthy. I tried to set the r range to -10 to 20, but things didn’t change.
+Do you have a similar experience? Many thanks if you can give me some hints.
+Best,
+Ying
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2024-10-10T08:32:02.041Z):
+Hi Ying,
+The error you see can only occur when you calculate uncertainties for the parameters. Did you also do this for the MultiDimFit?
+In any case, the internal workings of MultiDimFit and FitDiagnostics are the same for the most part. However, there are still some subtle differences that can lead to a successful calculation of the errors in one method and a missing uncertainty in the other. Can you share the commands you used? If you are using the --robustFit method, the --stepSize option might help you find the crossing.
+As a side note: you can also generate the prefit and postfit distributions without FitDiagnostics using the PostFitShapesFromWorkspace script that ships with the CombineHarvester, see docs here. That way, you don’t have to run the fit twice - you can save the fit result in your MultiDimFit with the option --saveFitResult and feed that into the script above.
+Best,
+Philip
+----------------------------------------
+
+REPLY 3 (by yian @ 2024-10-10T09:27:47.357Z):
+Dear Philip，
+Many thanks for your reply.
+My command used is as follows:
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=.*/tgQ_PhotonptGenBin1:r_1[1,0,5]' --PO 'map=.*/tgQ_PhotonptGenBin2:r_2[1,0,5]' --PO 'map=.*/tgQ_PhotonptGenBin3:r_3[1,0,5]' --PO 'map=.*/tgQ_PhotonptGenBin4:r_4[1,0,5]' --PO 'map=.*/ttg_PhotonptGenBin1:r_ttg1[1,0,5]' --PO 'map=.*/ttg_PhotonptGenBin2:r_ttg2[1,0,5]' --PO 'map=.*/ttg_PhotonptGenBin3:r_ttg3[1,0,5]' --PO 'map=.*/ttg_PhotonptGenBin4:r_ttg4[1,0,5]' Photonpt_diff_muon18.txt -o ws_Photonpt_diff_muon18.root --X-allow-no-signal --X-allow-no-background
+combine -M FitDiagnostics -d ws_Photonpt_diff_muon18.root --redefineSignalPOIs r_1,r_2,r_3,r_4,r_ttg1,r_ttg2,r_ttg3,r_ttg4 --setParameters=r_1=1,r_2=1,r_3=1,r_4=1,r_ttg1=1,r_ttg2=1,r_ttg3=1,r_ttg4=1 --setParameterRanges r_1=0,5:r_2=0,5:r_3=0,5:r_4=0,5:r_ttg1=0,5:r_ttg2=0,5:r_ttg3=0,5:r_ttg4=0,5 -t -1 -m 125  --robustFit 1 --saveWorkspace --saveShapes --saveWithUncertainties --saveNormalizations --saveOverallShapes --cminDefaultMinimizerStrategy 0 --skipBOnlyFit -n _Photonpt_diff_muon18_exp
+combine -M MultiDimFit --setParameters=r_1=1,r_2=1,r_3=1,r_4=1,r_ttg1=1,r_ttg2=1,r_ttg3=1,r_ttg4=1 -t -1 -m 125 ws_Photonpt_diff_muon18.root --saveWorkspace --saveFitResult --cminDefaultMinimizerStrategy 0 --algo singles
+It’s true I used robustFit and didn’t set --stepSize. Which value is proper to use then?
+For the PostFitShapesFromWorkspace, I thought the input fit file should be from the combine -M FitDiagnostics. Because the output file of combine -M MultiDimFit doesn’t have the directory fit_s. Am I wrong?
+BTW, I want to mention another issue I have. Since I am worried that some systematic uncertainty can cause this, so I use ValidateDatacards.py. It only succeeded to run once. After that, I always meet *** Break *** segmentation violation even for ValidateDatacards.py -h. I am in the latest recommended combine version (CMMSSW_14_1_0_pre4)
+Many thanks!
+Best,
+Ying
+----------------------------------------
+
+REPLY 4 (by yian @ 2024-10-10T09:57:06.058Z):
+Ying An:
+
+For the PostFitShapesFromWorkspace, I thought the input fit file should be from the combine -M FitDiagnostics. Because the output file of combine -M MultiDimFit doesn’t have the directory fit_s. Am I wrong?
+
+I now know that I just need to change the fit_s to fit_mdf that the MultiDimFit output fit has.
+----------------------------------------
+
+REPLY 5 [ACCEPTED ANSWER] (by pkeicher @ 2024-10-10T10:30:37.180Z):
+Hi Ying,
+indeed if you use -f fit_mdf in the PostFitShapesFromWorkspace script, you should be able to feed in the fit result from the MultiDimFit method. Regarding the --stepSize parameter: the default is 0.1, so if you don’t find a crossing a smaller value could work. Note that this will likely increase the run time of your fits since combine will need to scan in a finer mesh then.
+Regarding the segmentation violation you see: Strange. Can you
+
+try running ulimit -s unlimited before calling ValidateDatacards.py? (Just needs to be done once, I don’t really expect it to change much)
+re-scraming your CMSSW installation? Ideally with scram b clean; scram b
+
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 6 (by yian @ 2024-10-10T12:22:48.466Z):
+Hi Philip,
+Thanks for the prompt reply.  I want to give some details that I checked.
+I have an output file from FitDiagnostics. I added -t -1 so that it’s asimov data. I can get the normalization of every process in every channel and its uncertainties from prefit or posfit by
+
+norm_fit_s->Print("results"), and it gives me  ch7/Zjets_allGenPhotonpt = 38.2497 +/- 1405.31
+norm_prefit->Print("results"), and it gives me ch7/Zjets_allGenPhotonpt =  38.2497 +/- 12128.3
+If I go to the shapes_prefit or shapes_fit_s, in this channel and process, the errors of this histogram are 44.364076 and 706. The square root of the sum of the total_covar is 12158.403 and 1388.5820. So I understand that the very large normalisation uncertainty should be from the positive correlation between systematics. I’ll further check my data cards.
+
+I also use PostFitShapesFromWorkspace to get the pre-fit and post-fit histograms by  FitDiagnostics and MultiDimFit with -t -1 for both.
+
+if the input fit from FitDiagnostics, I have
+ch7_postfit/Zjets_allGenPhotonp  with error 541.56950
+ch7_prefit/Zjets_allGenPhotonpt with 33.564151.
+
+If the input fit from MultiDimFit
+ch7_postfit/Zjets_allGenPhotonp histogram with error 510.21711.
+ch7_prefit/Zjets_allGenPhotonpt histogram with total error 33.564151
+
+The errors in this process and channel from different input fit files are similar and acceptable. I would say they are also not far away from the error got in shapes_prefit or shapes_fit_s. But from the number, it seems that the correlation between sysmatics in bins and channels is not added.  I would like to know whether the uncertainty of correlation between systematics can also be added to histograms when run PostFitShapesFromWorkspace.
+For ValidateDatacards.py, I tried re-compile by scram b clean; scram b and running ulimit -s unlimited before calling ValidateDatacards.py. I still meet *** Break *** segmentation violation even when run ValidateDatacards.py -h. It follows a long error report. I put it to /afs/cern.ch/user/y/yian/public/print_ValidateDatacards_error.
+Many thanks!
+Best,
+Ying
+----------------------------------------
+
+REPLY 7 (by pkeicher @ 2024-10-10T13:29:19.316Z):
+Hi Ying,
+thanks for the additional information. Just a couple of comments from my side:
+The uncertainties on the shapes are indeed similar. It might be worthwhile to increase the number of sampled toys - that should make the numbers increasingly similar, so it’s a good cross check to ensure that you have full control.
+I’m not sure if I understand what you mean here:
+
+But from the number, it seems that the correlation between sysmatics in bins and channels is not added. I would like to know whether the uncertainty of correlation between systematics can also be added to histograms when run PostFitShapesFromWorkspace.
+
+The uncertainty in the different bins is calculated by sampling nuisance parameter values from the covariance matrix that you provide the script with by passing e.g. the fit_mdf object. That means the procedure considers the correlations of all uncertainties that you consider in the fit. Note that in previous versions, you had to provide the --sampling option to activate this behavior, but that has been changed some while ago I think. I’m not entirely how it’s done internally in FitDiagnostics right now, maybe someone else can comment here.
+Regarding the segmentation violation, I’ll try to follow up on that hopefully soon. Thanks for providing the output!
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 8 (by yian @ 2024-10-11T08:04:55.160Z):
+Hi Philip,
+Thanks for your explanation.
+
+Philip Keicher:
+
+The uncertainty in the different bins is calculated by sampling nuisance parameter values from the covariance matrix that you provide the script with by passing e.g. the fit_mdf object. That means the procedure considers the correlations of all uncertainties that you consider in the fit.
+
+We know that besides the correlation between systematics (NP), there are other correlations between channels or processes. So from my checking results shown previously, when I run PostFitShapesFromWorkspace,  the correlation between NPs is considered, but the correlation between channels is not included.
+An additional check is done to produce the pre-fit and post-fit histograms with --covariance added. So we can get the covariance matrix for a single channel between processes. Still, for the ch7 Zjets that I showed in previous e-mails, the ch7_cov is as the following screenshot.
+截屏2024-10-11 09.51.221455×845 182 KB
+If we sum up the column for Zjets and do the square root, we can get the total uncertainty for Zjets normalisation with correlations between processes included. And the value is 1280, which is similar to what we get in FitDiagnostics.
+I have to say this is not a good example because I know something went wrong causing so high uncertainty, but just for a simple consistency check, it should be fine.
+Best,
+Ying
+----------------------------------------
+
+REPLY 9 (by pkeicher @ 2024-10-11T08:52:00.101Z):
+Hi Ying,
+thanks for the follow up. I’ll have to check the code of the PostFitShapesFromWorkspace script again, but indeed iirc, the total covariance matrix for all channels and processes is not considered by default. The correlation between processes is correctly taken into acount whenever you sum different processes together at generation time, which means that the Total* templates should have the correct uncertainties in your case.
+There are two options that might be interesting to you though: --total-shapes generates shapes for the total sum of all channels, so you would also consider the correlations between the different processes across channels correctly. Additionally, there is the --covariance option, which also generates the covariance matrix you posted above.
+This is all of course just to give you more information. If you’re happy with FitDiagnostics and can ensure that the uncertainties are calculated correctly, that’s of course also more than fine!
+Cheers,
+Philip
+----------------------------------------

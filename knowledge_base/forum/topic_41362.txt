@@ -1,0 +1,67 @@
+TOPIC: Understanding toy datasets generation and fitting
+URL: https://cms-talk.web.cern.ch/t/41362
+DATE: 2024-05-20T16:34:22.868Z
+SOLVED: no
+============================================================
+
+QUESTION (by fiemmi @ 2024-05-20T16:34:23.326Z):
+Dear Combine experts,
+I am working with a standard H(γγ) datacard, where both signal and background are modeled with parametric shapes and the background is described with the envelope method. While making some experiments with the generation of toy datasets, and their fitting, I am seeing some behaviors I don’t understand conceptually. Let me try to summarize what I am doing.
+
+First of all, I want to obtain the best choice of the background PDFs from the observed data, while keeping the signal strenght blinded. So, I perform a frequentist fit to the data and throw an Asimov dataset from it, with r set to 1:
+
+combine myDatacard.root -m 125 -M MultiDimFit -P r --toysFrequentist --saveWorkspace -t -1 --setParameters r=1.0  -n initialSnapshot --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2
+
+Then, I throw a toy, using the background PDFs that were chosen in step 1. As far as I understand, giving -s -1 ensures this is a randomly-generated toy:
+
+combine higgsCombine_initialSnapshot.MultiDimFit.mH125.root --snapshotName MultiDimFit -m 125 -M GenerateOnly --saveWorkspace --toysFrequentist --bypassFrequentistFit -t 1 --setParameters r=1.0 -s -1 -n gen_1
+
+Finally, I want to fit this randomly-generated toy. Since I thought no more “randomness” is needed from now on, as a random toy is generated in the previous step, I just tried a MultiDimFit:
+
+combine gen_1.root -m 125 -M MultiDimFit -P r --saveWorkspace --toysFrequentist --bypassFrequentistFit --setParameters r=1.0 -n fit_1 --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2
+
+Now, even though I thought this is the most natural and correct thing to do, this gives unexpected results. In particular, I tried to repeat steps 1. and 2. 100 times, and checked what is the distribution of r that I get. The values of r that are fitted after step 2. are consistently greater than r=1.0, while I expected them to be centered at 1 with a Gaussian distribution.
+So, I tried to modify the command in step 3. in the following way:
+
+Same command as 3., but adding -s -1. I get no visible difference as the values of r are consistently greater than r=1.0.
+Same command as 3., but adding -t 1. All 100 repetitions give the same value of r.
+Same command as 3, but adding -s -1 -t 1. In this case, I get what I expect, that is, r can also take values below 1. So it seems that combining two options that do not work by themselves, gives a meaningful result.
+
+I find this very confusing and it leaves me with a few questions:
+
+What is the meaning of -s -1 and -t 1 during a MultiDimFit?
+Why would one need to throw a toy with -t 1 (isn’t this just a fitting step?!?) and in addition give a random seed (what is this seed for?!? Why do I need randomness?!?) in order to get the expected distribution of r?
+
+I hope I manage to explain the problem properly.
+Thanks a lot for your time, all the best,
+Fabio.
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-05-20T17:08:15.762Z):
+Hi Fabio,
+I didn’t try to repeat the commands but in your 3rd step, if you want combine to use a toy previously generated , you need to include the -t 1 to say you are running on a toy and not the data_obs in the workspace. Now in order to read the toy, you should be including somewhere a --toysFile option in your final step, but I don’t see this anywhere so I suspect you’re just reading in the data instead when you don’t add -t 1 and generating a new toy (from the default seed if not adding -s -1) when you do add it
+See here for some instructions on reading in toy datasets : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#generate-only
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by fiemmi @ 2024-05-20T18:35:45.919Z):
+Hi Nick,
+thanks for your prompt reply. This is very interesting, and indeed it might be that I am doing it wrong. But I don’t think this is fully clear to me yet. In step 3., I do combine gen_1.root -M MultiDimFit, where gen_1.root is the output of the toy generation. So, isn’t this enough to load and fit the toy? If not, in case I add the --toysFile option, why do I need to load gen_1.root? What is it for?
+Thank you very much!
+F.
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-05-20T19:31:57.000Z):
+Hi Fabio,
+You still need to load a file that contains the workspace to do the fitting. You can use the output from step 1 for this. Instead for the toy, you are just telling combine where to find the data (see the docs) - in any step you need the workspace (the main file) and a dataset (either the one in the main file, ones being generated or ones generated and living in another file which is the case here)
+Best
+Nick
+----------------------------------------
+
+REPLY 5 (by fiemmi @ 2024-05-20T21:01:28.669Z):
+Hi Nick,
+alright, what you say makes much sense, I understand now.
+Thank you and best,
+Fabio.
+----------------------------------------

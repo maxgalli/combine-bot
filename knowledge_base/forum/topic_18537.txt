@@ -1,0 +1,25 @@
+TOPIC: --trackParameters in AsymptoticLimits
+URL: https://cms-talk.web.cern.ch/t/18537
+DATE: 2022-12-12T01:58:17.147Z
+SOLVED: no
+============================================================
+
+QUESTION (by kaho @ 2022-12-12T01:58:17.464Z):
+Dear combine experts,
+I would like to understand what --trackParameters does in AsymptoticLimits. Naively, I would think if one passes a nuisance parameter, it saves the profiled values of the nuisance parameter corresponding to the limits; and if one passes the POI, it would be exactly the same as the limit. So I did a simple test with the following command:
+
+combine -M AsymptoticLimits -m 125 mycard.txt --trackParameters r
+
+to track the signal strength which is also the POI. Interestingly, r and limit have different values in the tree output (notably for the median expected limit):
+Screen Shot 2022-12-12 at 9.56.19 AM1740×446 25.7 KB
+Am I misunderstanding how trackParameters works?
+Cheers,
+Ka Wa
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-12-12T07:54:15.853Z):
+Hi Ka Wa,
+There is an interpolation in r used to define the limit value once combine has bisected the crossing of the NLL at the critical value, so in general this may not correspond to the exact value found in the final fit. If you want to understand the behaviour of the profiled parameters at particular fixed values of r, it may be easier to use -M MultiDimFit --algo fixed --fixedPointPOIs r=[X].
+cheers,
+Andrew
+----------------------------------------

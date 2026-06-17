@@ -1,0 +1,67 @@
+TOPIC: Stability of signal injection test fit interval using singles algo in Combine
+URL: https://cms-talk.web.cern.ch/t/144106
+DATE: 2026-04-17T00:09:38.959Z
+SOLVED: no
+============================================================
+
+QUESTION (by ppradeep @ 2026-04-17T00:09:39.796Z):
+Dear all,
+I am writing this question based on our attempt to perform bias tests with an injected signal for the Level-1 Dijet Scouting search (EXO-25-015) using Combine. Using a toy dataset generated with from a datacard from a data sample with an injected signal strength of 5 as follows,
+combine -M GenerateOnly datacards/datacard_default_sr_pt30_wfull_350_500.root -m 350 -t 100 -n _bias_sr_pt30_wfu
+ll_500ls_sig5 --expectSignal 5 --toysFrequentist --saveToys --cminDefaultMinimizerStrategy 2
+
+I tried to estimate the interval of the best-fit for the first toy using MultiDimFit as follows using the singles algorithm leading to the following result with an invalid low-error.
+combine -M MultiDimFit datacards/datacard_default_sr_pt30_wfull_350_500.root -m 350 -n _bias_sr_pt30_wfull_500ls
+_sig5 --expectSignal 5 -D higgsCombine_bias_sr_pt30_wfull_500ls_sig5.GenerateOnly.mH350.123456.root:toys/toy_1 --algo singles --rMin -20 --rMax 20 --cminDefaultMinimizerStrategy 2
+<<< Combine >>>
+<<< v10.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Doing initial fit:
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid low-error found, will report difference to minimum of range for : r
+r :    +4.283   -24.283/+0.351 (68%)
+Done in 0.10 min (cpu), 0.10 min (real)
+
+On the other hand, for the same toy, if I estimate the interval using the grid algorithm, I get a reasonably parabolic NLL scan with a well defined low-error as shown in the image attached in [1].
+combine -M MultiDimFit datacards/datacard_default_sr_pt30_wfull_350_500.root -m 350 -n _bias_scan_sr_pt30_wfull_
+500ls_sig5 --expectSignal 5 -D higgsCombine_bias_sr_pt30_wfull_500ls_sig5.GenerateOnly.mH350.123456.root:toys/toy_1 --algo grid --points 100 --rMin 0 --rMax 20 --cminDefaultMinimizerStrategy 2
+
+It seems that the choice of interval for --rMin and --rMax has some influence on the validity of the lower error value as shown in some choices in [2] and [3]. However, I am struggling to come up with a consistent and reliable choice for these parameters for each toy as --rMin 0 --rMax 10, which works for toy 1, seems to fail for toy 2.
+I would like to ask for advice on why this might be the case, and if there’s a sensible way to get good intervals for the MultiDimFit that can be run on an ensemble of generated toys. A compressed folder containing the datacard and the workspace with the shapes is attached in [4].
+Thanks for your time in advance,
+Prijith
+##############
+[1] test_scan_350.pdf (14.9 KB)
+[2]
+> combine -M MultiDimFit datacards/datacard_default_sr_pt30_wfull_350_500.root -m 350 -n _bias_sr_pt30_wfull_500ls_sig5 --expectSignal 5 -D higgsCombine_bias_sr_pt30_wfull_500ls_sig5.GenerateOnly.mH350.123456.root:toys/toy_1 --algo singles --rMin 0 -
+-rMax 10 --cminDefaultMinimizerStrategy 2
+<<< Combine >>>
+<<< v10.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Doing initial fit:
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +4.282   -0.574/+0.595 (68%)
+Done in 0.10 min (cpu), 0.10 min (real)
+
+[3]
+> combine -M MultiDimFit datacards/datacard_default_sr_pt30_wfull_350_500.root -m 350 -n _bias_sr_pt30_wfull_500ls_sig5 --expectSignal 5 -D higgsCombine_bias_sr_pt30_wfull_500ls_sig5.GenerateOnly.mH350.123456.root:toys/toy_1 --algo singles --rMin 0 --rMax 20 --cminDefaultMinimizerStrategy 2
+<<< Combine >>>
+<<< v10.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+Doing initial fit:
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid low-error found, will report difference to minimum of range for : r
+r :    +4.282   -4.282/+0.473 (68%)
+Done in 0.12 min (cpu), 0.12 min (real)
+
+[4]  BiasTest.tar.gz (643.0 KB)
+----------------------------------------

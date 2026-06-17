@@ -1,0 +1,43 @@
+TOPIC: Including contraint in signal model
+URL: https://cms-talk.web.cern.ch/t/2183
+DATE: 2021-10-14T12:09:57.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by dmoran @ 2021-10-14T12:09:57.000Z):
+*** Discussion title: Higgs Combination
+Dear experts,
+I have a signal model with 3 POIs which correspond to signal
+cross-section fractions with ranges between 0 and 1. I would like to
+enforce a constraint that the sum of the three POIs is <=1. Is this
+possible to implement at the level of the signal model?
+In the end I would like to be able to scan one POI between 0 and 1, with
+the other two POIs floating, whilst avoiding the phase space where
+sum(POI)>1. So any advice on how to do this is welcome.
+Thanks, Dermot
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-10-14T15:46:12.000Z):
+*** Discussion title: Higgs Combination
+Hi Dermot,
+It does not come to my mind a straightforward way to do it.
+The reason behind is stat the minimization algorithms will try to scan the parameters and move towards the minimum.
+Hard boundaries could be implemented but often this will result in complaints from the minimization algorithms, the non definition of the hessian matrix at the minimum (and thus the breaking for instance of the regularity conditions of Wilks' theorem).
+So ditto, you can do a math trick similar to what it is done for the RooAddPdf with recursive coefficient.  The redefinition unfortunately will imply that you have new pois and new parameters (that will define the inputs you can scan). For instance, if your pois are (alpha, beta, gamma) and you want that 0<=alpha+beta+gamma<=1, you can define:
+alpha = a[0,1]
+beta = (1.-a) * b[0,1]
+gamma = (1.-a)*(1.-b)*c[0,1]
+Whenever you want to set an interval on the POIs you can now use the value of the deltaNLL and transform from a,b,c -> alpha,beta,gamma.
+Of course, since a=alpha, for the first POI is strictly simple and you can easily let b and c floating, giving you the interval you need. Potentially, if you don't mind to generate different mapping, this could also be a strategy having a separate workspace per POI. The order should be completely irrelevant, since the likelihood function is always defined with respect of alpha, beta, and gamma and not a,b,c, and so it is just a redefinition which is invariant under minimization.
+If you instead want the sum to be exactly equal to 1, you will need to remove a parameter (eg c).
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by dmoran @ 2021-10-15T09:29:11.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrea,
+Thank you for your suggestion, we have implemented it and now the signal
+model does exactly what we were looking for.
+Cheers! Dermot
+----------------------------------------

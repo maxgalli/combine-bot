@@ -1,0 +1,58 @@
+TOPIC: Shifted pulls
+URL: https://cms-talk.web.cern.ch/t/11623
+DATE: 2022-06-13T15:12:58.523Z
+SOLVED: no
+============================================================
+
+QUESTION (by atarabin @ 2022-06-13T15:12:59.146Z):
+Dear Combine experts,
+We are working on the 1st step of the unblinding procedure of HIG-21-009 (fiducial XS in HZZ4l). The impacts for all observables look good (e.g. https://atarabin.web.cern.ch/atarabin/fiducial/1stStepUnbl/massZ1/impacts_skimmed_v3_massZ1_r_smH_massZ1_0_asimov.pdf), but for two observables we notice something strange in the pulls of some nuisances, particularly CMS_eff_e, which is our leading nuisance (https://atarabin.web.cern.ch/atarabin/fiducial/1stStepUnbl/rapidity4l/impacts_skimmed_v3_rapidity4l_r_smH_YH_0_asimov.pdf). They are very shifted from zero, e.g. CMS_eff_e = 3.5.
+We had a look at the workspaces and at the general set-up but we have not noticed anything different from all the other observables. We also investigated the correlations of CMS_eff_e, but they are reasonable and cannot explain what we see.
+Do you have any insight of the problem? Perhaps you can suggest us some tests to run.
+You can find here [1] the card and ws to reproduce the error. The comands used to generate the impacts can be found here [2] and reflect the standard procedure.
+Best,
+Alessandro Tarabini
+[1] https://gitlab.cern.ch/cms-hcg/cadi/hig-21-009/-/tree/master/rapidity4l
+[2] https://atarabin.web.cern.ch/atarabin/fiducial/1stStepUnbl/rapidity4l/commands_impacts_rapidity4l_v3.py
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-06-15T12:40:25.387Z):
+Hi Alessandro,
+do you have a recent presentation of the analysis? (pre-approval was done in Sep.)
+By a quick look it seems that the electron scale uncertainty is pontentially very large >10%. Accordingly to what you wrote in the paper
+whereas only the Z boson resonance can be exploited in the 4e channel, yielding to larger uncertainties in the low peT region.
+
+it is unclear to me how much this is due to a correlated effect among the datacard, or where a large component of the uncertainties is due to statistical effects and therefore deserve a decorrelation among the pt-bin it was derived.
+Do you have already produced postfit plots or plots that show the effects of this systematic on some distribution?
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by atarabin @ 2022-06-15T15:57:46.000Z):
+Hello Andrea,
+Thanks for your reply.
+Yes, we have some recent presentations. This is the last update from last week [1], in the first slides you can find the link to all other presentations.
+About the problem of the shifted pulls we have found the solution. There was a subtle and sneaky bug in the computation of the templates for the ZX background. This problem was causing the ZX NP to be shifted and because of the correlations among NPs, the impacts looked that way. We have fixed the problem and now everything is fine [2]
+[1] https://indico.cern.ch/event/1154440/contributions/4916443/attachments/2460103/4217735/HZZ_08062022.pdf
+[2] https://atarabin.web.cern.ch/atarabin/fiducial/1stStepUnbl/rapidity4l/
+Cheers,
+Alessandro
+
+On 15 Jun 2022, at 14:43, Andrea Carlo Marini via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Andrea Carlo Marini amariniJune 15
+
+Hi Alessandro,
+do you have a recent presentation of the analysis? (pre-approval was done in Sep.)
+By a quick look it seems that the electron scale uncertainty is pontentially very large >10%. Accordingly to what you wrote in the paper
+whereas only the Z boson resonance can be exploited in the 4e channel, yielding to larger uncertainties in the low peT region.
+
+it is unclear to me how much this is due to a correlated effect among the datacard, or where a large component of the uncertainties is due to statistical effects and therefore deserve a decorrelation among the pt-bin it was derived.
+Do you have already produced postfit plots or plots that show the effects of this systematic on some distribution?
+Cheers,
+-Andrea
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

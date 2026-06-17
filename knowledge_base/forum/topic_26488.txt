@@ -1,0 +1,60 @@
+TOPIC: How to treat FS uncertainties in combine
+URL: https://cms-talk.web.cern.ch/t/26488
+DATE: 2023-07-07T08:45:29.314Z
+SOLVED: no
+============================================================
+
+QUESTION (by tbevilac @ 2023-07-07T08:45:29.456Z):
+Dear Combine experts,
+In our analysis H+c we are generating our MC signal samples with aMC@NLO in the 4 Flavour Scheme scenario using the FXFX merging procedure. Speaking with theorists the suggestion on how to take into account the uncertainty coming from the choice of 4FS vs 3FS in our simulation was to generate additional samples that just differ for the FS used for the fixed order calculation and asses the difference in yields in each analysis category.
+Having done that, now I have the values of the difference (and the respective 3FS/4FS ratio) in yields but I’m not sure how to include this values in the statistical analysis with combine. My main concerns are:
+
+in principle these difference are one sided for each category, but I know that one sided uncertainties are not recommended in Combine.
+if I introduce this uncertainty as a nuisance parameter what should I use? 1 + (3FS/4FS) / 1 - (3FS/4FS), 1/1 - (3FS/4FS), or just the (3FS/4FS) value as a symmetric nuisance parameter?
+How should I act if the ratio is big? For instance > 2 as it happen in one (out of 48) category.
+
+Thank you in advance,
+Tiziano
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-07-07T12:05:09.061Z):
+Hi Tiziano,
+A few very quick thoughts, maybe someone else has something to add in as well.
+
+I would not recommend one-sided uncertainties in most cases, and this is not combine-specific but a general recommendation. There can be some technical issues with having sharp cutoffs, but the primary reason I don’t recommend them is more conceptual. than technical I think its very rare that the ‘true’ uncertainty you are trying to represented really has a most probable value around X, and is only slightly less probably around X+epsilon, but around X-epsilon has probability 0. So I just think this tends to be an inaccurate model. There are exceptions to every rule, but I don’t really think this, or other similar uncertainties estimated from two samples are those exceptions.
+
+I think the most sensible thing to do would be to implement it as a log-normal rate uncertainty. What (if any) kind of asymmetry to use is harder to say, as it is really a domain-specific problem than a general stats problem. I don’t know enough about your particular use case to say what a good choice would be.
+
+I think it depends partly on if the ratio really is big, and you have a large uncertainty, or you simply have a large estimate of it which may come, for example, from a statistical fluctuation, if the samples you are using to estimate the difference have low statistics. In either case, it might be good to try to reduce the effect size, but this is again an analysis-specific question its hard to give general advice on. In principle there is no problem with large uncertainties, and for log-normal rate uncertainties the physical boundary at 0 events doesn’t pose a problem for the large shifts, by construction.  Though, in some cases large uncertainties can imply some problems with the asymptotic approximation, as it sometimes means the best fit is near the boundary of the parameter space, and it is a precondition of wilk’s theorem that you are in the interior of the parameter space. In my experience this is usually not a major problem, though.
+
+One thing I often try to do in such cases, where one needs to make a modelling choice which perhaps doesnt have an obvious solution, is come up with an estimate of how much a few different options effect the result. For things involving the uncertainty model this can be a little trickier, since generating pseudodata may not answer the question you want, and you may not want to be looking at the real data yet, depending on your use case.
+Sorry that the answers are all a little vague, happy to clarify, but I think ultimately it is a question about 3FS/4FS variations and the ‘true’ uncertainty on the prediction, than one which has a generic answer.
+But happy to give more feedback if there’s follow up.
+Maybe some others have more helpful thoughts. Since this isn’t really a combine-specific issue, there might be additional useful input from members of the statistics committee, you could consider asking for advice there [1] as well.
+Cheers,
+Kyle
+[1] https://cms-talk.web.cern.ch/c/physics/stats/142
+----------------------------------------
+
+REPLY 3 (by tbevilac @ 2023-07-10T08:36:22.431Z):
+Hi Kyle,
+Thank you for the very complete answer. I would have a couple of follow up questions:
+about point 2. If I expect the upper side variation to be smaller, is it allowed (and if so how would one proceed) to pick a smaller value wrt the difference coming from the 3-4 FS yields? Also in the implementations of the lognormal uncertainty as a starting value should I put directly the ratio of the two yields?
+about point 3. Indeed in this case the fact that the uncertainty is big may be related to the fact that in these analysis categories the number of events is really low, how should I proceed then?
+Cheers,
+Tiziano
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-07-11T08:06:47.226Z):
+Hi Tiziano,
+It is certainly allowed to use asymmetric uncertainties. For a symmetric log-normal uncertainty you just need to put the ratio of the yields in the datacard; for an asymmetric log-normal you need to put the ratio for the up and down variations separately. You can find the details in the section of the documentation on setting up the datacard [1] if you scroll down to the section on the different uncertainty types.
+How you chose the actual value is again more of a physics question, and I unfortunately have very little insight for your case.
+For part 3, the best thing you can do is get more statistics. Assuming this isn’t possible, or its too costly, it is also sometimes worth considering simply merging some categories or doing something similar to increase the statistics. But this should be done keeping in mind the tradeoffs, and what physics problem you are trying to solve. So again, this is all problem-specific.
+In some cases smoothing techniques for noisy templates can be used, as discussed in some detail in this note [2]. However, that kind of smoothing only really makes sense if there is a well-defined ordering over which you expect a smooth distribution. If you are talking about different analysis categories, this is likely not the case. Another method I have used in some cases are stein-type “shrinkage” estimators [3]; these are biased estimators that can achieve lower mean-squared-error on the estimate, at the cost of introducing some bias. So there are tradeoffs to be considered, but I think in some cases the tradeoff can be worth it.
+I hope that helps.
+Cheers,
+Kyle
+[1]https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#a-simple-counting-experiment
+[2] https://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2018_077_v4.pdf
+[3] https://en.wikipedia.org/wiki/James–Stein_estimator
+----------------------------------------

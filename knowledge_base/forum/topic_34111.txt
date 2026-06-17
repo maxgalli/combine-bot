@@ -1,0 +1,94 @@
+TOPIC: Combine: warning the pull could not be computed
+URL: https://cms-talk.web.cern.ch/t/34111
+DATE: 2024-02-05T21:56:41.983Z
+SOLVED: no
+============================================================
+
+QUESTION (by astepenn @ 2024-02-05T21:56:42.143Z):
+Dear experts,
+I’m trying to interpret one of the combine warnings for calculating pulls.
+After executing sequence of commands from combine documentation for making pulls, I receive the following warnings for some of the uncertainties:
+>>Warning, the pull for Unc1 could not be computed
+>> Warning, the pull for Unc2 could not be computed
+
+To get the pulls I ran the following commands from combine documentation:
+text2workspace.py  $1 -o workspace_v35_Nom_$2.root
+combineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --doInitialFit --robustFit 1  --rMax 10 --rMin -10
+combineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --robustFit 1  --doFits --rMax 10 --rMin -10
+combineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 -o impacts_v35_Nom_$2.json
+plotImpacts.py -i impacts_v35_Nom_$2.json -o impacts_v35_Nom_$2
+
+Could you please suggest how one can interpret these warnings? Are there any combine options or recipes for such cases?
+kind regards,
+Anton
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-02-06T07:34:45.936Z):
+Hi Anton,
+It’s likely the case that the pull is calculated following the diffPullAsym definition here. As noted in the docs, if the post-fit uncertainty is the same or larger than the pre-fit, the pull is not defined. In principle this shouldn’t happen, but sometimes it does because of the finite precision of the interval finding in combine, or perhaps some more significant failure.  In this case I’d recommend just checking the post-fit values and uncertainties of these parameters make sense.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by adewit @ 2024-02-06T07:36:26.000Z):
+Dear Anton,
+I think this warning appears when the denominator for the pull is smaller than some threshold (ie if sigma_init^2-sigma_fit^2 is very small, which means the fit is not constraining the parameter much). In this case the calculated pull would blow up if the numerator were nonzero.
+In the impact plot you will have the fitted value and the constraint for these parameters as well, so you’ll be able to check whether there is a problem (if the parameter is shifted significantly from its initial value, even though the fit does not constrain it, that could be an indication of an issue), or whether this is purely a numerical effect.
+Hope that helps,
+Adinda
+
+On 5 Feb 2024, at 22:58, Anton Stepennov via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Anton Stepennov astepennFebruary 5
+
+Dear experts,
+I’m trying to interpret one of the combine warnings for calculating pulls.
+After executing sequence of commands from combine documentation for making pulls, I receive the following warnings for some of the uncertainties:
+>>Warning, the pull for Unc1 could not be computed
+>> Warning, the pull for Unc2 could not be computed
+
+To get the pulls I ran the following commands from combine documentation:
+text2workspace.py  $1 -o workspace_v35_Nom_$2.root
+combineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --doInitialFit --robustFit 1  --rMax 10 --rMin -10
+combineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --robustFit 1  --doFits --rMax 10 --rMin -10
+combineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 -o impacts_v35_Nom_$2.json
+plotImpacts.py -i impacts_v35_Nom_$2.json -o impacts_v35_Nom_$2
+
+Could you please suggest how one can interpret these warnings? Are there any combine options or recipes for such cases?
+kind regards,
+Anton
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by astepenn @ 2024-02-06T15:38:30.332Z):
+Dear Andrew and Adinda,
+Thanks a lot for your suggestions. We checked the uncertainties on these parameters using FitDiagnostics and as Andrew said, those sources have postfit uncertainties larger than 1 (larger than initial prefit uncertainty):
+BTagSFLightUnCorr2018    0.0000e+00 +/-  1.17e+00
+HEM   -1.3562e-02 +/-  1.01e+00
+POGSFEle   -7.8599e-02 +/-  1.01e+00
+TTFRhighpt   -7.5636e-02 +/-  1.09e+00
+
+Could you please suggest, what (and if) we should do anything about these uncertainties ? Do we need to do smth with the option for calculating pulls?
+Visually these shape uncertainties look ok, they don’t differ from any other uncertainties in the analysis, which don’t cause any problem.
+kind regards,
+Anton
+----------------------------------------
+
+REPLY 5 (by adewit @ 2024-02-07T16:41:29.117Z):
+Dear Anton,
+It may be worth investigating those uncertainties a little more. There’s a little bit of information in the FAQ page here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/#faq (" Why do some of my nuisance parameters have uncertainties > 1?").
+One thing I could suggest is to try to scan these parameters with MultiDimFit as suggested there, to check that the likelihood shapes as a function of these parameters don’t look suspicious (e.g. a shape like the plot here:  https://indico.cern.ch/event/976099/contributions/4138476/attachments/2163625/3651175/CombineTutorial-2020-debugging.pdf#page=13 would indicate some issue).
+Best,
+Adinda
+----------------------------------------
+
+REPLY 6 (by astepenn @ 2024-02-18T09:26:46.061Z):
+Dear Adinda,
+Thanks a lot for the suggestion!
+I’ll try to do MultiDImFIt.
+kind regards,
+Anton
+----------------------------------------

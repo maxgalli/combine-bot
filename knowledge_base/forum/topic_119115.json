@@ -1,0 +1,89 @@
+{
+  "topic_id": 119115,
+  "title": "Non-commuting categories in combine fit",
+  "url": "https://cms-talk.web.cern.ch/t/119115",
+  "category_id": 279,
+  "created_at": "2025-03-18T13:34:17.541Z",
+  "last_posted_at": "2025-03-18T18:11:05.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "rseidita",
+      "name": "Roberto Seidita",
+      "created_at": "2025-03-18T13:34:17.810Z",
+      "updated_at": "2025-03-18T13:34:17.810Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI\u2019m contacting you because of an issue in the context of the EXO-24-010 analysis (search for t-channel production of semi visible jets). We are performing a template fit using ABCD to estimate the shape and normalization of our background, combining 4 categories across the 3 run2 years.\nWe observe that when adding shape uncertainties on our signal, the order in which we combine the categories seems to change the result of the fit. A minimal example, with only two categories and a single shape uncertainty, can be found here.\nWe compared the datacards obtained when combining the categories in the two permutations and found nothing obviously out of place. We also tried dumping the contents of the workspaces we get from the combined cards (via text2workspace.py), but could not find obvious differences apart from the different mapping of categories to channels, which is expected and seems consistent.\nWe are running on combine v10.1.0 under CMSSW 14_1_0_pre4.\nThank you very much in advance for any insight,\nCheers,\nRoberto, for the EXO-24-010 team",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I\u2019m contacting you because of an issue in the context of the EXO-24-010 analysis (search for t-channel production of semi visible jets). We are performing a template fit using ABCD to estimate the shape and normalization of our background, combining 4 categories across the 3 run2 years.</p>\n<p>We observe that when adding shape uncertainties on our signal, the order in which we combine the categories seems to change the result of the fit. A minimal example, with only two categories and a single shape uncertainty, can be found <a href=\"https://gitlab.cern.ch/rseidita/svj_t_channel_fit_example\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>We compared the datacards obtained when combining the categories in the two permutations and found nothing obviously out of place. We also tried dumping the contents of the workspaces we get from the combined cards (via <code>text2workspace.py</code>), but could not find obvious differences apart from the different mapping of categories to channels, which is expected and seems consistent.</p>\n<p>We are running on combine v10.1.0 under CMSSW 14_1_0_pre4.</p>\n<p>Thank you very much in advance for any insight,</p>\n<p>Cheers,</p>\n<p>Roberto, for the EXO-24-010 team</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-03-18T16:21:31.646Z",
+      "updated_at": "2025-03-18T16:21:31.646Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Roberto,\nThat is indeed rather strange. Can you try a simple change just to rule it out.\nCan you rename the observable for one of the two sets of workspaces. I noticed that MET has the same range across all channels but has a different binning set. Can you change it so that the one with 9 bins is called MET_new or something like that?\nBest,\nNick",
+      "cooked_html": "<p>Hi Roberto,</p>\n<p>That is indeed rather strange. Can you try a simple change just to rule it out.</p>\n<p>Can you rename the observable for one of the two sets of workspaces. I noticed that <code>MET</code> has the same range across all channels but has a different binning set. Can you change it so that the one with 9 bins is called <code>MET_new</code> or something like that?</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-03-18T16:41:45.090Z",
+      "updated_at": "2025-03-18T16:41:45.090Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Just to add, I manually tried doing this with the workspaces you sent and then it seems like both ordering give consistent results when I do,\nNick",
+      "cooked_html": "<p>Just to add, I manually tried doing this with the workspaces you sent and then it seems like both ordering give consistent results when I do,<br>\nNick</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "rseidita",
+      "name": "Roberto Seidita",
+      "created_at": "2025-03-18T17:25:55.749Z",
+      "updated_at": "2025-03-18T17:25:55.749Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Nick,\nthank you for your very quick reply! Indeed, renaming the observable in one of the categories seems to fix the issue and I now get consistent results. Is this known/expected behavior?\nThank you so much for you help,\nCheers,\nRoberto",
+      "cooked_html": "<p>Dear Nick,</p>\n<p>thank you for your very quick reply! Indeed, renaming the observable in one of the categories seems to fix the issue and I now get consistent results. Is this known/expected behavior?</p>\n<p>Thank you so much for you help,</p>\n<p>Cheers,</p>\n<p>Roberto</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-03-18T17:50:34.000Z",
+      "updated_at": "2025-03-18T17:52:28.004Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Roberto,\nI suspect it\u2019s an issue when creating the dataset. The code will use the binning from the relevant observable to create an Asimov dataset, whichever version it imported first will then be used to create the Asimov for all channels (since as far as it\u2019s concerned, there is only one observable called MET with 9 bins or 16 depending on the order)\nIf the names are different, each observable is treated properly\nIt\u2019s an issue I\u2019ve seen before many times when the ranges are different. Generally it\u2019s safest to use a different name for each category to avoid any issues (there is a warning about this in the docs here https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#shape-analyses)\nBest,\nNick\n\n| Roberto Seidita rseiditaMarch 18 |\n\n| - |\n\nDear Nick,\nthank you for your very quick reply! Indeed, renaming the observable in one of the categories seems to fix the issue and I now get consistent results. Is this known/expected behavior?\nThank you so much for you help,\nCheers,\nRoberto\n\n\u00b7\u00b7\u00b7\nOn 18 Mar 2025 17:31, Roberto Seidita via CMS talk noreply-cms-talk@cern.ch wrote:",
+      "cooked_html": "<p>Hi Roberto,</p>\n<p>I suspect it\u2019s an issue when creating the dataset. The code will use the binning from the relevant observable to create an Asimov dataset, whichever version it imported first will then be used to create the Asimov for all channels (since as far as it\u2019s concerned, there is only one observable called MET with 9 bins or 16 depending on the order)</p>\n<p>If the names are different, each observable is treated properly</p>\n<p>It\u2019s an issue I\u2019ve seen before many times when the ranges are different. Generally it\u2019s safest to use a different name for each category to avoid any issues (there is a warning about this in the docs here <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#shape-analyses\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#shape-analyses</a>)</p>\n<p>Best,<br>\nNick</p>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/user_avatar/cms-talk.web.cern.ch/rseidita/45/2834_2.png\" title=\"rseidita\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/rseidita\">Roberto Seidita</a> rseidita<br>March 18 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p>Dear Nick,</p>\n<p>thank you for your very quick reply! Indeed, renaming the observable in one of the categories seems to fix the issue and I now get consistent results. Is this known/expected behavior?</p>\n<p>Thank you so much for you help,</p>\n<p>Cheers,</p>\n<p>Roberto</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>On 18 Mar 2025 17:31, Roberto Seidita via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n</details>"
+    },
+    {
+      "post_number": 6,
+      "username": "rseidita",
+      "name": "Roberto Seidita",
+      "created_at": "2025-03-18T18:04:22.985Z",
+      "updated_at": "2025-03-18T18:04:22.985Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Indeed we missed that warning  Thanks again for the lightning-fast turnaround,\nCheers,\nRoberto",
+      "cooked_html": "<p>Indeed we missed that warning <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=12\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"> Thanks again for the lightning-fast turnaround,</p>\n<p>Cheers,</p>\n<p>Roberto</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-03-18T18:11:05.000Z",
+      "updated_at": "2025-03-18T18:12:24.246Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Happy to help\n\n| Roberto Seidita rseiditaMarch 18 |\n\n| - |\n\nIndeed we missed that warning Thanks again for the lightning-fast turnaround,\nCheers,\nRoberto\n\n\u00b7\u00b7\u00b7\nOn 18 Mar 2025 18:08, Roberto Seidita via CMS talk noreply-cms-talk@cern.ch wrote:",
+      "cooked_html": "<p>Happy to help <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/+1.png?v=12\" title=\":+1:\" class=\"emoji\" alt=\":+1:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/user_avatar/cms-talk.web.cern.ch/rseidita/45/2834_2.png\" title=\"rseidita\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/rseidita\">Roberto Seidita</a> rseidita<br>March 18 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p>Indeed we missed that warning <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=12\" title=\":slight_smile:\" alt=\":slight_smile:\" width=\"20\" height=\"20\">Thanks again for the lightning-fast turnaround,</p>\n<p>Cheers,</p>\n<p>Roberto</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>On 18 Mar 2025 18:08, Roberto Seidita via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n</details>"
+    }
+  ]
+}

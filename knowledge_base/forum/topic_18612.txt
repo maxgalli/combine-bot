@@ -1,0 +1,224 @@
+TOPIC: Toys in combine with multiple POIs
+URL: https://cms-talk.web.cern.ch/t/18612
+DATE: 2022-12-13T15:06:44.323Z
+SOLVED: no
+============================================================
+
+QUESTION (by byates @ 2022-12-13T15:06:44.581Z):
+Hi combine experts,
+Sorry for the spam, I think I posted this in a less active channel before, so I’m reposting here:
+I’m having some trouble making toys in combine with multiple POIs. We have an EFT workspace with 26 WCs, and are trying to run toys just on those (while freezing the NPs). I find that if I specify all 26 WCs with the -P flag, I do not get values for them in limit tree. If I only specify one, and save the others with --trackParameters, then I do see them. However, using the --saveToys flag, I see that the 25 tracked parameters are always initialized to 0 (the terms with quantileExpected=-2). It’s my understanding that all NPs (and in this case it should be treating the other 25 as unconstrained NPs) are randomized unless I use one of the other flags to tell it not to.
+Here is an example of the command for the latter case:
+combine --algo grid --cminPreScan --cminDefaultMinimizerStrategy=0 -P ctW --trackParameters ctZ,ctp,cpQM,ctG,cbW,cpQ3,cptb,cpt,cQl3i,cQlMi,cQei,ctli,ctei,ctlSi,ctlTi,cQq13,cQq83,cQq11,ctq1,cQq81,ctq8,ctt1,cQQ1,cQt8,cQt1 --floatOtherPOIs 1 --setParameterRanges ctW=-4.0,3.0 -t 1 --saveToys --freezeParameters allConstrainedNuisances,lumi,charge_flips,pdf_scale_gg,qcd_scale_ttH,qcd_scale_ttll,qcd_scale_tttt,pdf_scale_qg,qcd_scale_tHq,pdf_scale_qq,qcd_scale_ttlnu,qcd_scale_V,qcd_scale_tWZ,qcd_scale_VV,qcd_scale_VVV,diboson_njets,missing_parton --setParameters ctW=0,ctZ=0,ctp=0,cpQM=0,ctG=0,cbW=0,cpQ3=0,cptb=0,cpt=0,cQl3i=0,cQlMi=0,cQei=0,ctli=0,ctei=0,ctlSi=0,ctlTi=0,cQq13=0,cQq83=0,cQq11=0,ctq1=0,cQq81=0,ctq8=0,ctt1=0,cQQ1=0,cQt8=0,cQt1=0 -M MultiDimFit -s  -1 -d /afs/crc.nd.edu/user/b/byates2/CMSSW_10_2_13/src/EFTFit/Fitter/test/ptz-lj0pt_fullR2_anatest23v01_withAutostats_withSys.root --points 25 --firstPoint 0 --lastPoint 0 -n .120222.EFT.Float.ctW.POINTS.0.0
+
+Which for a single point gives:
+limit->Scan("2*deltaNLL:ctW:trackedParam_cpt:trackedParam_ctZ:quantileExpected")
+************************************************************************
+*    Row   * 2*deltaNL *       ctW * trackedPa * trackedPa * quantileE *
+************************************************************************
+*        0 *         0 * 0.0564355 *         0 *         0 *        -2 *
+*        1 * 1.0615646 *      -0.5 * 1.6163560 * -0.131414 *        -1 *
+*        2 * 1.0615646 *      -0.5 * 1.6393538 * -0.256613 *         1 *
+************************************************************************
+
+Any suggestions on how to make this work would be appreciated.
+Thanks,
+Brent
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-12-14T15:05:47.961Z):
+Hi Brent,
+A few thoughts:
+
+Brent Yates:
+
+I find that if I specify all 26 WCs with the -P flag, I do not get values for them in limit tree.
+
+The trackParameters approach should work, but just adding --saveInactivePOI 1 might be easier - this will make sure all the N-1 POIs not specified with -P are also saved.
+
+Brent Yates:
+
+However, using the --saveToys flag, I see that the 25 tracked parameters are always initialized to 0 (the terms with quantileExpected=-2). It’s my understanding that all NPs (and in this case it should be treating the other 25 as unconstrained NPs) are randomized unless I use one of the other flags to tell it not to.
+
+The other POIs are not associated with any constraint pdfs, so will not be randomised in the toy throwing, this is as expected. That said, there’s something I don’t understand in the first row of your output: the value of ctW is not zero for the toy, though it should be given the combine command above.
+Other things:
+
+The use of allConstrainedNuisances here might not work as intended, see this thread.
+I’m also surprised you don’t have more entries in the limit tree (i.e. one for the first unconditional fit with all POIs floating). Do you see any errors from combine?
+If you copy the workspace somewhere public can take a look
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by byates @ 2022-12-14T15:27:22.000Z):
+Hi Andrew,
+Thanks for your reply. The limit tree printout was just a shortened version so it could fit nicely in the email. Is there a way to have combine randomize the other 25 WCs? This is really what we’re after.
+Thanks again,
+
+Brent Yates
+Postdoctoral Researcher
+Department of Physics
+3034 Physics Research Building
+
+···
+From: Andrew Gilbert via CMS talk noreply@cms-talk.web.cern.ch
+Sent: Wednesday, December 14, 2022 10:07 AM
+To: Yates, Brent R. yates.313@osu.edu
+Subject: [HIG PAG/Combination] Toys in combine with multiple POIs
+Andrew Gilbert agilbert SMP convener December 14 Hi Brent, A few thoughts: Brent Yates: I find that if I specify all 26 WCs with the -P flag, I do not get values for them in limit tree. The trackParameters approach should work, but just adding
+
+Andrew Gilbert agilbert SMP convenerDecember 14
+
+Hi Brent,
+A few thoughts:
+
+Brent Yates:
+I find that if I specify all 26 WCs with the -P flag, I do not get values for them in limit tree.
+
+The trackParameters approach should work, but just adding --saveInactivePOI 1 might be easier - this will make sure all the N-1 POIs not specified with -P are also saved.
+
+Brent Yates:
+However, using the --saveToys flag, I see that the 25 tracked parameters are always initialized to 0 (the terms with quantileExpected=-2). It’s my understanding that all NPs (and in this case it should be treating the other 25 as unconstrained NPs) are randomized unless I use one of the other flags to tell it not to.
+
+The other POIs are not associated with any constraint pdfs, so will not be randomised in the toy throwing, this is as expected. That said, there’s something I don’t understand in the first row of your output: the value of ctW is not zero for the toy, though it should be given the combine command above.
+Other things:
+· The use of allConstrainedNuisances here might not work as intended, see this thread.
+· I’m also surprised you don’t have more entries in the limit tree (i.e. one for the first unconditional fit with all POIs floating). Do you see any errors from combine?
+· If you copy the workspace somewhere public can take a look
+cheers,
+Andrew
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-12-14T15:33:00.183Z):
+Hi Brent,
+But how do you want these to be randomised, according to which probability density?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by byates @ 2022-12-14T15:36:21.000Z):
+I suppose just a uniform density. What does combine use to randomize the POIs specified with the -P flag? We really want to treat all 26 WCs on equal footing, whereas right now it’s randomizing 1 and not the other 25.
+
+Brent Yates
+Postdoctoral Researcher
+Department of Physics
+3034 Physics Research Building
+
+···
+From: Andrew Gilbert via CMS talk noreply@cms-talk.web.cern.ch
+Sent: Wednesday, December 14, 2022 10:34 AM
+To: Yates, Brent R. yates.313@osu.edu
+Subject: [HIG PAG/Combination] Toys in combine with multiple POIs
+Andrew Gilbert agilbert SMP convener December 14 Hi Brent, But how do you want these to be randomised, according to which probability density? cheers, Andrew Visit Topic or reply to this email to respond. In Reply To Brent Yates byates December
+
+Andrew Gilbert agilbert SMP convenerDecember 14
+
+Hi Brent,
+But how do you want these to be randomised, according to which probability density?
+cheers,
+Andrew
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Brent Yates byatesDecember 14
+
+Hi Andrew, Thanks for your reply. The limit tree printout was just a shortened version so it could fit nicely in the email. Is there a way to have combine randomize the other 25 WCs? This is really what we’re after. Thanks again, [The Ohio State University] Brent Yates Postdoctoral Researcher …
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by agilbert @ 2022-12-14T15:48:26.404Z):
+Hi,
+The -P option is nothing to do with randomising POIs. In MultiDimFit it’s used to select a particular subset of the POIs to fit/scan (with other POIs fixed to their initial values unless --floatOtherPOIs 1 is also specified). When you generate toys you should find a distribution of fitted values for the POIs, but the values used to generate the toys are typically fixed to some particular hypothesis.
+If you wanted to randomize the POIs with a uniform density you would still have to choose the range over which to do this, which seems somewhat arbitrary to me. Perhaps you could explain in some more detail what you want to do with this study, or maybe you have some slides with more information?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 7 (by byates @ 2022-12-15T14:03:21.605Z):
+Hi Andrew,
+We are trying to check the validity of Wilks’ theorem as outlined in [1]. Basically, we need to sample a bunch of random points (probably within or near our 2 sigma limits), and make sure combine can fit this ok. This will show us if our model introduces any issues (such as the quadratic terms in our EFT fits preventing combine from exploring certain interference terms).
+[1] https://arxiv.org/abs/2207.01350
+----------------------------------------
+
+REPLY 8 (by agilbert @ 2022-12-15T14:22:45.559Z):
+Hi Brent,
+Indeed, that’s an interesting paper. Glad to hear someone is checking it. I think in this case it would be sufficient to pick sets of fixed parameter points, and then derive the sampling distribution of the test statistic, and compare to the Wilk’s theorem assumption. There’s no need to fluctuate the WCs here, I think you want to perform the test for a particular hypothesis (e.g. as in Fig 1 of that paper). Indeed the sets of parameter points to test could be randomly chosen, but this would need to be done externally to combine.
+When you have the results of these tests I think it would be a very useful thing to present to the Statistics Committee.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 9 (by byates @ 2023-03-06T15:22:15.000Z):
+Hi Andrew,
+I’ve been working on this for a while, and made some progress. However, I wanted to ask about the best way to approach this and what combine commands to use. Currently, I’m using the -P flag to specify a single WC to fit, e.g. ctp. From my understanding, what combine is doing is asking RooFit to sample the distribution for ctp, while holding the others constant. Then it will evaluate the yields using this non-zero ctp value, and finally fit all the WCs to these new yields. We had some internal discussion, and it seems that what we really want to do is ­just vary the yields, not a coefficient, and then fit to these varied yields. I couldn’t find this in the documentation (it seems a little sparse on the exact commands for toys).
+Related to this, we were having some issues understanding the saturated test value, as it seemed to be related to the number of bins we have, instead of the number of WCs. We’ve decided to use the likelihood value as the test statistic instead, so I’m using the fixed point flag. Here is an example command:
+combineTool.py --algo fixed --cminPreScan --cminDefaultMinimizerStrategy=0 --setParameters ctW=0,ctp=0,cpQM=0,ctei=0,ctli=0,cQei=0,ctZ=0,cQlMi=0,cQl3i=0,ctG=0,ctlTi=0,cbW=0,cpQ3=0,cptb=0,cpt=0,ctlSi=0 --trackParameters ctp,ctW,ctZ,cpQM,ctG,cbW,cpQ3,cptb,cpt,cQl3i,cQlMi,cQei,ctli,ctei,ctlSi,ctlTi -M MultiDimFit -d EFTWorkspace.root --freezeParameters rgx{.*} -n .BestScan.rgx.fixed.initial.ctp --floatOtherPOIs 1 -t 10 --toysNoSystematics --saveToys -P ctp
+Correct me if I’m wrong, but this command is varying ctp, then it compute the yields (as I mentioned above) and fit the WCs, and finally compares this fit to a fixed value. Since I haven’t explicitly given the --fixedPointPOIs flag, it should just compare to the starting point, which is just the SM here. I’m freezing the NPs, since if we can verify Wilk’s theorem without them, then we should be fine with them, as they’ll just broaden our likelihood curve a bit.
+The only question I have about this method is it is treating ctp different from the other WCs. Should we treat them all on equal footing, or do a fit like this one WC at a time?
+Looking back at your last email, you mentioned fixed parameter points. Did you just mean using the fixed algo without toys, and just seeing how the test statistic changes as we vary ctp, basically like a grid scan?
+Thanks,
+
+Brent Yates
+Postdoctoral Researcher
+Department of Physics
+3034 Physics Research Building
+
+···
+From: Andrew Gilbert via CMS talk noreply@cms-talk.web.cern.ch
+Sent: Thursday, December 15, 2022 9:24 AM
+To: Yates, Brent R. yates.313@osu.edu
+Subject: [HIG PAG/Combination] Toys in combine with multiple POIs
+Andrew Gilbert agilbert SMP convener December 15 Hi Brent, Indeed, that’s an interesting paper. Glad to hear someone is checking it. I think in this case it would be sufficient to pick sets of fixed parameter points, and then derive the sampling
+
+Andrew Gilbert agilbert SMP convenerDecember 15
+
+Hi Brent,
+Indeed, that’s an interesting paper. Glad to hear someone is checking it. I think in this case it would be sufficient to pick sets of fixed parameter points, and then derive the sampling distribution of the test statistic, and compare to the Wilk’s theorem assumption. There’s no need to fluctuate the WCs here, I think you want to perform the test for a particular hypothesis (e.g. as in Fig 1 of that paper). Indeed the sets of parameter points to test could be randomly chosen, but this would need to be done externally to combine.
+When you have the results of these tests I think it would be a very useful thing to present to the Statistics Committee.
+cheers,
+Andrew
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 10 (by kcormier @ 2023-03-08T10:37:02.746Z):
+Hi Brent,
+I haven’t looked at the paper you linked in full detail, but I’ve taken a quick look at it and at what you’re trying to do.
+If I understand you correctly, you are trying to check the distribution of the log-likelihood ratio to see if it follows the asymptotic distribution predicted by Wilk’s theorem, because it has been pointed out by this paper that this will not be true in all cases (because the parameters may not lie on the interior of the model space, violating one of the theorem’s assumptions).
+So what  I understand you’re trying to do is generate pseudoexperiments with fixed values for your model parameters, then check the distribution of the log-like likelihood ratio, to see if it is following the one predicted by Wilk’s theorem. Is that right? Then for this test, you would like to repeat it for each wilson coefficient, where you allow only that particular wilson coefficient to be a free parameter in the fit? Thus trying to test the Asymptotic distribution separately for each of the POIs?
+It wasn’t clear to me if you then also planned to repeat this test at several points in the parameter space (as I think Andrew was suggesting)?
+Did I understand that correctly?
+
+Related to this, we were having some issues understanding the saturated test value, as it seemed to be related to the number of bins we have, instead of the number of WCs. We’ve decided to use the likelihood value as the test statistic instead, so I’m using the fixed point flag. Here is an example command:
+
+Its true that the saturated test statistic’s distribution will depend on the number of bins (but also on the number of free parameters in the model). But it’s not clear to me why you are mentioning it here, maybe I’ve missed why you are bringing it up?  I thought you were always planning to test the log-likelihood ratio between a nominal model with all WCs fixed to the value used to generate the toys and a model with one WC floating.
+
+Correct me if I’m wrong, but this command is varying ctp, then it compute the yields (as I mentioned above) and fit the WCs, and finally compares this fit to a fixed value.
+
+The parameter of interest (in this case your wilson coefficient ctp) is not varied in the toy generation. the use of -P and --floatOtherPOIs are specifying what should be done in the fit, not in generating the toys.
+In your case it might also be helpful to explicity separate the toy generation step from the fitting step by first running with -M GenerateOnly as described here [1].
+This has two benefits that I can see. Firstly, you can re-use the same pseudoexperiment for different fits (e.g. where different WCs are floating or fixed). Secondly, it helps to clarify conceptually what is being done in the toy generation as opposed to the fit in terms of parameter values and settings.
+
+The only question I have about this method is it is treating ctp different from the other WCs. Should we treat them all on equal footing, or do a fit like this one WC at a time?
+
+Whether or not you want to treat them on the same or different footings depends on what you are trying to test and on what interpretations you will give. So I can’t answer that question without further discussion. Though if you want to provide more details I can give my two cents.  However, if you know which you’d like to do, we can certainly help ensure that what you are running is in fact doing what you intend.
+One other thing to keep in mind which is relevant to this point is that the distribution expected from Wilk’s theorem depends on the additional number of degrees of freedom in the larger model, so you expect different distributions based on whether you allow the other WCs to float in the fit or keep them fixed.
+
+Looking back at your last email, you mentioned fixed parameter points. Did you just mean using the fixed algo without toys, and just seeing how the test statistic changes as we vary ctp, basically like a grid scan?
+
+The fixed algorithm for MultiDimFit  (described here [2]) means comparing the log-likelihood at a fixed point in parameter space as compared to the best fit point. Note that this doesn’t have anything to do with the data, or the pseudodata which is used for the fit, i.e. it is not specifying anything about how the (pseudo)data are being generated.
+I think what Andrew was suggesting (he can correct me if I’ve misinterpreted) is that you can generate pseudodata (toys) for some fixed values of the parameters, and then perform your tests on those toys. One obvious example choice is generating pseudodata from the SM expectation (with all WCs set to 0). But it may be useful to also rerun the tests for other points in model space (e.g. ctp=1.5, all other WCs = 0), because the degree to which Wilk’s theorem is a good approximation will in general depend on where you are in parameter space.
+I hope that helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#generate-only
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+----------------------------------------

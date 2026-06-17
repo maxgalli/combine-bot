@@ -1,0 +1,35 @@
+TOPIC: Get post-fit uncertainty on total background integral?
+URL: https://cms-talk.web.cern.ch/t/9471
+DATE: 2022-04-19T16:12:23.901Z
+SOLVED: no
+============================================================
+
+QUESTION (by jmhogan @ 2022-04-19T16:12:24.153Z):
+Hello,
+I’m working on creating tables of post-fit normalizations for a paper. Via --saveNormalizations and the script linked in the documentation, we have uncertainties on the integrals for each background process in each channel.
+I would also like to state the uncertainty on the total background integral. Is there a way to access this information with the proper correlations from Combine?
+I’ve tested using PostFitShapesFromWorkspace and I’m not certain of the output – the uncertainty on total background from this tool is smaller than some individual process uncertainties from the norm_fit_X RooArgSets, which seems like it must be incorrect.
+For one channel in my analysis I see this total background info from that tool:
+Bin                       Total bkg, bkg unc, relative bkg uncert. (postfit)
+ch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine   9468.11845   80.96722   0.00855
+While from mlfitNormsToText.py I get the following info for the 3 background processes:
+Channel                                  Process                                              B-Only Fit
+ch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine ewk          1284.715 +/- 48.404
+ch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine qcd           560.034 +/- 65.195
+ch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine top            7623.370 +/- 107.161
+Both tools are using the same fitDiagnostics.root input files. Do you have any recommendations for the correct way to access this information?
+Thanks,
+Julie Hogan
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-04-20T10:30:21.572Z):
+Dear Julie,
+There are several options in PostFitShapesFromWorkspace so without the exact command it’s difficult to confirm if this is correct, however given the uncertainty is smaller than from the individual components I assume that the covariance matrix resampling was switched on (this is the correct behaviour - it is on by default)
+It is possible for the total background uncertainty to be smaller than the uncertainties on individual components due to correlations between the parameters in the fit, so in that sense I don’t find the result alarming. However, if you’d like to double check and be sure that the uncertainties on the individual components and on the total are extracted in exactly the same way, the easiest thing to do is check out the HEAD of the Combine 102x branch, where the total signal and background normalizations are now added to the FitDiagnostics output when run with --saveNormalizations --saveWithUncertainties.
+Hope this helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by ncsmith @ 2022-04-20T20:18:45.265Z):
+I have some old code for this, that basically does the same resampling of the fit covariance that is done to make the shapes in FitDiagnostics, and then propagates that to the per-channel process normalization parameters (i.e. integral of the shapes) and dumps it to a TTree, one row per sample. Then you can loop over the tree and compute mean and std of any combination of normalizations https://gitlab.cern.ch/ncsmith/monoZ/blob/master/plotter/resampleFit.py
+----------------------------------------

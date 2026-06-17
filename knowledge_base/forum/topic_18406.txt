@@ -1,0 +1,26 @@
+TOPIC: Function value nan while computing limit
+URL: https://cms-talk.web.cern.ch/t/18406
+DATE: 2022-12-07T08:49:33.630Z
+SOLVED: no
+============================================================
+
+QUESTION (by snandan @ 2022-12-07T08:49:33.905Z):
+Dear experts,
+I am trying to calculate limit using the following command
+combine --method AsymptoticLimits datacard
+but getting this error
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(systeff_HH_resolved_1b_nonvbf_TT_erdON) evaluation error,  origin       : AsymPow::systeff_HH_resolved_1b_nonvbf_TT_erdON[ kappaLow=0.000000 kappaHigh=0.000000 theta=erdON ]  message      : function value is NAN  server values: kappaLow=0.000000=0, kappaHigh=0.000000=0, theta=erdON=0 +/- 1 [#0] ERROR:Eval -- RooAbsReal::logEvalError(n_exp_final_binHH_resolved_1b_nonvbf_proc_TT) evaluation error,
+Didn’t see this error before. I put the datacard here
+/afs/cern.ch/user/s/snandan/public/datacard
+
+Did anybody face this error before? It would be nice if someone tell what is going wrong.
+Thanks and Regards,
+Saswati
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-12-08T09:56:23.538Z):
+Hi Saswati,
+It looks like you have a shape uncertainty erdON for process TT in channel HH_resolved_1b_nonvbf where the Up and Down histograms are empty. This is not something combine can handle, so it’s worth a look if the histograms are being filled correctly, and if this is just an issue of very low statistics for a small background, consider whether the shape uncertainty needs to be applied here.
+cheers,
+Andrew
+----------------------------------------

@@ -1,0 +1,45 @@
+{
+  "topic_id": 47445,
+  "title": "Error on T2W with expression for POI, on combine v10",
+  "url": "https://cms-talk.web.cern.ch/t/47445",
+  "category_id": 279,
+  "created_at": "2024-09-02T14:10:14.981Z",
+  "last_posted_at": "2024-09-02T15:22:51.364Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "bribeiro",
+      "name": "Beatriz Ribeiro Lopes",
+      "created_at": "2024-09-02T14:10:15.042Z",
+      "updated_at": "2024-09-02T14:10:15.042Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nI recently upgraded to the new Combine version (v10.0.2), and now I can\u2019t create workspaces using expressions for the POIs. For example, I have this command:\ntext2workspace.py chASYM_datacard.txt -o chASYM_datacard.root \\\n-P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose \\\n--PO 'map=.*/signal0:r_ttg0[1,0.4,1.6]' \\\n--PO 'map=.*/signal1:r_ttg1=expr;;r_ttg1(\"1.010339*@0*(100+@1)/(100-@1)\",r_ttg0,r_Ac[-0.5143048,-50,50])'\n\nAnd the output is\nMapping  r_ttg0  to  ['.*/signal0']  patterns\nWill create expression  r_ttg1  with factory  expr::r_ttg1(\"1.010339*@0*(100+@1)/(100-@1)\",r_ttg0,r_Ac[-0.5143048,-50,50])\nMapping  r_ttg1  to  ['.*/signal1']  patterns\nMH (not there before) will be assumed to be 0\nfree(): invalid pointer\n*** Break *** abort\n\nfollowed by a crash that is not helpful. Even if I simplify the expression a lot, e.g. just a sum, the result is the same, If I remove the expression and just scale a process directly, there is no error.\nThis same code was running well in combine v9. Does anyone have any idea of what could be the issue?\nThanks in advance,\nBeatriz",
+      "cooked_html": "<p>Dear all,</p>\n<p>I recently upgraded to the new Combine version (v10.0.2), and now I can\u2019t create workspaces using expressions for the POIs. For example, I have this command:</p>\n<pre><code class=\"lang-auto\">text2workspace.py chASYM_datacard.txt -o chASYM_datacard.root \\\n    -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose \\\n    --PO 'map=.*/signal0:r_ttg0[1,0.4,1.6]' \\\n    --PO 'map=.*/signal1:r_ttg1=expr;;r_ttg1(\"1.010339*@0*(100+@1)/(100-@1)\",r_ttg0,r_Ac[-0.5143048,-50,50])'\n</code></pre>\n<p>And the output is</p>\n<pre data-code-wrap=\"Will\"><code class=\"lang-Will\">Mapping  r_ttg0  to  ['.*/signal0']  patterns\nWill create expression  r_ttg1  with factory  expr::r_ttg1(\"1.010339*@0*(100+@1)/(100-@1)\",r_ttg0,r_Ac[-0.5143048,-50,50])\nMapping  r_ttg1  to  ['.*/signal1']  patterns\nMH (not there before) will be assumed to be 0\nfree(): invalid pointer\n *** Break *** abort \n</code></pre>\n<p>followed by a crash that is not helpful. Even if I simplify the expression a lot, e.g. just a sum, the result is the same, If I remove the expression and just scale a process directly, there is no error.</p>\n<p>This same code was running well in combine v9. Does anyone have any idea of what could be the issue?</p>\n<p>Thanks in advance,<br>\nBeatriz</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-09-02T14:49:35.093Z",
+      "updated_at": "2024-09-02T14:49:35.093Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Beatriz,\nCan you explain a bit more about the model you want to setup. I just tried a similar command in v10.0.2 on our toy hgg datacard and things work as expected (*). Can you send your datacard so that we can test with your setup?\nBest,\nNick.\n(*) I run the following\ntext2workspace.py data/tutorials/multiDim/toy-hgg-125.txt -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose \\\n--PO 'map=.*/ggH:r_ggH[1,0.4,1.6]' \\\n--PO 'map=.*/qqH:r_qqH=expr::r_qqH(\"1.010339*@0+@1\",r_ggH,r_Ac[-0.5143048,-50,50])'\n\nand get,\nWill create a POI  r_ggH  with factory  r_ggH[1,0.4,1.6]\nMapping  r_ggH  to  ['.*/ggH']  patterns\nWill create expression  r_qqH  with factory  expr::r_qqH(\"1.010339*@0+@1\",r_ggH,r_Ac[-0.5143048,-50,50])\nMapping  r_qqH  to  ['.*/qqH']  patterns\nMH (not there before) will be assumed to be 125.0\nWill scale  incl/ggH  by  r_ggH\nWill scale  incl/qqH  by  r_qqH\nWill scale  incl/bkg  by  1\nWill scale  dijet/ggH  by  r_ggH\nWill scale  dijet/qqH  by  r_qqH\nWill scale  dijet/bkg  by  1",
+      "cooked_html": "<p>Hi Beatriz,</p>\n<p>Can you explain a bit more about the model you want to setup. I just tried a similar command in v10.0.2 on our toy hgg datacard and things work as expected (*). Can you send your datacard so that we can test with your setup?</p>\n<p>Best,<br>\nNick.</p>\n<p>(*) I run the following</p>\n<pre><code class=\"lang-auto\">text2workspace.py data/tutorials/multiDim/toy-hgg-125.txt -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose \\\n    --PO 'map=.*/ggH:r_ggH[1,0.4,1.6]' \\\n    --PO 'map=.*/qqH:r_qqH=expr::r_qqH(\"1.010339*@0+@1\",r_ggH,r_Ac[-0.5143048,-50,50])' \n</code></pre>\n<p>and get,</p>\n<pre><code class=\"lang-auto\">Will create a POI  r_ggH  with factory  r_ggH[1,0.4,1.6]\nMapping  r_ggH  to  ['.*/ggH']  patterns\nWill create expression  r_qqH  with factory  expr::r_qqH(\"1.010339*@0+@1\",r_ggH,r_Ac[-0.5143048,-50,50])\nMapping  r_qqH  to  ['.*/qqH']  patterns\nMH (not there before) will be assumed to be 125.0\nWill scale  incl/ggH  by  r_ggH\nWill scale  incl/qqH  by  r_qqH\nWill scale  incl/bkg  by  1\nWill scale  dijet/ggH  by  r_ggH\nWill scale  dijet/qqH  by  r_qqH\nWill scale  dijet/bkg  by  1\n</code></pre>"
+    },
+    {
+      "post_number": 3,
+      "username": "bribeiro",
+      "name": "Beatriz Ribeiro Lopes",
+      "created_at": "2024-09-02T15:22:51.364Z",
+      "updated_at": "2024-09-02T15:22:51.364Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Nick,\nThanks for your quick reply. I just tried to run the same thing but on lxplus (was previously running on the DESY NAF) and there it works, I cannot reproduce the error that I get on the NAF. So I think it must be a problem with my setup there and not with Combine. I will just run on lxplus, sorry for wasting your time!\nCheers,\nBeatriz",
+      "cooked_html": "<p>Dear Nick,</p>\n<p>Thanks for your quick reply. I just tried to run the same thing but on lxplus (was previously running on the DESY NAF) and there it works, I cannot reproduce the error that I get on the NAF. So I think it must be a problem with my setup there and not with Combine. I will just run on lxplus, sorry for wasting your time!</p>\n<p>Cheers,<br>\nBeatriz</p>"
+    }
+  ]
+}

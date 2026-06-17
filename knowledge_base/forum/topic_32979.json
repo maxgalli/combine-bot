@@ -1,0 +1,45 @@
+{
+  "topic_id": 32979,
+  "title": "Error while compiling combine v9 in lxplus",
+  "url": "https://cms-talk.web.cern.ch/t/32979",
+  "category_id": 279,
+  "created_at": "2023-12-29T19:59:41.029Z",
+  "last_posted_at": "2023-12-31T17:48:40.819Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "abasnet",
+      "name": "Aashwin Basnet",
+      "created_at": "2023-12-29T19:59:41.411Z",
+      "updated_at": "2023-12-29T19:59:41.411Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have been following the instructions in [1] to install combine v9 in lxplus. I also checked out the recommended tag and did a clean build as recommended. However, during compilation, I am getting lots of error messages, including an eventual segfault, that I have pasted in the cernbox link in [2].\nIs this a known issue? I would appreciate any help in fixing this.\n[1]https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version\n[2]https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I have been following the instructions in [1] to install combine v9 in lxplus. I also checked out the recommended tag and did a clean build as recommended. However, during compilation, I am getting lots of error messages, including an eventual segfault, that I have pasted in the cernbox link in [2].</p>\n<p>Is this a known issue? I would appreciate any help in fixing this.</p>\n<p>[1]<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version</a><br>\n[2]<a href=\"https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8\" rel=\"noopener nofollow ugc\">https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2023-12-29T20:55:25.000Z",
+      "updated_at": "2023-12-29T20:58:22.028Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi,\nThis may have something to do with the lxplus machines moving over to el9.\nWe have an open PR for updates to the docs to get around this but for now can you try the following?\ncmssw-el7\ncmsrel CMSSW_11_3_4\ncd CMSSW_11_3_4/src\ncmsenv\ngit clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit\ncd HiggsAnalysis/CombinedLimit\nBest\nNick\n\n| Aashwin Basnet abasnetDecember 29 |\n\n| - |\n\nDear experts,\nI have been following the instructions in [1] to install combine v9 in lxplus. I also checked out the recommended tag and did a clean build as recommended. However, during compilation, I am getting lots of error messages, including an eventual segfault, that I have pasted in the cernbox link in [2].\nIs this a known issue? I would appreciate any help in fixing this.\n[1]https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version\n[2]https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8\n\n\u00b7\u00b7\u00b7\nOn 29 Dec 2023 20:01, Aashwin Basnet via CMS talk noreply-cms-talk@cern.ch wrote:",
+      "cooked_html": "<p>Hi,</p>\n<p>This may have something to do with the lxplus machines moving over to el9.</p>\n<p>We have an open PR for updates to the docs to get around this but for now can you try the following?</p>\n<p>cmssw-el7<br>\ncmsrel CMSSW_11_3_4<br>\ncd CMSSW_11_3_4/src<br>\ncmsenv<br>\ngit clone <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git</a> HiggsAnalysis/CombinedLimit<br>\ncd HiggsAnalysis/CombinedLimit</p>\n<p>Best<br>\nNick</p>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/d78d45/45.png\" title=\"abasnet\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/abasnet\">Aashwin Basnet</a> abasnet<br>December 29 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p>Dear experts,</p>\n<p>I have been following the instructions in [1] to install combine v9 in lxplus. I also checked out the recommended tag and did a clean build as recommended. However, during compilation, I am getting lots of error messages, including an eventual segfault, that I have pasted in the cernbox link in [2].</p>\n<p>Is this a known issue? I would appreciate any help in fixing this.</p>\n<p>[1]<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version</a><br>\n[2]<a href=\"https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8\">https://cernbox.cern.ch/s/vpmXwRPuMn5TQr8</a></p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>On 29 Dec 2023 20:01, Aashwin Basnet via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n</details>"
+    },
+    {
+      "post_number": 3,
+      "username": "abasnet",
+      "name": "Aashwin Basnet",
+      "created_at": "2023-12-31T17:48:40.819Z",
+      "updated_at": "2023-12-31T17:48:40.819Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nThank you for your help. I can confirm that this seems to be resolving the issue for now. I am now able to set up and compile the repo.\nSincerely,\nAashwin",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>Thank you for your help. I can confirm that this seems to be resolving the issue for now. I am now able to set up and compile the repo.</p>\n<p>Sincerely,<br>\nAashwin</p>"
+    }
+  ]
+}

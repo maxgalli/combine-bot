@@ -1,0 +1,102 @@
+TOPIC: Multidimensional likelihood scan on promoted nuisance parameters gives error
+URL: https://cms-talk.web.cern.ch/t/124317
+DATE: 2025-04-29T16:41:32.229Z
+SOLVED: no
+============================================================
+
+QUESTION (by jduarteq @ 2025-04-29T16:41:32.494Z):
+Dear experts,
+I’m trying to perform a likelihood scan freezing my signal strength and all my constrained nuisance parameters, except three of them npar1, npar2, npar3.
+Before this I successfully ran the scan without freezing the nuisance parameters, only the signal strength, using MultiDimFit with the following options:
+--algo grid --points 1000 --robustFit 1 -n scanExpected --setParameterRange rgx{npar.+}=-1,1 --redefineSignalPOIs npar1,npar2,npar3 --setParameters r=1 --freezeParameters r -t -1
+
+This gives an acceptable result with some points missing due to fit failures but I suppose that’s okay.
+Now, to get the scan with stat only I tried freezing all constrained nuisance parameters using the option --freezeParameters r,allConstrainedNuisances, but it gave me a result with only one point (the initial fit), then I used the verbose option and saw the error: Error in <ROOT::Math::Fitter::SetFCN>: FCN function has zero parameters showing me problems with the likelihood, to try and debug this I created a group of nuisances parameters adding this line to the datacard:
+g1 group = npar1 npar2 npar3
+
+and freezing now with the options --freezeParameters r --freezeNuisanceGroups=^g1. This gave me the same result as before when fitting the 3 parameters, then I tried just fitting two (npar1, npar2) and leaving the other floating (npar3), which result in a successful scan.
+Then I tried freezing npar3, which gave the same error. Later, I tried freezing both npar2 and npar3, and it ran successfully.
+Lastly, just to test, I ran the scan for all 3 parameters, but leaving some random nuisance parameter floating. This gave me a correct scan (but not stat only since this nuisance parameter was being fitted).
+All this suggests to me that the likelihood is not well constructed for multiple POIs promoted from nuisance parameters, which leaves the likelihood constant when doing a scan giving the error before.
+Is the likelihood well-defined (in the default model) when promoting multiple nuisance parameters as POIs? I could run the scan for npar1 and npar2, leaving npar3 floating (tracking it), but I want to be sure that this scan is valid.
+Also, I wanted to try building the workspace using a multisignal model. How can I promote these nuisance parameters as POIs in a multisignal model?
+Thanks for your help.
+Cheers,
+Juan.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-04-29T20:19:41.040Z):
+Dear Juan,
+Could you please explain what are you trying to achieve in general by promoting nuisance parameters to the POIs so that we can provide a better advice?
+In case you just wanted to produce the scans for the nuisance parameters for e.g. debugging purposes, please keep in mind that when the --redefineSignalPOIs is used the associated constrain terms are dropped from the total likelihood, as explained also in the documentation here.
+Now to those errors, I suspect that when you freeze both r and constrained nuisances with --freezeParameters r,allConstrainedNuisances you just don’t have any other parameters that can be varied in the fit, and this is exactly what this error tells you Error in <ROOT::Math::Fitter::SetFCN>: FCN function has zero parameters.
+About all other cases, I think something similar happens, but hard to say without looking at the model.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by jduarteq @ 2025-04-29T20:43:24.058Z):
+Dear Aliya,
+What I try to achieve is to actually measure these nuisance parameters, they represent shape variations of my MC, you can see a similar process on TOP-23-001 for one POI.
+About the errors, even if I constrain r and allConstrainedNuisances that should only leave the promoted POIs in the model I would assume. However, in the next cases using the group tag, I don’t freeze those promoted, but why for Combine they’re not in the likelihood? If I freeze everything except one promoted POI, still works.
+About the model, I’m using the default one.
+Thanks,
+Juan.
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2025-04-30T14:38:01.821Z):
+Dear Juan,
+Ok, I see, it is strange indeed.
+Could you please check when you run in a verbose mode you see that the parameters are indeed promoted and this message is printed, just to rule out typos. Other I can suggest you to share the workspace and we can take a closer look.
+Aliya
+----------------------------------------
+
+REPLY 5 (by jduarteq @ 2025-04-30T18:37:45.207Z):
+I checked with verbose and got that message, here’s the workspaces:
+workspace__13_fine__6bins_rebin_1_combined.root (668.5 KB)
+The command that I use to obtain a likelihood scan without freezing nuisance parameters is:
+combine workspaces/workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit --algo grid --points 1000 --robustFit 1 -n no_spin_corrExpected --setParameterRange CMS_TOPXXYYY_EWK=0,7:CMS_TOPXXYYY_COLORREC_QCDINSPIRED=0,7:CMS_TOPXXYYY_COLORREC_GLUONMOVE=0,7:CMS_TOPXXYYY_COLORREC_ERDON=0,7:top_pt_reweighting=0,7:rgx{no_spin_corr.+}=-1,1 --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_rr,no_spin_corr_c_nn --setParameters r=1 --freezeParameters r -t -1
+
+For the statOnly (the one giving error), this is the command I run:
+combine workspaces/workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit --algo grid --points 6000 --robustFit 1 -n no_spin_corrExpected_Stat  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters r --freezeNuisanceGroups=^nosc --setParameterRange rgx{no_spin_corr.+}=-1,1 --parameters no_spin_corr_c_kk,no_spin_corr_c_rr,no_spin_corr_c_nn -t -1
+
+Let me know if you get something.
+Thanks,
+Juan.
+----------------------------------------
+
+REPLY 6 (by anigamov @ 2025-05-05T16:43:57.392Z):
+Hi Juan,
+With the following command
+combine workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters  r,allConstrainedNuisances --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr  --floatOtherPOIs 1 -v 3 --algo grid -P no_spin_corr_c_kk
+
+I managed to run the stat-only scans for the nuisance parameters no_spin_corr_c_kk,no_spin_corr_c_nn and no_spin_corr_c_rr promoted to POIs with --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr (please make sure you read the docs here ). When you run the scans for the model with multiple signal parameters you have to select which parameter you are scanning  -P <name>, as also shown above. It is also possible to control how are the other commands treated: --floatOtherPOIs 1 will profile over other parameters.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 7 (by jduarteq @ 2025-05-06T16:26:01.993Z):
+Hi Aliya,
+I tried your command but it runs separate scans for each POI, and therefore if I use it I would have to perform manual scans for each POI and combine the likelihoods somewhat. I tried using -P on each promoted POI but gave me ROOT error as before.
+If this is the extend of what Combine can do at this point, I suppose I’ll have to look into the combinations of multiple likelihood scans.
+Thanks,
+Juan.
+----------------------------------------
+
+REPLY 8 (by anigamov @ 2025-05-07T16:34:50.791Z):
+Hi Juan,
+I do not understand why would you get an error if we are both running the command on the same workspace. Could you please check again if it is the case and/or past the command which gives you an error here?
+The set of options I provided in my previous post allows to extract confidence intervals for promoted nuisances with other POIs floating in the fit because of --floatOtherPOIs 1. So you don’t have to do anything about the likelihood scans if you just want to have the CI for each parameter. Now if you would like to produce 2D likelihood scans you can run the same command specifying 2 parameters e.g.  -P no_spin_corr_c_kk -P no_spin_corr_c_rr . More on this in the documentation.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 9 (by gallim @ 2025-05-16T09:15:19.892Z):
+Hi Juan,
+if we got it right, this PR should fix the issue. We tested it on your workspace with
+combine workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters  r,allConstrainedNuisances --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr  --floatOtherPOIs 1 -v 3 --algo grid -P no_spin_corr_c_kk -P no_spin_corr_c_nn -P no_spin_corr_c_rr
+
+Could you maybe give it a try and let us know?
+Thanks,
+Massimiliano
+----------------------------------------

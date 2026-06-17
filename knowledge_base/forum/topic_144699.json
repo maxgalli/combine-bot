@@ -1,0 +1,23 @@
+{
+  "topic_id": 144699,
+  "title": "Negative Bins in Shape Variations",
+  "url": "https://cms-talk.web.cern.ch/t/144699",
+  "category_id": 279,
+  "created_at": "2026-05-04T21:00:21.227Z",
+  "last_posted_at": "2026-05-04T21:00:21.562Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "ckapsiak",
+      "name": "Charles Maxwell Kapsiak",
+      "created_at": "2026-05-04T21:00:21.562Z",
+      "updated_at": "2026-05-04T21:00:49.797Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Everyone,\nWe are working on a 2D bump hunt using a data-driven background estimation.\nWe are using Gaussian process regression for our background estimate, which outputs a MVN distribution.\nTo use this MVN estimate in Combine, we treat the mean of the MVN as the background estimate, and then do an spectral decomposition of the covariance matrix to produce \u201ceigen-variations,\u201d which are treated as the up/down variations of the nominal background.\nOne peculiarity we have encountered is that when there are smaller bin counts and/or large up/down variations, this eigen-decomposition can produce down shape variations which have negative count in some bins.\nCurrently, we have been \u201cclipping\u201d the down variations so they cannot become negative.\nOur question is if this is the correct way to handle things.\nIf the goal it to replicate the MVN and to avoid bias, it seems like we want to have the real up/down variations without clipping, to that they can \u201cinterfere\u201d as needed to emulate the MVN.\nOn the other hand, negative bin counts are obviously non-physical and we don\u2019t want to make Combine upset.\nPlease let us know if you have insights into this matter.\nBest,\nCharlie and the Single Stop Team",
+      "cooked_html": "<p>Hello Everyone,</p>\n<p>We are working on a 2D bump hunt using a data-driven background estimation.<br>\nWe are using Gaussian process regression for our background estimate, which outputs a MVN distribution.<br>\nTo use this MVN estimate in Combine, we treat the mean of the MVN as the background estimate, and then do an spectral decomposition of the covariance matrix to produce \u201ceigen-variations,\u201d which are treated as the up/down variations of the nominal background.<br>\nOne peculiarity we have encountered is that when there are smaller bin counts and/or large up/down variations, this eigen-decomposition can produce down shape variations which have negative count in some bins.<br>\nCurrently, we have been \u201cclipping\u201d the down variations so they cannot become negative.</p>\n<p>Our question is if this is the correct way to handle things.<br>\nIf the goal it to replicate the MVN and to avoid bias, it seems like we want to have the real up/down variations without clipping, to that they can \u201cinterfere\u201d as needed to emulate the MVN.<br>\nOn the other hand, negative bin counts are obviously non-physical and we don\u2019t want to make Combine upset.</p>\n<p>Please let us know if you have insights into this matter.</p>\n<p>Best,<br>\nCharlie and the Single Stop Team</p>"
+    }
+  ]
+}

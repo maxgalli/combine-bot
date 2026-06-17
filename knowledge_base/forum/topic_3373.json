@@ -1,0 +1,45 @@
+{
+  "topic_id": 3373,
+  "title": "FitDiagnostics file generated from uneven bins",
+  "url": "https://cms-talk.web.cern.ch/t/3373",
+  "category_id": 279,
+  "created_at": "2021-12-14T12:14:39.537Z",
+  "last_posted_at": "2021-12-15T07:35:09.036Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "vwachira",
+      "name": "Vichayanun Wachirapusitanand",
+      "created_at": "2021-12-14T12:14:39.714Z",
+      "updated_at": "2023-02-07T10:55:48.301Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI have been working on a new set of datacards provided by my colleague, and they contain histogram templates with different number of histogram bins. I ran FitDiagnostics on the workspace file generated from those datacards with options --saveShapes --saveNormalizations --saveWithUncertainties added, but I noticed that FitDiagnostics output file contains prefit and postfit plots with the same number of binnings for all histogram templates. The number of bins in both distributions also appears to be the maximum number of histogram bins across different templates. Is this an expected behaviour, and how do I fix FitDiagnostics distributions to contain correct number of bins?\nRegards,\nVichayanun",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I have been working on a new set of datacards provided by my colleague, and they contain histogram templates with different number of histogram bins. I ran FitDiagnostics on the workspace file generated from those datacards with options <code>--saveShapes --saveNormalizations --saveWithUncertainties</code> added, but I noticed that FitDiagnostics output file contains prefit and postfit plots with the same number of binnings for all histogram templates. The number of bins in both distributions also appears to be the maximum number of histogram bins across different templates. Is this an expected behaviour, and how do I fix FitDiagnostics distributions to contain correct number of bins?</p>\n<p>Regards,<br>\nVichayanun</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-12-14T13:45:38.358Z",
+      "updated_at": "2021-12-14T13:45:38.358Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Vichayanun,\nIs the issue that different categories have different numbers of bins? You might want to try remaking the workspace with --X-no-optimize-bins - this removes the padding to the maximum number of bins in the model. IIRC it makes the fit a little slower, though.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Vichayanun,</p>\n<p>Is the issue that different categories have different numbers of bins? You might want to try remaking the workspace with --X-no-optimize-bins - this removes the padding to the maximum number of bins in the model. IIRC it makes the fit a little slower, though.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "vwachira",
+      "name": "Vichayanun Wachirapusitanand",
+      "created_at": "2021-12-15T07:35:09.036Z",
+      "updated_at": "2021-12-15T07:35:19.356Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "--X-no-optimize-bins option works! Thank you!\nRegards,\nVichayanun",
+      "cooked_html": "<p><code>--X-no-optimize-bins</code> option works! Thank you!</p>\n<p>Regards,<br>\nVichayanun</p>"
+    }
+  ]
+}

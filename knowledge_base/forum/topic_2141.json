@@ -1,0 +1,23 @@
+{
+  "topic_id": 2141,
+  "title": "Re: Acquiring postfit nuisance templates to compare to prefit",
+  "url": "https://cms-talk.web.cern.ch/t/2141",
+  "category_id": 279,
+  "created_at": "2021-08-07T19:24:21.000Z",
+  "last_posted_at": "2021-08-07T19:24:21.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "andrea_marini",
+      "name": "andrea marini",
+      "created_at": "2021-08-07T19:24:21.000Z",
+      "updated_at": "2023-02-07T10:55:38.754Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nyou can first run the fit with\ncombine -M MultiDimFit --saveWorkspace [\u2026]\n\u2192 higgs\u2026root\nand then run FitDiagonstics with saveShapes saveWithUncertainties on the postfit results with the other nuisances frozen.\ncombine -M FitDiagnostics -d higgs\u2026root --snapshotName MultiDimFit [\u2026]\n(I guess that for CombineHarvester the wrapping should be similar)\nOne additional caveat is that you are neglecting the correlation term with the nuisances under study and the frozen parameters. For large constraints, in either fits, these effects may not be negligible.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<p>you can first run the fit with</p>\n<p>combine -M MultiDimFit --saveWorkspace [\u2026]</p>\n<p> \u2192 higgs\u2026root</p>\n<p>and then run FitDiagonstics with saveShapes saveWithUncertainties on the postfit results with the other nuisances frozen.</p>\n<p>combine -M FitDiagnostics -d higgs\u2026root --snapshotName MultiDimFit [\u2026]</p>\n<p>(I guess that for CombineHarvester the wrapping should be similar)</p>\n<p>One additional caveat is that you are neglecting the correlation term with the nuisances under study and the frozen parameters. For large constraints, in either fits, these effects may not be negligible.</p>\n<p>Cheers,</p>\n<p>-Andrea</p>"
+    }
+  ]
+}

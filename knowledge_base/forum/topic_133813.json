@@ -1,0 +1,45 @@
+{
+  "topic_id": 133813,
+  "title": "Distributions of the toys outputs",
+  "url": "https://cms-talk.web.cern.ch/t/133813",
+  "category_id": 279,
+  "created_at": "2025-10-08T08:57:48.728Z",
+  "last_posted_at": "2025-10-15T16:15:36.969Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "atarabin",
+      "name": "Alessandro Tarabini",
+      "created_at": "2025-10-08T08:57:49.075Z",
+      "updated_at": "2025-10-08T08:57:49.075Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI would like to have your feedback on a behaviour that I see in my toys that I do not fully understand. I am working with a (simplified) datacard to measure cross sections in the H(GammaGamma) channel in bins of transverse momentum of the Higgs. Datacard and workspace (after compilation with t2w) can be found here: /afs/cern.ch/work/a/atarabin/public/powheg_dc\nI am generating and fitting toys with the following commands:\ncombine Datacard_PTH_2023.root\n-M GenerateOnly\n-m 125\n--cminDefaultMinimizerStrategy=0\n--saveWorkspace\n--X-rtd MINIMIZER_skipDiscreteIterations\n--setParameters MH=125,r_PTH_0p0_15p0=1,r_PTH_15p0_30p0=1,r_PTH_30p0_45p0=1,r_PTH_45p0_80p0=1,r_PTH_80p0_120p0=1,r_PTH_120p0_200p0=1,r_PTH_200p0_350p0=1,r_PTH_350p0_10000p0=1\n-t 1\n--saveToys\n--seed $seed\n\ncombine Datacard_PTH_2023.root\n--cminDefaultMinimizerStrategy=0\n--saveWorkspace\n--X-rtd MINIMIZER_skipDiscreteIterations\n--setParameters MH=125,r_PTH_0p0_15p0=1,r_PTH_15p0_30p0=1,r_PTH_30p0_45p0=1,r_PTH_45p0_80p0=1,r_PTH_80p0_120p0=1,r_PTH_120p0_200p0=1,r_PTH_200p0_350p0=1,r_PTH_350p0_10000p0=1\n--setParameterRanges r_PTH_350p0_10000p0=-30,30\n--saveFitResult\n--floatOtherPOIs 1\n--freezeParameters MH,${pdfindex},allConstrainedNuisances\n-D higgsCombineTest.GenerateOnly.mH125.${seed}.root:toys/toy_1\n-M MultiDimFit\n-m 125\n\nI am removing the discrete profiling and freezing systematic uncertainties to remove possible sources of bias. Of the total toys I generated, I have 23,253 succeeding fits (fraction of failing fits is 13.36%).\nThe distributions of my POIs is dumped in the slides in attachment. For 'r_PTH_15p0_30p0, r_PTH_30p0_45p0, r_PTH_45p0_80p0, r_PTH_120p0_200p0, and r_PTH_200p0_350p0, the distributions look good: a distribution around 1.\nI am a bit perplexed by the first r_PTH_0p0_15p0 and last r_PTH_350p0_10000p0 bin.\n\nr_PTH_0p0_15p0 The distribution is shifted below of ~7%. Any wise suggestion on how to identify the origin of the bias?\nr_PTH_200p0_350p0 The distribution is very skewed and with a long left tail (it is cut at -30 because the parameter range is up to -30). I believe this is somewhat expected since this is the last PTH bin, where the statistics is very low. Looking at the entire distribution, the median, which should be a more robust estimator that the mean in these cases, is ~ 1. If we zoom in, it is a bit trickier, it looks that the actual peak is more around ~1.4. I would expect in any case a distribution peaking at one, no matter the statistics. I am a bit perplexed whether this bin is behaving healthy or not.\n\nWhen running the Asimov fit, all the bin close perfectly to one.\nAny inputs/opinions on these results will be very much appreciated.\nCheers,\nAlessandro\ntoys.pdf (557.1 KB) (The grey line is at 1 as a reference)",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I would like to have your feedback on a behaviour that I see in my toys that I do not fully understand. I am working with a (simplified) datacard to measure cross sections in the H(GammaGamma) channel in bins of transverse momentum of the Higgs. Datacard and workspace (after compilation with t2w) can be found here: <code>/afs/cern.ch/work/a/atarabin/public/powheg_dc</code></p>\n<p>I am generating and fitting toys with the following commands:</p>\n<pre><code class=\"lang-auto\">combine Datacard_PTH_2023.root \n        -M GenerateOnly \n        -m 125 \n        --cminDefaultMinimizerStrategy=0 \n        --saveWorkspace \n        --X-rtd MINIMIZER_skipDiscreteIterations \n        --setParameters MH=125,r_PTH_0p0_15p0=1,r_PTH_15p0_30p0=1,r_PTH_30p0_45p0=1,r_PTH_45p0_80p0=1,r_PTH_80p0_120p0=1,r_PTH_120p0_200p0=1,r_PTH_200p0_350p0=1,r_PTH_350p0_10000p0=1 \n        -t 1 \n        --saveToys \n        --seed $seed\n\ncombine Datacard_PTH_2023.root \n        --cminDefaultMinimizerStrategy=0 \n        --saveWorkspace \n        --X-rtd MINIMIZER_skipDiscreteIterations \n        --setParameters MH=125,r_PTH_0p0_15p0=1,r_PTH_15p0_30p0=1,r_PTH_30p0_45p0=1,r_PTH_45p0_80p0=1,r_PTH_80p0_120p0=1,r_PTH_120p0_200p0=1,r_PTH_200p0_350p0=1,r_PTH_350p0_10000p0=1 \n        --setParameterRanges r_PTH_350p0_10000p0=-30,30 \n        --saveFitResult \n        --floatOtherPOIs 1 \n        --freezeParameters MH,${pdfindex},allConstrainedNuisances \n        -D higgsCombineTest.GenerateOnly.mH125.${seed}.root:toys/toy_1 \n        -M MultiDimFit \n        -m 125\n</code></pre>\n<p><strong>I am removing the discrete profiling and freezing systematic uncertainties to remove possible sources of bias.</strong> Of the total toys I generated, I have 23,253 succeeding fits (fraction of failing fits is 13.36%).</p>\n<p>The distributions of my POIs is dumped in the slides in attachment. For <code>'r_PTH_15p0_30p0</code>, <code>r_PTH_30p0_45p0</code>, <code>r_PTH_45p0_80p0</code>, <code>r_PTH_120p0_200p0</code>, and <code>r_PTH_200p0_350p0</code>, the distributions look good: a distribution around 1.</p>\n<p>I am a bit perplexed by the first <code>r_PTH_0p0_15p0</code> and last <code>r_PTH_350p0_10000p0</code> bin.</p>\n<ul>\n<li><code>r_PTH_0p0_15p0</code> The distribution is shifted below of ~7%. Any wise suggestion on how to identify the origin of the bias?</li>\n<li><code>r_PTH_200p0_350p0</code> The distribution is very skewed and with a long left tail (it is cut at -30 because the parameter range is up to -30). I believe this is somewhat expected since this is the last PTH bin, where the statistics is very low. Looking at the entire distribution, the median, which should be a more robust estimator that the mean in these cases, is ~ 1. If we zoom in, it is a bit trickier, it looks that the actual peak is more around ~1.4. I would expect in any case a distribution peaking at one, no matter the statistics. I am a bit perplexed whether this bin is behaving healthy or not.</li>\n</ul>\n<p>When running the Asimov fit, all the bin close perfectly to one.</p>\n<p>Any inputs/opinions on these results will be very much appreciated.</p>\n<p>Cheers,<br>\nAlessandro</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/e57cCDSTNHbxcgh5urkTNdxcVrG.pdf\">toys.pdf</a> (557.1 KB) (The grey line is at 1 as a reference)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "atarabin",
+      "name": "Alessandro Tarabini",
+      "created_at": "2025-10-08T09:12:10.360Z",
+      "updated_at": "2025-10-08T09:12:10.360Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "PS. Typo, the second bullet refers to r_PTH_350p0_10000p0",
+      "cooked_html": "<p>PS. Typo, the second bullet refers to <code>r_PTH_350p0_10000p0</code></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-10-15T16:15:36.969Z",
+      "updated_at": "2025-10-15T16:15:36.969Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Alessandro,\nI would try investigate what happens with other parameters in your model in these toys.\nTo start with you can try to identify a set of the most (anti)-correlated parameters, save them in the toys with `\u2013saveSpecifiedNuis=par1,par2,\u2026` (see docs) and plot in a similar way, and see about the next steps from what you find.\nHope it helps,\nAliya",
+      "cooked_html": "<p>Dear Alessandro,</p>\n<p>I would try investigate what happens with other parameters in your model in these toys.<br>\nTo start with you can try to identify a set of the most (anti)-correlated parameters, save them in the toys with `\u2013<mark>save</mark>SpecifiedNuis=par1,par2,\u2026` (see <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/?h=save#fitting-only-some-parameters\" rel=\"noopener nofollow ugc\">docs</a>) and plot in a similar way, and see about the next steps from what you find.</p>\n<p>Hope it helps,<br>\nAliya</p>"
+    }
+  ]
+}

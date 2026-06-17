@@ -1,0 +1,43 @@
+TOPIC: Asymmetric impacts (SUS-24-006)
+URL: https://cms-talk.web.cern.ch/t/97034
+DATE: 2025-01-14T18:57:23.701Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmajor @ 2025-01-14T18:57:24.188Z):
+Dear Experts,
+we are producing impact plots for our cut and count datacards and see that some impacts, especially the ones beyond the first two pages are one-sided.
+This is conceptually not a problem when the parameter itself is constrained from one side, like “lambda_3” for example, but it is quite strange for nuisance parameters representing statistical uncertainties that do go both ways.
+This mostly happens for tiny impacts, and I am wondering if this could be due to a fit instability or similar. Should I worry about this?
+image702×569 70.8 KB
+The impact is calculated as:
+text2workspace.py g2000chi600.withABCDLL.csv -o g2000chi600.withABCDLL.root --channel-masks
+
+combineTool.py -M Impacts -d g2000chi600.withABCDLL.root -n .g2000chi600.withABCDLL.expSig0 --doInitialFit         --robustFit 1 -t -1 --expectSignal 0 --rMin -2 --rMax 2 -m 120  --cminDefaultMinimizerTolerance 0.1
+combineTool.py -M Impacts -d g2000chi600.withABCDLL.root -n .g2000chi600.withABCDLL.expSig0 --doFits --parallel 20 --robustFit 1 -t -1 --expectSignal 0 --rMin -2 --rMax 2 -m 120  --cminDefaultMinimizerTolerance 0.1
+combineTool.py -M Impacts -d g2000chi600.withABCDLL.root -n .g2000chi600.withABCDLL.expSig0 -o g2000chi600.withABCDLL.expSig0.json -m 120
+plotImpacts.py -i  g2000chi600.withABCDLL.expSig0.json -o impacts_g2000chi600.withABCDLL.expSig0
+
+combineTool.py -M Impacts -d g2000chi600.withABCDLL.root -n .g2000chi600.withABCDLL.expSig1 --doInitialFit         --robustFit 1 -t -1 --expectSignal 1 --rMin -2 --rMax 2 -m 120  --cminDefaultMinimizerTolerance 0.1
+combineTool.py -M Impacts -d g2000chi600.withABCDLL.root -n .g2000chi600.withABCDLL.expSig1 --doFits --parallel 20 --robustFit 1 -t -1 --expectSignal 1 --rMin -2 --rMax 2 -m 120  --cminDefaultMinimizerTolerance 0.1
+combineTool.py -M Impacts -d g2000chi600.withABCDLL.root -n .g2000chi600.withABCDLL.expSig1 -o g2000chi600.withABCDLL.expSig1.json -m 120
+plotImpacts.py -i  g2000chi600.withABCDLL.expSig1.json -o impacts_g2000chi600.withABCDLL.expSig1
+
+The datacard and the r=0 and r=1 impact plots are available here:
+https://cernbox.cern.ch/s/eUBLmdGXYClVP2h
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2025-01-15T08:43:33.198Z):
+Hi Peter,
+I suspect you’re just seeing the effect of the finite precision in the minimisation. Once the impacts become very small, of the order in the precision of finding the true NLL minimum, a slight displacement in the initial best-fit value of the POI can give rise to this effect. You could try setting --cminDefaultMinimizerTolerance 0.01 to see if this improves the situation, but it might be hard to fully resolve.
+That said, I think you can safely conclude that these low ranked impacts do not have any relevant effect on your analysis.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by pmajor @ 2025-01-15T14:50:48.798Z):
+Dear Andrew,
+thank you, this is what we suspected, but hearing it from an expert is comforting. I tried to run with 0.01, but the minimization failed for several nuisances, which I think is expected for small thresholds, so I did not proceed with that study.
+Cheers,
+Peter
+----------------------------------------

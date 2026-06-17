@@ -1,0 +1,51 @@
+TOPIC: Binned shape analysis
+URL: https://cms-talk.web.cern.ch/t/10391
+DATE: 2022-05-12T23:54:48.804Z
+SOLVED: no
+============================================================
+
+QUESTION (by minxi @ 2022-05-12T23:54:49.039Z):
+Dear experts,
+Combine can do the binned shape analysis with either TH1 histogram or RooDataHist and RooHistPdf. However, these two methods do not give identical results with the same input data. So my question is why the output of the two methods is not the same?.
+Here, I provide an example written by myself.
+This code is used to generate the pseudo data
+Combine-flavorRatio/generate.py at main · minxiyang/Combine-flavorRatio (github.com)
+This code is used to run the combine (datacards can be found in the same dir of my GitHub)
+Combine-flavorRatio/run.sh at main · minxiyang/Combine-flavorRatio (github.com)
+This plot shows the NLL as a function of the flavor ratio, and you can see the NLL curves are different
+Combine-flavorRatio/testhistPdfVsTH1all_massCut_10000.pdf at main · minxiyang/Combine-flavorRatio (github.com)
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-05-13T08:11:39.228Z):
+Can you double check the creation of the datasets?
+I got (from your repository w/o rerunning) different content in the data histogram:
+
+image1604×1248 57.5 KB
+
+Likely, the difference is in the binning and the overflow.
+-Andrea
+----------------------------------------
+
+REPLY 3 (by minxi @ 2022-05-13T18:37:15.163Z):
+Hi Andrea,
+There is an issue in the previous code and I have already fixed it and updated my Github.
+However, I can still observe the difference. I think now my question is much clear.
+I can create a TH1
+h_data = ROOT.TH1D(“data_obs”, “toy data”, 100, 0, 100)
+And convert it into a RooDataHist
+datahist = ROOT.RooDataHist(“data_obs”, “data_obs”, ROOT.RooArgList(massVar), ROOT.RooFit.Import(h_data))
+I can also create a RooDataHist from RooDataset
+massVar = ROOT.RooRealVar(“massVar”, “massVar”, 50.0, 0.0, 100.0)
+massVar.setBins(100)
+datahist = ROOT.RooDataHist(“data_obs”, “”, ROOT.RooArgSet(massVar), dataset)
+However,  it looks like that massVar.setBins(100) do not provide the same binning as h_data = ROOT.TH1D(“data_obs”, “toy data”, 100, 0, 100)?
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-05-17T09:54:14.829Z):
+Hi Minxi,
+I ran your example script. As far as I can tell, the binning is consistent, but you need to take care of the overflow (data points with value > 100). These are effectively ignored when you convert from TH1 to RooDataHist, however it appears the constructor from RooDataSet will put them in the last bin. If I exclude these when building the RooDataSet, they appear identical (see attached).
+cheers,
+Andrew
+
+datahistVsTH1567×550 20.4 KB
+----------------------------------------

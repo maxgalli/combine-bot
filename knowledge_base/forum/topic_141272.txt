@@ -1,0 +1,327 @@
+TOPIC: Issue with RooFFTConvPDF + FitDiagnostics + --plots
+URL: https://cms-talk.web.cern.ch/t/141272
+DATE: 2026-01-22T14:55:37.804Z
+SOLVED: no
+============================================================
+
+QUESTION (by forlandi @ 2026-01-22T14:55:37.981Z):
+Dear Combine experts,
+I am writing to report an issue we are facing in Combine when using a RooFFTConvPdf, the FitDiagnostics method, and the --plots option. We are using Combine outside of CMSSW, but we have observed the same behavior when using Combine 10.4.2 within CMSSW 14_1_0_pre4.
+The physics case involves a background function with a turn-on and a falling part, with a signal being a resonance over the falling region. We have prepared a code (test_convolution.cc) that generates such a distribution using a Gaussian turn-on and an exponential falling part.
+To compile and run:
+clang++ test_convolution.cc -o test_convolution $(root-config --cflags --libs) -lRooFit -lRooFitCore && ./test_convolution
+
+If we then run Combine using the attached datacard.txt with
+combine -M FitDiagnostics datacard.txt -m 40 --plots
+
+the process stops after creating the first background-only png files, giving a break segmentation violation.
+Info in <TCanvas::Print>: png file ./cat_x_fit_b.png has been created
+Info in <TCanvas::Print>: png file ./cat_x_fit_b_logy.png has been created
+
+*** Break *** segmentation violation
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+....
+
+#458 0x00007fd4424e717b in TBufferIO::WriteObjectAny(void const*, TClass const*, bool) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#459 0x00007fd4424daf6c in TBufferFile::WriteFastArray(void**, TClass const*, int, bool, TMemberStreamer*) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#460 0x00007fd442741ad5 in int TStreamerInfo::WriteBufferAux<char**>(TBuffer&, char** const&, TStreamerInfo::TCompInfo* const*, int, int, int, int, int) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#461 0x00007fd4425a8edd in TStreamerInfoActions::GenericWriteAction(TBuffer&, void*, TStreamerInfoActions::TConfiguration const*) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#462 0x00007fd4424e0866 in TBufferFile::WriteClassBuffer(TClass const*, void*) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#463 0x00007fd4425818f6 in TKey::TKey(TObject const*, char const*, int, TDirectory*) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#464 0x00007fd4425416a5 in TFile::CreateKey(TDirectory*, TObject const*, char const*, int) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#465 0x00007fd442532c56 in TDirectoryFile::WriteTObject(TObject const*, char const*, char const*, int) () from /cvmfs/cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so
+#466 0x00007fd44494e8ed in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so
+#467 0x00007fd44495e6bd in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so
+#468 0x00007fd44492d873 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /afs/cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so
+#469 0x00007fd4449327ec in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) () from /afs/cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so
+#470 0x000000000040cdf1 in main ()
+===========================================================
+
+We have tried to do some debugging, and it appears that the crash occurs when attempting to write to the output file in src/FitDiagnostics.cc after saving the png files when writing the obejct to fitOut. The same happens later whenever trying to write to fitOut.
+All the other methods (Significance, MultiDimFit,…) seem to work fine.
+Are we doing something wrong in either preparing the workspaces / datacards or running Combine? The FitDiagnostics + --plots option is quite a useful combination.
+Thank you very much in advance!
+Best,
+Francesco Orlandi and Federico Ferri
+datacard.txt (488 Bytes)
+test_convolution.cc (3.1 KB)
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-01-22T15:22:00.000Z):
+Dear Francesco,
+Can you please share with us also the workspace file, so that we can try to reproduce the error?
+Thanks,
+Giacomo
+
+On 22 Jan 2026, at 15:56, Francesco Orlandi via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Francesco Orlandi forlandiJanuary 22
+
+Dear Combine experts,
+I am writing to report an issue we are facing in Combine when using a RooFFTConvPdf, the FitDiagnostics method, and the --plots option. We are using Combine outside of CMSSW, but we have observed the same behavior when using Combine 10.4.2 within CMSSW 14_1_0_pre4.
+The physics case involves a background function with a turn-on and a falling part, with a signal being a resonance over the falling region. We have prepared a code ([test_convolution.cc](http://test_convolution.cc/)) that generates such a distribution using a Gaussian turn-on and an exponential falling part.
+To compile and run:
+clang++ [test_convolution.cc](http://test_convolution.cc/) -o test_convolution $(root-config --cflags --libs) -lRooFit -lRooFitCore && ./test_convolution
+
+If we then run Combine using the attached datacard.txt with
+combine -M FitDiagnostics datacard.txt -m 40 --plots
+
+the process stops after creating the first background-only png files, giving a break segmentation violation.
+Info in <TCanvas::Print>: png file ./cat_x_fit_b.png has been created
+Info in <TCanvas::Print>: png file ./cat_x_fit_b_logy.png has been created
+
+*** Break *** segmentation violation
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+....
+
+#458 0x00007fd4424e717b in TBufferIO::WriteObjectAny(void const*, TClass const*, bool) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#459 0x00007fd4424daf6c in TBufferFile::WriteFastArray(void**, TClass const*, int, bool, TMemberStreamer*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#460 0x00007fd442741ad5 in int TStreamerInfo::WriteBufferAux<char**>(TBuffer&, char** const&, TStreamerInfo::TCompInfo* const*, int, int, int, int, int) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#461 0x00007fd4425a8edd in TStreamerInfoActions::GenericWriteAction(TBuffer&, void*, TStreamerInfoActions::TConfiguration const*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#462 0x00007fd4424e0866 in TBufferFile::WriteClassBuffer(TClass const*, void*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#463 0x00007fd4425818f6 in TKey::TKey(TObject const*, char const*, int, TDirectory*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#464 0x00007fd4425416a5 in TFile::CreateKey(TDirectory*, TObject const*, char const*, int) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#465 0x00007fd442532c56 in TDirectoryFile::WriteTObject(TObject const*, char const*, char const*, int) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#466 0x00007fd44494e8ed in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#467 0x00007fd44495e6bd in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#468 0x00007fd44492d873 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#469 0x00007fd4449327ec in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#470 0x000000000040cdf1 in main ()
+===========================================================
+
+We have tried to do some debugging, and it appears that the crash occurs when attempting to write to the output file in src/[FitDiagnostics.cc](http://fitdiagnostics.cc/) after saving the png files when writing the obejct to fitOut. The same happens later whenever trying to write to fitOut.
+All the other methods (Significance, MultiDimFit,…) seem to work fine.
+Are we doing something wrong in either preparing the workspaces / datacards or running Combine? The FitDiagnostics + --plots option is quite a useful combination.
+Thank you very much in advance!
+Best,
+Francesco Orlandi and Federico Ferri
+datacard.txt (488 Bytes)
+test_convolution.cc (3.1 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by forlandi @ 2026-01-22T15:45:42.680Z):
+Yes, sorry, I was not clear. The workspace I am attaching is the output of the .cc from above.
+Thank you!
+Francesco
+workspace.root (13.2 KB)
+----------------------------------------
+
+REPLY 4 (by gortona @ 2026-01-27T12:53:41.000Z):
+Dear Francesco,
+Unfortunately, I wasn’t able to reproduce your error on lxplus+CMSSW.
+In my setup I always end up with memory issues that points to a bad treatment of the memory, most likely in the FFT cache. But since you are able to run the other methods and most of fitDiagnostics as well this must be a different issue. Can I ask you what system are you using?
+I doubt it will solve your problem, but can you try to issue ulimit -s unlimited before running the fitDiagnostics? If you are simply out of memory this should help.
+Also, can you try to use a high verbosity, like -v 10, and see if some more meaningful error message pops up?
+Thank you,
+Best,
+Giacomo
+
+On 22 Jan 2026, at 16:46, Francesco Orlandi via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Francesco Orlandi forlandiJanuary 22
+
+Yes, sorry, I was not clear. The workspace I am attaching is the output of the .cc from above.
+Thank you!
+Francesco
+workspace.root (13.2 KB)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaJanuary 22
+
+Dear Francesco,
+Can you please share with us also the workspace file, so that we can try to reproduce the error?
+Thanks,
+Giacomo
+
+On 22 Jan 2026, at 15:56, Francesco Orlandi via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Francesco Orlandi forlandiJanuary 22
+
+Dear Combine experts,
+I am writing to report an issue we are facing in Combine when using a RooFFTConvPdf, the FitDiagnostics method, and the --plots option. We are using Combine outside of CMSSW, but we have observed the same behavior when using Combine 10.4.2 within CMSSW 14_1_0_pre4.
+The physics case involves a background function with a turn-on and a falling part, with a signal being a resonance over the falling region. We have prepared a code ([[test_convolution.cc](http://test_convolution.cc/)]([http://test_convolution.cc/](http://test_convolution.cc/))) that generates such a distribution using a Gaussian turn-on and an exponential falling part.
+To compile and run:
+clang++ [[test_convolution.cc](http://test_convolution.cc/)]([http://test_convolution.cc/](http://test_convolution.cc/)) -o test_convolution $(root-config --cflags --libs) -lRooFit -lRooFitCore && ./test_convolution
+
+If we then run Combine using the attached datacard.txt with
+combine -M FitDiagnostics datacard.txt -m 40 --plots
+
+the process stops after creating the first background-only png files, giving a break segmentation violation.
+Info in <TCanvas::Print>: png file ./cat_x_fit_b.png has been created
+Info in <TCanvas::Print>: png file ./cat_x_fit_b_logy.png has been created
+
+*** Break *** segmentation violation
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+....
+
+#458 0x00007fd4424e717b in TBufferIO::WriteObjectAny(void const*, TClass const*, bool) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#459 0x00007fd4424daf6c in TBufferFile::WriteFastArray(void**, TClass const*, int, bool, TMemberStreamer*) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#460 0x00007fd442741ad5 in int TStreamerInfo::WriteBufferAux<char**>(TBuffer&, char** const&, TStreamerInfo::TCompInfo* const*, int, int, int, int, int) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#461 0x00007fd4425a8edd in TStreamerInfoActions::GenericWriteAction(TBuffer&, void*, TStreamerInfoActions::TConfiguration const*) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#462 0x00007fd4424e0866 in TBufferFile::WriteClassBuffer(TClass const*, void*) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#463 0x00007fd4425818f6 in TKey::TKey(TObject const*, char const*, int, TDirectory*) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#464 0x00007fd4425416a5 in TFile::CreateKey(TDirectory*, TObject const*, char const*, int) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#465 0x00007fd442532c56 in TDirectoryFile::WriteTObject(TObject const*, char const*, char const*, int) () from /cvmfs/[[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)]([http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so))
+#466 0x00007fd44494e8ed in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/[[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)]([http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so))
+#467 0x00007fd44495e6bd in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/[[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)]([http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so))
+#468 0x00007fd44492d873 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /afs/[[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)]([http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so))
+#469 0x00007fd4449327ec in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) () from /afs/[[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)]([http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so))
+#470 0x000000000040cdf1 in main ()
+===========================================================
+
+We have tried to do some debugging, and it appears that the crash occurs when attempting to write to the output file in src/[[FitDiagnostics.cc](http://fitdiagnostics.cc/)]([http://fitdiagnostics.cc/](http://fitdiagnostics.cc/)) after saving the png files when writing the obejct to fitOut. The same happens later whenever trying to write to fitOut.
+All the other methods (Significance, MultiDimFit,…) seem to work fine.
+Are we doing something wrong in either preparing the workspaces / datacards or running Combine? The FitDiagnostics + --plots option is quite a useful combination.
+Thank you very much in advance!
+Best,
+Francesco Orlandi and Federico Ferri
+datacard.txt (488 Bytes)
+test_convolution.cc (3.1 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Francesco Orlandi forlandiJanuary 22
+
+Dear Combine experts,
+I am writing to report an issue we are facing in Combine when using a RooFFTConvPdf, the FitDiagnostics method, and the --plots option. We are using Combine outside of CMSSW, but we have observed the same behavior when using Combine 10.4.2 within CMSSW 14_1_0_pre4.
+The physics case involves a background function with a turn-on and a falling part, with a signal being a resonance over the falling region. We have prepared a code ([test_convolution.cc](http://test_convolution.cc/)) that generates such a distribution using a Gaussian turn-on and an exponential falling part.
+To compile and run:
+clang++ [test_convolution.cc](http://test_convolution.cc/) -o test_convolution $(root-config --cflags --libs) -lRooFit -lRooFitCore && ./test_convolution
+
+If we then run Combine using the attached datacard.txt with
+combine -M FitDiagnostics datacard.txt -m 40 --plots
+
+the process stops after creating the first background-only png files, giving a break segmentation violation.
+Info in <TCanvas::Print>: png file ./cat_x_fit_b.png has been created
+Info in <TCanvas::Print>: png file ./cat_x_fit_b_logy.png has been created
+
+*** Break *** segmentation violation
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+....
+
+#458 0x00007fd4424e717b in TBufferIO::WriteObjectAny(void const*, TClass const*, bool) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#459 0x00007fd4424daf6c in TBufferFile::WriteFastArray(void**, TClass const*, int, bool, TMemberStreamer*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#460 0x00007fd442741ad5 in int TStreamerInfo::WriteBufferAux<char**>(TBuffer&, char** const&, TStreamerInfo::TCompInfo* const*, int, int, int, int, int) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#461 0x00007fd4425a8edd in TStreamerInfoActions::GenericWriteAction(TBuffer&, void*, TStreamerInfoActions::TConfiguration const*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#462 0x00007fd4424e0866 in TBufferFile::WriteClassBuffer(TClass const*, void*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#463 0x00007fd4425818f6 in TKey::TKey(TObject const*, char const*, int, TDirectory*) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#464 0x00007fd4425416a5 in TFile::CreateKey(TDirectory*, TObject const*, char const*, int) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#465 0x00007fd442532c56 in TDirectoryFile::WriteTObject(TObject const*, char const*, char const*, int) () from /cvmfs/[cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so](http://cms.cern.ch/el9_amd64_gcc12/cms/cmssw/CMSSW_14_1_0_pre4/external/el9_amd64_gcc12/lib/libRIO.so)
+#466 0x00007fd44494e8ed in FitDiagnostics::runSpecific(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#467 0x00007fd44495e6bd in FitterAlgoBase::run(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&, double const*) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#468 0x00007fd44492d873 in Combine::mklimit(RooWorkspace*, RooStats::ModelConfig*, RooStats::ModelConfig*, RooAbsData&, double&, double&) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#469 0x00007fd4449327ec in Combine::run(TString, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, double&, double&, int&, TTree*, int) () from /afs/[cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so](http://cern.ch/work/f/forlandi/private/test_fft/CMSSW_14_1_0_pre4/lib/el9_amd64_gcc12/libHiggsAnalysisCombinedLimit.so)
+#470 0x000000000040cdf1 in main ()
+===========================================================
+
+We have tried to do some debugging, and it appears that the crash occurs when attempting to write to the output file in src/[FitDiagnostics.cc](http://fitdiagnostics.cc/) after saving the png files when writing the obejct to fitOut. The same happens later whenever trying to write to fitOut.
+All the other methods (Significance, MultiDimFit,…) seem to work fine.
+Are we doing something wrong in either preparing the workspaces / datacards or running Combine? The FitDiagnostics + --plots option is quite a useful combination.
+Thank you very much in advance!
+Best,
+Francesco Orlandi and Federico Ferri
+datacard.txt (488 Bytes)
+test_convolution.cc (3.1 KB)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by forlandi @ 2026-01-28T14:05:52.741Z):
+Dear Giacomo,
+Thank you for checking on your side.
+I tried to reproduce everything from scratch on lxplus, but I still encounter the same error. Below are the exact commands I am running (from the Combine instructions):
+cmsrel CMSSW_14_1_0_pre4
+cd CMSSW_14_1_0_pre4/src
+cmsenv
+git -c advice.detachedHead=false clone --depth 1 --branch v10.4.2 https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+scramv1 b clean; scramv1 b -j$(nproc --ignore=2) # always make a clean build, with n - 2 cores on the system
+# copy test_convolution.cc and datacard.txt in .
+g++ test_convolution.cc -o test_convolution `root-config --cflags --libs` -lRooFit -lRooFitCore
+./test_convolution
+combine -M FitDiagnostics datacard.txt -m 40 --plots
+
+...
+[utils::makePlots] Number of events for pdf in cat_x, pdf pdf_bincat__model_bonly_ = 9999.88
+Info in <TCanvas::Print>: png file ./cat_x_fit_b.png has been created
+Info in <TCanvas::Print>: png file ./cat_x_fit_b_logy.png has been created
+
+*** Break *** segmentation violation
+...
+
+I also tried running with the --verbose=10 option. I see some messages related to caching, but I’m not sure how to interpret them or whether they are relevant to the failure.
+Fit B-only, status = 0, numBadNLL = 0, covariance quality = 3
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1 from preexisting content.
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x7390cb0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(pdf_bincat__model_bonly_) directly selected PDF components: (shapeSig_sig_cat)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(pdf_bincat__model_bonly_) indirectly selected PDF components: ()
+[#1] INFO:NumericIntegration -- RooRealIntegral::init(falling step_Int[x]) using numeric integrator RooRombergIntegrator to calculate Int(x)
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x747a5e0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(pdf_bincat__model_bonly_) directly selected PDF components: (shapeBkg_bkg_cat)
+[#1] INFO:Plotting -- RooAbsPdf::plotOn(pdf_bincat__model_bonly_) indirectly selected PDF components: ()
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x747a5e0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1 from preexisting content.
+[utils::makePlots] Number of events for pdf in cat_x, pdf pdf_bincat__model_bonly_ = 9999.88
+[#1] INFO:Caching -- RooAbsCachedPdf::getCache(shapeBkg_bkg_cat) creating new cache 0x747a5e0 with pdf falling step_CONV_turn_on_CACHE_Obs[x]_NORM_x for nset (x) with code 1 from preexisting content.
+
+I’m attaching the full stack in case it helps.
+Do you have any suggestions or additional checks I could perform to help narrow this down?
+Thank you!
+Francesco
+error.txt (251.8 KB)
+----------------------------------------
+
+REPLY 6 (by gortona @ 2026-01-28T15:01:01.822Z):
+Dear Francesco,
+I still don’t know why my setup was not working before, but after a clean install I can now reproduce your situation.
+I still think there’s some problem with the handling of the memory, but I couldn’t find the culprit yet.
+Nevertheless, since the fit is converging and running, instead of running with the --plots option you can instead run using --saveShapes --saveWithUncertainties --saveNormalizations. This will store your results in the fitDiagnosticsTest.root file, and you can plot them using
+python3 $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/data/tutorials/longexercise/postFitPlot.py --input_file fitDiagnosticsTest.root --shape_type <type> --region cat,
+where type can be shapes_prefit, shapes_fit_b or shapes_fit_s
+I checked that for the background-only fit what you get with this procedure is the same as what you were getting with the plots option.
+So you just need one step more. On the other side the aesthetics of what you get out of the postFitPlot macro is way nicer.
+I hope it helps. If I manage to find why the plots option was failing I will let you know.
+Best,
+Giacomo
+----------------------------------------

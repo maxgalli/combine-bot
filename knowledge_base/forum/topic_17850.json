@@ -1,0 +1,67 @@
+{
+  "topic_id": 17850,
+  "title": "High uncertainty on r in pull-impacts",
+  "url": "https://cms-talk.web.cern.ch/t/17850",
+  "category_id": 279,
+  "created_at": "2022-11-22T14:33:47.950Z",
+  "last_posted_at": "2022-11-24T12:21:51.239Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2022-11-22T14:33:48.106Z",
+      "updated_at": "2023-02-07T10:53:02.281Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am trying to run pull and impacts where I see large one sided uncertainty on r. I tried many options in CH like robustFit, robust Hese, changing r range, maxFailedSteps but nothing worked. I put my datcards here\n/afs/cern.ch/user/s/snandan/public/pull_800_spin2/ and also attached the pul-impacts plot herewith\npulls_impacts__poi_r__params_r1.0_r_gghh1.0_r_qqhh1.0_kl1.0_kt1.0_CV1.0_C2V1.0__mcstats.pdf (38.0 KB)\nThe command which I ran usually is something like this\ncombine --method MultiDimFit datcard_file --verbose 1\n\u2013mass 125.0 --seed 0 --snapshotName MultiDimFit --redefineSignalPOIs r --setParameterRanges r=-10000,10000\n\u2013robustFit 1 --maxFailedSteps 10\n\u2013setParameters r=1.0 --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4\n\u2013X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo singles --saveFitResult\nIt would be nice if someone tells what is going wrong and how to solve it.\nThanks and Regards,\nSaswati",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am trying to run pull and impacts where I see large one sided uncertainty on r. I tried many options in CH like robustFit, robust Hese, changing r range, maxFailedSteps but nothing worked. I put my datcards here<br>\n/afs/cern.ch/user/s/snandan/public/pull_800_spin2/ and also attached the pul-impacts plot herewith<br>\n<a class=\"attachment\" href=\"/uploads/short-url/7ybO9sG5byzWqMT76AcgKReQdbT.pdf\">pulls_impacts__poi_r__params_r1.0_r_gghh1.0_r_qqhh1.0_kl1.0_kt1.0_CV1.0_C2V1.0__mcstats.pdf</a> (38.0 KB)</p>\n<p>The command which I ran usually is something like this<br>\ncombine --method MultiDimFit datcard_file --verbose 1<br>\n\u2013mass 125.0 --seed 0 --snapshotName MultiDimFit --redefineSignalPOIs r --setParameterRanges r=-10000,10000<br>\n\u2013robustFit 1 --maxFailedSteps 10<br>\n\u2013setParameters r=1.0 --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4<br>\n\u2013X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo singles --saveFitResult</p>\n<p>It would be nice if someone tells what is going wrong and how to solve it.</p>\n<p>Thanks and Regards,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-11-24T10:42:18.195Z",
+      "updated_at": "2022-11-24T10:42:18.195Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "It seems that the initial fit was unable to find the correct crossing.\nMaybe you can set an adequate range on r and retry?\n-Andrea",
+      "cooked_html": "<p>It seems that the initial fit was unable to find the correct crossing.<br>\nMaybe you can set an adequate range on r and retry?</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2022-11-24T11:01:50.749Z",
+      "updated_at": "2022-11-24T11:01:50.749Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI tried to understand the reason in more detail. So in my case I have 6 regions, I looked at pulls and impacts for one region separately and I see same thing there also. I have attached plot herewith.\npull_HH_resolved_2b.pdf (29.6 KB)\nFor this I used --robustHesse 1 option and I see some error like this\nRunning Minos for POI\nError in <ROOT::Math::Fitter::CalculateMinosErrors>: Minos error calculation failed for all parameters\n>> Found 106 floating parameters\n>> The following parameters are protected in the event of negative eigenvalues: r\n>> Verifying eigenvalues are all positive (iteration 0)\n>> All eigenvalues are positive\n>> Inverting Hessian...\n>> Matrix inverted\n\n--- MultiDimFit ---\nParameter impacts:\nParameter          :   Best-fit               r\nCMS_bbwwsl_tt_norm :   -0.000  +0.000/+0.031  +0.000/+0.008\n\nSo I thought there is some problem in CMS_bbwwsl_tt_norm. So I did a scan of this parameter using the command\ncombine datacard -M MultiDimFit --algo grid --points 100\n--setParameterRanges CMS_bbwwsl_tt_norm=-7,7 -m 125\n-P CMS_bbwwsl_tt_norm\n-t -1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --cminDefaultMinimizerStrategy=1\n\nand the plot is attached also.\nscan.pdf (14.6 KB)\nI don\u2019t see any problem in this scan or I am missing something? Same thing happened for other region also. It would be nice if someone tells what is wrong that uncertainty on r is so large.\nThanks and Regards,\nSaswati",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I tried to understand the reason in more detail. So in my case I have 6 regions, I looked at pulls and impacts for one region separately and I see same thing there also. I have attached plot herewith.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/59ysUEOlFAhYLGkfs1exRxGFI5W.pdf\">pull_HH_resolved_2b.pdf</a> (29.6 KB)</p>\n<p>For this I used --robustHesse 1 option and I see some error like this</p>\n<pre><code class=\"lang-auto\">Running Minos for POI\nError in &lt;ROOT::Math::Fitter::CalculateMinosErrors&gt;: Minos error calculation failed for all parameters\n&gt;&gt; Found 106 floating parameters\n&gt;&gt; The following parameters are protected in the event of negative eigenvalues: r\n&gt;&gt; Verifying eigenvalues are all positive (iteration 0)\n&gt;&gt; All eigenvalues are positive\n&gt;&gt; Inverting Hessian...\n&gt;&gt; Matrix inverted\n\n --- MultiDimFit ---\nParameter impacts:\n  Parameter          :   Best-fit               r\n  CMS_bbwwsl_tt_norm :   -0.000  +0.000/+0.031  +0.000/+0.008\n</code></pre>\n<p>So I thought there is some problem in CMS_bbwwsl_tt_norm. So I did a scan of this parameter using the command</p>\n<pre><code class=\"lang-auto\">combine datacard -M MultiDimFit --algo grid --points 100\n --setParameterRanges CMS_bbwwsl_tt_norm=-7,7 -m 125 \n -P CMS_bbwwsl_tt_norm \n-t -1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --cminDefaultMinimizerStrategy=1\n</code></pre>\n<p>and the plot is attached also.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/cy6TVlc5OeLeQLQ55DRbjJR2hBs.pdf\">scan.pdf</a> (14.6 KB)<br>\nI don\u2019t see any problem in this scan or I am missing something? Same thing happened for other region also. It would be nice if someone tells what is wrong that uncertainty on r is so large.</p>\n<p>Thanks and Regards,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2022-11-24T11:02:55.811Z",
+      "updated_at": "2022-11-24T11:02:55.811Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nSorry I missed your email, just after sending my last email, I saw you email. Extremely sorry.\nThanks,\nSaswati",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>Sorry I missed your email, just after sending my last email, I saw you email. Extremely sorry.</p>\n<p>Thanks,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2022-11-24T12:21:51.239Z",
+      "updated_at": "2022-11-24T12:21:51.239Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi @amarini\nI tried different range of r like 100,200,500,600,10000,100000 but every time the result is same and I get some error for CMS_bbwwsl_tt_norm which I mentioned in my last email. I am pasting the commands which I run here\ncombine workspace.root --verbose 1 --mass 125.0 --seed 0 --toys -1 --redefineSignalPOIs r --setParameterRanges r=-200,200 --robustHesse 1 --maxFailedSteps 10 --setParameters r=1.0, --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo singles --saveFitResult\n\ncombine workspace.root --verbose 1 --mass 125.0 --seed 2 --toys -1 --redefineSignalPOIs r --setParameterRanges r=-200,200 --robustHesse 1 --maxFailedSteps 10 --setParameters r=1.0 --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4\n--X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo impact --parameters BR_htt --floatOtherPOIs 1 --saveInactivePOI 1\n\nThe last command is run for all systematics, only the -parameters and --seed are changed. Can you please tell whether these commands are okay and what else I should check?",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/amarini\">@amarini</a></p>\n<p>I tried different range of r like 100,200,500,600,10000,100000 but every time the result is same and I get some error for CMS_bbwwsl_tt_norm which I mentioned in my last email. I am pasting the commands which I run here</p>\n<pre><code class=\"lang-auto\">combine workspace.root --verbose 1 --mass 125.0 --seed 0 --toys -1 --redefineSignalPOIs r --setParameterRanges r=-200,200 --robustHesse 1 --maxFailedSteps 10 --setParameters r=1.0, --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo singles --saveFitResult\n\ncombine workspace.root --verbose 1 --mass 125.0 --seed 2 --toys -1 --redefineSignalPOIs r --setParameterRanges r=-200,200 --robustHesse 1 --maxFailedSteps 10 --setParameters r=1.0 --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 \n--X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo impact --parameters BR_htt --floatOtherPOIs 1 --saveInactivePOI 1\n</code></pre>\n<p>The last command is run for all systematics, only the -parameters and --seed are changed. Can you please tell whether these commands are okay and what else I should check?</p>"
+    }
+  ]
+}

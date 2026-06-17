@@ -1,0 +1,23 @@
+{
+  "topic_id": 140477,
+  "title": "Initial fit does not find true minimum Combine",
+  "url": "https://cms-talk.web.cern.ch/t/140477",
+  "category_id": 279,
+  "created_at": "2026-01-06T18:59:53.109Z",
+  "last_posted_at": "2026-01-06T18:59:53.664Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "msrivast",
+      "name": "Mohit Vir Srivastav",
+      "created_at": "2026-01-06T18:59:53.664Z",
+      "updated_at": "2026-01-06T18:59:53.664Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nSometimes when fitting to toys, Combine doesn\u2019t manage to find the true minimum in the initial fit, leading to negative values for \\Delta NLL. I know that when scanning one can use --pointsRandProf=N to sample N random starting points when scanning, but that does not translate to the initial fit (as I understand).\nIn the same spirit, is there an easy way for Combine to do the initial fit over a multidimensional space from a variety of starting points using the MultiDimFitalgorithm similar to what is described above?\nThank you,\nMohit Srivastav",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>Sometimes when fitting to toys, Combine doesn\u2019t manage to find the true minimum in the initial fit, leading to negative values for <span class=\"math\">\\Delta NLL</span>. I know that when scanning one can use <code>--pointsRandProf=N</code> to sample N random starting points when scanning, but that does not translate to the initial fit (as I understand).</p>\n<p>In the same spirit, is there an easy way for Combine to do the initial fit over a multidimensional space from a variety of starting points using the <code>MultiDimFit</code>algorithm similar to what is described above?</p>\n<p>Thank you,</p>\n<p>Mohit Srivastav</p>"
+    }
+  ]
+}

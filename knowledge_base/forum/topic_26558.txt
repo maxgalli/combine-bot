@@ -1,0 +1,12 @@
+TOPIC: High Energy Physics Statistics Serialization Standard discussion at CAT meeting this Wednesday at 14:00
+URL: https://cms-talk.web.cern.ch/t/26558
+DATE: 2023-07-10T07:59:15.360Z
+SOLVED: no
+============================================================
+
+QUESTION (by clange @ 2023-07-10T07:59:16.046Z):
+Hello everyone,
+There’ll be a presentation on the development of a High Energy Physics Statistics Serialization Standard at the CAT meeting this week, 12th July at 14:00 CERN time. For more details see the meeting announcement.
+Best regards,
+Giulio and Clemens
+----------------------------------------

@@ -1,0 +1,28 @@
+TOPIC: How separate syst. and stat. uncertainties
+URL: https://cms-talk.web.cern.ch/t/26109
+DATE: 2023-06-28T12:47:08.234Z
+SOLVED: no
+============================================================
+
+QUESTION (by sibashir @ 2023-06-28T12:47:08.389Z):
+Hi,
+I have a specific requirement regarding obtaining both statistical and systematic uncertainty values. I have a tree named “limit” which includes a “systematics” branch, but unfortunately, there are no statistical branches available.
+image751×152 19 KB
+Additionally, when I ran the command mentioned below, I obtained a combined uncertainty value. However, I would like to have the statistical and systematic uncertainties separately. Could you please assist me in achieving this?
+combine -M MultiDimFit o/ee_output_17.root -n .singles --algo singles
+
+image751×125 14.3 KB
+I would greatly appreciate it if you could advise me on how to obtain distinct statistical and systematic uncertainty values.
+Sima
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-06-28T13:35:18.639Z):
+Hi Sima,
+If I’ve understood correctly that you are trying to get a breakdown of the uncertainties into different sources for your fit, you should take a look at this section of the documentation:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties
+As you can see, running such a breakdown requires running a number of additional fits, and defining an ordering in which the uncertainties are applied. So this is not done by the default fits.
+Also, just to clarify, the syst branch of the limit tree output by combine is indicating whether or not the fit was run with systematics, its not indicating the size of the statistical uncertainties.
+I hope this answers your questions, if not please feel free to follow up.
+Cheers,
+Kyle
+----------------------------------------

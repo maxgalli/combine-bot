@@ -1,0 +1,100 @@
+{
+  "topic_id": 44296,
+  "title": "Question about --cminDefaultMinimizerTolerance",
+  "url": "https://cms-talk.web.cern.ch/t/44296",
+  "category_id": 279,
+  "created_at": "2024-07-25T11:30:48.945Z",
+  "last_posted_at": "2024-07-29T10:20:28.205Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-25T11:30:49.110Z",
+      "updated_at": "2024-07-25T11:30:49.110Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI run MultiDimFit -algo fixed\n\u00f4n my toy events with background only and do unbinned fit of m_mumu\nin the range of 12-70 GeV in 6 search regions (SR).\nfor some events I have got a very large DeltaNLL corresponding to a very low p-value and corresponding to a significance much larger than 5.0.  When  I look at  m_mumu distributions in every SRs I got from toys, I do not see any bumps there \u2026 When I added option\n\u2013cminDefaultMinimizerTolerance\nall these events have gone.  So, what exactly this parameter means in my case and why did it help ?\nThank you, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I run MultiDimFit -algo fixed</p>\n<p>\u00f4n my toy events with background only and do unbinned fit of m_mumu<br>\nin the range of 12-70 GeV in 6 search regions (SR).</p>\n<p>for some events I have got a very large DeltaNLL corresponding to a very low p-value and corresponding to a significance much larger than 5.0.  When  I look at  m_mumu distributions in every SRs I got from toys, I do not see any bumps there \u2026 When I added option</p>\n<p>\u2013cminDefaultMinimizerTolerance</p>\n<p>all these events have gone.  So, what exactly this parameter means in my case and why did it help ?</p>\n<p>Thank you, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-25T11:32:04.796Z",
+      "updated_at": "2024-07-25T11:32:04.796Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "sorry,\nwhen I added option\n\u2013cminDefaultMinimizerTolerance 0.5\nI saw that default is 0.1\nCheers, Sasha.",
+      "cooked_html": "<p>sorry,</p>\n<p>when I added option</p>\n<p>\u2013cminDefaultMinimizerTolerance 0.5</p>\n<p>I saw that default is 0.1</p>\n<p>Cheers, Sasha.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-07-29T08:41:06.078Z",
+      "updated_at": "2024-07-29T08:41:06.078Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nThe --cminDefaultMinimizerTolerance sets how close the minimizer needs to think it is to the true minimum in order to consider that a fit has succeeded. The minimizer estimates an \u201cestimated distance to minimum\u201d (EDM) and requires this to be below a certain threshold in order to consider a fit succesful. Exactly what role this is playing in your fit is not clear to me without more information.\nWhen you say \u201ca significance much larger than 5.0\u201d, is that, e.g. 7? Or is it e.g. 30k? In some cases, such as for negative pdf values the program may perform a fast exit and return a very large NLL. I\u2019m not sure if this is whats happening your case. If the values are very large, I suspect its more likely that this is due to some mode of fit failure than any information about the \u201ctrue\u201d deltaNLL.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>The <code>--cminDefaultMinimizerTolerance</code> sets how close the minimizer needs to think it is to the true minimum in order to consider that a fit has succeeded. The minimizer estimates an \u201cestimated distance to minimum\u201d (EDM) and requires this to be below a certain threshold in order to consider a fit succesful. Exactly what role this is playing in your fit is not clear to me without more information.</p>\n<p>When you say \u201ca significance much larger than 5.0\u201d, is that, e.g. 7? Or is it e.g. 30k? In some cases, such as for negative pdf values the program may perform a fast exit and return a very large NLL. I\u2019m not sure if this is whats happening your case. If the values are very large, I suspect its more likely that this is due to some mode of fit failure than any information about the \u201ctrue\u201d deltaNLL.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-29T09:36:25.442Z",
+      "updated_at": "2024-07-29T09:36:25.442Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nthank you for your answer and hint about effect of negative pdf.\nI do have DeltaNLL = 2996 or 1517, which I guess due to fast exit,\nas you said.  I have also DeltaNLL = 25.5, significance = 6.7. In that case\nfit gives be very large number of signal events (80 in SR1 and 84 in SR3),\nbut looking at dimuon mass distribution I do not see any bumps in my mass range of 25-30 GeV\u2026  When I change --cminDefaultMinimizerTolerance from 0.1 to 0.2 it gives be small Delta NLL less than 0.2 and reasonably small number of the signal events.\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>thank you for your answer and hint about effect of negative pdf.<br>\nI do have DeltaNLL = 2996 or 1517, which I guess due to fast exit,<br>\nas you said.  I have also DeltaNLL = 25.5, significance = 6.7. In that case<br>\nfit gives be very large number of signal events (80 in SR1 and 84 in SR3),<br>\nbut looking at dimuon mass distribution I do not see any bumps in my mass range of 25-30 GeV\u2026  When I change --cminDefaultMinimizerTolerance from 0.1 to 0.2 it gives be small Delta NLL less than 0.2 and reasonably small number of the signal events.</p>\n<p>Cheers, Sasha.</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-07-29T09:49:55.412Z",
+      "updated_at": "2024-07-29T09:49:55.412Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nAs a first step, I would suggest you look at the postfit predictions for those fits. That should give you a sense pretty quickly which of those fits is actually describing the data more accurately and which has issues and what the fit is actually finding.\nDepending on the frequency of the large DeltaNLL and the unstable behaviour of the significance though, it could be that the changes when you change the tolerance are a symptom of a larger instability in the fit or fit model rather than the real issue itself.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>As a first step, I would suggest you look at the postfit predictions for those fits. That should give you a sense pretty quickly which of those fits is actually describing the data more accurately and which has issues and what the fit is actually finding.</p>\n<p>Depending on the frequency of the large DeltaNLL and the unstable behaviour of the significance though, it could be that the changes when you change the tolerance are a symptom of a larger instability in the fit or fit model rather than the real issue itself.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-29T09:56:01.882Z",
+      "updated_at": "2024-07-29T09:56:01.882Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nsaying \u201cpostfit predictions\u201d do you mean the best fit parameters of my model, like number of signal events, mass, width, which I get in printout after fit is finished ?\nThanks, Sasha.",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>saying \u201cpostfit predictions\u201d do you mean the best fit parameters of my model, like number of signal events, mass, width, which I get in printout after fit is finished ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-07-29T10:02:15.300Z",
+      "updated_at": "2024-07-29T10:02:15.300Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nI was rather referring to the pdfs postfit, and comparing them to data to see what the description of the data looks like compared to the pdf.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>I was rather referring to the pdfs postfit, and comparing them to data to see what the description of the data looks like compared to the pdf.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-29T10:20:28.205Z",
+      "updated_at": "2024-07-29T10:20:28.205Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nI got it.  I do see that signal model does not fit data at all since it gives a very large number of events, while my toy data distribution (no signal injected, only bkg.) of dimuon mass does not have any such bump in a signal region. I did not check yet how background model looks like after fit.  Could be EDM an indicator that fit is not stable.  For example in \u201cgood\u201d toys it is about of 1.e-5  at the end, while in events with large DeltaNLL it is for example order of 1.e-3 or even larger.\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>I got it.  I do see that signal model does not fit data at all since it gives a very large number of events, while my toy data distribution (no signal injected, only bkg.) of dimuon mass does not have any such bump in a signal region. I did not check yet how background model looks like after fit.  Could be EDM an indicator that fit is not stable.  For example in \u201cgood\u201d toys it is about of 1.e-5  at the end, while in events with large DeltaNLL it is for example order of 1.e-3 or even larger.</p>\n<p>Cheers, Sasha.</p>"
+    }
+  ]
+}

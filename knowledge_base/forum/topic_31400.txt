@@ -1,0 +1,76 @@
+TOPIC: Proper way to do background-only postfit plot with FitDiagnostics in multi POI model
+URL: https://cms-talk.web.cern.ch/t/31400
+DATE: 2023-11-07T15:26:02.387Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2023-11-07T15:26:02.566Z):
+Dear experts,
+I am struggling with the correct command to do background only postfit plots. The first case, with no option, sets only the first POI as 0, with the second freely floating. Then I tried with --setParameters 'g1=0.,g2=0.' --freezeParameters 'g1,g2'   --customStartingPoint, and the result came back with g1 = 1 in the output root file, in tree_fit_b.
+What is the correct way to get both g1 and g2 to be 0 in the background-only fit?
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-11-09T10:41:13.006Z):
+Dear Afiq,
+I don’t see anything wrong with what you’ve written, I think it should work. Could you perhaps provide a minimal working example with a datacard and exact command that you run where it’s not working?
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by afiqaize @ 2023-11-09T20:18:35.282Z):
+Dear Kyle,
+Turns out it does work. In the previous version where it did not, I had --X-rtd NO_INITIAL_SNAP in the command, which was part of the speed improvement options that I received months ago. Without it, the second approach with --customStartingPoint works as expected. By chance while I was preparing the MWE for you, this option was not included.
+Perhaps it is worth documenting all the available --X-rtd options, and what they do and more importantly might break…
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-11-10T08:23:34.632Z):
+Dear Afiq,
+Glad it worked.
+I agree, we need to keep improving the documentation, and these options are one of the things that need to be better documented.
+This could be a nice self-contained project. Since one of our main limitations is person power, we are always happy if anyone is interested in contributing to such efforts.  If you’re interested, contact me and @anigamov so maybe we can coordinate. Or for smaller things you are always welcome to make a pull request directly!
+Cheers,
+Kyle
+----------------------------------------
+
+REPLY 5 (by afiqaize @ 2023-11-10T13:21:44.329Z):
+Dear Kyle,
+I spoke too soon. It’s still incomplete, in that the plots appear with the correct POIs, but they come without uncertainties in the shapes_fit_b/bin_name/total_covar matrix. Same with the histograms.
+The command I ran was:
+combine -v -1 -M FitDiagnostics /afs/cern.ch/work/a/afiqaize/public/ahtt/combinestuff/A_m400_w5p0__H_m400_w5p0_78/workspace_fitdiag.root --saveWithUncertainties --saveNormalizations --saveShapes --saveOverallShapes --plots -m 400 -n _forceb --X-rtd OPTIMIZE_BOUNDS=0 --X-rtd FAST_VERTICAL_MORPH --X-rtd CACHINGPDF_NOCLONE --X-rtd MINIMIZER_MaxCalls=9999999 --cminPreScan --cminDefaultMinimizerStrategy 2 --robustFit 1 --setRobustFitAlgo Minuit2 --maxFailedSteps 9999999 --setRobustFitStrategy 2  --skipSBFit --setParameters 'g1=0.,g2=0.' --freezeParameters 'g1,g2' --customStartingPoint
+
+The workspace was made with:
+text2workspace.py -o workspace_fitdiag.root -P CombineHarvester.CombineTools.MultiInterferencePlusFixed:multiInterferencePlusFixed --PO signal=A_m400_w5p0,H_m400_w5p0 --PO verbose --PO no-r --channel-masks --X-pack-asympows --optimize-simpdf-constraints=cms -m 400 ahtt_combined.txt
+
+The errors are there if I don’t use  --X-pack-asympows --optimize-simpdf-constraints=cms in the ws creation and run without --X-rtd FAST_VERTICAL_MORPH --X-rtd CACHINGPDF_NOCLONE, but this is tremendously slow, and I’ve never got this to not crash when running the full analysis even with fit strategy 0. Tolerable for small test cases, but not usable without splitting it up somehow.
+Any ideas?
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 6 (by anigamov @ 2023-11-10T13:59:30.699Z):
+Hi Afiq,
+As you’ve already noticed you can’t make the post-fit plots with the additional --X-rtd options you are using. You can still use these fit results and make the plots with the PostFitShapesFromWorkspace script, and make sure to use the workspace created without these extra options you mentioned in the previous message.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2023-11-10T15:42:35.071Z):
+Dear Afiq,
+If you are not seeing any entries in the covariance matrix under shapes_fit_b/<bin_name>/total_covar it is possible that this is due to issues with the covariance matrix estimation.  See the online documentation on this [1]. If the covariance matrix is forced to be positive definite it will not fill the covariance matrix, as these values are really not to be trusted. You can check the status of the covariance matrix by printing the corresponding RooFitResult in FitDiagnostics output file.
+Cheers,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties
+----------------------------------------
+
+REPLY 8 (by afiqaize @ 2023-11-10T21:24:58.074Z):
+Hi Kyle, Aliya,
+Thanks for the pointer that the uncertainties are not written out when the covariance matrix is forced posdef. This is is a good hint. So after playing around a bit more, I’ve come to the conclusion that in fact the extra options in the ws and fitdiagnostics step do not cause the missing errors by themselves. Restricting myself to just one bin, I can get accurate covariance matrix with them.
+However it is true that having these options make forced posdef matrices appear significantly more often. So in some sense they reduce the fit stability somehow… maybe you can explain what exactly they do here, so that I have a better idea on what to investigate to get my fits to converge?
+As mentioned before, the extra options provide substantial speed gains, and this is important for the full fit.
+Cheers,
+Afiq
+----------------------------------------

@@ -1,0 +1,119 @@
+TOPIC: Get fit parameters uncertainties
+URL: https://cms-talk.web.cern.ch/t/23857
+DATE: 2023-05-09T15:15:49.531Z
+SOLVED: no
+============================================================
+
+QUESTION (by sibashir @ 2023-05-09T15:15:49.773Z):
+Hi experts,
+I am a beginner in using HiggsCombineTool. I have performed a fit using this tool and now I want to obtain the uncertainties of the fit parameters. There are three parameters in the fit. I used the code [1] to get the uncertainties, but it only gave me the uncertainty of one parameter. Could you please help me with how to get the uncertainties of the other two parameters? I would appreciate your assistance.
+[1]
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:WHelicityModel datacard.txt -o aaa.root
+combine -M MultiDimFit aaa.root -n .scan --algo grid --points 20 --setParameters flang=0.7,flm=0.3,r_n=1.0
+combine aaa.root -M FitDiagnostics -n Fit0with0 -m 125 --setParameters flang=0.7,flm=0.3 --toysFile higgsCombineToys0.GenerateOnly.mH125.123456.root -t 1000 --rMin -10 --rMax 10  --robustFit 1
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-05-10T08:00:32.370Z):
+Hi Sima,
+So I guess what you want is to calculate the 1D confidence interval on each parameter of interest while the other two (and the nuisance parameters) are profiled?
+We have a few different ways to do this, but the MultiDimFit method is a good place to start, there’s some documentation here:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+The --algo singles option should run the scans for each parameter in turn and report the three intervals.
+If you want to be able to plot the explicit likelihood scan then --algo grid is what you want - but you’ll need to run combine three times, one for each parameter, using -P [param] to identify the one you want to do the scan for.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by sibashir @ 2023-05-10T12:54:19.529Z):
+yes i want to get uncertainty of three POIs and calculate the 1D confidence interval on each parameter of interest while the other two (and the nuisance parameters) are profiled.
+i ran this command and i got the three fit parameters:
+combine -M MultiDimFit aaa.root -n .scan --algo grid --points 20 --setParameters flang=0.7,flm=0.3,r_n=1.0
+to obtain the uncertainties, i ran the command as below but the fit failed:
+[sbashiri@SuperMicro6 CombinedLimit]$ combine -M FitDiagnostics -d o/mumu_output.root -n _fit_result --saveShapes --saveWithUncertaintie
+<<< Combine >>>
+>>> random number generator seed is 123456
+>>> method used is FitDiagnostics
+ModelConfig 'ModelConfig' defines more than one parameter of interest. This is not supported in some statistical methods.
+Warning! -- You haven't picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the 'B-only' ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 0 channels, 0 generic constraints, 37 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+SimNLL created with 1 channels, 0 generic constraints, 37 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- FitDiagnostics ---
+Fit failed.
+Done in 0.08 min (cpu), 0.08 min (real)
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2023-05-10T18:40:39.676Z):
+Hi Sima,
+Well there are two things here, the first is what happens when you run MultiDimFit, and the other is the error when you run FitDiagnostics. It’s not clear from your mail if there’s a failure in the MultiDimFit step, where I would recommend trying the --algo singles option first.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 6 (by sibashir @ 2023-05-13T09:32:02.195Z):
+higgsCombine.scan.MultiDimFit.root (7.1 KB)
+Hi Andrew,
+I have frozen two parameters to fit only one parameter(here is flm) by running:
+combine -M MultiDimFit o/ee_output_17.root  -n .scan --algo grid --points 110  --freezeParameters r_n,flang
+I got a root file(attached). now I want to have plotted the best fit by deltaNLL variation by running:
+plot1DScan.py  higgsCombine.scan.MultiDimFit.root   --output scan --POI flm
+
+however, i got this error:
+x[0]=0.190653, y[0]=0
+Traceback (most recent call last):
+File "/home/sbashiri/CMSSW_11_3_4/bin/slc7_amd64_gcc900/plot1DScan.py", line 127, in <module>
+main_scan = BuildScan(args.output, args.POI, [args.main], args.main_color, yvals, args.y_cut)
+File "/home/sbashiri/CMSSW_11_3_4/bin/slc7_amd64_gcc900/plot1DScan.py", line 42, in BuildScan
+raise RuntimeError('Attempting to build %s scan from TGraph with zero or one point (see above)' % files)
+RuntimeError: Attempting to build ['higgsCombine.scan.MultiDimFit.mH120.root'] scan from TGraph with zero or one point (see above)
+
+still, I’m not sure whether the fit was done is correct or not.
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2023-05-15T15:49:30.397Z):
+Hi Sima,
+I think the reason the plot is not working is just an issue with the parameter ranges; I think they may be too wide for what you are trying to do, so that a grid of 110 points is not capturing what you are looking for. There is also an issue that if you are looking for intervals on individual parameters while profiling the others, you should use the -P flag to specify which parameter you are scanning and plot the results of the 1D parameter scan. Otherwise you are not profiling the others, and while I haven’t checked the behaviour of plot1Dscan.py  in the case where the fit is done over multiple parameters, it won’t be what you want.
+The reason the plotting script is complaining that there is only one point is because it cuts off points the deltaNLL > threshold. (which is configurable by --y-cut <value> on the command line, not that this is separate from the maximum value of the axis, which can be set with --y-max <value>).
+Normally the y-cut value is 7, but taking a quick look at the limit tree in the file you provided the DNN values away from the best fit point are all in the hundreds. It seems at the granularity of your grid with those parameter ranges you are probing very unlikely regions of the parameter space.
+I think the solution is to first follow Andrew’s suggestion of running MultiDimFit with --algo singles to see how the fit performs and what the sort of ranges of the uncertainty on each parameter are.
+When using the --algo grid algorithm to scan a single POI, while profiling the others make sure to set which parameter you are scanning using -P.  Though its not necessary, you can use the result from the --algo singles run to get a better estimate of what range of the parameter to use.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 8 (by sibashir @ 2023-05-17T16:34:39.336Z):
+Hi Kyle,
+Many thanks for your time and response.
+I put my workspace file in the lxplus, if it is possible for you, please take a look at it, since i already have plotted with smaller grod numbers, but i got same error.
+/afs/cern.ch/user/s/sibashir/public/ee_outfile.root
+----------------------------------------
+
+REPLY 9 (by sibashir @ 2023-05-17T19:47:07.294Z):
+I ran the command below and obtained three parameters and intervals.
+combine -M MultiDimFit o/ee_output_17.root -n .singles --algo singles
+<<< Combine >>>
+>>> random number generator seed is 123456
+>>> method used is MultiDimFit
+ModelConfig 'ModelConfig' defines more than one parameter of interest. This is not supported in some statistical methods.
+Warning! -- You haven't picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the 'B-only' ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 1 channels, 0 generic constraints, 22 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+flm :    +0.254   -0.017/+0.018 (68%)
+flang :    +0.755   -0.020/+0.019 (68%)
+r_n :    +0.944   -0.038/+0.039 (68%)
+Done in 0.00 min (cpu), 0.00 min (real)
+----------------------------------------
+
+REPLY 10 (by kcormier @ 2023-05-19T07:31:18.153Z):
+Hi Sima,
+I think the files you are working with are different than the ones in your public afs area.
+I don’t see any ee_outfile.root in the directory you mentioned, and the file outfile_ee_17.root appears to be histograms, not a workspace.
+If I run on the file ee_output.root, I get a fit failure when running the MultiDimFit.
+But I can make it work by restricting the range of r_n to, e.g. 0-0.05. The best fit point I see is around 0.01. I think there may be some other issues with the fit, but running
+with -P <param> for each of r_n, flm, and flang works, and the plot1DScan.py script also works when setting  --POI <param> for the appropriate parameter depending on the scan.
+Please let us know if it seems there is something that’s not working.
+Best,
+Kyle
+----------------------------------------

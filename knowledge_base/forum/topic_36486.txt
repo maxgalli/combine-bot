@@ -1,0 +1,193 @@
+TOPIC: Combine failing to perform MultiDimFit
+URL: https://cms-talk.web.cern.ch/t/36486
+DATE: 2024-03-06T17:20:21.136Z
+SOLVED: no
+============================================================
+
+QUESTION (by castells @ 2024-03-06T17:20:21.486Z):
+Dear Experts,
+I’m a complete newbie at using Combine so please excuse any ignorance on my part. I am trying to run MultiDimFit for my shape based analysis. For context, I have created a workspace with the corresponding PDFs and RooDataHist for data. I have also confirmed that my RooDataHist is not empty and that the PDFs are valid objects via plotting. I’m trying to keep this as simple as possible and have omitted systematics for now. My datacard+workspace are attached and I can successfully “compile” it.
+h4g_15_GeV_datacard.root (19.3 KB)
+h4g_15_GeV_datacard.txt (705 Bytes)
+workspace.root (68.1 KB)
+When I run combine -M MultiDimFit h4g_15_GeV_datacard.root -m 125 --setParameters pdf_index=1 --freezeParameters pdf_index --saveWorkspace -n .bestfit --verbose 9 I get the following output:
+>>> random number generator seed is 123456
+>>> method used is MultiDimFit
+Setting runtime-define ADDNLL_RECURSIVE to 0
+Adding /afs/crc.nd.edu/user/s/scastel2/Private/h4g_tools_CMSSW_11_3_4/src to include path
+Adding /cvmfs/cms.cern.ch/slc7_amd64_gcc900/lcg/root/6.22.08-ljfedo//include to include path
+Input workspace 'w':
+
+RooWorkspace(w) w contents
+
+variables
+---------
+(CMS_channel,bern1_p1,coeff_sig_gauss0,expAlpha1_0,h4g_15_GeV,h4g_data_15_GeV,laurent1_pow0,mean_sig_gauss0,mean_sig_gauss1,n_exp_binps_proc_background,pdf_index,pow1_p0,r,shapeBkg_background_ps__norm,sigma_sig_gauss0,sigma_sig_gauss1)
+
+p.d.f.s
+-------
+RooBernsteinFast<1>::15_GeV_bern1[ x=h4g_15_GeV coefList=(coeff_bern1_1) ] = 0.0170714
+RooAddPdf::15_GeV_laurent1[ laurent1_0 ] = 1.63883
+RooAddPdf::15_GeV_sum_exp1[ exp1_0 ] = 8.52579e-07
+RooAddPdf::15_GeV_sum_pow1[ pow1_0 ] = 0.820703
+RooExponential::exp1_0[ x=h4g_15_GeV c=expAlpha1_0 ] = 8.52579e-07
+RooPower::laurent1_0[ x=h4g_15_GeV c=laurent1_pow0 ] = 1.63883
+RooSimultaneousOpt::model_b[ indexCat=CMS_channel ps=pdf_binps_bonly extraConstraints=() channelMasks=() ] = 8.52579e-07
+RooSimultaneousOpt::model_s[ indexCat=CMS_channel ps=pdf_binps extraConstraints=() channelMasks=() ] = 9.48515e-07
+RooProdPdf::nuisancePdf[  ] = 1
+RooAddPdf::pdf_binps[ n_exp_binps_proc_signal * shapeSig_signal_ps + n_exp_final_binps_proc_background * shapeBkg_background_ps ] = 9.48515e-07
+RooAddPdf::pdf_binps_bonly[ n_exp_final_binps_proc_background * shapeBkg_background_ps ] = 8.52579e-07
+RooPower::pow1_0[ x=h4g_15_GeV c=pow1_p0 ] = 0.820703
+RooMultiPdf::shapeBkg_background_ps[ _pdfs=(15_GeV_sum_exp1,15_GeV_bern1,15_GeV_sum_pow1,15_GeV_laurent1) _index=pdf_index ] = 8.52579e-07
+RooAddPdf::shapeSig_signal_ps[ coeff_sig_gauss0 * sig_gauss0 + [%] * sig_gauss1 ] = 9.68848e-05
+RooGaussian::sig_gauss0[ x=h4g_15_GeV mean=mean_sig_gauss0 sigma=sigma_sig_gauss0 ] = 0.000441772
+RooGaussian::sig_gauss1[ x=h4g_15_GeV mean=mean_sig_gauss1 sigma=sigma_sig_gauss1 ] = 3.62549e-12
+
+functions
+--------
+RooFormulaVar::coeff_bern1_1[ actualVars=(bern1_p1) formula="x[0]*x[0]" ] = 0.01
+ProcessNormalization::n_exp_binps_proc_signal[ thetaList=() asymmThetaList=() otherFactorList=(r) ] = 1
+RooProduct::n_exp_final_binps_proc_background[ n_exp_binps_proc_background * shapeBkg_background_ps__norm ] = 1000
+
+datasets
+--------
+RooDataSet::data_obs(h4g_data_15_GeV,CMS_channel)
+
+named sets
+----------
+ModelConfig_Observables:(h4g_data_15_GeV,CMS_channel)
+ModelConfig_POI:(r)
+ModelConfig_bonly_Observables:(h4g_data_15_GeV,CMS_channel)
+ModelConfig_bonly_POI:(r)
+POI:(r)
+globalObservables:()
+nuisances:()
+observables:(h4g_data_15_GeV,CMS_channel)
+
+generic objects
+---------------
+RooStats::ModelConfig::ModelConfig
+RooStats::ModelConfig::ModelConfig_bonly
+RooArgSet::discreteParams
+
+Workspace has a ModelConfig for signal called 'ModelConfig', with contents:
+
+=== Using the following for ModelConfig ===
+Observables:             RooArgSet:: = (h4g_data_15_GeV,CMS_channel)
+Parameters of Interest:  RooArgSet:: = (r)
+PDF:                     RooSimultaneousOpt::model_s[ indexCat=CMS_channel ps=pdf_binps extraConstraints=() channelMasks=() ] = 9.48515e-07
+
+Input ModelConfig 'ModelConfig':
+
+=== Using the following for ModelConfig ===
+Observables:             RooArgSet:: = (h4g_data_15_GeV,CMS_channel)
+Parameters of Interest:  RooArgSet:: = (r)
+PDF:                     RooSimultaneousOpt::model_s[ indexCat=CMS_channel ps=pdf_binps extraConstraints=() channelMasks=() ] = 9.48515e-07
+
+Set Default Index of Parameter pdf_index To : 1 (was: 0 )
+Freezing the following parameters: RooArgSet:: = (pdf_index)
+Saving snapshot 'clean'
+Saved snapshot 'clean'
+bin   h4g_data_15_GeV       CMS_channel    weight
+0             110.5                ps     0.0000000
+1             111.5                ps     0.0000000
+2             112.5                ps     0.0000000
+3             113.5                ps     0.0000000
+4             114.5                ps     0.0000000
+5             115.5                ps     0.0000000
+6             116.5                ps     0.0000000
+7             117.5                ps     0.0000000
+8             118.5                ps     0.0526316
+9             119.5                ps     0.0526316
+10             120.5                ps     0.0000000
+11             121.5                ps     0.0000000
+12             122.5                ps     0.0000000
+13             123.5                ps     0.0000000
+14             124.5                ps     0.1052632
+15             125.5                ps     0.0000000
+16             126.5                ps     0.0526316
+17             127.5                ps     0.1578947
+18             128.5                ps     0.0526316
+19             129.5                ps     0.0000000
+20             130.5                ps     0.0000000
+21             131.5                ps     0.0000000
+22             132.5                ps     0.0000000
+23             133.5                ps     0.0000000
+24             134.5                ps     0.0000000
+25             135.5                ps     0.0000000
+26             136.5                ps     0.0000000
+27             137.5                ps     0.0000000
+28             138.5                ps     0.0526316
+29             139.5                ps     0.0000000
+30             140.5                ps     0.0000000
+31             141.5                ps     0.0000000
+32             142.5                ps     0.0000000
+33             143.5                ps     0.0000000
+34             144.5                ps     0.0000000
+35             145.5                ps     0.0526316
+36             146.5                ps     0.0000000
+37             147.5                ps     0.0526316
+38             148.5                ps     0.0000000
+39             149.5                ps     0.0000000
+40             150.5                ps     0.0526316
+41             151.5                ps     0.0000000
+42             152.5                ps     0.0000000
+43             153.5                ps     0.0000000
+44             154.5                ps     0.0000000
+45             155.5                ps     0.0000000
+46             156.5                ps     0.0526316
+47             157.5                ps     0.0526316
+48             158.5                ps     0.0000000
+49             159.5                ps     0.0526316
+50             160.5                ps     0.0000000
+51             161.5                ps     0.0526316
+52             162.5                ps     0.0000000
+53             163.5                ps     0.0526316
+54             164.5                ps     0.0000000
+55             165.5                ps     0.0000000
+56             166.5                ps     0.0000000
+57             167.5                ps     0.0526316
+58             168.5                ps     0.0000000
+59             169.5                ps     0.0000000
+60             170.5                ps     0.0000000
+61             171.5                ps     0.0000000
+62             172.5                ps     0.0000000
+63             173.5                ps     0.0000000
+64             174.5                ps     0.0000000
+65             175.5                ps     0.0000000
+66             176.5                ps     0.0000000
+67             177.5                ps     0.0000000
+68             178.5                ps     0.0000000
+69             179.5                ps     0.0000000
+Caught exception ERROR: channel ps factorized to zero.
+Printing Message Summary From ... combine_logger.out
+----------------------------------------------
+Messages of type INFO : 2
+Messages of type DEBUG : 0
+Messages of type ERROR : 0
+----------------------------------------------
+INFO: (function: run) Combine.cc: 686 -- Freezing the following parameters:
+INFO: (function: run) Combine.cc: 689  pdf_index
+
+I’m at a total loss as to what might be the problem here… I’ve seen a CMS Talk post that suggests using ulimit to memory but that didn’t work. If anyone has any ideas, please let me know.
+Many thanks in advance,
+Sergi
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-03-07T09:46:27.273Z):
+Hi Sergi,
+It looks to me like you’ve constructed your data and your pdfs using different observables, i.e. they depend on different RooRealVars, your pdf depends on h4g_15_GeV, but your data depends on h4g_data_15_GeV. Your predictions and your observations should depend on the same observables.
+So combine is essentially complaining that your pdf is independent from your data.
+You might find it helpful to follow parts (or all) of the tutorial on parametric models in combine [1] to see examples to compare to your use case. The tutorial on rooFit basics [2] may or may not also be helpful.
+I hope that helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#signal-modelling
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/roofit/
+----------------------------------------
+
+REPLY 3 (by castells @ 2024-03-08T13:53:38.924Z):
+Hi Kyle,
+Thanks a lot for the reply. I tried fixing the names of my observables and it fixed the problem. I was so focused on the code that I didn’t realize the observables have to be the same!
+Many thanks for the fix,
+Sergi
+----------------------------------------

@@ -1,0 +1,103 @@
+TOPIC: Significance calculation of multiple bins
+URL: https://cms-talk.web.cern.ch/t/34830
+DATE: 2024-02-15T12:25:20.984Z
+SOLVED: no
+============================================================
+
+QUESTION (by fanx @ 2024-02-15T12:25:21.249Z):
+Dear combine experts,
+I have encountered a quite strange thing. I use combine to calculate the expected significance of 4 bins. I firstly calculate them separately with individual datacards, and write down the results. Then, I put them together in the same datacard to calculate the combined expected significance. I would expect the combined one is equal to the sqrt(sum(each bin significance square)), but it is not.
+Because of our analysis strategy, we have to use different fitting ranges for different bins. I wonder if this is the reason for the disagreement I have seen. This doesn’t happen when I use the same range for some other samples. Does anyone have any experience on this issue?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-02-16T16:27:09.753Z):
+Dear Xingchen,
+I may not have understood exactly what you are doing, but some questions that may help understand what is going on:
+
+If you’re doing a parametric fit, is the observable name the same in all cases? (If I’m not mistaken you may need to make sure the observable names are distinct, to avoid the same object being reused and therefore having the same binning. You may want to check this, in any case)
+Are there any uncertainties that are correlated between your channels? (If so, this could account for some differences)
+Did you check that you are calculating the pre-fit expected significance?
+
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by fanx @ 2024-02-19T12:09:50.730Z):
+Dear Adinda,
+
+If when saying “observable” you mean data_obs in the datacard, then yes. But I do give distinct names for the histograms of different bins. From the example available, I think it is OK to use data_obs for multiple bins?
+And I am doing the parametric fit. Models for different bins have different parameter names, except for some constant parameters whose values and names are shared across the bins.
+I don’t include any uncertainties.
+I don’t quite understand what you mean by “pre-fit expected significance”. All the models I put in are already post-fit. And their individual expected significances, as I mentioned, are calculated already.
+I kinda convince myself of this discrepancy. Multiple bins share the signal strength r, so there must be some correlation associated. The result would be different from treating them individually with their own r. This can be the reason for it?
+
+Best
+Xingchen
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2024-02-19T13:21:35.623Z):
+Dear Xingchen,
+I’m not quite sure I understand what you mean when you say all the models are post-fit?
+I think that Adinda’s point in asking the question about the pre-fit expected significance is that your expectation of the combined expected significance being the sum in quadrature of the individual ones is true for some models. But even in those cases, the observed significance will not be the sum in quadrature of the four observed significances, because each channel will have independent data, and the observed values will almost certainly not be the same across all channels – This is I think the same point you are making in your last bullet.
+Combine actually provides a method for checking the fit in each of the channels against each other, it is the channel compatability test [1]. There a nominal fit is performed, using all channels, as well as a fit where the signal strength in each of the channels is allowed to float independently of the others. Then you can see the extent to which tension in the different preferred signal strengths of different channels might be affecting the overall fit.
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#channel-compatibility
+----------------------------------------
+
+REPLY 5 (by fanx @ 2024-02-19T14:04:40.762Z):
+Dear Kyle,
+Sorry, I should have been clearer on the description. There is no observed significance whatsoever in my usage here. I use the toy option and Asimov sample option to calculate the expected significance, meaning there is no fitting on the actual sample. And combine uses the models with the initial values I set to generate the Asimov samples, then the significance is based upon the generated samples.
+When I say “post-fit”, I mean that the initial values that I use to generate the Asimov samples are based on the fitting result of the actual samples.
+The point I made with my last bullet should be independent from whether we are talking about the expected significance or observed significance, right?
+This channel compatibility test is definitely interesting and totally new to me. If it allows the signal strength to float independently, I would expect the combine significance to be exactly the same with the sum of the quadrature of the individual bins. I will check it out to verify. But please allow me to ask a naive question, in the actual analysis should we float the signal strength like this?
+best
+Xingchen
+----------------------------------------
+
+REPLY 6 (by kcormier @ 2024-02-20T14:27:52.775Z):
+Dear Xingchen,
+I’d like to make sure I’m understanding one particular part of what you said:
+
+When I say “post-fit”, I mean that the initial values that I use to generate the Asimov samples are based on the fitting result of the actual samples.
+
+Does this mean that you first fit the observed data separately in all 4 categories, then use this to set the model parameters, then generate asimov data independently in each bin with these parameters and from this run the expected significance on the combined model?
+I’m just trying to understand if the observed data is being used at any point. A more pedagogical explanation of why this matters is given with technical details below.
+One should not interpret the results of the channel compatibility check as a significance. There are both physics and statistical reasons for this. The physics reasons are that it is often not physically meaningful to fully decorrelate parameters which represent the same physical effect. the statistical reason is that the significance depends on how you define your test-statistic and the number of additional parameters in the s vs s+b model, as well as a few other things, so one cannot simply change the model without reconsidering these factors. The channel compatibility check is just as the name implies: a check of how compatible the different channels are with each other. Though sometimes it is tempting, it is a mistake to interpret these values as significances.
+Best,
+Kyle
+Some Pedagogical/Technical details on the sum-in-quadrature expectation, and when it holds
+The important point is how the expectation that the significance can be given as a sum-in-quadrature of the individual significances can be justified.
+If you are using the asymptotic significance calculation, (from the -M Significance method in combine) it is using the modified discovery test statistic from the “CCGV” paper [1] (see eq. 12). The test statistic \tilde{q}_0 is 0 if the best fit value is <= 0, and otherwise is the ln likelihood ratio:
+\tilde{q}_0 = -2 \mathrm{ln}(\frac{\mathcal{L}(r=0)}{\mathcal{L}(r=\hat{r})})
+The asymptotic distribution of the test-statistic is also worked out in the paper, and it is shown that for this asymptotic case, the significance, Z is just given by \sqrt{\tilde{q}_0}.
+So for your sum-in-quadrature expectation to be correct, what you need is that the likelihood factorizes, because in that case:
+\sqrt{\sum_\mathrm{bin} Z^2_\mathrm{bin}} = \sqrt{\sum_\mathrm{bin}\tilde{q}_0^{\mathrm{bin}}} = \sqrt{ -2 \mathrm{ln}(\prod_\mathrm{bin}\frac{\mathcal{L}^\mathrm{bin}(r=0)}{\mathcal{L}^\mathrm{bin}(r=\hat{r}_\mathrm{bin})})}
+If the likelihood factorizes and \hat{r} is identical for all bins and for the combined fit,  then the products of the likelihoods on the individual bins are the same as the full likelihood, and your expectation for the sum-in-quadrature should hold for the asymptotic calculation.
+But notice a very important point: Even if the likelihood factorizes,  \hat{r} will in general be different for each bin, and these will also in general be different than the value you get from the simultaneous fit of all bins! The expected value will be the same for each of them if you have an unbiased estimator, but as soon as you start fitting to any observed data you will change that.
+[1] https://arxiv.org/abs/1007.1727
+----------------------------------------
+
+REPLY 7 (by fanx @ 2024-02-21T17:05:26.096Z):
+Dear Kyle,
+Yes, you are absolutely correct. I am hesitant to use the word “observed data” because we are blinded and using the MC at this moment. But in this context, we fit the observed data in the 4 categories. And do what you said consequently.
+And thank you for the pedagogical details. I am quite aware of how the significance is calculated in combine. But can you elaborate on the factorization? What do you mean by this?
+
+what you need is that the likelihood factorizes
+
+Now, thanks to this thread, I am quite aware that the combined observed significance will be different from the quadrature sum of the individual observed significance.
+Best
+Xingchen
+----------------------------------------
+
+REPLY 8 (by kcormier @ 2024-02-22T10:37:10.184Z):
+Dear Xingchen,
+By “What you need is the likelihood factorizes” what I meant was, that for your expectation to hold, you would like to have that the full likelihood is the product of the likelihoods for each bin. Then the Right Hand Side of the equation I wrote out above is equal to the (asymptotic approximation of the) significance of the full fit. More precisely, what you need is:
+\frac{\mathcal{L}( r = 0)}{\mathcal{L}(r=\hat{r})} = \prod_\mathrm{bin} \frac{\mathcal{L}^{\mathrm{bin}}(r = 0 )}{\mathcal{L}^\mathrm{bin}( r = \hat{r}_\mathrm{bin})}
+Note that in general, this is not the case. In particular if there are any constraint terms shared across bins then they will not factorize, and if any of the \hat{r}_\mathrm{bin} values are not equal to the best fit value from the full fit, \hat{r}, then the factorization won’t hold.
+So about the use of the “observed data”, maybe this is not the most accurate term, but the important point is whether or not whatever (pseudo)data is being used in that fit has any variation (such as statistical fluctuations around the expectation) which can lead to the best fit model parameters in each bin being different from each other, which it sounds like there is in your case, if I’ve understood correctly.
+Best,
+Kyle
+----------------------------------------

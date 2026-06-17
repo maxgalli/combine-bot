@@ -1,0 +1,23 @@
+{
+  "topic_id": 2167,
+  "title": "Running blind with ABCD in the datacard",
+  "url": "https://cms-talk.web.cern.ch/t/2167",
+  "category_id": 279,
+  "created_at": "2021-09-20T10:31:03.000Z",
+  "last_posted_at": "2021-09-20T10:31:03.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Peter_Major",
+      "name": "Peter Major",
+      "created_at": "2021-09-20T10:31:03.000Z",
+      "updated_at": "2023-02-07T10:55:42.679Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Experts,\nI have implemented the ABCD method in our datacard as described in\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters\nAn example of my implementation is available here:\nhttps://drive.google.com/drive/folders/1H_iemGQqnLKYJ5kZrBbnaEHl-AF1VX4H?usp=sharing\nI am wondering if it is possible to run blind with this datacard\nsomehow. Unfortunately ```combine -M AsymptoticLimits -d\n./combinedCard.csv --run blind``` leads to a lot of error messages,\nwhich only makes sense, as the ABCD implementation is basically ruined\nby this option.\nThe error messages are also saved and are accessible on the link above.\nThank you for your input!",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Experts,</p>\n<p>I have implemented the ABCD method in our datacard as described in<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters</a></p>\n<p>An example of my implementation is available here:<br>\n<a href=\"https://drive.google.com/drive/folders/1H_iemGQqnLKYJ5kZrBbnaEHl-AF1VX4H?usp=sharing\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://drive.google.com/drive/folders/1H_iemGQqnLKYJ5kZrBbnaEHl-AF1VX4H?usp=sharing</a></p>\n<p>I am wondering if it is possible to run blind with this datacard<br>\nsomehow. Unfortunately ```combine -M AsymptoticLimits -d<br>\n./combinedCard.csv --run blind``` leads to a lot of error messages,<br>\nwhich only makes sense, as the ABCD implementation is basically ruined<br>\nby this option.</p>\n<p>The error messages are also saved and are accessible on the link above.</p>\n<p>Thank you for your input!</p>"
+    }
+  ]
+}

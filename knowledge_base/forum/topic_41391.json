@@ -1,0 +1,34 @@
+{
+  "topic_id": 41391,
+  "title": "RooFit sideband fit involving FFT evaluated PDF",
+  "url": "https://cms-talk.web.cern.ch/t/41391",
+  "category_id": 279,
+  "created_at": "2024-05-21T10:51:36.227Z",
+  "last_posted_at": "2024-05-21T15:07:08.996Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2024-05-21T10:51:36.398Z",
+      "updated_at": "2024-05-21T10:52:11.903Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nWe have noticed that RooFit cannot correctly perform a sideband fit with any PDF involving FFT in its evaluation. Although the minimization seems to succeed, the result from the fitting is far off from the shape that the PDF is fitted over.\nWe believe this is due to how the sideband fit is conducted in RooFit. The test statistics is defined as the addition of those from the left and right ranges. Over the two ranges, PDF is evaluated assuming different periods for the FFT (not using the full range as the period).\nIs there any fix to this issue? Or any way around it? At least, this is still a problem in ROOT 6.24.\nCheers\nXingchen",
+      "cooked_html": "<p>Dear experts,</p>\n<p>We have noticed that RooFit cannot correctly perform a sideband fit with any PDF involving FFT in its evaluation. Although the minimization seems to succeed, the result from the fitting is far off from the shape that the PDF is fitted over.</p>\n<p>We believe this is due to how the sideband fit is conducted in RooFit. The test statistics is defined as the addition of those from the left and right ranges. Over the two ranges, PDF is evaluated assuming different periods for the FFT (not using the full range as the period).</p>\n<p>Is there any fix to this issue? Or any way around it? At least, this is still a problem in ROOT 6.24.</p>\n<p>Cheers<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-05-21T15:07:08.996Z",
+      "updated_at": "2024-05-21T15:07:08.996Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Xingchen,\nCould you provide a Minimal Working Example of the issue you\u2019re seeing?\nBest,\nKyle",
+      "cooked_html": "<p>Dear Xingchen,</p>\n<p>Could you provide a Minimal Working Example of the issue you\u2019re seeing?</p>\n<p>Best,<br>\nKyle</p>"
+    }
+  ]
+}

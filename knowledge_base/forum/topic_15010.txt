@@ -1,0 +1,82 @@
+TOPIC: Per-process channel yields with autoMCStats
+URL: https://cms-talk.web.cern.ch/t/15010
+DATE: 2022-09-13T19:05:48.770Z
+SOLVED: no
+============================================================
+
+QUESTION (by awightma @ 2022-09-13T19:05:48.946Z):
+Dear Combine experts,
+I’m trying to extract per-process yield information from a RooWorkspace created with combine tools and I’m running into issues with processes that use autoMCStats. We also use shape templates, but I don’t know if that actually complicates things or not.
+For a particular channel I want to get the per-process yield information for, the concrete layout of the Roo objects looks something like the following:
+pdf_binch1 (RooRealSumPdf)
+prop_binch1 (CMSHistErrorPropagator)
+shapeSig_ch1_PROC1_morph (CMSHistFunc)
+shapeBkg_ch1_PROC2_morph (CMSHistFunc)
+prop_binch1_bin0_PROC2_prod (RooProduct)
+prop_binch1_bin1_PROC2_prod (RooProduct)
+n_exp_binch1_proc_PROC1 (ProcessNormalization)
+n_exp_binch1_proc_PROC2 (ProcessNormalization)
+prop_binch1_bin2_PROC2 (RooRealVar)
+
+Where we only enabled autoMCStats for PROC2 and all shapes have 4 bins. I understand that each of the prop_bin objects gets created according the algorithm outlined in the documentation here.
+This is all well and good and when I try to get the yield information for the entire channel (e.g. from pdf_binch1 or prop_binch1) I get expected results. Also, when trying to get per-process yield info for processes w/o autoMCStats I can get it from a combination of the shape and n_exp objects just fine. However, for processes with autoMCStats enabled I need to also take into account these prop_binch objects and it is not clear to me how to do this properly.
+The combine documentation briefly mentions what sounds like my exact issue and introduces a CMSHistFuncWrapper class that is supposed to handle this automatically, but I haven’t been able to figure out how to use it to calculate what I want. Is this the right tool for what I’m trying to do here or should I be going about this another way?
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-09-15T09:23:26.955Z):
+Hi Andrew,
+Right, indeed, you’ll need to use the CMSHistFuncWrapper objects in the workspace to get the correct process yields. The basic reason being that in normal operation the “Barlow-Beeston lite” MC stat uncertainties modify the summed yield over processes directly (via the CMSHistErrorPropagator), so for per-process yields we have to manually propagate the effect back to the individual contributions.
+As a further step, you’ll need to multiply the integral of the CMSHistFuncWrapper with the ProcessNormalization value. This is what’s done in FitDiagnostics (https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/FitDiagnostics.cc#L620-L651), so you may be able to follow this.
+To find the wrappers, you can call wrapperList() on the CMSHistErrorPropagator, or perhaps directly from the workspace: w->function("[PROC_NAME]_wrapper").
+By the way, is there a reason you can’t use the FitDiagnostics --saveNormalizations output in this case?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by awightma @ 2022-09-15T17:39:28.398Z):
+Hi Andrew,
+Thanks for the clarification! A bit more information from my side, the actual command we are running to generate the workspace is of the form:
+text2workspace.py combined_card.txt -o wps.root -P OurCustomPhysModel --X-allow-no-background --for-fits --no-wrappers --X-pack-asympows --optimize-simpdf-constraints=cms
+
+Where we had added these extra options to help speed up the otherwise excessively long runtime of the t2w step. Notably, I noticed the --no-wrappers option and on removing that option it reintroduced all the CMSHistFuncWrapper objects that I wasn’t finding before (which was a considerable source of my confusion). For our analysis, MC stats is only relevant for one of our samples, so if we can avoid adding a wrapper for every process in the workspace that would be ideal. On that note, is it possible to create the specific wrappers we need “a posteriori” from just the workspace, or does it also need info from the datacard+template root files, i.e. it really needs to be done during t2w? If it can be constructed from just what’s in the RooWorkspace, how would we go about it? As in what are the inputs needed to instantiate the equivalent CMSHistFuncWrapper ourselves?
+On the topic of using FitDiagnostics, the model we’re fitting has a large number of POIs and so we extract confidence intervals using MultiDimFit grid scans. We then re-run MultiDimFit with --algo none and parameters set to those obtained from the grid scan in order to obtain a RooFitResult that is used to estimate the correlated uncertainties around the point we’re interested in (usually the bestfit one). It’s my understanding that FitDiagnostics isn’t meant to be used with models that have multiple POIs, is that correct? Or can this option also be used to the same effect with MultiDimFit?
+In case it might be helpful I can try to elaborate a bit more on how we construct/use our workspace. In our model each of the POIs can scale multiple processes each by a different amount (for the same choice of POI values). Furthermore, this process scaling can also differ bin-by-bin and so our POIs don’t just simply scale all processes by some flat amount across all of our bin categories. Fortunately, we do have a parameterization for how each process in each bin is to be scaled w.r.t. the POIs. So what we do is decompose each of the signal processes into a set of independent pieces with per-bin normalizations chosen such that they can be scaled by a flat amount across the board.
+The upshot of this approach is that it avoids needing an excessively large number of RooFormula objects with potentially very long string definitions. It also means we can apply systematic uncertainties to individual pieces of the parameterization in cases where that’s relevant. The downside is that it breaks up your signal processes into many many individual processes that aren’t easily interpreted w/o summing things back together, which is why we go through the trouble of extracting quantities directly from the workspace with appropriate inputs fed in from running combine.
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-09-16T14:09:54.519Z):
+Hi Andrew,
+
+Andrew Wightman:
+
+On that note, is it possible to create the specific wrappers we need “a posteriori” from just the workspace, or does it also need info from the datacard+template root files, i.e. it really needs to be done during t2w? If it can be constructed from just what’s in the RooWorkspace, how would we go about it? As in what are the inputs needed to instantiate the equivalent CMSHistFuncWrapper ourselves?
+
+Yes, it’s possible. You can construct one given the CMSHistFunc object, the corresponding CMSHistErrorPropagator, the observable RooRealVar and the index position of that process in the CMSHistErrorPropagator:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/interface/CMSHistFuncWrapper.h#L22-L23
+
+CMSHistFuncWrapper(const char* name, const char* title, RooRealVar& x,
+CMSHistFunc & func, CMSHistErrorPropagator & err, unsigned idx);
+
+e.g. here:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/e8a7a2a1627e39eaad9b489e82ce405974c18edd/python/ShapeTools.py#L263-L263
+
+wrapper = ROOT.CMSHistFuncWrapper(pdfs[idx].GetName() + '_wrapper', '', pdfs.at(idx).getXVar(), pdfs.at(idx), prop, idx)
+
+Andrew Wightman:
+
+It’s my understanding that FitDiagnostics isn’t meant to be used with models that have multiple POIs, is that correct? Or can this option also be used to the same effect with MultiDimFit?
+
+FitDiagnostics should also work with multiple POIs - it might only report the uncertainty interval for the first POI in the list, but the others should still be floating in the S+B fit. So with --saveNormalizations you should get the post-fit norms of all your signal processes even with the model having multiple POIs. It’s true if you need to make arbitrary sums over subsets of your processes then you won’t be able to get the correct uncertainties on the sums from the FitDiagnostics output, since you don’t know the correlations between the individual uncertainties. In that case indeed another approach would be needed.
+cheers,
+Andrew
+----------------------------------------

@@ -1,0 +1,37 @@
+TOPIC: Signal injection test commands
+URL: https://cms-talk.web.cern.ch/t/143351
+DATE: 2026-03-23T18:43:38.068Z
+SOLVED: no
+============================================================
+
+QUESTION (by alkaloge @ 2026-03-23T18:43:38.503Z):
+Dear experts
+Apologies if this has been answered already, but I would like to ask if there are some links/examples on how to properly perform a signal injection test for different \mu values, as I could not find anything searching the usual git combine documentation.
+Thanks in advance,
+Alexis
+----------------------------------------
+
+REPLY 2 (by amarini @ 2026-03-23T19:11:53.987Z):
+Hi Alexis,
+--expectSignal 2 or --setParameters r=2,...  with either the toys or Asimov generation.
+cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by alkaloge @ 2026-03-23T19:39:45.658Z):
+so, for a set of different signal strengths like SIGNAL_STRENGTHS=(0.0 0.5 1.0 1.5 2.0) would this be ok?
+combineTool.py -M FitDiagnostics \
+-d input_Run2_3000_SRCR1B2B.root \
+-t $TOYS_PER_JOB \
+--toysFrequentist \
+--expectSignal=$EXPECT_SIG \
+--setParameters r=$EXPECT_SIG \
+--cminDefaultMinimizerStrategy 1 \
+-s $JOB_SEED \
+--rMin -5 --rMax 5 \
+-n _sigInj_Suu3_r${NAME}_${BASE_SEED}_part${i} \
+-v 1 \
+--job-mode condor \
+--sub-opts='+JobFlavour="workday"' \
+--task-name SignalInjection_${NAME}_part${i}
+----------------------------------------

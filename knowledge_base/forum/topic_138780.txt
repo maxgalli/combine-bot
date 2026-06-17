@@ -1,0 +1,19 @@
+TOPIC: CMSHistSum vs. CMSHistErrorPropagator
+URL: https://cms-talk.web.cern.ch/t/138780
+DATE: 2025-11-19T12:57:41.525Z
+SOLVED: no
+============================================================
+
+QUESTION (by klin @ 2025-11-19T12:57:41.660Z):
+Dear Combine experts,
+May I ask if it is recommended to use CMSHistSum instead of CMSHistErrorPropagator by using the option --use-histsum to create the workspace? The Combine documentation suggested that the former saved memories and I wondered if it could help to alleviate my high memory problems. I have a workspaces with 400+ floating NPs and sometimes the peak memory usage hit > 12 GB when I did MultiDimFit.
+Best regards,
+Kuan
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2025-11-19T14:44:38.174Z):
+Dear Kuan,
+It’s possible it could improve things, but would depend on the exact structure of your model. Some things don’t work when using CMSHistSum (IIRC), for example the extraction of post-fit shapes, but for basic fitting you could test it and see if it helps. Would also be good to verify you get identical fit results first.
+cheers,
+Andrew
+----------------------------------------

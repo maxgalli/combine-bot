@@ -1,0 +1,45 @@
+{
+  "topic_id": 9471,
+  "title": "Get post-fit uncertainty on total background integral?",
+  "url": "https://cms-talk.web.cern.ch/t/9471",
+  "category_id": 279,
+  "created_at": "2022-04-19T16:12:23.901Z",
+  "last_posted_at": "2022-04-20T20:18:45.265Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jmhogan",
+      "name": "Julie Hogan",
+      "created_at": "2022-04-19T16:12:24.153Z",
+      "updated_at": "2023-02-07T10:57:32.194Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nI\u2019m working on creating tables of post-fit normalizations for a paper. Via --saveNormalizations and the script linked in the documentation, we have uncertainties on the integrals for each background process in each channel.\nI would also like to state the uncertainty on the total background integral. Is there a way to access this information with the proper correlations from Combine?\nI\u2019ve tested using PostFitShapesFromWorkspace and I\u2019m not certain of the output \u2013 the uncertainty on total background from this tool is smaller than some individual process uncertainties from the norm_fit_X RooArgSets, which seems like it must be incorrect.\nFor one channel in my analysis I see this total background info from that tool:\nBin                       Total bkg, bkg unc, relative bkg uncert. (postfit)\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine   9468.11845   80.96722   0.00855\nWhile from mlfitNormsToText.py I get the following info for the 3 background processes:\nChannel                                  Process                                              B-Only Fit\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine ewk          1284.715 +/- 48.404\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine qcd           560.034 +/- 65.195\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine top            7623.370 +/- 107.161\nBoth tools are using the same fitDiagnostics.root input files. Do you have any recommendations for the correct way to access this information?\nThanks,\nJulie Hogan",
+      "cooked_html": "<p>Hello,</p>\n<p>I\u2019m working on creating tables of post-fit normalizations for a paper. Via --saveNormalizations and the script linked in the documentation, we have uncertainties on the integrals for each background process in each channel.</p>\n<p>I would also like to state the uncertainty on the total background integral. Is there a way to access this information with the proper correlations from Combine?</p>\n<p>I\u2019ve tested using PostFitShapesFromWorkspace and I\u2019m not certain of the output \u2013 the uncertainty on total background from this tool is smaller than some individual process uncertainties from the norm_fit_X RooArgSets, which seems like it must be incorrect.</p>\n<p>For one channel in my analysis I see this total background info from that tool:</p>\n<p>Bin                       Total bkg, bkg unc, relative bkg uncert. (postfit)<br>\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine   9468.11845   80.96722   0.00855</p>\n<p>While from mlfitNormsToText.py I get the following info for the 3 background processes:</p>\n<p>Channel                                  Process                                              B-Only Fit<br>\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine ewk          1284.715 +/- 48.404<br>\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine qcd           560.034 +/- 65.195<br>\nch1_BB_isCR_isE_dnnLargeJttbar_DeepAK8_0_Combine top            7623.370 +/- 107.161</p>\n<p>Both tools are using the same fitDiagnostics.root input files. Do you have any recommendations for the correct way to access this information?</p>\n<p>Thanks,<br>\nJulie Hogan</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-04-20T10:30:21.572Z",
+      "updated_at": "2022-04-20T10:30:21.572Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Julie,\nThere are several options in PostFitShapesFromWorkspace so without the exact command it\u2019s difficult to confirm if this is correct, however given the uncertainty is smaller than from the individual components I assume that the covariance matrix resampling was switched on (this is the correct behaviour - it is on by default)\nIt is possible for the total background uncertainty to be smaller than the uncertainties on individual components due to correlations between the parameters in the fit, so in that sense I don\u2019t find the result alarming. However, if you\u2019d like to double check and be sure that the uncertainties on the individual components and on the total are extracted in exactly the same way, the easiest thing to do is check out the HEAD of the Combine 102x branch, where the total signal and background normalizations are now added to the FitDiagnostics output when run with --saveNormalizations --saveWithUncertainties.\nHope this helps,\nAdinda",
+      "cooked_html": "<p>Dear Julie,</p>\n<p>There are several options in PostFitShapesFromWorkspace so without the exact command it\u2019s difficult to confirm if this is correct, however given the uncertainty is smaller than from the individual components I assume that the covariance matrix resampling was switched on (this is the correct behaviour - it is on by default)</p>\n<p>It is possible for the total background uncertainty to be smaller than the uncertainties on individual components due to correlations between the parameters in the fit, so in that sense I don\u2019t find the result alarming. However, if you\u2019d like to double check and be sure that the uncertainties on the individual components and on the total are extracted in exactly the same way, the easiest thing to do is check out the HEAD of the Combine 102x branch, where the total signal and background normalizations are now added to the FitDiagnostics output when run with <code>--saveNormalizations --saveWithUncertainties</code>.</p>\n<p>Hope this helps,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "ncsmith",
+      "name": "Nick Smith",
+      "created_at": "2022-04-20T20:18:45.265Z",
+      "updated_at": "2022-04-20T20:18:45.265Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I have some old code for this, that basically does the same resampling of the fit covariance that is done to make the shapes in FitDiagnostics, and then propagates that to the per-channel process normalization parameters (i.e. integral of the shapes) and dumps it to a TTree, one row per sample. Then you can loop over the tree and compute mean and std of any combination of normalizations https://gitlab.cern.ch/ncsmith/monoZ/blob/master/plotter/resampleFit.py",
+      "cooked_html": "<p>I have some old code for this, that basically does the same resampling of the fit covariance that is done to make the shapes in FitDiagnostics, and then propagates that to the per-channel process normalization parameters (i.e. integral of the shapes) and dumps it to a TTree, one row per sample. Then you can loop over the tree and compute mean and std of any combination of normalizations <a href=\"https://gitlab.cern.ch/ncsmith/monoZ/blob/master/plotter/resampleFit.py\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/ncsmith/monoZ/blob/master/plotter/resampleFit.py</a></p>"
+    }
+  ]
+}

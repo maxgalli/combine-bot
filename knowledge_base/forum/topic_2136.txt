@@ -1,0 +1,52 @@
+TOPIC: Differences between STXS Analysis and Likelihood Unfolding
+URL: https://cms-talk.web.cern.ch/t/2136
+DATE: 2021-08-04T15:16:02.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Philip_Daniel_Keiche @ 2021-08-04T15:16:02.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+Recently, I read up on the likelihood unfolding in the documentation
+[1]. While reading, I had the impression that the approach is very
+similar to a STXS measurement - you define bins on gen level, generate
+the corresponding statistical model for a given observable and perform a
+fit of all gen bins simultaneously. The only differences I can think of
+are
+- in STXS, we measure cross sections, not the signal strength modifier
+and
+- in the LL unfolding, we add regularization to stabilize the unfolding
+process.
+So if I understand correctly, I should be able to convert datacards used
+for STXS measurements to datacards for LL unfolding by adding the
+regularization parameters. Is that correct? Is there a more
+sophisticated difference, or a conceptional reason not to do this at
+all? Sorry if this is a very obvious question, just want to make sure
+that I understand this correctly.
+Any feedback would be much appreciated, thank you!
+Cheers, Philip
+[1]
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/regularisation.html
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-08-04T15:33:57.000Z):
+*** Discussion title: Higgs Combination
+Hi Philip,
+That's correct, when you're doing an STXS measurement you are already
+unfolding in the likelihood, it is just unregularized.
+The difference of whether you're measuring a signal strength modifier or
+a cross section is mainly down to whether you include theoretical
+uncertainties that scale the overall cross section in the model (signal
+strength) or not (cross section).
+Note that there is no obligation to use regularization when you unfold
+(though you may decide that it's necessary depending on the case).
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by Philip_Daniel_Keiche @ 2021-08-04T17:06:09.000Z):
+*** Discussion title: Higgs Combination
+Hi Adinda,
+thanks for the fast reply! OK, so I understood that correctly.
+Cheers, Philip
+----------------------------------------

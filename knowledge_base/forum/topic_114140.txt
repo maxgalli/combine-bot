@@ -1,0 +1,203 @@
+TOPIC: Help and suggestions on Discrete Profiling method
+URL: https://cms-talk.web.cern.ch/t/114140
+DATE: 2025-02-14T09:16:39.733Z
+SOLVED: no
+============================================================
+
+QUESTION (by santocch @ 2025-02-14T09:16:39.960Z):
+Hello,
+I started to play with the discrete profiling method to select the optimal fitting function for a smooth background distribution and I have few questions.
+
+In [0] I read:
+“We can also check the scan when we fix at each PDF individually to check that the envelope is achieved. For this, you will need to include the option --X-rtd REMOVE_CONSTANT_ZERO_POINT=1. In this way, we can take a look at the absolute value to compare the curves, if we also include --saveNLL.”
+Question is: from the text I assume the REMOVE_CONSTANT_ZERO_POINT=1 is needed only when I fix a PDF and not when I leave them free but in the command example (just after this sentence) this option is present in both case… is this correct? Because from what is written above, it looks to me I don’t need to use it when I dont fix the PDF.
+
+I’m using the combine data card and the workspaces used for the discrete profiling method  (the one written as suggested in tutorial/manual with the free PDF index) also for the asymptotic significance, the Goodness of Fit check and significance with toys… is this correct ?
+
+When I calculate with Combine the asymptotic significance (combine -M Significance …), I use an unbinned dataset (i.e. a RooDataSet). But I’d like to check also the Goodness-of-Fit of the background function used in the model. In the Tutorial [1] I read “… make sure to save the data object as a RooDataHist…”. My question is: Because I have a RooDataSet, do I have to copy the dataset to a RooDataHist or can I use the RooDataSet and just use a binned variable with the command   dimuomass.setBins(nbins); where nbins is the number of bins ? (Originally dimuomass is not binned)
+
+Again for the GoF test: for the saturated model sometimes I get a negative value for a toy… is this OK (so I can use it for the histogram to calculate the p-value) or do I have to discard it? In other words… if I have 1000 toys and 10 of them are negative: is it ok to keep a negative value or do I need to fill the histogram only with the positive values (i.e. 990 entries) and then use 990 in the denominator?
+
+Previously, to select the best fitting function, I checked the GoF p-value for several functions choosing the one with the highest p-value (see slide #9 at [2]). Now I implement the discrete profiling method using just 3 of them (the 3 with the highest GoF… i.e. #1, #2 and #3). Playing a bit with the method, I see that sometimes the selected function is just one of the 3, sometimes it’s a mixture of 2 of them. The GoF gives me a p-value quite high (0.8 ~ 0.9) so I would say I’m happy with this approach and I assume that the systematics due to different fitting function is included in the significance calculation (regardless if it is the asymptotic one or the one from toys). Is this correct? How many function do I have to add to the profiling method? Three of them is enough?
+
+Thanks for helping
+Attilio
+[0] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#discrete-profiling
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/tutorial2023/parametric_exercise/?h=goodness#extension-goodness-of-fit-tests
+[2] https://indico.cern.ch/event/1475198/contributions/6214057/attachments/2963905/5213812/2024.11.08.talkCERN_v01.pdf
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2025-02-14T09:52:44.151Z):
+Hi Attilio,
+Some quick responses:
+
+Possible that it’s not strictly necessary in the envelope scan, it may just be that you have to manually fix and offset between that scan and the scans done with each PDF fixed individually. Or put another way - you should be able to obtain the same final plot in both cases. If not, suggest to keep REMOVE_CONSTANT_ZERO_POINT=1.
+Yes, that should be ok.
+I think setting the binning will be enough, but again, it could be good to check.
+In principle negative values shouldn’t happen, it implies that the real data agrees better with the model than a model perfectly matching the data. This could imply some problem in the setup (perhaps related to point 3). I would suggest to try and understand this first and not just remove these values.
+Whether the discrete profiling impacts the significance or not for a particular data set depends on whether the best-fit function changes between the best-fit signal strength and mu=0, but over the ensemble, yes, the uncertainty in the choice of bkg function should be taken into account. There is no hard rule about the number of functions to include in the profiling method. The goal should be to consider a diverse set of functions that can adequately describe the data. If someone finds a fourth function that can describe the data but with a very different fitted signal strength, then there is no promise that the envelope method with 3 functions will have the correct coverage. But this is always the case whether we use the envelope method or some other procedure to assign an uncertainty for the choice of background function.
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by santocch @ 2025-02-21T20:32:53.141Z):
+Andrew Gilbert:
+
+I think setting the binning will be enough, but again, it could be good to check.
+
+Hello,
+thanks for the answers. I made few checks for point #3 and it looks to me that binning is not enough… meaning I get different results. Here is what I did. I used the same combine datacard but with 2 different workspace… in the first one (binning the variable) using the following commands:
+RooRealVar dimuomass("dimuomass","dimuomass",mMin,mMax);
+int nbins = 40;
+dimuomass.setBins(nbins);
+
+I get for the data best fit using
+
+combine -M GoodnessOfFit --algo=saturated -d combine_card_profile_binned.txt
+
+a value 48.4782 and for the toys using
+
+combine --toysFreq -M GoodnessOfFit --algo=saturated -s 1234 -t 1000 -d combine_card_profile_binned.txt
+
+Best fit test statistic: 39.7157
+Done in 0.00 min (cpu), 0.00 min (real)
+mean   expected limit: r < 36.1083 +/- 0.323743 @ 95%CL (1000 toyMC)
+median expected limit: r < 35.4987 @ 95%CL (1000 toyMC)
+68% expected band : 25.7876 < r < 46.0984
+95% expected band : 17.9111 < r < 58.6
+And the p-value is 0.111
+Using a RooDataHist with the following code:
+RooRealVar dimuomass("dimuomass","dimuomass",mMin,mMax);
+int nbins = 40;
+TH1F *hTmp_p = new TH1F("hTmp_p","",nbins,mMin,mMax);
+TH1F *hTmp_m = new TH1F("hTmp_m","",nbins,mMin,mMax);
+t_p->Project("hTmp_p","dimuomass",Form("%f < dimuomass && dimuomass < %f",mMin,mMax));
+t_m->Project("hTmp_m","dimuomass",Form("%f < dimuomass && dimuomass < %f",mMin,mMax));
+RooDataHist dh_p("dh_p", "dh_p", dimuomass, Import(*hTmp_p));
+dh_p.SetName("data_obs");
+RooDataHist dh_m("dh_m", "dh_m", dimuomass, Import(*hTmp_m));
+
+I get for the data best fit a value of 46.4665 and for the toys
+Best fit test statistic: 49.6325
+Done in 0.00 min (cpu), 0.00 min (real)
+mean   expected limit: r < 52.5933 +/- 0.231437 @ 95%CL (1000 toyMC)
+median expected limit: r < 52.2055 @ 95%CL (1000 toyMC)
+68% expected band : 45.0255 < r < 59.7143
+95% expected band : 38.7618 < r < 67.9697
+and the p-value is 0.791
+Could you comment on these different results? Which one would you consider correct?
+I have also another question… because the number of entries is not big (412 in the range mMin=150 and mMax=2000) I noted that if I use a bigger number of bins, the p-value goes to zero quickly (using a RooDataHist and nbins=50 the p-value goes to 0.03 and for higher nbins it goes to zero, while if I use nbins=25, the p-value is above 0.90). My (poor) understanding is that this is reasonable but I’d like to have a feedback about it.
+As a final input (which could help in understanding what’s going on), let me give you few info about the original tree: this is a simple dimuon invariant mass of a typical Drell-Yan process. I’m interested in fitting the range 150-2000 (with few additional cuts) and the final tree, has ~60000 events below the mMin value (150 GeV), 412 in the interesting range (150-2000) and very few (less then 5) events above 2000 GeV. Because I set the dimuomass variable in the range 150-2000, I decided to exclude all the events outside this range and this is why in the histogram filling I use dimuomass cut (i.e. excluding all events outside the interesting range).
+Thanks for helping again
+Attilio
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2025-02-26T11:40:08.921Z):
+Hi Attilio,
+
+Could you comment on these different results? Which one would you consider correct?
+
+I was hoping they would come out the same, but I guess there is something non-trivial going on between the two cases. Can you share the two workspaces? Will require some more investigation. At a guess I would say using the RooDataHist as input should be more reliable.
+
+I have also another question… because the number of entries is not big (412 in the range mMin=150 and mMax=2000) I noted that if I use a bigger number of bins, the p-value goes to zero quickly (using a RooDataHist and nbins=50 the p-value goes to 0.03 and for higher nbins it goes to zero, while if I use nbins=25, the p-value is above 0.90). My (poor) understanding is that this is reasonable but I’d like to have a feedback about it.
+
+I think its expected that the GoF changes as you increase the binning (you may start to resolve features in the data that the model doesn’t describe), but if the model is fundamentally the correct description of the data then I think we would anticipate a reasonable GoF regardless of the binning. Slight caveat that we may need to check the behaviour when many bins have zero events in data, but I think it should be ok.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by santocch @ 2025-03-03T21:42:34.166Z):
+Hi Andrew,
+I have more questions and I hope you can keep helping because the more I look into this the more I’m confused… And sorry for the long email but I’d like to be as precise as possible. Below you find a python script which show all the feature we discussed above and few more. Some useful information about the scritpt:
+
+In the first part, I build 2 RooDataSet reproducing (in a simplified way) the situation I have in my analysis: I have 2 data sample with identical background apart statistical fluctuations (here is a simple exponential bkgd) with a signal (gaussian) in both sample but 85% of the signal goes in the P-Distribution while the rest goes in the M-Distribution (if you need to better understand what I’m doing have a look at the AN-2024/179 [0])
+I produce first an unbinned workspace for the significance calculation (which you can switch off changing the doSgnf flag to speed up the process) and I correctly get a highest significance for the signal peak at 400 GeV.
+Then I test 4 different GoF p-value calculation: 1st is using a RooDataHist and 50 bins, 2nd is using again a RooDataHist and 25 bins, then I use a RooDataSet with just the binned variable (again 50 bins) and the last one is again using a RooDataSet with the binned variable and 25 bins. The first 2 test give 2 different p-value (0.17 and 0.10) while the 3th and the 4th give both 0.68
+Last point: I tried to change the order of the 4 different GoF calculation to be sure that setting the binning of the dimuomass variable several times don’t introduce any “historical” effect and the numbers don’t change so I concluded that I can change the binning of the variables anywhere I like without problems.
+
+My conclusion: using RooDataHist and different bins you get different p-value (but now it looks that decresing the number of bin increse the p-value while I was getting the opposite before). Using a RooDataSet with the binned variable show no change in the p-value if you change the number of bins. So I will follow your suggestion that it’s better to use a RooDataHist.
+Now a couple of questions:
+
+If you look at the code, I fix the value of the signal peak (line #96 and #97 of the script) at the value of the generated signal (400 GeV). If I comment line #97, the p-value change a lot… RooDataHist + 50 bins goes from 0.17 to 0.16 (not big change) but RooDataHist and 25 bins goes from 0.10 to 0.29 (i.e. I don’t set the peak of the signal at 400GeV as constant). If I comment both lines (so the peak of the signal is floating and it has no initial value)  RooDataHist + 50 bins goes from 0.17 to 0 and using 25 bins goes from 0.10 to 0.46. These numbers don’t look reasonable to me so I guess fixing the value of the peak at the peak of the signal is the right thing to do (meaning that in the real analysis, first I scan the significance and then, if I found a peak, I fix the signal model at that mass). BUT… in the combine manual I read “the signal strength is left floating in the fit, so that the measure is independent from the presence or absence of a signal” and this is not what I get from these test… another example: if I set constant in the gaussian signal model the value at 350 GeV (i.e. a value different from where the signal is) both p-value (RooDataHist + 25 or 50 bins) goes to zero.
+
+If you change the range of the dimuomass variable (for example using mMax 600 instead of 1000) also both p-values change a lot…this is somehow expected because using 1000 you have a lot of empty bins above 600 while if you set mMax=600 all bins are more or less not empty and I think this is the right approach. Could you confirm this idea (i.e. looking at the background distribution and using as variable range only where you have events and then setting the number of bins at a reasonable value) is correct?
+
+Could you comment on this observation? I hope the script help you checking what I get and if you play a bit with it maybe you can give me some hint on the best way to use the combine GoF test because at the moment It looks to me too dependent on how I use it… but maybe I’m not using it in the correct way and any help would be appreciated.
+Thanks again
+Attilio
+test_combine_GoF.py (15.3 KB)
+[0] https://cms.cern.ch/iCMS/user/noteinfo?cmsnoteid=CMS%20AN-2024/196
+----------------------------------------
+
+REPLY 6 (by santocch @ 2025-03-16T21:37:06.586Z):
+Hello,
+I think I’m stuck and I’m doing something wrong but I don’t have any idea what is it. This is situation:
+
+I have a DATA background RooDataSet. I produce 2 bootstrapped distribution from this sample and I add to the first one a gaussian signal at 400 GeV (18 signal events)
+I use 3 different functions to fit the background only distribution (the second bootstrapped distribution) SEPARATELY
+Then I use the 3 different function in a single workspace for discrete profiling
+
+Here is what I get: using each function separately everything looks good to me: asymptotic significance is what I expect, goodness of fit are OK (0.93, 0.98, 0.88) and also FitDiagnostics gives reasonable numbers for each function and for binned or unbinned dataset:
+--- FitDiagnostics ---
+f1:
+Best fit r: 16.7578  -4.43415/+3.24216  (68% CL)
+Best fit r: 18.0285  -4.26971/+1.9715  (68% CL)
+f2
+Best fit r: 16.9241  -4.43939/+3.07591  (68% CL)
+Best fit r: 18.0813  -4.26707/+1.91873  (68% CL)
+f3
+Best fit r: 16.6375  -4.42761/+3.36248  (68% CL)
+Best fit r: 18.0807  -4.26938/+1.9193  (68% CL)
+
+And finally the lln looks good (Here is, as an example, the f1 scan):
+single_scan_f1696×572 6.04 KB
+When I go to the discrete profile workspace, things don’t work anymore. The GoF is ok (0.71), but the FitDiagnostics does not converge, the tree_fit_b is empty (all numbers are 999) and also the signal strength is no more ~ 18 as for the single functions:
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Missing background ModelConfig 'ModelConfig_bonly' in workspace 'w' in file roostats-ywPEys.root
+Will make one from the signal ModelConfig 'ModelConfig' setting signal strength 'r' to zero
+[ERROR] Closed range without finding crossing!
+
+--- FitDiagnostics ---
+Best fit r: 0.127234  -0.116501/+19.8728  (68% CL)
+
+The MultiDimFit for the likelihood scan gives deltaNLL of the order of 10^-6. I checked the workspace and everything looks good to me but all results are not what I expect.
+The file attached are :
+
+4 unbinned workspace (3 for the single function + the discrete profile ws)
+4 binned workspace (same as above → I used them for the GoF)
+4 datacard for the unbinned workspace
+4 datacard for the binned workspace (only for the GoF)
+A text file with all the command I use for what I described above.
+
+Could someone more expert than me give a look? I don’t know if something is wrong in the ws, in the datacard or in the combine command I use.
+Thanks for helping.
+Best
+Attilio
+INSTRUCTION: you can download everything in a folder and run (source) the command file.
+Unbinned ws:
+plotSM_250_discrete_profiling_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (14.5 KB)
+plotSM_250_f1_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (12.9 KB)
+plotSM_250_f2_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (12.9 KB)
+plotSM_250_f3_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (13.0 KB)
+Binned ws:
+plotSM_250_discrete_profiling_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (12.7 KB)
+plotSM_250_f1_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (11.0 KB)
+plotSM_250_f2_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (11.1 KB)
+plotSM_250_f3_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.root (11.1 KB)
+Unbinned datacard:
+combine_card_f1_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (439 Bytes)
+combine_card_f2_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (440 Bytes)
+combine_card_f3_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (441 Bytes)
+combine_card_profile_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (715 Bytes)
+Binned datacard:
+combine_card_f1_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (437 Bytes)
+combine_card_f2_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (438 Bytes)
+combine_card_f3_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (439 Bytes)
+combine_card_profile_binned_0.05000_75_1_2.0000_400_16_4.00_BS_0.txt (713 Bytes)
+command file:
+allCommands.txt (4.9 KB)
+----------------------------------------

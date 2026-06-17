@@ -1,0 +1,56 @@
+{
+  "topic_id": 42869,
+  "title": "Segmentation violation with Combine v10.0.1 / Asimov vs identical data with bkgs",
+  "url": "https://cms-talk.web.cern.ch/t/42869",
+  "category_id": 279,
+  "created_at": "2024-06-28T14:50:37.866Z",
+  "last_posted_at": "2024-07-08T16:26:45.930Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2024-06-28T14:50:38.208Z",
+      "updated_at": "2024-06-28T14:50:38.208Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nDuring our statistical study on the analysis, we had several questions.\n1\u2026 While executing FigDiagnostics using the command:\ncombine -M FitDiagnostics 2018_MuMu_M1000_syst.root --rMin -10 --rMax 10 --saveShapes --saveWithUncertainties -n 2018_MuMu_M1000_syst --plots -t -1\n\nwe encountered a segmentation violation error in Combine v10.0.1 (log attached below).\nNewFitDiag.log (93.6 KB)\nThis error was not present when using Combine v8.1.0 (quite old though):\nOldFitDiag.log (96.5 KB)\nThe input workspaces are provided in [1], along with the log of text2workspace [2], input datacard [3], and the physics model [4] in case.\nIt\u2019d be appreciated if you could give any help on why this occurred.\n2\u2026 When running Impacts with Asimov toy option (-t -1), the results show that all best fit nuisances are in a line as expected as below:\nToy_2018_MuMu_M1000_syst.pdf (33.2 KB)\nNow when we run this without Asimov option, filling in \u2018data_obs\u2019 histogram with the sum of total backgrounds, (i.e. running simply e.g.\ncombineTool.py -M Impacts -d input --rMin -10 --rMax 10 --robustFit 1 --doInitialFit )\nwe see somewhat different result:\nTotBkg_2018_MuMu_M1000_syst.pdf (34.1 KB)\nOur initial guess was that the best fit r should be 0, with the nuisances matching the input value exactly, as the input data and backgrounds are identical.\nCould you help us understand why these results differ?\n3\u2026 Finally, we were wondering about interpreting \u2018prefit\u2019 (or postfit as well) outcomes when running FitDiagnostics with --saveShapes --saveWithUncertainties.\nA typical example would be shown as:\nsr1_CMS_th1x_prefit696\u00d7472 4.33 KB\nHow should we interpret those blue/green lines and the yellow band?\nThis result is from the Asimov option, so none of these should correspond to an input histogram.\nThanks in advance,\nJihun.\n[1] /afs/cern.ch/user/j/jihunk/FitDiag/*Combine_2018_MuMu_M1000_syst.root\n[2] /afs/cern.ch/user/j/jihunk/FitDiag/*Workspace.log\n[3] /afs/cern.ch/user/j/jihunk/FitDiag/card_2018_MuMu_M1000_syst.txt\n[4] /afs/cern.ch/user/j/jihunk/FitDiag/HNDilepModel.py",
+      "cooked_html": "<p>Dear experts,</p>\n<p>During our statistical study on the analysis, we had several questions.</p>\n<p>1\u2026 While executing FigDiagnostics using the command:</p>\n<pre><code class=\"lang-auto\">combine -M FitDiagnostics 2018_MuMu_M1000_syst.root --rMin -10 --rMax 10 --saveShapes --saveWithUncertainties -n 2018_MuMu_M1000_syst --plots -t -1\n\n</code></pre>\n<p>we encountered a segmentation violation error in Combine v10.0.1 (log attached below).<br>\n<a class=\"attachment\" href=\"/uploads/short-url/eLUj4HIwitPEE5YoFQn9Yc4mNm1.log\">NewFitDiag.log</a> (93.6 KB)</p>\n<p>This error was not present when using Combine v8.1.0 (quite old though):<br>\n<a class=\"attachment\" href=\"/uploads/short-url/zvSaTwHTPbIh89QBnXlAsuo3jit.log\">OldFitDiag.log</a> (96.5 KB)</p>\n<p>The input workspaces are provided in [1], along with the log of text2workspace [2], input datacard [3], and the physics model [4] in case.</p>\n<p>It\u2019d be appreciated if you could give any help on why this occurred.</p>\n<p>2\u2026 When running Impacts with Asimov toy option (-t -1), the results show that all best fit nuisances are in a line as expected as below:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/vh5kQ0qjX7ZcCgomrACaS4NiMcQ.pdf\">Toy_2018_MuMu_M1000_syst.pdf</a> (33.2 KB)</p>\n<p>Now when we run this without Asimov option, filling in \u2018data_obs\u2019 histogram with the sum of total backgrounds, (i.e. running simply e.g.<br>\n<code>combineTool.py -M Impacts -d input --rMin -10 --rMax 10 --robustFit 1 --doInitialFit </code>)<br>\nwe see somewhat different result:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/5kL9v4irbOcKuvNrq6odkk0MuuI.pdf\">TotBkg_2018_MuMu_M1000_syst.pdf</a> (34.1 KB)</p>\n<p>Our initial guess was that the best fit r should be 0, with the nuisances matching the input value exactly, as the input data and backgrounds are identical.<br>\nCould you help us understand why these results differ?</p>\n<p>3\u2026 Finally, we were wondering about interpreting \u2018prefit\u2019 (or postfit as well) outcomes when running FitDiagnostics with --saveShapes --saveWithUncertainties.<br>\nA typical example would be shown as:<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7a0606a3ec04e46bc4f1ac95b9903ecf8c66b2a0.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/7a0606a3ec04e46bc4f1ac95b9903ecf8c66b2a0\" title=\"sr1_CMS_th1x_prefit\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7a0606a3ec04e46bc4f1ac95b9903ecf8c66b2a0.png\" alt=\"sr1_CMS_th1x_prefit\" data-base62-sha1=\"hpta2ns06L8RKfItN6zpQ3YANl6\" width=\"690\" height=\"467\" data-dominant-color=\"F7F7F6\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">sr1_CMS_th1x_prefit</span><span class=\"informations\">696\u00d7472 4.33 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>How should we interpret those blue/green lines and the yellow band?<br>\nThis result is from the Asimov option, so none of these should correspond to an input histogram.</p>\n<p>Thanks in advance,<br>\nJihun.</p>\n<p>[1] /afs/cern.ch/user/j/jihunk/FitDiag/*Combine_2018_MuMu_M1000_syst.root<br>\n[2] /afs/cern.ch/user/j/jihunk/FitDiag/*Workspace.log<br>\n[3] /afs/cern.ch/user/j/jihunk/FitDiag/card_2018_MuMu_M1000_syst.txt<br>\n[4] /afs/cern.ch/user/j/jihunk/FitDiag/HNDilepModel.py</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-07-03T10:01:13.338Z",
+      "updated_at": "2024-07-03T10:01:13.338Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jihun,\nSorry for the delayed response. Right now I don\u2019t have permission to view these files, you could you update the permisions or share them e.g. via cernbox so that I can take a closer look?\nBest,\nKyle",
+      "cooked_html": "<p>Hi Jihun,</p>\n<p>Sorry for the delayed response. Right now I don\u2019t have permission to view these files, you could you update the permisions or share them e.g. via cernbox so that I can take a closer look?</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2024-07-04T06:42:15.706Z",
+      "updated_at": "2024-07-04T06:42:15.706Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nI uploaded those on cernbox as well, please check below:\nhttps://cernbox.cern.ch/s/8sA1HLndHNmK5F6\nLet me know if you need anything with more details.\nThanks in advance,\nJihun.",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>I uploaded those on cernbox as well, please check below:<br>\n<a href=\"https://cernbox.cern.ch/s/8sA1HLndHNmK5F6\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cernbox.cern.ch/s/8sA1HLndHNmK5F6</a></p>\n<p>Let me know if you need anything with more details.</p>\n<p>Thanks in advance,<br>\nJihun.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-07-08T16:26:45.930Z",
+      "updated_at": "2024-07-08T16:26:45.930Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Jihun,\nI think the seg fault was related to some double deletions that were going on when running the plotting. I\u2019ve opened up a PR to fix it here: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/991\nI\u2019m not sure exactly why in some cases it seg faults and in others it just prints a warning. But in any case, it seems at least to be a simple fix.\nFor the asimov fit vs replacing the observed data with the prediction, these should give the same result, and when I did this they did (I did not run the full impacts, but just a quick initial fit). Is it possible the histogram does not exactly match the prefit expectation?\nFor the last question, these plots are showing you the data overlaid on top of the prefit (or postfit) expected values from the model, showing the background only and signal+background expectations on the same plot, and including the uncertainty bands. Let me know if there is something unclear about the interpretation.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Jihun,</p>\n<p>I think the seg fault was related to some double deletions that were going on when running the plotting. I\u2019ve opened up a PR to fix it here: <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/991\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/991</a></p>\n<p>I\u2019m not sure exactly why in some cases it seg faults and in others it just prints a warning. But in any case, it seems at least to be a simple fix.</p>\n<p>For the asimov fit vs replacing the observed data with the prediction, these should give the same result, and when I did this they did (I did not run the full impacts, but just a quick initial fit). Is it possible the histogram does not exactly match the prefit expectation?</p>\n<p>For the last question, these plots are showing you the data overlaid on top of the prefit (or postfit) expected values from the model, showing the background only and signal+background expectations on the same plot, and including the uncertainty bands. Let me know if there is something unclear about the interpretation.</p>\n<p>Best,<br>\nKyle</p>"
+    }
+  ]
+}

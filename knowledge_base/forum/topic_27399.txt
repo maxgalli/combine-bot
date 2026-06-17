@@ -1,0 +1,123 @@
+TOPIC: Correctly make impact plots for models with more than 1 POI
+URL: https://cms-talk.web.cern.ch/t/27399
+DATE: 2023-07-21T15:56:16.654Z
+SOLVED: no
+============================================================
+
+QUESTION (by fiemmi @ 2023-07-21T15:56:17.014Z):
+Dear experts,
+I have a physics model with 3 POIs: MH, GammaH and r. After performing likelihood scans for each of them, I’d like to check the impact plots, again for each of them.
+Based on the documentation here, it is clear that the relevant steps to produce impacts are three:
+
+initial fit step
+doFits step
+fit collection into .json
+
+What I am not sure about is, for each step, which parameter I should consider as a POI through the --redefineSignalPOI option. What I tried is (numbers correspond to the steps mentioned above):
+
+--redefineSignalPOI MH,GammH,r
+--redefineSignalPOI MH,GammH,r
+--redefineSignalPOI GammaH
+
+in case I want, e.g., make impacts for GammaH. This leads to an unexpected result: when making impact plots for MH, the central value and the errors (upper right corner of the impact plot) are reported correctly; when making plots for GammaH or r, instead, the errors (both +1σ and - 1σ) are 0. And indeed, if I check the .json file that I use as an input to the plotting script, I see something like
+"POIs": [
+{
+"fit": [
+0.0040234909392893314,
+0.0040234909392893314,
+0.0040234909392893314
+],
+"name": "GammaH"
+}
+],
+
+where clearly the central, +1σ and -1σ values are identical.
+This said, I wanted to ask:
+
+Is my usage of --redefineSignalPOI correct, or should I change it?
+Are my results trustable, meaning that the issue with the errors is just an issue with making the .json file and plotting it?
+If it’s just an issue with the plotting, do you have any idea what could be causing it?  Can the issue be caused by my usage of --redefineSignalPOI?
+
+Thanks a lot for your time and best regards,
+Fabio.
+----------------------------------------
+
+REPLY 2 (by fiemmi @ 2023-07-22T13:16:18.527Z):
+Dear all,
+I’ve been investigating deeper into my fits and I’d tend to say that it’s a plotting issue indeed. If I check the log for the initial fit, all the three POIs give a reasonable fit result (central value consistent with the one injected in the Asimov dataset, errors consistent with the likelihood scans). So my guess is that something goes wrong in step 3), when collecting the fits into the .json file.
+Is it something that happened to you in the past? Any idea on how to solve it? I still suspect that my choice(s) for --redefineSignalPOI may be wrong…
+Cheers,
+F.
+----------------------------------------
+
+REPLY 3 (by fiemmi @ 2023-07-22T16:27:28.028Z):
+Dear all,
+digging even deeper, I think that the cuplrit is at line 15 of CombineHarvester/CombineTools/python/combine/Impacts.py.
+The method utils.get_singles_results(file, scanned, columns) returns (here) the values for the POI to be plotted on the impact plots. Based on some printouts that I put, it reads the entry 1, 0 and 2 of the input limit tree.
+Now, if I inspect my input limit tree, I see the following:
+root [1] limit->Scan("MH:GammaH:r")
+************************************************
+*    Row   *        MH *    GammaH *         r *
+************************************************
+*        0 * 125.37998 * 0.0040234 * 0.9999772 *
+*        1 * 125.09249 * 0.0040234 * 0.9999772 *
+*        2 * 125.66726 * 0.0040234 * 0.9999772 *
+*        3 * 125.37998 *         0 * 0.9999772 *
+*        4 * 125.37998 * 0.7413536 * 0.9999772 *
+*        5 * 125.37998 * 0.0040234 * 0.8351216 *
+*        6 * 125.37998 * 0.0040234 * 1.2693400 *
+************************************************
+(long long) 7
+root [2]
+
+Clearly, while for MH the entries 1, 0, 2 are the -1σ, central and +1σ values (which looks good), this is not the case for GammaH and r (for GammaH, the -1σ entry is the 4th, while the +1σ entry is the 5th; for r they are the 5th and the 6th instead).
+While I am pretty sure I found where things are going wrong, it is quite hard for me to understand why this is happening. For example, why does my tree have 7 entries? What’s their meaning? And why, apparently, the -1σ, central and +1σ sigma values are distributed randomly?
+I still suspect I am doing something wrong but, as I said, I don’t know what. I am afraid I’ll need you people to better understand
+Cheers!
+F.
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2023-07-23T09:22:34.563Z):
+Hi Fabio,
+The output in your last message is correct - the first row is the best-fit point, then each pair of subsequent rows gives the intervals for each POI in turn. Note in this case for the other POIs just the best-fit is reported again, but they are actually being profiled in the fit.
+The issue is you need to keep the same --redefineSignalPOI command in the last step, with the three POIs in the same order. This is so the script knows in which order it should read the intervals output of the limit TTree.
+So you should get one json file that contains all the information for all POIs. Then it’s just at the impact plotting step where you choose the POI you want to plot. Can you try that and see if it works?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by fiemmi @ 2023-07-23T19:04:20.670Z):
+Dear Andrew,
+thanks! What you suggested works just fine. For some reason I thought I had to produce 3 separate .json files and from them run plotImpacs.py three times, and the script would understand what was the POI from the .json. Maybe it’s worth adding a line to the documentation, for posterity?
+Thanks again and best,
+Fabio
+----------------------------------------
+
+REPLY 6 (by agilbert @ 2023-07-24T12:54:32.570Z):
+Hi Fabio,
+This is a fair point, I’ve prepared an update to the docs that should be merged soon:
+
+github.com/cms-analysis/HiggsAnalysis-CombinedLimit
+
+Update impact docs to explain multiple POI usage
+
+cms-analysis:main ← cms-analysis:ajgilbert-update-impact-docs
+
+opened 12:42PM - 24 Jul 23 UTC
+
+ajgilbert
+
++3
+-1
+
+As suggested [here](https://cms-talk.web.cern.ch/t/correctly-make-impact-plots-f…or-models-with-more-than-1-poi/27399/5), this is really not obvious. This adds a few lines to the relevant docs.
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 7 (by fiemmi @ 2023-07-24T14:01:58.162Z):
+Hi Andrew,
+perfect! Thanks again for your prompt support and best!
+F.
+----------------------------------------

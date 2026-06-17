@@ -1,0 +1,45 @@
+{
+  "topic_id": 27562,
+  "title": "Minimisation procedures before b and s+b fits",
+  "url": "https://cms-talk.web.cern.ch/t/27562",
+  "category_id": 279,
+  "created_at": "2023-07-26T06:27:15.516Z",
+  "last_posted_at": "2023-07-26T10:24:00.620Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mrogulji",
+      "name": "Matej Roguljic",
+      "created_at": "2023-07-26T06:27:15.703Z",
+      "updated_at": "2023-07-26T06:27:15.703Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nwhy does the FitDiagnostics routine seemingly run minimisation several times before doing the background-only and signal+background fits as indicated in the output below? Also attached is the full output of combine for this specific fit.\nCombine2x2Output.txt (23.5 KB)\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nDEBUG: (function: runSpecific) FitDiagnostics.cc: 318 -- Fit B-only, status = 0, numBadNLL = 0, covariance quality = 3\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=-1\nDEBUG: (function: improveOnce) CascadeMinimizer.cc: 217 -- Minimization ended with latest status != 0 or 1",
+      "cooked_html": "<p>Dear experts,</p>\n<p>why does the FitDiagnostics routine seemingly run minimisation several times before doing the background-only and signal+background fits as indicated in the output below? Also attached is the full output of combine for this specific fit.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/ciSCg9qw7MlqiZnGOktsqw7ZxJS.txt\">Combine2x2Output.txt</a> (23.5 KB)</p>\n<pre><code class=\"lang-auto\">INFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0\nINFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0\nDEBUG: (function: runSpecific) FitDiagnostics.cc: 318 -- Fit B-only, status = 0, numBadNLL = 0, covariance quality = 3\nINFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1\nINFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=-1\nDEBUG: (function: improveOnce) CascadeMinimizer.cc: 217 -- Minimization ended with latest status != 0 or 1\n</code></pre>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-07-26T10:09:18.594Z",
+      "updated_at": "2023-07-26T10:09:18.594Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Matej,\nThe FitDiagnostics method in Combine does a lot of things and the minimisation is often ran in several iterations. In this case I think you are looking at the messages from the initial fit to the nusaincePdf which is done to save the snapshot of pre-fit nuisancePdf which can be used later for the toys. Perhaps someone else wants to give a more detailed explanation.\nBut I think you are trying to understand why the fit failed. I\u2019d suggest to increase the verbosity by one level i.e. -v 3 so we have more information to debug.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Matej,</p>\n<p>The FitDiagnostics method in Combine does a lot of things and the minimisation is often ran in several iterations. In this case I think you are looking at the messages from the <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/FitDiagnostics.cc#L221\" rel=\"noopener nofollow ugc\">initial fit to the nusaincePdf</a> which is done to save the snapshot of pre-fit nuisancePdf which can be used later for the toys. Perhaps someone else wants to give a more detailed explanation.<br>\nBut I think you are trying to understand why the fit failed. I\u2019d suggest to increase the verbosity by one level i.e. <code>-v 3</code> so we have more information to debug.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "mrogulji",
+      "name": "Matej Roguljic",
+      "created_at": "2023-07-26T10:24:00.620Z",
+      "updated_at": "2023-07-26T10:24:00.620Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank you Aliya,\n\nThe FitDiagnostics method in Combine does a lot of things and the minimisation is often ran in several iterations.\n\nAre these many things and iterations documented and explained somewhere? As you say, this is not related to the failing fit, but I\u2019m curious to know the full procedure.\nCheers,\nMatej",
+      "cooked_html": "<p>Thank you Aliya,</p>\n<blockquote>\n<p>The FitDiagnostics method in Combine does a lot of things and the minimisation is often ran in several iterations.</p>\n</blockquote>\n<p>Are these many things and iterations documented and explained somewhere? As you say, this is not related to the failing fit, but I\u2019m curious to know the full procedure.</p>\n<p>Cheers,<br>\nMatej</p>"
+    }
+  ]
+}

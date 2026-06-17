@@ -1,0 +1,59 @@
+TOPIC: In CMS Combine Toolkit, when the value of integral of MVA score distribution is less than 0
+URL: https://cms-talk.web.cern.ch/t/34782
+DATE: 2024-02-15T03:23:35.115Z
+SOLVED: no
+============================================================
+
+QUESTION (by yhoonlee @ 2024-02-15T03:23:35.278Z):
+Dear All,
+I wrote this question to ask about issues that may arise when using the CMS Combine Toolkit.
+Please let me know if I posted this question in the wrong place.
+The questions are:
+The TMVA BDT Method is used to classify the signal and background, and as a result, the MVA score distribution of MC or data is obtained.
+However, if the Event Yields (integral value) of a specific MC are less than 0, an error occurs in the CMS Combine Toolkit and it cannot be used.
+How should I resolve this?
+My case is described in more detail as follows.
+I am conducting a search in the tri-lepton channel. (tZq FCNC)
+The channels considered are ElElEl, MuElEl, ElMuMu, and MuMuMu, and the dataset is Run2.
+However, in 2016-postVFP and 2017, the ElElEl Nonprompt process has Event Yields (i.e. integral value) less than 0 in the Signal Region.
+I understand that this will cause an error in the CMS Combine Toolkit.
+To proceed with the analysis, I combined ZGamma and WGamma with Nonprompt to hide problems where Event Yields (i.e. integral values) are less than 0.
+But I don’t know if I can do this.
+Is there a general way to solve this problem?
+Any help would be greatly appreciated.
+Best Regards,
+Younghoon.
+----------------------------------------
+
+REPLY 2 (by clange @ 2024-02-16T16:01:32.513Z):
+Hi Younghoon,
+This is the wrong category, I moved your post to the correct one: https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279
+Cheers,
+Clemens
+----------------------------------------
+
+REPLY 3 (by adewit @ 2024-02-16T16:20:12.370Z):
+Dear Younghoon,
+It is true that Combine will complain in the case of negative event yields (pdfs cannot be negative, after all). This is also consistent in the sense that in general, a negative event yield does not make sense for a physical process (except in the case of negative interference, in which case a specific physics model needs to be used to address the issue).
+In your case, you should work out whether a negative yield for this specific process means you have no background from it at all (in which case you might exclude it), or whether your estimate is unreliable (in which case you may need to find an alternative method for estimating it).
+Best,
+Adinda
+----------------------------------------
+
+REPLY 4 (by yhoonlee @ 2024-02-17T05:23:56.472Z):
+Dear Clemens,
+Thank you for your help.
+I will refer to this when using CMS-Talk in the future.
+Best Regards,
+Younghoon.
+----------------------------------------
+
+REPLY 5 (by yhoonlee @ 2024-02-17T05:24:10.725Z):
+Dear Adinda,
+If so, I need to find a method that suits my work.
+If a specific process in the background is very small or has a negative yield, it may be necessary to consider excluding that process.
+Your reply really helped me figure out what to do next.
+Thank you for your kind and detailed reply.
+Best Regards,
+Younghoon.
+----------------------------------------

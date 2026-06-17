@@ -1,0 +1,37 @@
+TOPIC: Understanding the memory pattern as a function of toys
+URL: https://cms-talk.web.cern.ch/t/16270
+DATE: 2022-10-14T09:22:36.696Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2022-10-14T09:22:36.807Z):
+Hi experts,
+In making the tests that led to my question in the other thread, I find an unexpected memory usage pattern that increases as the number of requested toys increase. The test is done with the command [1]. The resulting maximum memory usage is [2]. In other areas such a pattern is indicative of memory leaks, and I wonder if this may not be the case here as well.
+Cheers,
+Afiq
+[1]
+/usr/bin/time -f '%Uuser %Ssystem %Eelapsed %PCPU (%Xtext+%Ddata %Mmax)k' combineTool.py -v -1 -M MultiDimFit -d workspace_twin-g.root -m 400 -n _pnt_g1_0.0_g2_0.0_toys_0 --algo fixed --fixedPointPOIs 'g1=0.0,g2=0.0' --setParameters 'g1=0.0,g2=0.0'  --cminPreScan --cminDefaultMinimizerAlgo Migrad --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,Simplex,0 -s -1 --toysFrequentist -t 10 --X-rtd MINIMIZER_analytic
+
+[2]
+ntoy max_memory
+5 660860max
+10 678128max
+20 952588max
+40 1348592max
+80 2137032max
+160 3637392max
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-10-14T09:25:18.277Z):
+Hi Afiq,
+I think it’s been seen before. May be on the RooFit side instead of ours, but worth checking again. Can you make a github issue (https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues) to fully document and add links to your inputs so we can reproduce.
+thanks,
+Andrew
+----------------------------------------
+
+REPLY 3 (by afiqaize @ 2022-10-14T09:27:04.450Z):
+Hi Andrew,
+Alright, will do.
+Cheers,
+Afiq
+----------------------------------------

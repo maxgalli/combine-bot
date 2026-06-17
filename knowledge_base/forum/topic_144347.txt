@@ -1,0 +1,75 @@
+TOPIC: Unwanted behavior of impacts plots routine with '--toysFrequentist'
+URL: https://cms-talk.web.cern.ch/t/144347
+DATE: 2026-04-23T16:59:53.253Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by fiemmi @ 2026-04-23T16:59:53.718Z):
+Dear Combine experts,
+with this thread I’d like to report a behavior of the current routine producing impact plots which, I believe, is unwanted and potentially dangerous.
+When making expected impact plots, we want to throw an Asimov dataset, fit its nuisance parameters (NPs) back, and plot the differences \hat{\theta}_i - \theta_{i,0}, where \theta_{i,0} is the “initial value” of the i-th NP. According to the very definition of Asimov dataset, we should fit all the NPs back, thus getting \hat{\theta}_i - \theta_{i,0} = 0\, \forall i, which means no pulls whatsoever. Now, what the “initial value” \theta_{i,0} is, really depends on what the analyzer does. If one does
+combineTool.py --M Impacts -d datacard.root -t -1 --setParameters <something> --doFits
+
+then the routine takes the values of the NPs in the input workspace, throws an Asimov dataset, fits it back. If the Asimov fit is healthy, the pulls are zero. Now, as soon as one adds --toysFrequentist to the command above, a frequentist fit to the data is triggered in order to make the “best” choice of the NPs values (let’s call them \theta_{\textrm{freq},i}) to throw the Asimov with. But still, when making plots, the values taken by the NPs in the input workspace (\theta_{\textrm{ws},i}) are used as the “initial values”. Clearly, since now a frequentist fit to the data is involved, we will in general have \hat{\theta}_i - \theta_{\textrm{ws},i} \neq 0, and we will thus see pulls, while the correct behavior would be to plot \hat{\theta}_i - \theta_{\textrm{freq},i} (which for a healthy Asimov fit should be 0).
+Let me quickly flash why I believe this is potentially dangerous. Suppose you are making a mass measurement (e.g., Higgs mass). You’ll have several energy scale NPs, which effectively are able to shift your mass peak to the left or to the right. Now you fix the value of your parameter of interest MH to a given value (say, 125.38 GeV), make a frequentist fit to the data to get the values of the NPs (this is very common in H(γγ) where we want e.g. to choose the best-fit PDF for background from the data), throw and Asimov dataset, and finally make impact plots. I attach a possible result of such routine down below.
+impacts_toysFreq1598×301 44.3 KB
+Basically, the scale nuisances are consistently pulled to the right, effectively telling us that the observed mass is higher than 125.38 GeV. Needless to say: despite this being unintended, it is not fine to have this information prior to unblinding…
+In conclusion, I think we are definitely not supposed to have access to pulls when the frequentist fit is triggered and, when this is the case, \hat{\theta}_i - \theta_{\textrm{freq},i} should be plotted.
+Let me know what you think. Thanks for your time!
+All the best,
+Fabio.
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by agilbert @ 2026-04-23T17:34:08.988Z):
+Hi Fabio,
+Yes, this problem has been around since the beginning. I agree with you, in some specific cases this is very undesirable, and even if not, rather confusing for the user. Actually it will be fixed in this PR,
+
+github.com/cms-analysis/HiggsAnalysis-CombinedLimit
+
+WIP: First implementation of ATLAS-style global impacts
+
+main ← ajgilbert:global-impacts
+
+opened 02:03PM - 12 Jan 26 UTC
+
+ajgilbert
+
++252
+-32
+
+- Added option to combineTool.py -M Impacts to calculate the global impacts both… for the standard (asymmetric) impacts (what ATLAS call the shifted global-observable method), and the approximate (symmetric) impacts (what ATLAS call the post-fit nuisance-parameter covariance method)
+- Enabled by adding `--globalImpacts` or `-g` to all three of the combineTool.py steps. At the moment, runs in addition to (not instead of) the standard impacts calculation. Anticipate support run only global impacts eventually.
+- plotImpacts.py also has an option `--show-global` or `-g` to draw the global impacts too.
+- Also fixes long-standing bug/feature that impacts made when running toysFrequentist did not correctly center the fit results (i.e. did not know about the shifted pre-fit values). Now we also retrieve these from the RooFitResult.
+- Includes script for summing global impacts and quadrature and calculating stat/syst split (plus for any NP groups that are defined in the workspace): `python3 scripts/groupGlobalImpacts.py -i impacts.json`
+
+TODO:
+= - Some discussion needed on treatment of NPs with non-Gaussian constraints. Right now we vary global obs by prefit uncertainty on the nuisance parameter (which in this case may not be the same as the "uncertainty" on the global observable). Can see a potential inconsistency with what one would get throwing frequentist toys instead, but this needs to be tested.
+- It would be ideal to have some kind of CI checks for the global impacts, and also to check that I didn't inadvertently break anything for the regular impacts workflow.
+<img width="892" height="732" alt="image" src="https://github.com/user-attachments/assets/c857a3a0-2134-4253-94b6-f70f719f3bbc" />
+
+## Summary by CodeRabbit
+
+* **New Features**
+* Added --globalImpacts (-g) to compute and include global impact metrics in output JSON.
+* Prefit/postfit now account for constant/fixed parameter values and extract global observables for improved comparisons.
+* Added --show-global to plot global impacts alongside per-parameter impacts.
+* New grouping utility to summarize per-POI and per-group global contributions.
+
+* **Bug Fixes**
+* Fixed Hessian decision logic in the initial fit stage.
+
+<sub>✏️ Tip: You can customize this high-level summary in your review settings.</sub>
+
+where we overhauled the determination of the initial values in the impacts plotting.
+Hopefully will be merged soon, I have a little work to do still.
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by fiemmi @ 2026-04-23T17:51:47.972Z):
+Hi Andrew,
+Great news!  I wasn’t aware of this PR, thanks a lot for working on it. It will be a great improvement to the tool.
+Best,
+F.
+----------------------------------------

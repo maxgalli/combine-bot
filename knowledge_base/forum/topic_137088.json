@@ -1,0 +1,45 @@
+{
+  "topic_id": 137088,
+  "title": "combineCreateNLL not properly integrated with pyROOT on with combine v10.2.0 onwards",
+  "url": "https://cms-talk.web.cern.ch/t/137088",
+  "category_id": 279,
+  "created_at": "2025-11-07T18:50:58.823Z",
+  "last_posted_at": "2025-11-14T15:28:46.711Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    },
+    {
+      "id": 249,
+      "name": "combineharvester",
+      "slug": "combineharvester"
+    }
+  ],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2025-11-07T18:50:59.281Z",
+      "updated_at": "2025-11-11T11:15:07.654Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello,\nI would like to report a bug(?) where combineTool\u2019s FastScan method is not working from v10.2.0 onwards. Here\u2019s my script:\ntext2workspace.py -m 125 datacard_comb_sig_all_ggh.txt\ncombineTool.py -M FastScan -w datacard_comb_sig_all_ggh.root:w --no-match pdf_index_ggh  --setParameters pdf_index_ggh=0  --freezeParameters pdf_index_ggh --cminDefaultMinimizerStrategy=0 --parallel 60 -o nll_pdf_index0\n\nThis leads to this error statement:\nTraceback (most recent call last):\nFile \"/depot/cms/private/users/yun79/combine/old_ver/CMSSW_14_1_0_pre4/bin/el8_amd64_gcc12/combineTool.py\", line 76, in <module>\nmethod.run_method()\nFile \"/depot/cms/private/users/yun79/combine/old_ver/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/tool_base/FastScan.py\", line 60, in run_method\nnll = ROOT.combineCreateNLL(pdf, data)\nFile \"/cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.07-f3322c77db1c59847b28fde88ff7218c/lib/ROOT/_facade.py\", line 196, in _fallback_getattr\nraise AttributeError(\"Failed to get attribute {} from ROOT\".format(name))\nAttributeError: Failed to get attribute combineCreateNLL from ROOT\n\nThis error directly comes from FastScan.py\u2019s importing function ROOT.combineCreateNLL in order to extract the NLL values. This modue exists in the combineTool\u2019s code, but it\u2019s not being integrated properly with pyROOT package when I set it up following the official instructions.\nFortunately, I checked FastScan.py from v10.1.0, and it extracts the NLL values using a different method. I can confirm that when I compile my combine environment with v10.1.0, my FastScan script runs fine.\nPlease let me know if I was compiling my combine wrong.\nThank you,\nHyeon-Seo",
+      "cooked_html": "<p>Hello,</p>\n<p>I would like to report a bug(?) where combineTool\u2019s FastScan method is not working from v10.2.0 onwards. Here\u2019s my script:</p>\n<pre><code class=\"lang-auto\">text2workspace.py -m 125 datacard_comb_sig_all_ggh.txt \ncombineTool.py -M FastScan -w datacard_comb_sig_all_ggh.root:w --no-match pdf_index_ggh  --setParameters pdf_index_ggh=0  --freezeParameters pdf_index_ggh --cminDefaultMinimizerStrategy=0 --parallel 60 -o nll_pdf_index0\n</code></pre>\n<p>This leads to this error statement:</p>\n<pre><code class=\"lang-auto\">Traceback (most recent call last):\n  File \"/depot/cms/private/users/yun79/combine/old_ver/CMSSW_14_1_0_pre4/bin/el8_amd64_gcc12/combineTool.py\", line 76, in &lt;module&gt;\n    method.run_method()\n  File \"/depot/cms/private/users/yun79/combine/old_ver/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/python/tool_base/FastScan.py\", line 60, in run_method\n    nll = ROOT.combineCreateNLL(pdf, data)\n  File \"/cvmfs/cms.cern.ch/el8_amd64_gcc12/lcg/root/6.30.07-f3322c77db1c59847b28fde88ff7218c/lib/ROOT/_facade.py\", line 196, in _fallback_getattr\n    raise AttributeError(\"Failed to get attribute {} from ROOT\".format(name))\nAttributeError: Failed to get attribute combineCreateNLL from ROOT\n</code></pre>\n<p>This error directly comes from FastScan.py\u2019s importing function <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/3dda45cf669789ded9584814768472b67c215337/python/tool_base/FastScan.py#L63\" rel=\"noopener nofollow ugc\">ROOT.combineCreateNLL</a> in order to extract the NLL values. This modue exists in the combineTool\u2019s code, but it\u2019s not being integrated properly with pyROOT package when I set it up following the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#combine-v10-recommended-version\" rel=\"noopener nofollow ugc\">official instructions</a>.</p>\n<p>Fortunately, I checked FastScan.py from v10.1.0, and it extracts the NLL values using a <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/1cd275fe12f54ffbf0ed2d44e3dae66595572212/python/tool_base/FastScan.py#L64\" rel=\"noopener nofollow ugc\">different method</a>. I can confirm that when I compile my combine environment with v10.1.0, my FastScan script runs fine.</p>\n<p>Please let me know if I was compiling my combine wrong.</p>\n<p>Thank you,</p>\n<p>Hyeon-Seo</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-11-14T15:28:46.711Z",
+      "updated_at": "2025-11-14T15:28:46.711Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi @hyeonseo,\nThanks a lot for reporting the issue, it is fixed in the v10.3.3 as announced in\n\nThe latest recommended Combine and CombineHarvester versions Statistical Interpretation Tools\n\nDear all,\nThe latest recommended tag for Combine was recently updated to v10.3.3. This release addresses the bug in FastScan method, details are in the release notes. Please update your Combine setup.\nCombine: v10.3.3, setup instructions\nCombineHarvester: v3.0.0 , setup instructions (the same as before).\nBest,\nMassimiliano\n\nBest,\nAliya",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/hyeonseo\">@hyeonseo</a>,</p>\n<p>Thanks a lot for reporting the issue, it is fixed in the v10.3.3 as announced in</p><aside class=\"quote\" data-post=\"16\" data-topic=\"25462\">\n  <div class=\"title\">\n    <div class=\"quote-controls\"></div>\n    <img alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/b77776/48.png\" class=\"avatar\">\n    <div class=\"quote-title__text-content\">\n      <a href=\"https://cms-talk.web.cern.ch/t/the-latest-recommended-combine-and-combineharvester-versions/25462/16\">The latest recommended Combine and CombineHarvester versions</a> <a class=\"badge-category__wrapper \" href=\"/c/physics/cat/cat-stats/279\"><span data-category-id=\"279\" style=\"--category-badge-color: #FAE217; --category-badge-text-color: #FFFFFF; --parent-category-badge-color: #0088CC;\" data-parent-category-id=\"274\" data-drop-close=\"true\" class=\"badge-category --style-square --has-parent\" title=\"Email gateway: cmstalk+cat-stats@dovecotmta.cern.ch\"><span class=\"badge-category__name\">Statistical Interpretation Tools</span></span></a>\n    </div>\n  </div>\n  <blockquote>\n    Dear all, \nThe latest recommended tag for Combine was recently updated to v10.3.3. This release addresses the bug in FastScan method, details are in the release notes. Please update your Combine setup. \nCombine: <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/releases/tag/v10.3.3\" rel=\"noopener nofollow ugc\">v10.3.3</a>, <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#combine-v10-recommended-version\" rel=\"noopener nofollow ugc\">setup instructions</a> \nCombineHarvester: <a href=\"https://github.com/cms-analysis/CombineHarvester/releases/tag/v3.0.0\" rel=\"noopener nofollow ugc\">v3.0.0 </a>, <a href=\"https://github.com/cms-analysis/CombineHarvester?tab=readme-ov-file#quick-start\" rel=\"noopener nofollow ugc\">setup instructions </a>(the same as before). \nBest, \nMassimiliano\n  </blockquote>\n</aside>\n\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

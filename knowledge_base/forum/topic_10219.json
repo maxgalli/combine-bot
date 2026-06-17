@@ -1,0 +1,78 @@
+{
+  "topic_id": 10219,
+  "title": "Incorporate sPlots in combine template fit",
+  "url": "https://cms-talk.web.cern.ch/t/10219",
+  "category_id": 279,
+  "created_at": "2022-05-09T12:52:24.258Z",
+  "last_posted_at": "2022-05-09T15:19:37.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "manzoni",
+      "name": "Riccardo Manzoni",
+      "created_at": "2022-05-09T12:52:24.446Z",
+      "updated_at": "2023-02-07T10:57:34.617Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.\n\nis there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?\n\ndoes combine allow to fit weighed data?\n\nLet me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.\nThanks,\nRiccardo\n\nq2696\u00d7672 8.08 KB\n\nmass696\u00d7672 9.13 KB",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.</p>\n<ol>\n<li>\n<p>is there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?</p>\n</li>\n<li>\n<p>does combine allow to fit weighed data?</p>\n</li>\n</ol>\n<p>Let me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.</p>\n<p>Thanks,<br>\nRiccardo</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7ad3423c608d10d69e15ad57a1f621575ce2a4d7.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/7ad3423c608d10d69e15ad57a1f621575ce2a4d7\" title=\"q2\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7ad3423c608d10d69e15ad57a1f621575ce2a4d7.png\" alt=\"q2\" data-base62-sha1=\"hwyS0G78OdnHmLElLIQP2xlOy6X\" width=\"517\" height=\"500\" data-dominant-color=\"C9CDDF\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">q2</span><span class=\"informations\">696\u00d7672 8.08 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div><br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/2/22e09a91db4e3cb6b41df59becca89c16013904b.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/22e09a91db4e3cb6b41df59becca89c16013904b\" title=\"mass\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/2/22e09a91db4e3cb6b41df59becca89c16013904b.png\" alt=\"mass\" data-base62-sha1=\"4YxrC5mXJSWZUvlVcSCSwuLk5M7\" width=\"517\" height=\"500\" data-dominant-color=\"D0D4E4\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">mass</span><span class=\"informations\">696\u00d7672 9.13 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2022-05-09T13:03:11.000Z",
+      "updated_at": "2022-05-09T13:03:58.531Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "sPlot is evil\nEl lun., 9 may. 2022 14:54, Riccardo Manzoni via CMS talk <noreply@cms-talk.web.cern.ch> escribi\u00f3:\n\nRiccardo Manzoni manzoniMay 9\n\nDear Experts,\nI have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.\n\nis there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?\n\ndoes combine allow to fit weighed data?\n\nLet me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.\nThanks,\nRiccardo\n\nVisit Topic or reply to this email to respond.\nYou are receiving this because you enabled mailing list mode.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>sPlot is evil <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/smiley.png?v=12\" title=\":smiley:\" class=\"emoji\" alt=\":smiley:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>El lun., 9 may. 2022 14:54, Riccardo Manzoni via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; escribi\u00f3:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/m/c0e974/45.png\" title=\"manzoni\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/manzoni\">Riccardo Manzoni</a> manzoni<br>May 9</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Experts,</p>\n<p>I have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.</p>\n<ol>\n<li>\n<p>is there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?</p>\n</li>\n<li>\n<p>does combine allow to fit weighed data?</p>\n</li>\n</ol>\n<p>Let me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.</p>\n<p>Thanks,<br>\nRiccardo</p>\n<p><a href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7ad3423c608d10d69e15ad57a1f621575ce2a4d7.png\"></a></p>\n<p><a href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/2/22e09a91db4e3cb6b41df59becca89c16013904b.png\"></a></p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/incorporate-splots-in-combine-template-fit/10219/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>You are receiving this because you enabled mailing list mode.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/699f4879e31a39668177f047cbca4f56fb4f6a351d498669ea422a790e394160\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 3,
+      "username": "manzoni",
+      "name": "Riccardo Manzoni",
+      "created_at": "2022-05-09T13:10:32.446Z",
+      "updated_at": "2022-05-09T13:10:32.446Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "\u201cthe end justify the means\u201d\nJokes apart, I\u2019m am also more than curious to know if there are better ideas to achieve the same goal.\nCheers,\nRiccardo",
+      "cooked_html": "<p>\u201cthe end justify the means\u201d <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/wink.png?v=12\" title=\":wink:\" class=\"emoji\" alt=\":wink:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>Jokes apart, I\u2019m am also more than curious to know if there are better ideas to achieve the same goal.</p>\n<p>Cheers,<br>\nRiccardo</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2022-05-09T14:21:20.000Z",
+      "updated_at": "2022-05-09T14:23:39.626Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "yes, it\u2019s always a compromise between need and ideality.\nJokes aside, the most tricky part is checking for independence rather than only uncorrelatedness, and the issue with uncertainties.\nWe had a workshop on this a couple years ago https://indico.cern.ch/event/909987/ , and I seem to remember also another in-depth workshop where a modification to splot was proposed but I need to find the link.\nCheers,\nPietro\n\n\u00b7\u00b7\u00b7\nDr. Pietro Vischia\nFNRS Fellow\nhttp://cp3.irmp.ucl.ac.be/Members/pvischia\nmobile: 0034 666 986 616 (ES)\noffice: +32 10 473205\nmail: pietro.vischia@cern.ch pietro.vischia@gmail.com\nskype: rambling_hadron",
+      "cooked_html": "<p><img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/smiley.png?v=12\" title=\":smiley:\" class=\"emoji\" alt=\":smiley:\" loading=\"lazy\" width=\"20\" height=\"20\"> yes, it\u2019s always a compromise between need and ideality.</p>\n<p>Jokes aside, the most tricky part is checking for independence rather than only uncorrelatedness, and the issue with uncertainties.</p>\n<p>We had a workshop on this a couple years ago <a href=\"https://indico.cern.ch/event/909987/\" rel=\"noopener nofollow ugc\">https://indico.cern.ch/event/909987/</a> , and I seem to remember also another in-depth workshop where a modification to splot was proposed but I need to find the link.</p>\n<p>Cheers,<br>\nPietro</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>Dr. Pietro Vischia</p>\n<p>FNRS Fellow</p>\n<p><a href=\"http://cp3.irmp.ucl.ac.be/Members/pvischia\" rel=\"noopener nofollow ugc\">http://cp3.irmp.ucl.ac.be/Members/pvischia</a><br>\nmobile: 0034 666 986 616 (ES)<br>\noffice: +32 10 473205<br>\nmail: <a href=\"mailto:pietro.vischia@cern.ch\">pietro.vischia@cern.ch</a> <a href=\"mailto:pietro.vischia@gmail.com\">pietro.vischia@gmail.com</a><br>\nskype: rambling_hadron</p>\n</details>"
+    },
+    {
+      "post_number": 5,
+      "username": "manzoni",
+      "name": "Riccardo Manzoni",
+      "created_at": "2022-05-09T14:56:52.261Z",
+      "updated_at": "2022-05-09T14:56:52.261Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "this one?\nhttps://indico.cern.ch/event/940874/timetable/#5-using-sweights-to-disentangl",
+      "cooked_html": "<p>this one?<br>\n<a href=\"https://indico.cern.ch/event/940874/timetable/#5-using-sweights-to-disentangl\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://indico.cern.ch/event/940874/timetable/#5-using-sweights-to-disentangl</a></p>"
+    },
+    {
+      "post_number": 6,
+      "username": "malcles",
+      "name": "Julie Malcles",
+      "created_at": "2022-05-09T15:19:37.000Z",
+      "updated_at": "2022-05-09T15:20:37.970Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi Riccardo,\nYou can do a 2D fit directly in fact (as done in HH-> bb gamma gamma analysis for example), you do not need sPlot.\nsPlot would rather be doing a 1D fit with invariant mass only to estimate the q2 distribution of signal or background. You are not supposed to use the variable you want to infer with sweights\nas a discriminating variable in the fit in sPlots.\nCheers,\nJulie\n\nOn 9 May 2022, at 14:55, Riccardo Manzoni via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nRiccardo Manzoni manzoniMay 9\n\nDear Experts,\nI have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.\n\nis there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?\n\ndoes combine allow to fit weighed data?\n\nLet me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.\nThanks,\nRiccardo\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Hi Riccardo,</p>\n<p>You can do a 2D fit directly in fact (as done in HH-&gt; bb gamma gamma analysis for example), you do not need sPlot.</p>\n<p>sPlot would rather be doing a 1D fit with invariant mass only to estimate the q2 distribution of signal or background. You are not supposed to use the variable you want to infer with sweights<br>\nas a discriminating variable in the fit in sPlots.</p>\n<p>Cheers,</p>\n<p>Julie</p>\n<blockquote>\n<p>On 9 May 2022, at 14:55, Riccardo Manzoni via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/m/c0e974/45.png\" title=\"manzoni\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/manzoni\">Riccardo Manzoni</a> manzoni<br>May 9</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Experts,</p>\n<p>I have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.</p>\n<ol>\n<li>\n<p>is there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?</p>\n</li>\n<li>\n<p>does combine allow to fit weighed data?</p>\n</li>\n</ol>\n<p>Let me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.</p>\n<p>Thanks,<br>\nRiccardo</p>\n<p><a href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7ad3423c608d10d69e15ad57a1f621575ce2a4d7.png\"></a></p>\n<p><a href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/2/22e09a91db4e3cb6b41df59becca89c16013904b.png\"></a></p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/incorporate-splots-in-combine-template-fit/10219/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/71025bc3224a871dd3118a4f106332eaa70af1510f63b755ae17a327966fe732\">click here</a>.</p>\n</blockquote>"
+    }
+  ]
+}

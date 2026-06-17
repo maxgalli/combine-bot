@@ -1,0 +1,51 @@
+TOPIC: Correlations in Unbinned Parametric Fit
+URL: https://cms-talk.web.cern.ch/t/17239
+DATE: 2022-11-07T21:50:18.640Z
+SOLVED: no
+============================================================
+
+QUESTION (by shigginb @ 2022-11-07T21:50:18.991Z):
+Hello Combine Experts,
+There are concerns with correlations in our unbinned parametric fit model. In RooFit I’ve implemented a fitting strategy that will use Bernstein polynomials for two backgrounds in our fit model. I would like to decorrelate the parameters in the polynomials.
+How do I decorrelate parameters in an unbinned parametric fit model?
+I found an old discussion on this here [1]; which pointed me to a PdfDiagonalizer in combine here [2].
+It seems that RooFit won’t choose a basis that are eigenvectors of the covariance matrix of the fit. Ergo correlations will naturally exits when one tries to vary the parameters in the likelihood.
+Is choosing a basis with eigenvectors of the covariance matrix how I decorrelate parameters? How would one treat the corresponding PDF with combine AND the “param” error associated with its parameters?
+Many thanks for your time and attention,
+Sam
+P.S. for reference here are some data cards for the analysis:
+/afs/cern.ch/user/s/shigginb/public/HAA_datacards/
+I believe this may also solve some fluctuation problems that I have too:
+
+Fluctuations in Upper 95 CL Limits in Parametric Unbinned Model Statistical Interpretation Tools
+
+Hi Sam,
+I agree, 30% is probably a bit too large to neglect it and 0.1 expected events is indeed very little.
+It is also true that 10^6 toys should be fairly enough.
+the things than you should try to to are:
+
+make sure that you are effectively running 10^6 toys, and not asking combine to stop early.
+
+make sure that toys have different seeds if ran on different jobs
+
+plot the test statistics distribution (see under complex models in the documentation) and check if it has weird features.
+…
+
+[1]https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/377/1/1/1.html
+[2]https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/PdfDiagonalizer.cc
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-11-09T10:56:35.672Z):
+Hi Sam,
+it is unclear to me what you exactly want to do with the decorrelation, if you are trying to propagate errors from another fit or just easy the fit convergence.
+RooFit will not compute eigen values/vectors because these quantities are defined after the fit. You can choose a point in the parameter space, compute the hessian matrix, and rotate the basis of the parameter is such a way that the hessian is diagonal. If you are at a local minimum of the log-likelihood, this means that the covariance matrix is also diagonal. However this transformation is (in general) point-wise dependent.
+A reason for doing it in anycase at some point and with some set of uncertainties could be to remove a large part of correlation/anti-correlation of some parameters and therefore easy the fit convergence.
+This means that if you had a probability density function P(a,b,c… ) now you can write it as P(alpha, beta, gamma, … ) where a, b, c  are linear combination of alpha, beta, gamma.
+A reparametrization of this kind does not change the likelihood function nor it’s capability of describing the dataset, but has only numerical advantages in the minimization process.
+There is no particular treatment in combine wrt different parametrizations. You will simply use the new pdf instead of the old one.
+If you have another fit from which you want to propagate some uncertainty as external measurement,
+you will diagonalize the result wrt that fit and add a constrain term for the eigenvector of the covariance matrix of that fit. A param statement add this constrain terms to the likelihood function.
+(Are you sure this is what you want to do?)
+Cheers,
+-Andrea
+----------------------------------------

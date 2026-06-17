@@ -1,0 +1,40 @@
+TOPIC: Some use cases of datacards validation ci/cd
+URL: https://cms-talk.web.cern.ch/t/30056
+DATE: 2023-09-29T10:41:02.580Z
+SOLVED: no
+============================================================
+
+QUESTION (by hkwon @ 2023-09-29T10:41:02.742Z):
+Dear experts,
+Maybe it’s worth to report some cases regarding the datacards validation pipeline for potential room for improvements:
+
+For analyses using custom pdf in fit, the default containter is lack of this library so that it needs a way around to get the pipeline rolling
+
+(Rather issue in ValidateDatacards.py/Combine harvester?) Compile error in RooFormula where parameters used were not pre-loaded probably since 1. datacard parsing seems order dependent 2. ‘param’ directive other than ‘rateParam’ are not recognized
+
+Please have a look into relevant pipelines [1] in case you are interested. (but probably the access right is limited for relevant maintainers.)
+[1]https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards/-/pipelines/6246325
+https://gitlab.cern.ch/cms-analysis/sus/sus-23-001/datacards/-/pipelines/6247277
+FYI: @kcormier @anigamov @guttley
+Thanks,
+Hyejin
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-10-02T12:02:14.309Z):
+Dear Hyejin,
+First, thanks a lot for bringing up these important points.
+
+Hyejin Kwon:
+
+For analyses using custom pdf in fit, the default containter is lack of this library so that it needs a way around to get the pipeline rolling
+
+The best way to address this issue is to include the missing libraries into Combine, once the PR created (by authors or Combine contacts) we’ll review it, release a new version of Combine as well as Combine container and update the ci. You can find a good example of such a PR here, let us know if something is not clear. In general I think it is important to avoid workarounds as much as possible.
+
+Hyejin Kwon:
+
+(Rather issue in ValidateDatacards.py/Combine harvester?) Compile error in RooFormula where parameters used were not pre-loaded probably since 1. datacard parsing seems order dependent 2. ‘param’ directive other than ‘rateParam’ are not recognized
+
+Here some work is needed to unify the datacard parsing procedures in Combine and CombineHarvester, we hope to address this issue rather soon.
+Best,
+Aliya
+----------------------------------------

@@ -1,0 +1,289 @@
+TOPIC: Help with Combine issues for H→aa→mmtt, Run 2 analysis (SUS-23-005)
+URL: https://cms-talk.web.cern.ch/t/136721
+DATE: 2025-11-04T19:52:05.620Z
+SOLVED: no
+============================================================
+
+QUESTION (by isalazar @ 2025-11-04T19:52:05.846Z):
+Hi all,
+We have been encountering some issues when running Combine for our Run 2 analysis “Search for a light pseudoscalar Higgs in H→aa→μμττ final state” (SUS-23-005) and would appreciate your advice. Here is the CADI link.
+Our analysis includes four final states: TauHadTauHad (the most dominant channel), TauMuTauHad, TauMuTauE, and TauETauHad, and considers five different Higgs mass (m_H) points. The fits are performed in three “a” mass regions:
+
+Low-mass: 3.6–8 GeV
+
+Upsilon: 8–12 GeV
+
+High-mass: 12–30 GeV
+
+The main issue appears for the m_H = 500 GeV case when we calculate and plot the limits for the all-channels, all-years combined scenario: the observed limits lie mostly within the –2σ band, which seems unexpected.
+When checking the individual years and channels, none of them show this behavior. However, two cases stand out:
+
+When plotting all channels, all years combined except TauHadTauHad, the deficit disappears.
+
+For TauHadTauHad, all years combined, the observed limits go well below the expected bands.
+
+Screenshot 2025-11-04 at 1.45.48 PM2448×1420 502 KB
+AsymptoticLimits-excluding-TauHadTauHad2548×1433 301 KB
+Following the suggestion from the NPS conveners, we focused on the problematic points in the upsilon region. We have produced impacts and Hybrid new limit values for ma = 10 GeV. The datacards and workspaces have been carefully verified, but the issue persists. All related files can be found in this CERN Box folder. The script used to combine the datacards is also included in the datacards/ directory for reference (run_combine.csh).
+Could you please advise on what might be causing this or suggest further debugging steps?  We can share additional logs or plots if needed.
+Thanks a lot for your time and help,
+Itzelli Salazar
+(on behalf of the H→aa→mmtt team)
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-11-04T20:17:56.919Z):
+Hi,
+do you also run the postfit impact plots for that point (including the non constrained nuisance parameters) for the splitted regions and combined?
+-A
+----------------------------------------
+
+REPLY 3 (by isalazar @ 2025-11-04T21:16:16.129Z):
+We do the fits and limits separately for each region (lowmass, upsilon, and highmass) and show them together in the final limit plot. For m_a=10, the impact for TauHadTauHad each year and combined, as well as the impact for all channels, all years combined, are present here.
+----------------------------------------
+
+REPLY 4 (by amarini @ 2025-11-06T07:38:44.555Z):
+Hi,
+I was trying to look in your datacard, but failed to compile them. This seems a parametric (unbinned?) datacard.
+Please check the followings:
+
+Are there parameters in the description of the signal and background shape uncorrelated among the categories? (I.e. they have a different name)
+
+In general, make sure that we are in a situation to help you the best with minimal time lost in setting up activities.
+
+try the datacards and the workspaces from a fixed and clean version of combine within CMSSW installation path (and share it).
+avoid to encode path in datacards and point the directory of additional code/library needed. Make sure they compile standalone. (e.g. root file.cpp++)
+Point as well to the gitlab repository, https://gitlab.cern.ch/cms-analysis/sus/sus-23-005, that in anycase you should have clean with the recommendations above.
+
+In particular, after cloning the repository, cleaning the DoubleSided from useless header and compile it as standalone library (in combine v10.1.0, CMSSW_14_1_0_pre4) I still get this error:
+datacards/input
+$text2workspace.py -L ../../datacards/DoubleSidedGaussian_cpp.so mmmt_mm_h_parametric_unbinned_lowmass_allchs_hm125_amX.txt
+Warning: Bin control_2016 has no signal processes contributing to it
+Warning: Bin control_2017 has no signal processes contributing to it
+Warning: Bin control_2018 has no signal processes contributing to it
+input_line_425:2:80: error: call to 'Max' is ambiguous
+Double_t TFormula____id17035059622895122062(Double_t *x){ return 3150.79054759+TMath::Max(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Min(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Max(0,TMath::Exp(x[1...
+^~~~~~~~~~
+/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/include/TMathBase.h:260:21: note: candidate function
+inline Int_t TMath::Max(Int_t a, Int_t b)
+^
+/cvmfs/cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/include/TMathBase.h:295:24: note: candidate function
+inline Double_t TMath::Max(Double_t a, Double_t b)
+^
+input_line_425:2:129: error: call to 'Min' is ambiguous
+Double_t TFormula____id17035059622895122062(Double_t *x){ return 3150.79054759+TMath::Max(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Min(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Max(0,TMath::Exp(x[1...
+
+-Andrea
+----------------------------------------
+
+REPLY 5 (by isalazar @ 2025-11-18T00:05:54.320Z):
+Dear Andrea,
+Sorry for the delay of our response. The errors you mentioned are coming due to incompatibility of those datacards  and latest CMSSW environment. The current set of datacards we had issues with, are kept here [1] in the recommended format. These are compatible to run standalone in CMSSW_14_1_0_pre4, combine v10.3.1. An additional library is needed for the  “DoubleSidedGaussian”. Readme [2] is updated with all the necessary information. Let us know if you have any further questions.
+[1]  https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards-h500
+Branch: itzelli-h500-uploads-2025-11-17
+[2]  https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards-h500/-/tree/itzelli-h500-uploads-2025-11-17?ref_type=heads#analysis-specific-instructions
+Thank you.
+-Itzelli
+----------------------------------------
+
+REPLY 6 (by isalazar @ 2025-11-24T17:23:03.416Z):
+Hi Andrea,
+Just following up on this. Please let me know if you are able to test them or if you need anything else from my side.
+Best,
+Itzelli
+----------------------------------------
+
+REPLY 7 (by gortona @ 2025-12-03T17:47:10.624Z):
+Dear Itzeli,
+We are having a look, but we can’t reproduce the behaviour you observe.
+Taking the instructions you provide in the itzelli-h500-uploads-2025-11-17 branch out-of-the box we get:
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 0.5775
+Expected  2.5%: r < 0.3079
+Expected 16.0%: r < 0.4198
+Expected 50.0%: r < 0.6062
+Expected 84.0%: r < 0.8914
+Expected 97.5%: r < 1.2670
+The expected values are consistent with what you report as Asymptotic results here (HybridNew comparison) but  you report an observed of ~0 while we obtain something in line with the expectations (and HybridNew).
+Did we miss something in running the command? Can you provide some more details on how to reproduce the issue?
+Thank you,
+Best regards,
+Giacomo and Massimiliano
+----------------------------------------
+
+REPLY 8 (by isalazar @ 2025-12-03T19:05:38.159Z):
+Dear Giacomo and Massimiliano,
+Thank you very much for taking the time to look into this. You are right, the comparison between AsymptoticLimits and HybridNew that showed the unexpected observed value was produced in our original setup, which had the following configuration:
+
+CMSSW release: CMSSW_11_3_4
+
+Architecture: cc8_amd64_gcc9
+
+Combine version: v9.2.1
+
+After being asked to prepare the GitLab repository with our datacards to run under the latest CMSSW release and Combine version, we re-ran the limits and found that for ma=10 GeV, the previously odd result now looks reasonable.
+We then decided to compute the asymptotic limits again for both the TauHadTauHad channel and the all-channels combined case using the following setup:
+
+CMSSW release: CMSSW_14_1_0_pre4
+
+Architecture: el9_amd64_gcc12
+
+Combine version: v10.3.3
+
+For the TauHadTauHad channel, we observe small improvements in the limits. However, for the all-channels combined case, the unusual behavior persists.
+We have summarized these findings in the following slides: https://docs.google.com/presentation/d/1E5e67-wWaDUohM3IxspotYr8ApfRV5vQ1v7sds1GnJw/edit?usp=sharing
+We would appreciate any further suggestions or insights on how to proceed.
+Please let us know if there’s any additional information we can provide.
+Thank you once again for your help.
+Best regards,
+Itzelli Salazar
+----------------------------------------
+
+REPLY 9 (by gortona @ 2025-12-06T13:45:11.000Z):
+Dear Itzelli,
+Do you happen to have the impacts plot for mA=10.6 (or anything between 10.6 and 11)?
+Everything seems to be working fine up to mA=10.5 and break down afterwards, but it is not easy to pinpoint what
+Best,
+Giacomo
+
+On 3 Dec 2025, at 20:06, Itzelli Salazar Segovia via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Itzelli Salazar Segovia isalazarDecember 3
+
+Dear Giacomo and Massimiliano,
+Thank you very much for taking the time to look into this. You are right, the comparison between AsymptoticLimits and HybridNew that showed the unexpected observed value was produced in our original setup, which had the following configuration:
+
+CMSSW release: CMSSW_11_3_4
+
+Architecture: cc8_amd64_gcc9
+
+Combine version: v9.2.1
+
+After being asked to prepare the GitLab repository with our datacards to run under the latest CMSSW release and Combine version, we re-ran the limits and found that for ma=10 GeV, the previously odd result now looks reasonable.
+We then decided to compute the asymptotic limits again for both the TauHadTauHad channel and the all-channels combined case using the following setup:
+
+CMSSW release: CMSSW_14_1_0_pre4
+
+Architecture: el9_amd64_gcc12
+
+Combine version: v10.3.3
+
+For the TauHadTauHad channel, we observe small improvements in the limits. However, for the all-channels combined case, the unusual behavior persists.
+We have summarized these findings in the following slides: https://docs.google.com/presentation/d/1E5e67-wWaDUohM3IxspotYr8ApfRV5vQ1v7sds1GnJw/edit?usp=sharing
+We would appreciate any further suggestions or insights on how to proceed.
+Please let us know if there’s any additional information we can provide.
+Thank you once again for your help.
+Best regards,
+Itzelli Salazar
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaDecember 3
+
+Dear Itzeli,
+We are having a look, but we can’t reproduce the behaviour you observe.
+Taking the instructions you provide in the itzelli-h500-uploads-2025-11-17 branch out-of-the box we get:
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 0.5775
+Expected 2.5%: r < 0.3079
+Expected 16.0%: r < 0.4198
+Expected 50.0%: r < 0.6062
+Expected 84.0%: r < 0.8914
+Expected 97.5%: r < 1.2670
+The expected values are consistent with what you report as Asymptotic results here (HybridNew comparison) but you report an observed of ~0 while we obtain something in line with the expectations (and HybridNew).
+Did we miss something in running the command? Can you provide some more details on how to reproduce the issue?
+Thank you,
+Best regards,
+Giacomo and Massimiliano
+
+Itzelli Salazar Segovia isalazarNovember 24
+
+Hi Andrea,
+Just following up on this. Please let me know if you are able to test them or if you need anything else from my side.
+Best,
+Itzelli
+
+Itzelli Salazar Segovia isalazarNovember 18
+
+Dear Andrea,
+Sorry for the delay of our response. The errors you mentioned are coming due to incompatibility of those datacards and latest CMSSW environment. The current set of datacards we had issues with, are kept here [1] in the recommended format. These are compatible to run standalone in CMSSW_14_1_0_pre4, combine v10.3.1. An additional library is needed for the “DoubleSidedGaussian”. Readme [2] is updated with all the necessary information. Let us know if you have any further questions.
+[1] https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards-h500
+Branch: itzelli-h500-uploads-2025-11-17
+[2] https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards-h500/-/tree/itzelli-h500-uploads-2025-11-17?ref_type=heads#analysis-specific-instructions
+Thank you.
+-Itzelli
+
+Andrea Carlo Marini amariniNovember 6
+
+Hi,
+I was trying to look in your datacard, but failed to compile them. This seems a parametric (unbinned?) datacard.
+Please check the followings:
+
+Are there parameters in the description of the signal and background shape uncorrelated among the categories? (I.e. they have a different name)
+
+In general, make sure that we are in a situation to help you the best with minimal time lost in setting up activities.
+
+try the datacards and the workspaces from a fixed and clean version of combine within CMSSW installation path (and share it).
+avoid to encode path in datacards and point the directory of additional code/library needed. Make sure they compile standalone. (e.g. root file.cpp++)
+Point as well to the gitlab repository, https://gitlab.cern.ch/cms-analysis/sus/sus-23-005, that in anycase you should have clean with the recommendations above.
+
+In particular, after cloning the repository, cleaning the DoubleSided from useless header and compile it as standalone library (in combine v10.1.0, CMSSW_14_1_0_pre4) I still get this error:
+datacards/input
+$text2workspace.py -L ../../datacards/[DoubleSidedGaussian_cpp.so](http://doublesidedgaussian_cpp.so/) mmmt_mm_h_parametric_unbinned_lowmass_allchs_hm125_amX.txt
+Warning: Bin control_2016 has no signal processes contributing to it
+Warning: Bin control_2017 has no signal processes contributing to it
+Warning: Bin control_2018 has no signal processes contributing to it
+input_line_425:2:80: error: call to 'Max' is ambiguous
+Double_t TFormula____id17035059622895122062(Double_t *x){ return 3150.79054759+TMath::Max(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Min(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Max(0,TMath::Exp(x[1...
+^~~~~~~~~~
+/cvmfs/[cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/include/TMathBase.h:260:21:](http://cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/include/TMathBase.h:260:21:) note: candidate function
+inline Int_t TMath::Max(Int_t a, Int_t b)
+^
+/cvmfs/[cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/include/TMathBase.h:295:24:](http://cms.cern.ch/el9_amd64_gcc12/lcg/root/6.30.07-8b1a11e1ef0e074fdfd44e162b27e71c/include/TMathBase.h:295:24:) note: candidate function
+inline Double_t TMath::Max(Double_t a, Double_t b)
+^
+input_line_425:2:129: error: call to 'Min' is ambiguous
+Double_t TFormula____id17035059622895122062(Double_t *x){ return 3150.79054759+TMath::Max(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Min(0,TMath::Exp(x[0])-1)*(315.079054759)+TMath::Max(0,TMath::Exp(x[1...
+
+-Andrea
+
+Itzelli Salazar Segovia isalazarNovember 4
+
+We do the fits and limits separately for each region (lowmass, upsilon, and highmass) and show them together in the final limit plot. For m_a=10, the impact for TauHadTauHad each year and combined, as well as the impact for all channels, all years combined, are present here.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 11 (by isalazar @ 2025-12-16T00:48:49.891Z):
+Dear Giacomo,
+Thank you for the follow-up.
+At the moment, I only have the impact plots for mA = 11 GeV, which are already available in the CERN Box under the impacts directory. I do not currently have impacts for mA values between 10.6 and 10.9 GeV. I attempted to compute them, but the MultiDimFit step fails in this range, and the output ROOT file is not properly produced (insufficient entries), so the impacts cannot be extracted for these points.
+Just to clarify your message: when you mention that things seem to work up to mA = 10.5 GeV and break down afterwards, are you referring to the asymptotic limits or specifically to the impacts?
+In our case, we already observe unexpected behavior in the asymptotic limits even below 10.5 GeV. I have added the ROOT files of the asymptotic limits for mA = 8.0–11 GeV (Upsilon region) to the shared CERN Box folder, under the directory: /SUS-23-005/asymptotic_limits/root-files
+Please let me know if you have any further questions.
+Best regards,
+Itzelli Salazar
+----------------------------------------
+
+REPLY 12 (by isalazar @ 2026-01-21T20:19:44.954Z):
+Hello!
+I also wanted to share an additional observation we made recently. For the upsilon region in the mH =500 TauHadTauHad channel, with all years combined, we noticed that the asymptotic limits show an unstable behavior. For this specific region, we recomputed the limits using the HybridNew method, and in that case, the limits do not exhibit this behavior and look much more reasonable.
+I’ve attached a slide that illustrates this comparison more clearly.
+I just wanted to flag this in case it is relevant for understanding the behavior we are seeing with the asymptotic limits in this channel and in the channel combination.
+Best regards,
+Itzelli
+Screenshot 2026-01-21 at 2.04.09 PM1525×860 91.6 KB
+----------------------------------------
+
+REPLY 13 (by sbaradia @ 2026-03-05T20:30:36.859Z):
+Dear all,
+Following up on the H500 issue discussed earlier in this thread: we have now identified the origin of the deficit observed in the all-channels, all-years combination. The problem was traced to a subtle bug during the workspace combination. Different channels use different four-body mass  and/or two-body mass ranges in the 2-D fit, but the observables had the same name across channels. During the combination step, the observable range was inherited from the last combined channel, which effectively excluded events outside that range from the likelihood.
+We have now fixed this by assigning channel-specific observable names, so that each channel preserves its intended observable range during the combination. After regenerating the limits with this fix, the combined results behave as expected and the apparent deficit in the H500 case disappears.
+Below we show the H500 combined limit before and after the fix for reference.
+Thanks,
+Sweta
+image1108×520 67.9 KB
+----------------------------------------

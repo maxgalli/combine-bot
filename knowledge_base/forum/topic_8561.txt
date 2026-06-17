@@ -1,0 +1,43 @@
+TOPIC: Plotting the fit error band within the Combine tool
+URL: https://cms-talk.web.cern.ch/t/8561
+DATE: 2022-03-23T22:00:36.389Z
+SOLVED: no
+============================================================
+
+QUESTION (by xuyan @ 2022-03-23T22:00:36.541Z):
+Hello experts,
+I am writing to see if there is a way to access the fitted error band within the combine tool, with combine -M FitDiagnostics? In the bare RooFit, one can fit the data, get the RooFitResult and plot the fitted model with VisualizeError(). However, combine -M FitDiagnostics only gives the fits as TH1F histograms and data as TGraphAsymmErrors. I am not very sure how to add the fitting error band on top of them…
+Do you have some suggestions?
+Thanks a lot!
+Sebastian
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-03-23T23:01:47.000Z):
+–saveWithUncertainties
+--saveWithUncertainties Save also pre/post-fit uncertainties on
+the shapes and normalizations (from
+resampling the covariance matrix)
+
+-Andrea
+On Wed, Mar 23, 2022 at 11:05 PM Xuli Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Xuli Yan xuyanMarch 23
+
+Hello experts,
+I am writing to see if there is a way to access the fitted error band within the combine tool, with combine -M FitDiagnostics? In the bare RooFit, one can fit the data, get the RooFitResult and plot the fitted model with VisualizeError(). However, combine -M FitDiagnostics only gives the fits as TH1F histograms and data as TGraphAsymmErrors. I am not very sure how to add the fitting error band on top of them…
+Do you have some suggestions?
+Thanks a lot!
+Sebastian
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by xuyan @ 2022-03-24T09:20:58.846Z):
+Hi Andrea,
+Thanks for your quick reply!
+Okay, I tried --saveWithUncertainties and it worked, but I am wondering how to get the errors corresponding to 2 sigma? I guess the error associated now is only 1 sigma, right?
+Thanks!
+Best regards,
+Sebastian
+----------------------------------------

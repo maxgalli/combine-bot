@@ -1,0 +1,46 @@
+TOPIC: Inconsistent signal strength between plot and json with plotImpact
+URL: https://cms-talk.web.cern.ch/t/35563
+DATE: 2024-02-23T08:14:22.118Z
+SOLVED: no
+============================================================
+
+QUESTION (by milee @ 2024-02-23T08:14:22.262Z):
+Dear combine experts,
+I notice the rounded function in the plotImpacts.py [1] script has some weird behavior if the analysis has larger uncertainties for the nominal value. I am checking the impact plots with Asimov dataset with signal strength equal to one.
+I checked the input json file where the fit POI has the fitted POI
+"POIs": [
+{
+"fit": [
+-136.34979248046875,
+1.0,
+143.6743927001953
+],
+"name": "r"
+}
+],
+
+However when I run the plotImpact.py script, I see the number changes to 0+/- 140.
+image1292×96 5.54 KB
+When I look into the combine script, I notice the nominal value changes due to the rounded option in combine. I am wondering whether this is expected and whether we should quote the rounded number or not in this case.
+[1]https://github.com/cms-analysis/CombineHarvester/blob/main/CombineTools/scripts/plotImpacts.py#L28-L30
+Thank you and best regards,
+Ming-Yan
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-02-23T09:00:09.637Z):
+Hi Ming-Yan,
+I agree it’s not ideal. In principle these are the PDG rounding rules, but it doesn’t make sense to me in this case. I guess you can just disable it temporarily in the code. Can you make an issue in github to report this? (so we don’t forgot to look at it)
+thanks,
+Andrew
+----------------------------------------
+
+REPLY 3 (by milee @ 2024-02-23T09:46:19.058Z):
+Hi Andrew,
+Thank you for the quick response! I am currently disable the rounding in the nominal value temporary and make a issue.
+Best regards,
+Ming-Yan
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-02-23T09:53:51.588Z):
+FYI: moved the thread to Common Analysis Tools/Statistical Interpretation Tools channel.
+----------------------------------------

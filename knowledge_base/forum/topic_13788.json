@@ -1,0 +1,67 @@
+{
+  "topic_id": 13788,
+  "title": "P.d.f negative error in AsymptoticLimits but not in FitDiagnostics",
+  "url": "https://cms-talk.web.cern.ch/t/13788",
+  "category_id": 279,
+  "created_at": "2022-08-10T01:15:38.743Z",
+  "last_posted_at": "2022-08-11T19:06:15.171Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jongho",
+      "name": "Jongho Lee",
+      "created_at": "2022-08-10T01:15:39.262Z",
+      "updated_at": "2023-02-07T10:53:06.374Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine Experts,\nWe are trying to calculate limits for our analysis. We are searching for a dark Higgs produced in association with dark matter. We have 51 different mass points. First, we used FitDiagnostics, running the following command:\ncombine -M FitDiagnostics --rMax +1.6 --saveWorkspace -d <workspace> --cminDefaultMinimizerStrategy 0\n\nThe fit succeeded for all 51 mass points and we didn\u2019t see any issue when checking the combine log.\nBut when we use PostFitShapesFromWorkspace or AsymptoticLimits the fit for half of the mass points fails. In the logs, they now appear a lot of p.d.f value is less than zero warnings. We used the following commands for each method:\nPostFitShapesFromWorkspace -w <workspace> -d <datacard> -f <fitDiagnostics output>:fit_s --postfit --sampling --samples 300 --skip-proc-errs -o <output root file>\n\ncombine -M AsymptoticLimits ${1}.root --cminDefaultMinimizerStrategy 0\n\nWe are having a hard time understanding why we get the p.d.f value is less than zero from PostFitShapesFromWorkspace and AsymptoticLimits while we have no issues with FitDiagnostics. Is there anything we are missing?\nThanks in advance for your help,\nJongho",
+      "cooked_html": "<p>Dear Combine Experts,</p>\n<p>We are trying to calculate limits for our analysis. We are searching for a dark Higgs produced in association with dark matter. We have 51 different mass points. First, we used FitDiagnostics, running the following command:</p>\n<pre><code class=\"lang-auto\">combine -M FitDiagnostics --rMax +1.6 --saveWorkspace -d &lt;workspace&gt; --cminDefaultMinimizerStrategy 0\n</code></pre>\n<p>The fit succeeded for all 51 mass points and we didn\u2019t see any issue when checking the combine log.<br>\nBut when we use PostFitShapesFromWorkspace or AsymptoticLimits the fit for half of the mass points fails. In the logs, they now appear a lot of <code>p.d.f value is less than zero</code> warnings. We used the following commands for each method:</p>\n<pre><code class=\"lang-auto\">PostFitShapesFromWorkspace -w &lt;workspace&gt; -d &lt;datacard&gt; -f &lt;fitDiagnostics output&gt;:fit_s --postfit --sampling --samples 300 --skip-proc-errs -o &lt;output root file&gt;\n</code></pre>\n<pre><code class=\"lang-auto\">combine -M AsymptoticLimits ${1}.root --cminDefaultMinimizerStrategy 0\n</code></pre>\n<p>We are having a hard time understanding why we get the <code>p.d.f value is less than zero</code> from PostFitShapesFromWorkspace and AsymptoticLimits while we have no issues with FitDiagnostics. Is there anything we are missing?</p>\n<p>Thanks in advance for your help,</p>\n<p>Jongho</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-08-10T09:19:49.713Z",
+      "updated_at": "2022-08-10T09:19:49.713Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jongho,\nPostFitShapesFromWorkspace and AsymptoticLimits are both doing different things than FitDiagnostics.\nPostFitShapesFromWorkspace takes the covariance matrix produced during FitDiagnostics, and generates a series of random sets of parameter values from it, and then evaluates the model pdfs given these randomised parameters. I\u2019m guessing that at one or more of these parameter points one or more of your pds evaluates to a value <= 0.\nIn AsymptoticLimits a series of fits are performed to both the real data and an Asimov dataset, with fixed and floating values of the signal strength. In this way, it is different from FitDiagnostics. I would guess again that at some point in this series of fits one of your pds evaluates to a value <= 0. If you turn on higher verbosity (-v 3) you should get error messages from RooFit that indicate the problematic pdf and associated parameter values.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Jongho,</p>\n<p>PostFitShapesFromWorkspace and AsymptoticLimits are both doing different things than FitDiagnostics.</p>\n<p>PostFitShapesFromWorkspace takes the covariance matrix produced during FitDiagnostics, and generates a series of random sets of parameter values from it, and then evaluates the model pdfs given these randomised parameters. I\u2019m guessing that at one or more of these parameter points one or more of your pds evaluates to a value &lt;= 0.</p>\n<p>In AsymptoticLimits a series of fits are performed to both the real data and an Asimov dataset, with fixed and floating values of the signal strength. In this way, it is different from FitDiagnostics. I would guess again that at some point in this series of fits one of your pds evaluates to a value &lt;= 0. If you turn on higher verbosity (-v 3) you should get error messages from RooFit that indicate the problematic pdf and associated parameter values.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jongho",
+      "name": "Jongho Lee",
+      "created_at": "2022-08-10T17:47:09.119Z",
+      "updated_at": "2022-08-10T17:47:09.119Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThanks for your message. We ran AsymptoticLimits by turning on higher verbosity (-v 3) and saved the log. Because the file size is huge (~400K lines), it is hard for me to recognize which parameters cause the p.d.f. negative issue.\nCan you please point me where I should look in the log?",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Thanks for your message. We ran AsymptoticLimits by turning on higher verbosity (-v 3) and saved the log. Because the file size is huge (~400K lines), it is hard for me to recognize which parameters cause the p.d.f. negative issue.</p>\n<p>Can you please point me where I should look in the log?</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-08-11T12:57:12.581Z",
+      "updated_at": "2022-08-11T12:57:12.581Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jongho,\nIt\u2019s hard to say without being able to see the actual file. I imagine you want to search the file for the error messages you reported before: p.d.f value is less than zero, and look at the surrounding lines.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Jongho,</p>\n<p>It\u2019s hard to say without being able to see the actual file. I imagine you want to search the file for the error messages you reported before: <code>p.d.f value is less than zero</code>, and look at the surrounding lines.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jongho",
+      "name": "Jongho Lee",
+      "created_at": "2022-08-11T19:06:15.171Z",
+      "updated_at": "2022-08-11T19:06:15.171Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nI bring a part of logs near the p.d.f value is less than zero error. I attach the text file.  Can you please take a look at the file and give some hints to understand the reason?\nlog.txt (163.3 KB)",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>I bring a part of logs near the <code>p.d.f value is less than zero</code> error. I attach the text file.  Can you please take a look at the file and give some hints to understand the reason?</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/qu1Heszd9odRfwKYpRkVRUl70BU.txt\">log.txt</a> (163.3 KB)</p>"
+    }
+  ]
+}

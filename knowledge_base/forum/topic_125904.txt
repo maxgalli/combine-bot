@@ -1,0 +1,64 @@
+TOPIC: Implementing regularisation terms in the datacard
+URL: https://cms-talk.web.cern.ch/t/125904
+DATE: 2025-06-13T08:06:48.261Z
+SOLVED: no
+============================================================
+
+QUESTION (by dkavtara @ 2025-06-13T08:06:48.493Z):
+Dear Combine experts,
+I’m trying to implement Regularised Maximum likelihood fits. From what I understand this can be done by adding a simple line in the systematics section of the datacard. The penalty term that I want to try out is this:
+Screenshot 2025-06-13 at 09.56.151182×258 26.3 KB
+Where delta is the regularisation strength. How can this be implemented? Is it easier to implement this while writing the datacard using the combineHarvester tool or just to add the regularisation line in the datacard? I also stumbled upon something like this:
+Screenshot 2025-06-13 at 10.04.021758×258 42.3 KB
+But I’m unsure how this line should actually look like.
+Thank you for your help in advance.
+Best,
+Dati
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-06-13T08:14:34.003Z):
+Hi Dati
+On the docs page you can find a concrete example of such a term
+name constr @0-2*@2+@1 r_Bin0,r_Bin1,r_Bin2 0.03
+(See here:https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/regularisation/#singular-value-decomposition-svd)
+This gives you an example of how to write formula and the delta
+The delta is just a constant that can be thought of as a tunable parameter. There are a few different ideas on how best to choose that parameter, I suggest you consult the statistics committee Twiki for that
+Best
+Nick
+----------------------------------------
+
+REPLY 3 (by gortona @ 2025-06-13T08:14:37.353Z):
+Dear Dati,
+The general syntax for the regularisation term in the datacard is
+name constr formula dependents delta
+
+You can find some practical examples and instructions at the following link:
+
+cms-analysis.github.io
+
+Unfolding & regularization - Combine
+
+I hope it helps,
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 4 (by dkavtara @ 2025-06-13T11:25:59.769Z):
+Dear Nick and Giacomo,
+Thank you for the very quick responses. I made some quick tests by adding these three lines in the datacard and it seems to work.
+Regularisation constr exp(-0.5*((@2-@1)-(@1-@0))) {r_ttbb_bin0,r_ttbb_bin1,r_ttbb_bin2} delta[0.03]
+Regularisation constr exp(-0.5*((@3-@2)-(@2-@1))) {r_ttbb_bin1,r_ttbb_bin2,r_ttbb_bin3} delta[0.03]
+Regularisation constr exp(-0.5*((@4-@3)-(@3-@2))) {r_ttbb_bin2,r_ttbb_bin3,r_ttbb_bin4} delta[0.03]
+
+As I understood I need to add lines for each product term, could you please confirm if this is the case?
+Does the delta enter into the exponent or remains outside of the formula? From the behaviour of the quick tests I assume it does.
+Coming back to the question of CombineHarvester, is there a simple way to add the formulas while creating the datacard via the CombineHarvester tool?
+Thank you again for your help,
+Best regards,
+Dati
+----------------------------------------
+
+REPLY 5 (by amarini @ 2025-06-13T13:53:16.043Z):
+It should be outside, irrc, as it is the constrain term that will be put as part of the gaus pdfs used to implement it.
+-Andrea
+----------------------------------------

@@ -1,0 +1,63 @@
+TOPIC: Issue with using combine
+URL: https://cms-talk.web.cern.ch/t/2156
+DATE: 2021-08-25T20:56:19.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Yihui_Lai @ 2021-08-25T20:56:19.000Z):
+Dear combine experts,
+I have some issues when I try to use combine for our X->WGamma search.
+I put a minimal package here (/afs/cern.ch/user/y/yilai/public/for_WG/higgs_mini) on lxplus to better explain my issue.
+Our Background p.d.f is All/mu2018workspace_all.root, signal samples are in signal/
+The command I used is in Width5/mu2018*/Mass*/run_combine_*.sh
+Previously in datacards (higgs_mini/Width5/mu2018_fixed/Mass*/wgamma_test_mt_res_.txt), background parameters (dijet_order_muA2018_all_dijet) are fixed with a mean value and an error. We get a smooth limit scan result_5_mu2018_fixed.png in this case.
+But now we try to make the parameters freely floating, (higgs_mini/Width5/mu2018_floating/Mass*/wgamma_test_mt_res_*.txt). Then I get this limit scan plot: result_5_mu2018_floating.png, which is not smooth. Also the background model only has 2 parameters, and we know the best value for p1 is around -9 from roofit. However, the parameter that comes out from combine has a different best fit value around -12.
+I am not sure what’s going wrong when I try to make the parameters float. Any suggestions are welcome.
+Thanks a lot !
+Yihui
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-08-27T09:26:40.000Z):
+*** Discussion title: Higgs Combination
+Dear Yihui,
+It would probably be best to investigate this with a single fit (e.g. as
+implemented in MultiDimFit) for one of the mass points, not by looking
+at the limits.
+How do you find that the best fit value for p1 is -12? Was that from a
+single fit? If so you can start investigating there.
+If you need more help at that stage it would also be good to discuss
+with the combine contact from the PAG where this analysis is conducted.
+You can find the names of the contacts here[*].
+Best,
+Adinda
+[*]
+https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters
+----------------------------------------
+
+REPLY 3 (by Yihui_Lai @ 2021-08-28T01:36:29.000Z):
+Dear Adinda,
+Thank you for your suggestions!
+The best fit value (-12) of p1 comes from using the --trackParameters option in the combine command. We find the reason why the best fit value is different is because the binning of histograms are different.
+In the toy data, we used 50 bins, use this as the input to combine, the best value comes from combine is -12. If I change to use more bins, such as 200 bins, the best value becomes -9 and the limit scan becomes smooth again!
+So the previous problem seems to come from we are doing a binned fit and the bin width is too large.
+Best,
+Yihui
+----------------------------------------
+
+REPLY 4 (by Kak_Wong @ 2021-08-28T16:27:54.000Z):
+*** Discussion title: Higgs Combination
+I'll add that we don't intend to do a binned fit. We use
+RooAbsPdf.generate to create toy data, but the distribution seems to be
+affected by the default binning of the main variable.
+----------------------------------------
+
+REPLY 5 (by andrea_marini @ 2021-08-28T21:59:34.000Z):
+Hi,
+let me add a couple of points to the discussion:
+*) for the binned vs unbinned fits, it is not clear to me what you are trying to do. What we see as “observed” (being observed or a particular dataset is irrelevant) seems to be almost identical between the two plots. If the analysis is unbinned you need an asimov to have the expected results, and you want to make sure that it is created in a suitable way. Here there are some options for Asimov generation in unbinned analyses http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets
+*) for binned fits, if your curvature is very large with respect to the bin width the integration performed by roofit is incorrect. See http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analysis for more details.
+*) in general allowing more parameters, and in particular parameters that modify the shape, will decrease the sensitivity towards the edges.
+Did you study the free parameters in the fit? What is the effect on the fitted observable(s)? Do you have eg a node at 500?
+Cheers,
+-Andrea
+----------------------------------------

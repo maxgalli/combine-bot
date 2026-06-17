@@ -1,0 +1,149 @@
+TOPIC: Porting counting DC with gmN and ABCD to shape based DC
+URL: https://cms-talk.web.cern.ch/t/42752
+DATE: 2024-06-25T11:04:20.324Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmajor @ 2024-06-25T11:04:20.464Z):
+Dear Experts,
+we are planning to transition from our simple counting experient dacards to shape-based datacards for convenient combination with other searches. I have a few questions that are not clear and would help us greatly:
+
+Most of our SR bins have a very low statistics. In the current datacards the uncertainties are modeled using a gmN distribution. This is done by us maintaining both a weighted and an unweighted histogram for MCs, so tat the average event weight can be properly calculated and inserted into the datacard. Can this somehow be done with the shape based approach?
+
+We use an ABCD estimation, which we implemented into the datacard. This requires bin-by-bin arithmetics between the bins of the SR and other control regions. To give you an idea, some of our formulas looked like this:
+
+delta_0     rateParam   sb_0  QCD   (@0)*(@1)/(@2)    beta_25,gamma_3,alpha_1
+delta_1     rateParam   sb_1  QCD   (@0)*(@1)/(@2)    beta_26,gamma_4,alpha_2
+delta_2     rateParam   sb_2  QCD   (@0)*(@1)/(@2)    beta_27,gamma_7,alpha_5
+delta_3     rateParam   sb_3  QCD   (@0)*(@1)/(@2)    beta_28,gamma_8,alpha_6
+delta_4     rateParam   sb_4  QCD   (@0)*(@1+@2)/(@3+@4)    beta_29,gamma_3,gamma_7,alpha_1,alpha_5
+
+You can see, that some C bins (linked to the gamma parameters) are even used multiple times, modeling the arising correlations properly.
+Is there a way to achieve this with the shape-based framework?
+Thank you very much in advance!
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-06-25T11:31:44.000Z):
+Hi Peter,
+Just to ask the provocative question first, if you just want to combine with other searches, why do you need to change to a shape based setup? You can combine counting with shape based datacards just fine in combine (you may need to add the “shapes * * FAKE” line as described here https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#combination-of-multiple-datacards )
+In answer to your specific questions
+
+···
+
+You could use the autoMCStats (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/bin-wise-stats/) which works with TH1 inputs. You just need to set the error on each bin of the TH1 to the correct value (based on the raw events or using the usual sumw2 command when filling them)
+This is indeed possible but requires using the RooParametricHist object which is essentially a histogram where each bin content is a function. You can find more details here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#rooparametrichist-gamman-for-shapes – it’s a little bit involved but we’ve had some analyses go this way for a per-bin gammaN approach / ABCD in the past. Essentially, you would just use the same formulae you have now in the datacard, but build them into the histograms directly.
+
+Now, the setback is that the answer I gave for 2. Is in fact incompatible with the answer for 1. The reason being that RooFit-based histograms do not have an equivalent of the “GetBinError” as TH1 objects do. We have for a long while thought how we can allow the autoMCStats to work with RooFit histograms but so far we didn’t find a solution.
+So (personally) unless there’s another reason to change to the histogram approach other than for combining, I would avoid it for your setup,
+All the best,
+Nick
+From: Peter Major via CMS talk noreply-cms-talk@cern.ch
+Date: Tuesday, 25 June 2024 at 12:10
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Porting counting DC with gmN and ABCD to shape based DC
+
+Peter Major pmajorJune 25
+
+Dear Experts,
+we are planning to transition from our simple counting experient dacards to shape-based datacards for convenient combination with other searches. I have a few questions that are not clear and would help us greatly:
+
+Most of our SR bins have a very low statistics. In the current datacards the uncertainties are modeled using a gmN distribution. This is done by us maintaining both a weighted and an unweighted histogram for MCs, so tat the average event weight can be properly calculated and inserted into the datacard. Can this somehow be done with the shape based approach?
+We use an ABCD estimation, which we implemented into the datacard. This requires bin-by-bin arithmetics between the bins of the SR and other control regions. To give you an idea, some of our formulas looked like this:
+
+delta_0     rateParam   sb_0  QCD   (@0)*(@1)/(@2)    beta_25,gamma_3,alpha_1
+
+delta_1     rateParam   sb_1  QCD   (@0)*(@1)/(@2)    beta_26,gamma_4,alpha_2
+
+delta_2     rateParam   sb_2  QCD   (@0)*(@1)/(@2)    beta_27,gamma_7,alpha_5
+
+delta_3     rateParam   sb_3  QCD   (@0)*(@1)/(@2)    beta_28,gamma_8,alpha_6
+
+delta_4     rateParam   sb_4  QCD   (@0)*(@1+@2)/(@3+@4)    beta_29,gamma_3,gamma_7,alpha_1,alpha_5
+
+You can see, that some C bins (linked to the gamma parameters) are even used multiple times, modeling the arising correlations properly.
+Is there a way to achieve this with the shape-based framework?
+Thank you very much in advance!
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by pmajor @ 2024-06-25T12:24:34.148Z):
+Hi Nicholas,
+thank you for the insight. This looks rather involved indeed.
+I think the reason is that this way we can have 1 datacard instead of one for every mass point of the signal grid. But I should ask our conveners who suggested the transition before I get too much out of my depth here.
+Cheers,
+Peter
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-06-25T12:33:15.000Z):
+Hi Peter,
+I certainly do see the advantage of having a single datacard instead of many of them where the signal rate is the only thing changing. There are some other work arounds that mean you can avoid having to hard code the signal rate and would mean you can have a single, counting experiment datacard - let me know if that is something that would be of use and I’d be happy to discuss with you and the conveners about the best way to achieve what you need without really having to overhaul the datacards,
+All the best,
+Nick
+
+···
+From: Peter Major via CMS talk noreply-cms-talk@cern.ch
+Date: Tuesday, 25 June 2024 at 13:25
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Porting counting DC with gmN and ABCD to shape based DC
+
+Peter Major pmajorJune 25
+
+Hi Nicholas,
+thank you for the insight. This looks rather involved indeed.
+I think the reason is that this way we can have 1 datacard instead of one for every mass point of the signal grid. But I should ask our conveners who suggested the transition before I get too much out of my depth here.
+Cheers,
+Peter
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by pmajor @ 2024-07-01T19:40:41.755Z):
+Dear Nicholas,
+in the end, we are taking your advice (thank you very much) and are staying with the current counting-based DCs.
+Could you give us some pointers on how we could avoid hardcoding the signal? Having only one card sounds potentially quite convenient.
+Sincerely,
+Peter
+----------------------------------------
+
+REPLY 6 (by nckw @ 2024-07-02T10:11:41.000Z):
+Hi Peter,
+There are a couple of ways to do this but they are variations on the same theme – essentially you create a set of rateParams, one for each channel (or bin), then either,
+
+···
+
+They are standard rateParams that are set constant in the datacard. These can be modified in the command line with the --setParameters r_1=X,r_2=Y,…
+They are functions that point to objects in a RooWorkspace and are parametric with whichever variables you want. Eg for the Higgs, we have splines for the SM cross-section and branching ratios as a function of MH. Then we can set the parameter MH in the command line to set the rates appropriately.
+
+The actual “rate” you put in the datacard should be 1 for the signal as rateParams multiply this number.
+You can see more implementation details for rateParams in the docs here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#rate-parameters
+If this isn’t clear, let me know – happy to take a look at cards to help,
+Cheers,
+Nick
+From: Peter Major via CMS talk noreply-cms-talk@cern.ch
+Date: Monday, 1 July 2024 at 20:41
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Porting counting DC with gmN and ABCD to shape based DC
+
+Peter Major pmajorJuly 1
+
+Dear Nicholas,
+in the end, we are taking your advice (thank you very much) and are staying with the current counting-based DCs.
+Could you give us some pointers on how we could avoid hardcoding the signal? Having only one card sounds potentially quite convenient.
+Sincerely,
+Peter
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by pmajor @ 2024-07-29T21:25:11.918Z):
+Dear Nick,
+I have been thinking about how to do this in the best way.
+For our everyday workflow, I think we will keep the many datacards, as combineTools makes it very convenient to submit those, while I am not sure how I could set the signal values for the 1000 files and execute them in parallel with the current tools.
+But the real issue I have right now, is that I do not see how the uncertainty of the signal would be modeled in this case, since essentially only the yield in each bin would be affected. Neither the statistical nor the systematic uncertainties would change. Is there a solution to this problem?
+Cheers,
+Peter
+----------------------------------------

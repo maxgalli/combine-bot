@@ -1,0 +1,34 @@
+{
+  "topic_id": 68867,
+  "title": "Issue with Observed Limir When Combining Data from 2016, 2017, and 2018",
+  "url": "https://cms-talk.web.cern.ch/t/68867",
+  "category_id": 279,
+  "created_at": "2024-11-26T10:14:27.649Z",
+  "last_posted_at": "2024-11-26T10:59:03.175Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "shachary",
+      "name": "Shriniketan Acharya",
+      "created_at": "2024-11-26T10:14:28.705Z",
+      "updated_at": "2024-11-26T10:14:28.705Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nI am currently working on computing the limits using the full Run2 data, and I have encountered an issue when combining datasets from different years.\nWhen I combine the 2017 and 2018 data, both the expected limits and observed limits improve, which is as expected. However, when I add the 2016 data to the combination (i.e., combining 2016 with 2017+2018), the expected limits increases, but the observed limits decrease.\nI have shared the relevant datacards and input files through the following link for reference:Datacards and input files\nThe Instructions_updated.txt file contains details on all the input files and the macro used to process the limits\nHas anyone encountered a similar issue or could provide insights into why this discrepancy in observed limits is happening? Any advice or suggestions would be greatly appreciated.\nThank you in advance for your help!\nBest regards,\nShriniketan Acharya\nPhD Student\nc/o\nDr Bhawna Gomber\nAssistant professor\nCASEST, University of Hyderabad\nHyderabad, India",
+      "cooked_html": "<p>Dear all,</p>\n<p>I am currently working on computing the limits using the full Run2 data, and I have encountered an issue when combining datasets from different years.</p>\n<p>When I combine the 2017 and 2018 data, both the expected limits and observed limits improve, which is as expected. However, when I add the 2016 data to the combination (i.e., combining 2016 with 2017+2018), the expected limits increases, but the observed limits decrease.</p>\n<p>I have shared the relevant datacards and input files through the following link for reference:<a href=\"https://gitlab.cern.ch/cms-analysis/sus/sus-23-016/datacards/-/tree/master/input?ref_type=heads\" rel=\"noopener nofollow ugc\">Datacards and input files</a></p>\n<p>The Instructions_updated.txt file contains details on all the input files and the macro used to process the limits</p>\n<p>Has anyone encountered a similar issue or could provide insights into why this discrepancy in observed limits is happening? Any advice or suggestions would be greatly appreciated.</p>\n<p>Thank you in advance for your help!</p>\n<p>Best regards,</p>\n<p>Shriniketan Acharya<br>\nPhD Student<br>\nc/o<br>\nDr Bhawna Gomber<br>\nAssistant professor<br>\nCASEST, University of Hyderabad<br>\nHyderabad, India</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-11-26T10:59:03.175Z",
+      "updated_at": "2024-11-26T10:59:03.175Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Dear Shriniketan,\nWhile it is correct to say the expected limit should improve when adding more data, the same is not necessarily true with the observed limit. If in one year you have a data excess/deficit, this will reflect on the combined limit as well.\nYou should compare the combined limit with the limits from the 3 years separately, to see if the combined result make sense.\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Shriniketan,</p>\n<p>While it is correct to say the expected limit should improve when adding more data, the same is not necessarily true with the observed limit. If in one year you have a data excess/deficit, this will reflect on the combined limit as well.<br>\nYou should compare the combined limit with the limits from the 3 years separately, to see if the combined result make sense.</p>\n<p>Best regards,<br>\nGiacomo</p>"
+    }
+  ]
+}

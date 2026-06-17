@@ -1,0 +1,53 @@
+TOPIC: Error while compiling Higgs combine (adding information)
+URL: https://cms-talk.web.cern.ch/t/4002
+DATE: 2021-12-24T19:13:02.638Z
+SOLVED: no
+============================================================
+
+QUESTION (by prebello @ 2021-12-24T19:13:02.880Z):
+Dear experts
+I am trying to compile HiggsAnalysis/CombinedLimit on both 10_2_X and 8_1_0 acc http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation.
+Nevertheless, it looks not working properly on both versions, as well as in standalone too.
+The error below is for 10_2_X (both v8.1.0 and v8.2.0 tags)
+
+Building shared library tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so
+Copying tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so to productstore area:
+Checking EDM Class Version for src/HiggsAnalysis/CombinedLimit/src/classes_def.xml in libHiggsAnalysisCombinedLimit.so
+Traceback (most recent call last):
+File “/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/python3.8/site-packages/site.py”, line 73, in
+__boot()
+File “/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/python3.8/site-packages/site.py”, line 3, in __boot
+import os
+ImportError: No module named os
+Suggestion: You can run ‘scram build updateclassversion’ to generate src/HiggsAnalysis/CombinedLimit/src/classes_def.xml.generated with updated ClassVersion
+gmake: *** [config/SCRAM/GMake/Makefile.rules:1673: tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so] Error 1
+gmake: *** [There are compilation/build errors. Please see the detail log above.] Error 2
+
+Even running ‘scram build updateclassversion’, after cleaning the build, it does not work.
+I have used my installation (10_2_13) of Combine Tool at the end of September without any issue. Now it is also not working anymore.
+May I kindly ask your help to fix it?
+Regards Patricia
+----------------------------------------
+
+REPLY 2 (by adavid @ 2022-01-03T10:51:21.751Z):
+I cannot reproduce this on lxplus (CC7).
+Since the error message suggests to run 'scram build updateclassversion' and that does not help, it seems that your working area is clobbered in some way.
+Can you start from a clean cmsrel slate? E.g., combine and other analysis code need not be under the exact same working area.
+----------------------------------------
+
+REPLY 3 (by amarini @ 2022-01-03T11:03:32.522Z):
+I think it is related to python3.
+x86_64-centos7-gcc9-opt/lib/python3.8
+10_2_X is not python3 ready (nor the combine tag, nor the release, IIRC).
+Try to set up a release from scratch.
+-Andrea
+----------------------------------------
+
+REPLY 4 (by prebello @ 2022-01-03T14:49:52.187Z):
+Thank you Andrea.
+Indeed,  my bashrc is setting up /cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/setup.sh pointing to python --version
+Python 3.8.6
+I will fix it properly.
+Happy new year to the team.
+Regards Pat
+----------------------------------------

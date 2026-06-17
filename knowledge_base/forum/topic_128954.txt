@@ -1,0 +1,99 @@
+TOPIC: Asymmetric Shrinkage of ±σ Bands in Full CLs (--HybridNew) Compared to the Asymptotic Approach
+URL: https://cms-talk.web.cern.ch/t/128954
+DATE: 2025-08-12T21:41:29.773Z
+SOLVED: no
+============================================================
+
+QUESTION (by gparida @ 2025-08-12T21:41:30.320Z):
+Dear Experts,
+I wanted to understand the feature observed when using the Full CLs (--HybridNew) method in Combine. For regions with low statistics, I understand that --HybridNew is recommended over --AsymptoticLimits. In our analysis of the heavy resonance X →HH→bbtautau, we are using the –HybridNew to obtain the limits for high masses. Following discussions with Combine contacts, and after varying both the density of the signal strength grid and the number of toys generated per signal strength point, we obtained the observed, expected and +/- 1 and 2 sigma bands using –HybridNew. When comparing the Full CLs results to those from --AsymptoticLimits, we observe:
+A) The expected median and observed values tend to be slightly worse (by about 10–15%) in the high-mass region.
+B)  The ±σ bands shrink compared to the asymptotic bands.
+C) The shrinking is asymmetric between the +σ and –σ sides.
+These effects are visible in the attached plots: the left-hand plot compares the Full CLs expected median and observed values (plotted in RED) to those from --AsymptoticLimits, while the right-hand plot shows the median expected, observed, and ±1σ/±2σ bands from Full CLs.
+image1716×994 247 KB
+We have also observed that other analyses using Full CLs show similar behaviour — for instance, see slide 20 of this analysis (link). However, the underlying reason for this effect when using --HybridNew is not entirely clear to me. Could you please clarify whether this behaviour is expected?
+Thanks and regards,
+Ganesh
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-08-14T14:02:34.000Z):
+Dear Ganesh,
+This is not an authoritative answer, and I think this is probably a subject for the Stat Comm more than for the Stat Tools.
+But as far as I understand the problem, what happens is that the asymptotic formulation overestimates the spread of the test-statistics distribution, and therefore the uncertainty bands as well.
+You can have a look for example at the plot in slide 14 here: https://indico.in2p3.fr/event/20220/contributions/90328/attachments/61941/84625/cowan_sos21_2.pdf
+I don’t know how general is this behaviour, or if it is something related on the specific setup CMS/a given analysis uses. But since most of our analyses have similar setups, I’m not surprised they observe a similar behaviour.
+Cheers,
+Giacomo
+
+On 12 Aug 2025, at 23:42, Ganesh Parida via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Ganesh Parida gparidaAugust 12
+
+Dear Experts,
+I wanted to understand the feature observed when using the Full CLs (--HybridNew) method in Combine. For regions with low statistics, I understand that --HybridNew is recommended over --AsymptoticLimits. In our analysis of the heavy resonance X →HH→bbtautau, we are using the –HybridNewto obtain the limits for high masses. Following discussions with Combine contacts, and after varying both the density of the signal strength grid and the number of toys generated per signal strength point, we obtained the observed, expected and +/- 1 and 2 sigma bands using –HybridNew. When comparing the Full CLs results to those from --AsymptoticLimits, we observe:
+A) The expected median and observed values tend to be slightly worse (by about 10–15%) in the high-mass region.
+B) The ±σ bands shrink compared to the asymptotic bands.
+C) The shrinking is asymmetric between the +σ and –σ sides.
+These effects are visible in the attached plots: the left-hand plot compares the Full CLs expected median and observed values (plotted in RED) to those from --AsymptoticLimits, while the right-hand plot shows the median expected, observed, and ±1σ/±2σ bands from Full CLs.
+
+We have also observed that other analyses using Full CLs show similar behaviour — for instance, see slide 20 of this analysis (link). However, the underlying reason for this effect when using --HybridNew is not entirely clear to me. Could you please clarify whether this behaviour is expected?
+Thanks and regards,
+Ganesh
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by gparida @ 2025-08-20T21:28:32.000Z):
+Hi Giacomo,
+Thank you so much for your response and the reference. Indeed, this is quite interesting and something perhaps to understand from Stat Comm.
+Regards,
+Ganesh
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, August 14, 2025 9:09 AM
+To: Ganesh Parida ganesh.parida@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Asymmetric Shrinkage of ±σ Bands in Full CLs (–HybridNew) Compared to the Asymptotic Approach
+
+Giacomo Ortona gortonaAugust 14
+
+Dear Ganesh,
+This is not an authoritative answer, and I think this is probably a subject for the Stat Comm more than for the Stat Tools.
+But as far as I understand the problem, what happens is that the asymptotic formulation overestimates the spread of the test-statistics distribution, and therefore the uncertainty bands as well.
+You can have a look for example at the plot in slide 14 here: https://indico.in2p3.fr/event/20220/contributions/90328/attachments/61941/84625/cowan_sos21_2.pdf
+I don’t know how general is this behaviour, or if it is something related on the specific setup CMS/a given analysis uses. But since most of our analyses have similar setups, I’m not surprised they observe a similar behaviour.
+Cheers,
+Giacomo
+
+On 12 Aug 2025, at 23:42, Ganesh Parida via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Ganesh Parida gparidaAugust 12
+
+Dear Experts,
+I wanted to understand the feature observed when using the Full CLs (--HybridNew) method in Combine. For regions with low statistics, I understand that --HybridNew is recommended over --AsymptoticLimits. In our analysis of the heavy resonance X →HH→bbtautau, we are using the –HybridNewto obtain the limits for high masses. Following discussions with Combine contacts, and after varying both the density of the signal strength grid and the number of toys generated per signal strength point, we obtained the observed, expected and +/- 1 and 2 sigma bands using –HybridNew. When comparing the Full CLs results to those from --AsymptoticLimits, we observe:
+A) The expected median and observed values tend to be slightly worse (by about 10–15%) in the high-mass region.
+B) The ±σ bands shrink compared to the asymptotic bands.
+C) The shrinking is asymmetric between the +σ and –σ sides.
+These effects are visible in the attached plots: the left-hand plot compares the Full CLs expected median and observed values (plotted in RED) to those from --AsymptoticLimits, while the right-hand plot shows the median expected, observed, and ±1σ/±2σ bands from Full CLs.
+
+We have also observed that other analyses using Full CLs show similar behaviour — for instance, see slide 20 of this analysis (link). However, the underlying reason for this effect when using --HybridNew is not entirely clear to me. Could you please clarify whether this behaviour is expected?
+Thanks and regards,
+Ganesh
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+In Reply To
+
+Ganesh Parida gparidaAugust 12
+
+Dear Experts, I wanted to understand the feature observed when using the Full CLs (–HybridNew) method in Combine. For regions with low statistics, I understand that --HybridNew is recommended over --AsymptoticLimits. In our analysis of the heavy resonance X →HH→bbtautau, we are using the –HybridNe…
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

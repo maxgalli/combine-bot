@@ -1,0 +1,27 @@
+TOPIC: toysFrequentist and toysFile options
+URL: https://cms-talk.web.cern.ch/t/16268
+DATE: 2022-10-14T09:13:55.639Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2022-10-14T09:13:55.891Z):
+Hi experts,
+I am thinking of making some resource/time savings in the toy-heavy parts of an analysis, and one approach that comes to mind is to share the background-only toys between signal points. To this end I prepared a toys file using the GenerateOnly option, and then in later steps read this file using the --toysFile option.
+Since the toys are made using the --toysFrequentist option, I wonder about the difference between having or not this option again in later analysis steps. I’m asking because I see a ~10% difference in memory/runtime of these steps, and if not having --toysFrequentist in the later steps is also correct, then clearly I would love to benefit from the savings.
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-10-14T09:16:41.036Z):
+Hi Afiq,
+In short, you need to keep the --toysFrequentist option in all steps, otherwise the treatment of the toys is inconsistent (the flag instructs combine to load the sampled global observables for each toy).
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by afiqaize @ 2022-10-14T09:23:52.725Z):
+Hi Andrew,
+Thanks for confirming. I will do so, then.
+Cheers,
+Afiq
+----------------------------------------

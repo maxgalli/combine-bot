@@ -1,0 +1,13 @@
+TOPIC: Re: Limits from Simplified Likelihood
+URL: https://cms-talk.web.cern.ch/t/2147
+DATE: 2021-08-12T18:09:32.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by nckw @ 2021-08-12T18:09:32.000Z):
+Hi Maxi,
+Ok thanks
+Yes indeed I would start with that recommended check on the likelihood scan (of course you can compare that with what you get with the full model in combine)
+Best,
+Nick
+----------------------------------------

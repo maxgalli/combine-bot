@@ -1,0 +1,459 @@
+TOPIC: Problem (?) with HybridNew --LHCmode LHC-feldman-cousins and 3 independent signal strengths
+URL: https://cms-talk.web.cern.ch/t/39486
+DATE: 2024-04-21T11:28:18.402Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-04-21T11:28:18.529Z):
+Dear experts,
+thanks to Aliya and Andrew Gilbert I got instructions how to evaluate p-value with toys in case I have 3 independent signal strengths.
+I run
+combine 2018UL_dimuon_SR1SR2SR3.root -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint r_sig1=0,r_sig2=0,r_sig3=0 --saveToys --fullBToys --saveHybridResult -T 10000 -i 1 -s -1 --setParameters mean=27.3,width=1.4 --freezeParameters mean,width --setParameterRanges r_sig1=0.0,120.0:r_sig2=0.0,120.0,r_sig3=0.0,120.0
+and got p-value 0.01126 which corresponds to significance of 2.30
+This p-value is 10 times larger than I got using analytical formula eq (4) from
+[2109.13426] Comment on “Accumulating Evidence for the Associate Production of a Neutral Scalar with Mass around 151 GeV” (arxiv.org)
+pvalue = 0.125*(3.0TMath::Prob(2deltaNLL,1)+3.0TMath::Prob(2deltaNLL,2)+1.0TMath::Prob(2deltaNLL,3));
+for my deltaNLL = 6.53 corresponding p-value = 0.00121802 and significance is 3.0.
+deltaNLL I got running:
+combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0 --redefineSignalPOIs r_sig1,r_sig2,r_sig3 --robustFit=1 --setParameters mean=27.3,width=1.4 --freezeParameters mean,width 2018UL_dimuon_SR1SR2SR3.root -v 3
+and extracting deltaNLL from output root file
+higgsCombineTest.MultiDimFit.mH120.root
+I do not beleive that factor of 10 difference in p-valus can be explained by the difference between analytical formula and toys. This formula was checked using toys by Andre David and Nick Wardle a while ago for 2 signal strengths.  Also individual significances are 3.1, 1.4 and 1.9 from individual fits of each SR.  I think combined significance of 3 is reasonable value.
+I  think either I used wrongly combine feldman-cousins  or there is a bug in
+feldman-cousins for few independent signal strenghts.
+Please, help.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-04-22T09:59:28.096Z):
+Hi Sasha,
+From an initial look, your command seems correct. Let me investigate a little whether this should work in principle - will get back to you in a couple of days.
+Just to check, did you already verify the cases of the single signal strengths in the separate categories?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-04-22T10:07:30.406Z):
+Hi Andrew,
+yes, I did check that that feldman-cousins reproduces p-values I got with toys using usual command :
+combine -M HybridNew  2017UL_dimuon_SR3.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 5000 -i 1 -s -1 --setParameters mean=27.2,width=4.9 --freezeParameters mean,width
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-04-24T10:57:09.110Z):
+Hi Sasha,
+I thought it would be good to try this on a simple set of datacards checking to see if our Feldman-Cousins method (i.e the one you used) gives the same result as the Fowlie paper in the case of 1, 2 or 3 parameters.
+Attached is a pdf showing the results I got and the datacards/commands I used. In short, everthing checks out so there is no bug in the method we recommended. Something else must be going on, or for this particular case, the Fowlie formulae do not hold
+AsymptoticSignificance.pdf (179.2 KB)
+Can you take a look and see if you can spot differences (of course in my case I don;t have a mass and width parameter to freeze, but that should not be an issue)?
+Best,
+Nick
+[1] this could of course be just that we are not in the asymptotic limit or that there are correlations between the signal strengths which the  Fowlie paper assumes are zero. I do agree that a factor of 10 is hard to understand from these however.
+----------------------------------------
+
+REPLY 5 (by nckw @ 2024-04-24T12:51:55.221Z):
+Just a small edit - the first figure should of course read \frac{1}{2}\delta(0) +\frac{1}{2}\chi^{2}(1) in the legend (and that is what is actually plotted in the red line)
+Best,
+Nick
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2024-04-24T13:36:22.053Z):
+Hi Nick,
+Thanks for checking !
+I do not use
+–redefineSignalPOI r,r2,r3 -i 10 -n r3
+what does
+-n r3
+mean ?
+May be this difference is a reason …
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 7 (by nckw @ 2024-04-24T14:01:56.000Z):
+Hi Sasha,
+Ah,
+The option –redefineSignalPOI r,r2,r3 tells combine to set the list of parameters of interest to r,r2,r3 when defining the test statistic. I am not sure if your datacards/model is already doing that but you could try adding this option for your 3 parameters that are your signal strengths.
+The option -n r3 is just naming the output file so doesn’t affect the results at all,
+Best,
+Nick
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2024-04-24T14:11:44.628Z):
+great !
+Can you send me command how do you read merged output files to get final p-value from many runs. What is written on page did not work for me. I have send
+question to Aliya through CMS Talk
+Combination of three Search Regions using toys and three independent signal strengths - Common Analysis Tools / Statistical Interpretation Tools - CMS talk (cern.ch)
+it is at the bottom.
+Thanks !
+Sasha.
+----------------------------------------
+
+REPLY 9 (by nckw @ 2024-04-24T14:42:37.078Z):
+Hi Sasha,
+You just need to include the same option --redefineSignalPOIs and replace --grid=input.root with --toysFile input.root --singlePoint (since you only have a single point, not a grid of points)
+Best,
+nick
+----------------------------------------
+
+REPLY 10 (by anikiten @ 2024-04-25T07:15:47.879Z):
+Hi Nick,
+unfortunately adding
+–redefineSignalPOI r_sig1,r_sig2,r_sig3
+did not help for me, I got again p-value 0.011 instead of 0.0012 I got from Fowlie paper.  Signal strengths are not correlated at all.  I think I do something wrong…
+If you have a bit of free time, can you check what I do ?  I have combined cards
+for 2018, SR1, SR2, SR3 at
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/2018UL_dimuon_SR1SR2SR3.txt
+and at the same dir I have 2018UL_RooFitWorkspaceSR1.root, 2018UL_RooFitWorkspaceSR2.root, 2018UL_RooFitWorkspaceSR3.root
+I then create a physics model with
+
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO ‘map=SR1_2018/sig:r_sig1[1,0,120]’ --PO ‘map=SR2_2018/sig:r_sig2[1,0,120]’ --PO ‘map=SR3_2018/sig:r_sig3[1,0,120]’ 2018UL_dimuon_SR1SR2SR3.txt -o 2018UL_dimuon_SR1SR2SR3.root
+
+and finally run Feldmab-Cousins:
+
+combine 2018UL_dimuon_SR1SR2SR3.root -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint r_sig1=0,r_sig2=0,r_sig3=0 --saveToys --fullBToys --saveHybridResult -T 5000 -i 1 -s -1 --setParameters mean=27.3,width=1.4 --freezeParameters mean,width --setParameterRanges r_sig1=0.0,120.0:r_sig2=0.0,120.0:r_sig3=0.0,120.0 --redefineSignalPOI r_sig1,r_sig2,r_sig3
+
+In the mean time I will try to run it with cards done in your way, without step 1.
+Thank you very much for all your help !
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 11 (by nckw @ 2024-04-25T10:31:35.966Z):
+Hi Sasha,
+Since you pointed me to your datacard, i’ve had a go myself and here is what I did
+
+I copied over your files to my own local area
+I run the same text2workspace command (I see now why adding the --redefineSignalPOI didn’t change things since you already used a physics model to define them, I didn’t realise that before, but in any case I left the command in since it doesn’t hurt) :
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO 'map=SR1_2018/sig:r_sig1[1,0,120]' --PO 'map=SR2_2018/sig:r_sig2[1,0,120]' --PO 'map=SR3_2018/sig:r_sig3[1,0,120]' 2018UL_dimuon_SR1SR2SR3.txt -o 2018UL_dimuon_SR1SR2SR3.root
+I created a .sh file with the combine line needed to generate the toys which looks like below,
+
+#!/bin/bash
+cd /afs/cern.ch/work/n/nckw/combine-versions/113x/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/forSasha/comb/jobs/
+cmsenv
+
+i=$1
+
+combine ../2018UL_dimuon_SR1SR2SR3.root -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint r_sig1=0,r_sig2=0,r_sig3=0 --saveToys --saveHybridResult -T 500 -s -1 --setParameters mean=27.3,width=1.4 --freezeParameters mean,width,sigma --setParameterRanges r_sig1=0.0,120.0:r_sig2=0.0,120.0:r_sig3=0.0,120.0 --redefineSignalPOI r_sig1,r_sig2,r_sig3 -n run_${i} --cminDefaultMinimizerStrategy 0
+
+Note that it also fixes the parameter sigma since the range was set to not allow it to float anyway (easier just to make it constant). I also used --cminDefaultMinimizerStrategy 0 since it makes the fits for the toys a bit quicker.
+I then submitted about 50 of these jobs to get 25000 toys in total (takes about the time it took to make a coffee and read a few emails etc).
+Then I collected the output from the jobs together with hadd into a single file which I called toys.root and I run the following command
+combine 2018UL_dimuon_SR1SR2SR3.root -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint r_sig1=0,r_sig2=0,r_sig3=0 --readHybridResult -s -1 --setParameters mean=27.3,width=1.4 --freezeParameters mean,width,sigma --setParameterRanges r_sig1=0.0,120.0:r_sig2=0.0,120.0:r_sig3=0.0,120.0 --redefineSignalPOI r_sig1,r_sig2,r_sig3 -n result --cminDefaultMinimizerStrategy 0 --toysFile toys.root
+
+and the output is
+
+-- Hybrid New --
+Pmu = 0.002 +/- 0.00028256
+Done in 0.00 min (cpu), 0.01 min (real)
+
+Finally, since I had the script available to do it, I also plotted the distribution of the toys and the formulae from Fowlie on top (see below).
+
+As you can see, things look nice - in my calculation, I got 2DeltaNLL=12.72. Plugging into the Fowlie formulae for n=3, I get a p-value of 0.00144 so pretty close to what we get from the toys. I am running a few more toys now just to see if the agreement gets better, but to me given the agreement between the line and the histogram I would say we’re ok.
+So, with the  toys calculation (p-value=0.002), one would say the significance is  2.88 sigma.
+Best,
+Nick
+----------------------------------------
+
+REPLY 12 (by anikiten @ 2024-04-25T11:05:28.623Z):
+Thanks a lot, Nick for a good news !
+I will try to repeat exactly what you did and find out where was my mistake or difference with you.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 13 (by anikiten @ 2024-04-25T17:43:54.865Z):
+Hi Nick,
+I reproduced your p-value with 25000 toys !
+Pmu = 0.002 +/- 0.00028256
+will be waiting for your result with a few more toys.
+Thank you !
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 14 (by nckw @ 2024-04-25T18:08:31.820Z):
+Hi Sasha,
+Here is the figure again but now with 100,000 toys, you can see the p-value is not so different and within your uncertainty
+Best
+Nick
+----------------------------------------
+
+REPLY 15 (by anikiten @ 2024-04-25T18:36:10.862Z):
+Hi Nick,
+thanks !  Significance for your p-value=0.002190 is 2.85.
+As you said before your 2DeltaNLL=12.72.
+However when I run command:
+combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,r_sig3=0 --redefineSignalPOIs r_sig1,r_sig2,r_sig3 --robustFit=1 --setParameters mean=27.3,width=1.4 --freezeParameters mean,width,sigma 2018UL_dimuon_SR1SR2SR3.root -v 3
+I read from outgoing root file  deltaNLL=6.53488.
+So, 2 x  6.53488 =  13.07,  larger than yours value.  With Fowlie formulae it gives
+significance 3.0.
+How we can understand different deltaNLL obtained in feldman-cousins and
+with MultiDimFit ?  Sure, I prefer to have significance 3.0
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 16 (by anikiten @ 2024-04-25T18:45:16.670Z):
+… also, looking at your historgam I see that p-value (Y axis) is definitely smaller than 0.002 for q = 12.72 (vertical line).  It is rather about of 0.001…
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 17 (by nckw @ 2024-04-25T19:22:03.000Z):
+The y axis is not the p-value, it is the density, the p-value is the integral above the black line
+Nick
+
+| Alexandre Nikitenko anikitenApril 25 |
+
+| - |
+
+… also, looking at your historgam I see that p-value (Y axis) is definitely smaller than 0.002 for q = 12.72 (vertical line). It is rather about of 0.001…
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 18 (by nckw @ 2024-04-25T19:39:32.057Z):
+Hi again,
+The difference in the value of 2*deltaNLL comes from the fact I am using the --cminDefaultMinimizerStrategy 0 option which, as I mentioned, makes the fit quicker but is less accurate
+If I use the same options as you, I get your value of 2*deltaNLL. So I don’t think there’s an issue, the options you’ve used should give a more accurate answer
+Also in this game I think 2.85 sigma is not materially less interesting than 3!
+Best
+Nick
+----------------------------------------
+
+REPLY 19 (by anikiten @ 2024-04-26T07:05:51.970Z):
+Hi Nick,
+good !  But what’s about my last question
+“… also, looking at your historgam I see that p-value (Y axis) is definitely smaller than 0.002 for q = 12.72 (vertical line). It is rather about of 0.001…”
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 20 (by nckw @ 2024-04-26T07:32:32.244Z):
+Hi Sasha,
+I answered this one already in an earlier email
+“The y axis is not the p-value, it is the density, the p-value is the integral above the black line”
+Best
+Nick
+----------------------------------------
+
+REPLY 21 (by anikiten @ 2024-04-26T13:38:50.009Z):
+Hi Nick,
+but I use this formulae from Fowlie
+pvalue = 0.125*(3.0TMath::Prob(2 deltaNLL,1)+3.0TMath::Prob(2 deltaNLL,2)+1.0TMath::Prob(2 deltaNLL,3));
+for p-value calculation… I just realized that it is indeed probability density function, not integral above observed chi^2 (of 2 x deltaNLL).  Shell I use then
+integral from this function to compare with p-value given by toys ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 22 (by nckw @ 2024-04-26T13:50:02.839Z):
+Hi Sasha,
+The formulae you used is correct since TMath::Prob(x,n) gives the integral from x to infinity of a chi-square distribution with n degrees of freedom already,
+Best,
+Nick
+----------------------------------------
+
+REPLY 23 (by anikiten @ 2024-04-26T13:53:27.674Z):
+Uff … !  Thanks so much.  Olga is running now with 1 M toys. So, we expect
+accuracy about of 3 %.  Will see if we are at 3 sigma or not   People like
+magical numbers…
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 24 (by anikiten @ 2024-04-27T19:21:30.165Z):
+Hi Nick,
+it seems we do not have yet “happy end” of this story.
+I reproduced your p-value about of 0.002 with 25K toys using option you used:
+–cminDefaultMinimizerStrategy 0
+Olga then run feldman-cousins without this option and got p-value about of 0.01
+with 1 M toys…
+I run it myself again with 25K toys without this option and reproduced
+her p-value about of 0.01.
+So, we see different in p-value by factor of 5 when we run feldman-cousins with
+and without option --cminDefaultMinimizerStrategy 0
+Can you understand it ?
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 25 (by nckw @ 2024-04-29T08:35:17.384Z):
+Hi Sasha,
+Hmm, seems there’s more to think about. I took a look at removing the option and compared the distributions (see the figure below). The black is with the option --cminDefaultMinimizerStrategy=0 and the blue is without it. In both cases, there is a rather large tail in the distribution (now I am plotting much further in the test statistic distribution) but the tail is much larger for the blue. I am running a few jobs now to see if I can spot what’s causing this.
+One thing I noticed is that in many cases, I see warnings from combine like this
+p.d.f value is less than zero (-109.565970), forcing value to zero @ x=dimuonmass12=49.6061, coefList=(a1_18sr2 = 7.839,a2_18sr2 = 0.640501,a3_18sr2 = -0.0342118,a4_18sr2 = 0.000346907)
+
+and in some cases, that value is very large. Now usually the fitter will try to walk away from this region but i’m not certain that it’s always managing to do it which could lead to a lot of fit failures. I’m not immediately sure why the option makes a difference but others might have some idea about it.
+One way we avoided this in H->gg is we used Bernstein Polynomials defined such that the background can never be negative. Did you ever consider these before instead of standard RooPolynomial or RooChebychev ?
+I’ll let you know if I get any further checking this odd tail,
+Nick
+Screenshot 2024-04-29 at 09.35.101202×872 70.3 KB
+----------------------------------------
+
+REPLY 26 (by anikiten @ 2024-04-29T08:55:17.397Z):
+Hi Nick,
+we did use Bernstein for SR3, but never for SR1 and SR2.  From message I see
+the warnings came from SR2 fit where we use polynomial of order 4.
+We changed Bernstein to Chevychev for SR3 on request of Stat.Com. since Bernstein gave a very large correlation for bkg. parameters.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 27 (by anikiten @ 2024-04-29T12:54:51.432Z):
+Hi again,
+I am thinking that we can stay with option –cminDefaultMinimizerStrategy 0
+but the then we calculate p-value with 2xdeltaNLL = 13.07 given by MultiDimFit,
+if it make a sense for you.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 28 (by nckw @ 2024-04-29T13:25:04.000Z):
+Hi Sasha,
+I think if we stick with –cminDefaultMinimizerStrategy 0 , (which makes sense given that the things being run without it shouldn’t even be necessary for this), then we really have to also use the same when calculating the 2xdeltaNLL. We can’t just pick numbers that give us the largest significance and claim that we really understand that result,
+Nick
+----------------------------------------
+
+REPLY 29 (by anikiten @ 2024-04-29T13:55:18.000Z):
+Hi Nick,
+yes, I was also thinking about that and you are right.
+I just want to have the best possible result, provided
+that feldman-cousins works propertly without this option.
+I do not want to change function since we did already
+unblinding with it and also I have to re-do many things
+from the beginning, like F-test, individual and combined
+signidficances, mass and width… I am terrified
+to start it again if it is not really needed and we are close
+to the “happy end”  and I do not have an army of people.
+If problem can’t be solved without changing function I agree to run
+with this option and get a bit less significance.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 30 (by nckw @ 2024-04-30T15:37:15.423Z):
+Hi Sasha,
+I was trying out a few more tests with toys, and I am noticing that the fits are not very happy it seems with the background functions (the behaviour is a little bit better with --cminDefaultMinimizerStrategy=0.
+I decided to go back to the data and try to run a profile likelihood scan over all of the background shape parameters, one by one. You can find them here : https://nckw.web.cern.ch/tmp/2018_sr1sr2sr3_300424_cmin1/
+In each plot, a single parameter (the one on the x-axis) is scanned and the others (in the legend) are allowed to float. The ranges chosen are just ones set in the workspace which you provided. To me it looks like some of the ranges could be reduced from what we have there as the deltaNLL is very large. The jumpy behaviour worries me as in the toys this can lead to fits being extremely unstable (which is what I am seeing). How were the ranges for the parameters chosen?
+Best,
+Nick
+----------------------------------------
+
+REPLY 31 (by anikiten @ 2024-05-01T11:52:23.000Z):
+Hi Nick,
+thanks for checking !
+I am wondering why on your plots for parameters of the polynomial function for SR1: a1_18sr1, a2_18sr2,a3_18sr1 scan starts from 0
+but not from -1.0 according to what I have in my macro for
+preparing Workspace
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/13TeV_2018UL_RooFitTest_SR1.C
+other parameters are indeed in the range I set. Ranges are taken
+“arbitrary large” and especially for SR2 and I do see from plots that I can restrict them. Would +/- 3 sigma work or I should take a range where
+2deltaNLL is has a smoothed shape ?
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 32 (by nckw @ 2024-05-01T12:00:39.000Z):
+Hi Sasha,
+Hmm, I should check – it might be that the points below 0 for that scan failed and so don’t appear in the plot.
+It might indeed be a good idea to try restricting the ranges to within +/- 3 sigma and see if things look more stable. All of this of course is part of the whole discussion on the background modelling (generally polynomials are tricky as they can go -ve, which is why we used Bernstein polynomials in the early H->gg analyses).
+I’ll keep digging but I think we should think more about this as calculating a proper significance with the toys relies on having fairly robust fits for the toy datasets.
+All the best,
+Nick
+----------------------------------------
+
+REPLY 33 (by anikiten @ 2024-05-01T18:35:46.000Z):
+Hi Nick,
+with bkg. parameters for SR2 (most large range used) restricted
+to +/- 3 sigma I got
+– Hybrid New –
+Pmu = 0.0014 +/- 0.000236477
+very same as with formulae. I still have sometime error messages from
+single SR1 fit and will work on it tomorrow. In single SR3 fit I did not get error messages.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 34 (by anikiten @ 2024-05-02T17:36:26.000Z):
+Hi Nick,
+I restricted +/- 3 sigma parameters for SR1 2018
+I got with 25K
+– Hybrid New –
+Pmu = 0.00188 +/- 0.000273968
+For single fits SR1, SR2 and SR3 2018 and combined fit 2018
+I do not see now error messages.
+But when I run feldman-cousins I still see some error messages
+from SR2
+[#0] WARNING:Minization – RooMinimizerFcn: Minimized function has error status.
+Returning maximum FCN so far (0.42633) to force MIGRAD to back out of this region. Error log follows
+Parameter values: a1_18sr1=0.0453454, a1_18sr2=6.36085, a1_18sr3=-0.580228, a2_18sr1=-0.00187511, a2_18sr2=0.670364, a2_18sr3=-0.294133, a3_18sr1=1.50902e-05, a3_18sr2=-0.0331028, a3_18sr3=0.271553, a4_18sr2=0.000341566, bkgrate_sr1_18=1.00336, bkgrate_sr2_18=1.0823, bkgrate_sr3_18=1.19537, r_sig1=14.37, r_sig2=11.8878, r_sig3=8.45183
+RooPolynomial::shapeBkg_bkg_SR2_2018[ x=dimuonmass12 coefList=(a1_18sr2,a2_18sr2,a3_18sr2,a4_18sr2) ]
+p.d.f value is less than zero (-12.522448), forcing value to zero @ x=dimuonmass12=52.5858, coefList=(a1_18sr2 = 6.36085 +/- 1.84784,a2_18sr2 = 0.670364 +/- 0.0483582,a3_18sr2 = -0.0331028 +/- 0.000960092,a4_18sr2 = 0.000341566 +/- 1.24018e-05)
+I have updated Workspace.root files at
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test
+I will try to scan and track SR2 bkg. parameters as you explained me a while ago.
+I think the reason is that bkg curve is very close to zero at the upper limit of fit range 55 GeV. Have a look at Fig. 23 left of paper draft
+CADI-Analyses (cern.ch)
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 35 (by nckw @ 2024-05-02T17:57:27.000Z):
+Hi Sasha
+Thanks - the error you get is indeed due to still getting -ve values issues but from the one you posted it looks like Minuit can find a way to avoid it . The number also looks more like with the --cminDefaultMinimizerStratefy 0 option which is very encouraging!
+Let me know what you find from your scans, I will take your new workspaces and investigate more. Hopefully we are converging on the p-value with toys calculation now!
+Best
+Nick
+----------------------------------------
+
+REPLY 36 (by anikiten @ 2024-05-03T09:35:24.000Z):
+Hi Nick,
+I run scan for a1_18sr2 and track other bkg function parameters
+combine -M MultiDimFit 2018UL_dimuon_SR1SR2SR3.root -P a1_18sr2 --setParameterRanges a1_18sr2=4.3,11.38 --algo grid --points 50 --floatOtherPOIs=1 --saveInactivePOI 1 --trackParameters a2_18sr2,a3_18sr2,a4_18sr2 --setParameters mean=27.3,width=1.4 --freezeParameters mean,width,r
+I can plot a1_18sr2 from scan (attached) with
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI a1_18sr2
+but when I try to plot a2_18sr2 it gives error
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI trackedParam_a2_18sr2
+scan_a1_18sr2.pdf (15 KB)
+----------------------------------------
+
+REPLY 37 (by anikiten @ 2024-05-03T09:42:48.000Z):
+Hi again,
+here is more reasonable plot for a1_18sr2 when I increase lower adge
+of interval: a1_18sr2=6.2,11.38
+but
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI trackedParam_a2_18sr2
+still gives the same error.
+Cheers, Sasha.
+scan_a1_18sr2.pdf (15.1 KB)
+----------------------------------------
+
+REPLY 38 (by anikiten @ 2024-05-03T13:45:32.000Z):
+Hi Nick,
+I think we can get a reasonable intervals for a1_18sr2 and a2_18sr2
+based on attached plots. I am wondering however why on scan plot
+of a1_18sr2 I do not see a circle points between 6.5 and 8.0… but curve
+looks nice.
+I will try to do the same with a3 and a4 for SR2 2017
+Cheers, Sasha.
+scan_a1_18sr2.pdf (19.3 KB)
+scan_a2_18sr2.pdf (15.5 KB)
+----------------------------------------
+
+REPLY 39 (by anikiten @ 2024-05-07T16:38:04.735Z):
+Hi Nick,
+I made scans of all bkg coefficients for SR1 and SR2 (poly functions) and
+made 95 % interval for parameter ranges.  Close to 95 % edges 2xdeltaNLL
+behaves very sharp, similar as on plot of a2_18sr2 in previous message.
+When I run feldman-cousins I still have sometime messages related to upper limit of SR2 fit range (55 GeV) where we have a few events only and function approaches zero.
+[#0] WARNING:Minization – RooMinimizerFcn: Minimized function has error status.
+Returning maximum FCN so far (0.335824) to force MIGRAD to back out of this region. Error log follows
+Parameter values: a1_18sr1=0.0345791, a1_18sr2=6.74989, a1_18sr3=-0.576619, a2_18sr1=-0.00155, a2_18sr2=0.667131, a2_18sr3=-0.264839, a3_18sr1=1.25665e-05, a3_18sr2=-0.0333135, a3_18sr3=0.251122, a4_18sr2=0.000344881, bkgrate_sr1_18=1.0215, bkgrate_sr2_18=1.05602, bkgrate_sr3_18=1.19159, r_sig1=32.046, r_sig2=15.626, r_sig3=0.426065
+RooPolynomial::shapeBkg_bkg_SR2_2018[ x=dimuonmass12 coefList=(a1_18sr2,a2_18sr2,a3_18sr2,a4_18sr2) ]
+p.d.f value is less than zero (-4.343847), forcing value to zero @ x=dimuonmass12=50.5746, coefList=(a1_18sr2 = 6.74989 +/- 4.57362,a2_18sr2 = 0.667131 +/- 0.0532241,a3_18sr2 = -0.0333135 +/- 0.00234042,a4_18sr2 = 0.000344881 +/- 3.44777e-05)
+With 25K events I got
+– Hybrid New –
+Pmu = 0.00168 +/- 0.000259012
+which is close to formulae p-value: pvalue = 0.00149352
+Olga will be running now 1M toys.
+My new Workspace.root is at the same place if you would like to do checks:
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/2018UL_dimuon_SR1SR2SR3.root
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 40 (by anikiten @ 2024-05-12T11:41:07.657Z):
+Hi Nick,
+with 1M toys Olga got a p-values close with 10 % to the one with analytical
+formulae. See details in
+Combined 2018, SR1+SR2+SR3 significance with toys - SUS / SUS-23-011 - CMS Pub Talk (cern.ch)
+We do now 2017 combination with toys after I selected parameter intervals with
+scans.
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/2017UL_dimuon_SR1SR2SR3.root
+Cheers, Sasha.
+----------------------------------------

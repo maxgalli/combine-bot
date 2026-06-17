@@ -1,0 +1,45 @@
+TOPIC: Minimisation procedures before b and s+b fits
+URL: https://cms-talk.web.cern.ch/t/27562
+DATE: 2023-07-26T06:27:15.516Z
+SOLVED: no
+============================================================
+
+QUESTION (by mrogulji @ 2023-07-26T06:27:15.703Z):
+Dear experts,
+why does the FitDiagnostics routine seemingly run minimisation several times before doing the background-only and signal+background fits as indicated in the output below? Also attached is the full output of combine for this specific fit.
+Combine2x2Output.txt (23.5 KB)
+INFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+INFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0
+INFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0
+INFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+INFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0
+INFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0
+INFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+INFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0
+INFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0
+INFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+INFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=0
+INFO: (function: improveOnce) CascadeMinimizer.cc: 216 -- Minimization success! status=0
+DEBUG: (function: runSpecific) FitDiagnostics.cc: 318 -- Fit B-only, status = 0, numBadNLL = 0, covariance quality = 3
+INFO: (function: improveOnce) CascadeMinimizer.cc: 188 -- Minimisation configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+INFO: (function: improveOnce) CascadeMinimizer.cc: 211 -- Minimisation finished with status=-1
+DEBUG: (function: improveOnce) CascadeMinimizer.cc: 217 -- Minimization ended with latest status != 0 or 1
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-07-26T10:09:18.594Z):
+Dear Matej,
+The FitDiagnostics method in Combine does a lot of things and the minimisation is often ran in several iterations. In this case I think you are looking at the messages from the initial fit to the nusaincePdf which is done to save the snapshot of pre-fit nuisancePdf which can be used later for the toys. Perhaps someone else wants to give a more detailed explanation.
+But I think you are trying to understand why the fit failed. I’d suggest to increase the verbosity by one level i.e. -v 3 so we have more information to debug.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by mrogulji @ 2023-07-26T10:24:00.620Z):
+Thank you Aliya,
+
+The FitDiagnostics method in Combine does a lot of things and the minimisation is often ran in several iterations.
+
+Are these many things and iterations documented and explained somewhere? As you say, this is not related to the failing fit, but I’m curious to know the full procedure.
+Cheers,
+Matej
+----------------------------------------

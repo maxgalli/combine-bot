@@ -1,0 +1,45 @@
+{
+  "topic_id": 47023,
+  "title": "Excluding Parameters with combineTool.py",
+  "url": "https://cms-talk.web.cern.ch/t/47023",
+  "category_id": 279,
+  "created_at": "2024-08-29T20:49:17.214Z",
+  "last_posted_at": "2024-08-29T21:20:49.199Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "eertorer",
+      "name": "Erdem Yigit Ertorer",
+      "created_at": "2024-08-29T20:49:17.315Z",
+      "updated_at": "2024-08-29T20:49:17.315Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nIs it possible to exclude certain parameters when running combineTool.py? If so, how can I do that? I checked the combine documentation but didn\u2019t see instructions on how to do so.\nThank you for your help,\nErdem",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>Is it possible to exclude certain parameters when running combineTool.py? If so, how can I do that? I checked the combine documentation but didn\u2019t see instructions on how to do so.</p>\n<p>Thank you for your help,<br>\nErdem</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "eertorer",
+      "name": "Erdem Yigit Ertorer",
+      "created_at": "2024-08-29T21:00:07.163Z",
+      "updated_at": "2024-08-29T21:00:07.163Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "To be more specific, I want to exclude parameters when running impacts. I am trying to find a way not to create condor jobs for a subset of parameters when running impacts with the --doFits and the --job-mode condor options.",
+      "cooked_html": "<p>To be more specific, I want to exclude parameters when running impacts. I am trying to find a way not to create condor jobs for a subset of parameters when running impacts with the <code>--doFits</code> and the <code>--job-mode condor</code> options.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-08-29T21:20:49.199Z",
+      "updated_at": "2024-08-29T21:20:49.199Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nDid you already try --exclude?\n$combineTool.py -M Impacts --help\n[...]\nImpacts options:\noptions specific to this method\n[...]\n--exclude PARAM1,PARAM2,...\nSkip these nuisances. Also accepts regexp with syntax 'rgx{<my regexp>}'\n[...]\n\n-A",
+      "cooked_html": "<p>Hi,</p>\n<p>Did you already try --exclude?</p>\n<pre><code class=\"lang-auto\">$combineTool.py -M Impacts --help\n[...]\nImpacts options:\n  options specific to this method\n[...]\n  --exclude PARAM1,PARAM2,...\n                        Skip these nuisances. Also accepts regexp with syntax 'rgx{&lt;my regexp&gt;}'\n[...]\n</code></pre>\n<p>-A</p>"
+    }
+  ]
+}

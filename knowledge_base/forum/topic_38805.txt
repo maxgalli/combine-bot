@@ -1,0 +1,31 @@
+TOPIC: Custom rebinning with combine harvester tool
+URL: https://cms-talk.web.cern.ch/t/38805
+DATE: 2024-04-09T13:12:36.759Z
+SOLVED: no
+============================================================
+
+QUESTION (by gbardell @ 2024-04-09T13:12:36.953Z):
+Dear experts,
+I have a question about the AutoRebin tool available in Combine Harvester. I would like to merge only some specific bins of an histogram, without having them failing a condition on the Bin Threshold or Bin Uncertainty Fraction, but just merge these specific ones with their neighbouring bins.
+In my case I have narrow bins (not failing any of the above mentioned conditions) in between wider bins and I would like to evaluate the impact on sensitivity after merging them.
+Is there a way to do this custom rebinning using the combine harvester tool as it is or I need to modify the code?
+And if the latter is the case do you perhaps have any experience ?
+Thanks in advance,
+Best regards,
+Giulio
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-04-09T13:28:14.163Z):
+Hi Giulio,
+I haven’t used AutoRebin for a while myself, so don’t remember if there is an option to do this -  however, could you not use the VariableRebin method for what you want to do? That is, take the bin boundaries you get out of AutoRebin, manually remove the ones where you want to merge neighbouring bins, and apply them with VariableRebin? I see examples both in cpp and python in the CombineHarvester code, but let me know in case you cannot find them.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by gbardell @ 2024-04-09T16:17:23.915Z):
+Hi Adinda,
+Thanks for the advice, I didn’t know there was this feature available, which perfectly worked for my purpose.
+Thanks again,
+Best,
+Giulio
+----------------------------------------

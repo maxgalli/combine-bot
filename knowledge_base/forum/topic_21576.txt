@@ -1,0 +1,43 @@
+TOPIC: Abnormal postfit uncertainty
+URL: https://cms-talk.web.cern.ch/t/21576
+DATE: 2023-03-17T17:52:50.467Z
+SOLVED: no
+============================================================
+
+QUESTION (by kskovpen @ 2023-03-17T17:52:50.738Z):
+Dear All,
+We have been trying to produce postfit plots using PostFitShapesFromWorkspace. While, in general, the results look sane, we have quite a number of cases where the postfit uncertainties that are produced by PostFitShapesFromWorkspace appear to be extremely large. The FitDiagnostic results look good and nothing problematic is spotted in the fitted parameters. By any chance, could you please have a look at this standalone example that reproduces the problem (see the standard output from the tool)?
+wget https://homepage.iihe.ac.be/~kskovpen/example.tar.gz
+tar -zxf example.tar.gz; cd example
+./run.sh
+We would highly appreciate any prompt feedback.
+Thanks,
+Kirill
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-03-17T20:37:02.898Z):
+Hi Kirill,
+Looking at the output, it seems we can trace it to some pathological behaviour in specific processes, e.g.:
+root [1] gDirectory->Get("ch1_ch1_y17_y17_bdt_DLee_sig_postfit/WZ")->Print("range")
+TH1.Print Name  = WZ, Entries= 7, Total sum= 2.38172
+fSumw[1]=0.550405, x=0.5, error=122975
+fSumw[2]=0.688442, x=1.5, error=0.688438
+fSumw[3]=0.840791, x=2.5, error=0.840787
+fSumw[4]=0.204158, x=3.5, error=0.204155
+fSumw[5]=0.092795, x=4.5, error=0.0927917
+fSumw[6]=0.00496271, x=5.5, error=0.00495937
+fSumw[7]=0.000166307, x=6.5, error=0.000163076
+
+I think this probably originates with a large number of shape uncertainties with a fully asymmetry effect on the normalisation (pdfShapeVar*) - at least for these problematic processes. Was this intentional? The down shape yield variation is the same as the nominal, but the up is fairly large (+17%), which means in the covariance matrix sampling there’s quite a good chance of throwing a configuration where many of these parameters are positive, and the multiplicative effect accumulates to give huge differences.
+So in short, I’d check the input uncertainties carefully - it looks like there might be a problem in some of the up/down shapes for these pdfShapeVar* ones (and maybe some of the others).
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by kskovpen @ 2023-03-17T23:17:56.640Z):
+Hi Andrew,
+Thank you very much for your quick reply and for spending your time looking into this.
+This was also my suspicion. We have these fully asymmetric uncertainties, which are associated with pdf variations (i.e. instead of an envelope we go for individual variations included directly in the fit). We will try to see what is the best strategy here.
+Thanks,
+Kirill
+----------------------------------------

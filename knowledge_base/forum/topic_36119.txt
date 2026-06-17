@@ -1,0 +1,22 @@
+TOPIC: Is it possible to save each nuisances in different histograms instead of just "total_background"
+URL: https://cms-talk.web.cern.ch/t/36119
+DATE: 2024-02-28T14:47:32.809Z
+SOLVED: no
+============================================================
+
+QUESTION (by alkaloge @ 2024-02-28T14:47:32.924Z):
+Hello
+I have a probably naive question. While running the FitDiagnostics, is there a way to have in the post-fit directory the nuisances (shapes) saved separately as histograms? I would like to be able to make a ratio band showing the different nuisances contributing to the total error band if possible.
+I hope my question makes sense.
+Thanks,
+Alexis
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-02-28T15:50:51.969Z):
+Hi Alexis,
+So you mean for example, a TH1 of total_background where the uncertainty comes just from a JES nuisance, say? I don’t think there’s an easy way to do that it FitDiagnostics, but others may want to comment.
+It could be done with PostFitShapesFromWorkspace (from CombineHarvester), there is a --freeze option that stops the list of parameters being varied in the covariance matrix sampling. So it’s a bit clunky, you’d have to list all the N-1 nuisances to freeze each time, but it should work.
+One thing to keep in mind, because of correlations in the fit, the simple sum in quadrature of the uncertainties for each NP could be much larger than the total uncertainty determined directly.
+cheers,
+Andrew
+----------------------------------------

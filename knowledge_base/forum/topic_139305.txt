@@ -1,0 +1,28 @@
+TOPIC: Overconstraints appearing when combining regions
+URL: https://cms-talk.web.cern.ch/t/139305
+DATE: 2025-11-25T15:50:51.853Z
+SOLVED: no
+============================================================
+
+QUESTION (by gdamolin @ 2025-11-25T15:50:52.238Z):
+Dear Stat & combine experts,
+I am the main contact of TOP-24-016 [1]. We measure LFU using the combineTF tool by performing a simultaneous fit on 11 regions (for each year of Run2) and extract the 9 signal strengths needed to compute our observable.
+However it seems the fit appears very overconstrained for some nuisances, even thought the standard prescriptions are employed. Here is the impacts (after smoothing, described later) on 2 observables with the full Run2 fit:
+R(mu/e) and R(tau/mu)
+Initially this was thought to be due to fluctuations in the templates, for example in the case of Pileup fluctuations in process with limited Monte Carlo statistics (W+Jets). In this image for example I show the Up & Down fluctuations of the W+Jets template in a ttbar region, where the W+Jets contribution is not huge.
+Schermata del 2025-11-25 14-52-511160×825 116 KB
+As you see, the fluctuations are essentially random.
+So to this and another few variable apply a SmoothLowess smoothing (span=0.67, number of iterations=3, delta=0), the templates become much better but the overconstraints still remain. Here is the same template after smoothing.
+Schermata del 2025-11-20 14-34-29686×472 61 KB
+However the constraints remain almost identical.
+I have done some tests, and it seems if I fit a single region basically no overconstrain appears, and only when I start to combine them they manifest (worsening the more regions I combine).
+One thing I notice, is that while smoothing reduces the crossings in a singular region, when Combine puts the different regions in the same histogram for the fit, red and blue contributions may be inverted from the case above, creating more crossings. For example here I show the Wjets templates under pileUp variation in 2 different regions (tt→etau and tt→mutau) and you see the up (red) and blue (down) templates are switched.
+image1828×627 161 KB
+I tested if forcing the red variation to be always the one bigger than nominal would solve the issue, and while it does bring some improvement, I am not sure it is legitimate to do this to the many overconstrained nuisances (mainly Pileup, a pair of JES, theoretical uncertainties and MET shifts).
+Do you have any suggestion on how to tackle this issue? Again, I have done some studies on subsets and individual regions, I summarize them in this presentation [2], and they all seem to point at the problem arising only when the regions are combined.
+Any suggestion is very very welcome.
+Thanks a lot and cheers,
+Giacomo
+[1] https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=TOP-24-016
+[2] https://docs.google.com/presentation/d/1tb3OutjiZRw0Wn3mIa-m1cTbC5nt2ql258zi_imTnTA/edit?usp=sharing
+----------------------------------------

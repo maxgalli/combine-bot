@@ -1,0 +1,45 @@
+{
+  "topic_id": 139253,
+  "title": "Seg fault when importing CombineHarvester and some numpy versions",
+  "url": "https://cms-talk.web.cern.ch/t/139253",
+  "category_id": 279,
+  "created_at": "2025-11-24T18:07:27.058Z",
+  "last_posted_at": "2025-11-24T18:20:11.168Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dstaffor",
+      "name": "Dominic William Stafford",
+      "created_at": "2025-11-24T18:07:27.380Z",
+      "updated_at": "2025-11-24T18:07:27.380Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts\nHaving installed combine and combine harvester in CMSSW_14_1_0_pre4 following the usual instructions, I got a segfault when doing:\nimport CombineHarvester.CombineTools.ch as ch\nimport numpy as np\n\nin python. After some exploration of why this was affecting me but not others, I found the issue was I had numpy==1.23.5 installed in my user directory (confirmed this was the issue by installing this version in a venv on lxplus). After deleting my user numpy install I no longer got the error, so it\u2019s not critical for me this gets fixed, but wanted to report it in case other people encounter the error (or if it\u2019s easy to fix, which I doubt).\nBest,\nDominic",
+      "cooked_html": "<p>Dear combine experts</p>\n<p>Having installed combine and combine harvester in CMSSW_14_1_0_pre4 following the usual instructions, I got a segfault when doing:</p>\n<pre><code class=\"lang-auto\">import CombineHarvester.CombineTools.ch as ch\nimport numpy as np\n</code></pre>\n<p>in python. After some exploration of why this was affecting me but not others, I found the issue was I had numpy==1.23.5 installed in my user directory (confirmed this was the issue by installing this version in a venv on lxplus). After deleting my user numpy install I no longer got the error, so it\u2019s not critical for me this gets fixed, but wanted to report it in case other people encounter the error (or if it\u2019s easy to fix, which I doubt).</p>\n<p>Best,</p>\n<p>Dominic</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "sqian",
+      "name": "Sitian Qian",
+      "created_at": "2025-11-24T18:13:10.531Z",
+      "updated_at": "2025-11-24T18:13:10.531Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I think I ran into similar issues with pandas etc. wonder if https://cms-sw.github.io/venv.html could be helpful for handling such issues.",
+      "cooked_html": "<p>I think I ran into similar issues with <code>pandas</code> etc. wonder if <a href=\"https://cms-sw.github.io/venv.html\" rel=\"noopener nofollow ugc\">https://cms-sw.github.io/venv.html</a> could be helpful for handling such issues.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2025-11-24T18:20:11.168Z",
+      "updated_at": "2025-11-24T18:20:11.168Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nthere are some incompatibilities with pandas and numpy, which could be inherited w/ local user installation. On top of the virtualenv  solution (which should be more stable), you could also try to set:\nexport PYTHONNOUSERSITE=nothingmeaningful\n\nWe may try as well to understand how much are the pandas library used, effectively.\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<p>there are some incompatibilities with pandas and numpy, which could be inherited w/ local user installation. On top of the virtualenv  solution (which should be more stable), you could also try to set:</p>\n<pre><code class=\"lang-auto\">export PYTHONNOUSERSITE=nothingmeaningful\n</code></pre>\n<p>We may try as well to understand how much are the pandas library used, effectively.</p>\n<p>-Andrea</p>"
+    }
+  ]
+}

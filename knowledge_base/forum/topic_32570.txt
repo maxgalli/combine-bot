@@ -1,0 +1,42 @@
+TOPIC: New draft of HEP Statistics Serialization Standard (v0.2)
+URL: https://cms-talk.web.cern.ch/t/32570
+DATE: 2023-12-11T07:57:11.850Z
+SOLVED: no
+============================================================
+
+QUESTION (by clange @ 2023-12-11T07:57:11.988Z):
+Hello everyone,
+For those interested, there’s a new (and now tagged) version (0.2) of the draft document that could develop into a standard for statistics serialization in HEP: https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard/releases/tag/v0.2 :
+
+After many months of waiting and countless iterations, HS³ v0.2 is finally out.
+This marks the first official release of HS³, superseding the (purely informal) v0.1 that never made it to the release stage.
+This appended document is probably still full of inconsistencies and bad ideas that should be changed further down the line, but it - importantly - marks the first reasonably complete draft of our standard, and is implemented in this form in the recently released ROOT 6.30/02. There is also a WIP Julia version tied to BAT.jl implementing this version, and pledges have been made by the development teams of both pyhf and zfit to implement HS³ in one of the future iterations.
+Please help to improve our standard by commenting on HS³ v0.2. The deadline for comments is Friday, the 19th of January 2024. Be sure to visit our discussions page and contribute to this development!
+
+Direct link to PDF: https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard/releases/download/v0.2/HS3.pdf
+If you have any questions, concern, or comments, please either comment directly by creating or adding to an issue in the GitHub repository or contact Kirill Skovpen who is the CMS contact.
+Thank you and best regards,
+Giulio and Clemens
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-01-16T17:06:56.727Z):
+Dear all,
+We have scheduled HS3 CMS chat this Thursday 18th of January at 3PM CERN time: https://indico.cern.ch/event/1370137/.
+We would like to discuss the latest HS3 draft and gather comments to submit them by this Friday, 19th of January.  If you are not able to join the discussion you are very welcome to submit the comments in the gdoc.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2024-01-31T09:30:55.246Z):
+Dear All,
+We are finalising the feedback for the HS3 draft v0.2 here.
+We invite everyone interested to look at it and to sign it.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-02-02T13:48:53.829Z):
+FYI, our feedback is now uploaded to HS3 GitHub discussions page: https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard/discussions/35
+Best,
+Aliya
+----------------------------------------

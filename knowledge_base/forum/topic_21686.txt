@@ -1,0 +1,38 @@
+TOPIC: MC stat. unc. and RooParametricHisto
+URL: https://cms-talk.web.cern.ch/t/21686
+DATE: 2023-03-21T16:50:51.160Z
+SOLVED: no
+============================================================
+
+QUESTION (by jlidrych @ 2023-03-21T16:50:51.338Z):
+Dear combine experts,
+I have a question related to MC statistical uncertainties and RooDataHist/RooParametricHisto. Is there any general recommendation on how to include MC stat unc. in the fit setup that uses the RooDataHists and RooParametricHisto (e.g. analysis with the data driven estimation of the background)?
+autoMCStats works only for the input in the TH1 format.
+Thank you for your suggestions.
+Best regards,
+Jindrich
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-03-23T13:40:02.334Z):
+Dear Jindrich,
+AFAIK, what can be done in this case is to add a shape systematics incorporating statistical uncertainty in each bin for each process. Possibly someone else has a better suggestion.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by nckw @ 2023-03-23T13:55:09.000Z):
+Indeed, this is the way to do it since the autoMCStats works only on TH1 style histograms right now. You can create the usual up/down shape for each bin and provide them as systematic shapes (RooDataHists) to account for the MC uncertainties.
+Nick
+
+On 23 Mar 2023, at 13:42, Aliya Nigamova via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Aliya Nigamova anigamovMarch 23
+
+Dear Jindrich,
+AFAIK, what can be done in this case is to add a shape systematics incorporating statistical uncertainty in each bin for each process. Possibly someone else has a better suggestion.
+Best,
+Aliya
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

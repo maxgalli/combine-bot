@@ -1,0 +1,12 @@
+TOPIC: Fisher Test for background modelling
+URL: https://cms-talk.web.cern.ch/t/55796
+DATE: 2024-10-23T20:47:59.001Z
+SOLVED: no
+============================================================
+
+QUESTION (by santocch @ 2024-10-23T20:47:59.121Z):
+Hello,
+I’m testing a set of functions to fit my background distribution and I’d like to compare different options… I have the chi2 from RooFit and the Goodness-of-Fit p-value from combine. I know that another option is to use the Fisher test but I didn’t find any specific code to use as an example (First time I’m using the TMVA root package). Could anyone give me some hint or (better) point me some code to use as a starting point?
+Thanks for helping
+Attilio
+----------------------------------------

@@ -1,0 +1,34 @@
+{
+  "topic_id": 139451,
+  "title": "autoMCstats",
+  "url": "https://cms-talk.web.cern.ch/t/139451",
+  "category_id": 279,
+  "created_at": "2025-11-28T15:20:06.871Z",
+  "last_posted_at": "2025-12-01T09:11:30.566Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "omanzani",
+      "name": "Oliver Manzanilla Carretero",
+      "created_at": "2025-11-28T15:20:07.070Z",
+      "updated_at": "2025-11-28T15:20:07.070Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am performing a shape analysis using combine, fitting the invariant mass distribution (from 300 GeV up to 6 TeV, our signal region is at high energies and the low energy region serves to fix the normalization of the MC).  I  have found that when I use autoMCstats to model the statistical uncertainty, I obtain results with higher statistical significance (but same minimums) than when I remove the autoMCstats datacards line (does this have sense?).\nAs I said, only the shape of the signal can be changed during the fit (shape analysis).We manage with the normalization using a rateParam (as suggested in this forum).\nI have tried several things: made a rebin requesting bin_content/bin_error>10 and bin_content>1, to avoid possible problems associated with bins with few events; change the autoMCstats threshold; not use autoMCstats for the MC signal\u2026 None of them significantly changes the result. Plotting the pulls and impacts, the nuisance parameters associated with statistical uncertainty for bins with more entries are the most important (among nuisance parameters related with statistical uncertainty): low energy bins with a very high number of events and very low statistical uncertainty (usually lower than 1%).\nMy guess is that autoMCStats generates nuisance parameters that can only be moved within a very small range in those low-mass bins. This makes those nuisance parameters very important in the fit, so if there is a slight discrepancy between the data and the MC, combine tries to fit it as if it were a signal with high significance.\nAny suggestion?\nThanks a lot!\nGreetings\nOliver",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am performing a shape analysis using combine, fitting the invariant mass distribution (from 300 GeV up to 6 TeV, our signal region is at high energies and the low energy region serves to fix the normalization of the MC).  I  have found that when I use autoMCstats to model the statistical uncertainty, I obtain results with higher statistical significance (but same minimums) than when I remove the autoMCstats datacards line (does this have sense?).</p>\n<p>As I said, only the shape of the signal can be changed during the fit (shape analysis).We manage with the normalization using a rateParam (as suggested in this forum).</p>\n<p>I have tried several things: made a rebin requesting bin_content/bin_error&gt;10 and bin_content&gt;1, to avoid possible problems associated with bins with few events; change the autoMCstats threshold; not use autoMCstats for the MC signal\u2026 None of them significantly changes the result. Plotting the pulls and impacts, the nuisance parameters associated with statistical uncertainty for bins with more entries are the most important (among nuisance parameters related with statistical uncertainty): low energy bins with a very high number of events and very low statistical uncertainty (usually lower than 1%).</p>\n<p>My guess is that autoMCStats generates nuisance parameters that can only be moved within a very small range in those low-mass bins. This makes those nuisance parameters very important in the fit, so if there is a slight discrepancy between the data and the MC, combine tries to fit it as if it were a signal with high significance.</p>\n<p>Any suggestion?</p>\n<p>Thanks a lot!</p>\n<p>Greetings</p>\n<p>Oliver</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2025-12-01T09:11:30.566Z",
+      "updated_at": "2025-12-01T09:11:30.566Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Oliver,\nGenerally we wouldn\u2019t expect the addition of bin-by-bin statistical uncertainties using autoMCStats to increase the sensitivity of the analysis (I think you are saying this is what is happening), so this sounds a bit odd.\nFor someone to be able to help you, it would be better if you can share your statistical model (datacards and input shapes, and the commands that you are running), as well as the results that you obtained.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Oliver,</p>\n<p>Generally we wouldn\u2019t expect the addition of bin-by-bin statistical uncertainties using autoMCStats to increase the sensitivity of the analysis (I think you are saying this is what is happening), so this sounds a bit odd.</p>\n<p>For someone to be able to help you, it would be better if you can share your statistical model (datacards and input shapes, and the commands that you are running), as well as the results that you obtained.</p>\n<p>Best,</p>\n<p>Adinda</p>"
+    }
+  ]
+}

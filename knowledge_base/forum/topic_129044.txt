@@ -1,0 +1,193 @@
+TOPIC: Fit issue after parameterization of background models
+URL: https://cms-talk.web.cern.ch/t/129044
+DATE: 2025-08-13T14:43:26.095Z
+SOLVED: no
+============================================================
+
+QUESTION (by geliu @ 2025-08-13T14:43:26.483Z):
+Dear Experts,
+I am writing to consult about an issue we are faced with when computing the asymptotic limits for HIG-23-001, searching for heavy resonances decaying to 2l2q. I tried my best but could not resolve it.
+Let me narrate the issue step by step:
+
+An example of the original datacard is in [1] on lxplus. The statistical model is 2-d with a mass variable zz2lJ_mass and a kinematic discriminant Dspin0. There are two signals (ggH_hzz, qqH_hzz) constructed as RooDoubleCB(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass), and three backgrounds constructed as RooHistPdf(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass). You can see that the mass of the signals are parameterized, while that of backgrounds is described by histograms. This datacard works fine (as far as we understood).
+Based on some comments, we plan to parameterize the background mass shapes, i.e. replace their RooHistPdf(zz2lJ_mass) by a parameterized Pdf. The Pdf form we chose is RooggZZPdf_v2. The new datacard can be found in [2].
+However, the new version doesn’t give a reasonable result. In both [1] and [2], you can find a log file with blinded asymptotic limits, freezing all nuisance parameters. And there is a big difference between them, which is not expected.
+I am wondering what is the reason for the difference. I checked all Pdf distributions as well as normalizations, but I don’t see any evident difference between the two datacards. Therefore I am not sure if it is a subtle issue in combine.
+
+Really appreciate it if you could help us figure this out!
+Thanks very much!
+Yours Sincerely,
+Geliang
+[1] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_Binned
+[2] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_UnBinned
+----------------------------------------
+
+REPLY 2 (by gallim @ 2025-08-14T10:53:22.788Z):
+Hi Geliang,
+could you please write the commands you ran to produce the log files?
+Thank you,
+Massimiliano
+----------------------------------------
+
+REPLY 3 (by geliu @ 2025-08-14T13:39:53.473Z):
+Dear Massimiliano,
+Thanks for your reply. The command is:
+combine -M AsymptoticLimits -m 1000 -d hzz2l2q_M1000_mumuqq_Merged_untagged_13TeV.txt -n .mH1000_test -v 2 --run blind --cminDefaultMinimizerStrategy=0 --cminFallback Minuit2,0:0.01 --cminFallback Minuit,0:0.001 --minosAlgo=stepping --X-rtd TMCSO_AdaptivePseudoAsimov=30 --freezeParameters allConstrainedNuisances,BTAG_merged,BTAG_resolved --setParameters frac_VBF=0 > combineTest_mH1000.log
+Yours Sincerely,
+Geliang
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-08-14T13:42:57.000Z):
+Hi Gelliang,
+From a quick look at your binned inputs, it seems to me the zz2lJ_mass variable has only 22 bins (over a 3.5TeV range). Is that correct?
+I don’t know the details of your setup, but if your mass variable has 160GeV-wide bins, maybe it makes sense that you gain roughly a factor x3 when you move to an unbinned distribution, doesn’t it?
+Do you know from other studies that this is too good to be true? Have you tried to see what happens if you increase the ZZ2l2J binning to ~40 or ~50 bins?
+Cheers,
+Giacomo
+
+On 14 Aug 2025, at 12:54, Massimiliano Galli via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Massimiliano Galli gallimAugust 14
+
+Hi Geliang,
+could you please write the commands you ran to produce the log files?
+Thank you,
+Massimiliano
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Geliang Liu geliuAugust 13
+
+Dear Experts,
+I am writing to consult about an issue we are faced with when computing the asymptotic limits for HIG-23-001, searching for heavy resonances decaying to 2l2q. I tried my best but could not resolve it.
+Let me narrate the issue step by step:
+
+An example of the original datacard is in [1] on lxplus. The statistical model is 2-d with a mass variable zz2lJ_mass and a kinematic discriminant Dspin0. There are two signals (ggH_hzz, qqH_hzz) constructed as RooDoubleCB(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass), and three backgrounds constructed as RooHistPdf(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass). You can see that the mass of the signals are parameterized, while that of backgrounds is described by histograms. This datacard works fine (as far as we understood).
+Based on some comments, we plan to parameterize the background mass shapes, i.e. replace their RooHistPdf(zz2lJ_mass) by a parameterized Pdf. The Pdf form we chose is RooggZZPdf_v2. The new datacard can be found in [2].
+However, the new version doesn’t give a reasonable result. In both [1] and [2], you can find a log file with blinded asymptotic limits, freezing all nuisance parameters. And there is a big difference between them, which is not expected.
+I am wondering what is the reason for the difference. I checked all Pdf distributions as well as normalizations, but I don’t see any evident difference between the two datacards. Therefore I am not sure if it is a subtle issue in combine.
+
+Really appreciate it if you could help us figure this out!
+Thanks very much!
+Yours Sincerely,
+Geliang
+[1] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_Binned
+[2] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_UnBinned
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by geliu @ 2025-08-21T13:26:17.793Z):
+Dear Giacomo,
+Thanks for your message.
+The binning is also something I am confused with. If I directly extract zz2lJ_mass, I find 22 binnings. But if I draw the PDF, I find much more binnings. Besides, the signal PDFs in both datacards are the same and are parameterized. If the evaluation of the signal PDF is okay during combine (i.e. the values are based on the parameterization, not integrated in each zz2lJ_mass binning), I think the result should not be affected that much?
+Yours Sincerely,
+Geliang
+----------------------------------------
+
+REPLY 6 (by gortona @ 2025-08-22T15:19:23.000Z):
+Dear Geliang,
+It is a subtle question. In principle, what matters to define the PDF is the input histogram, not the RooRealVar binning. But the problem is that for several operations, including integrations or toy sampling, RooFit will rely on the binning defined by the x variable. I think that in unbinned datasets this probably won’t matter as it should be recognised as such, but in binned dataset it might cause troubles, especially if the bin edges don’t match. I remember this being a problem in the past in HZZ, which uses a very similar setup to your analysis.
+As a general rule, it is way safer to set the zz2lJ_mass binning exactly matching the binning of the input histogram and not having to worry about this anymore
+Cheers,
+Giacomo
+
+On 21 Aug 2025, at 15:27, Geliang Liu via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Geliang Liu geliuAugust 21
+
+Dear Giacomo,
+Thanks for your message.
+The binning is also something I am confused with. If I directly extract zz2lJ_mass, I find 22 binnings. But if I draw the PDF, I find much more binnings. Besides, the signal PDFs in both datacards are the same and are parameterized. If the evaluation of the signal PDF is okay during combine (i.e. the values are based on the parameterization, not integrated in each zz2lJ_mass binning), I think the result should not be affected that much?
+Yours Sincerely,
+Geliang
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaAugust 14
+
+Hi Gelliang,
+From a quick look at your binned inputs, it seems to me the zz2lJ_mass variable has only 22 bins (over a 3.5TeV range). Is that correct?
+I don’t know the details of your setup, but if your mass variable has 160GeV-wide bins, maybe it makes sense that you gain roughly a factor x3 when you move to an unbinned distribution, doesn’t it?
+Do you know from other studies that this is too good to be true? Have you tried to see what happens if you increase the ZZ2l2J binning to ~40 or ~50 bins?
+Cheers,
+Giacomo
+
+On 14 Aug 2025, at 12:54, Massimiliano Galli via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Massimiliano Galli gallimAugust 14
+
+Hi Geliang,
+could you please write the commands you ran to produce the log files?
+Thank you,
+Massimiliano
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Geliang Liu geliuAugust 13
+
+Dear Experts,
+I am writing to consult about an issue we are faced with when computing the asymptotic limits for HIG-23-001, searching for heavy resonances decaying to 2l2q. I tried my best but could not resolve it.
+Let me narrate the issue step by step:
+
+An example of the original datacard is in [1] on lxplus. The statistical model is 2-d with a mass variable zz2lJ_mass and a kinematic discriminant Dspin0. There are two signals (ggH_hzz, qqH_hzz) constructed as RooDoubleCB(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass), and three backgrounds constructed as RooHistPdf(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass). You can see that the mass of the signals are parameterized, while that of backgrounds is described by histograms. This datacard works fine (as far as we understood).
+Based on some comments, we plan to parameterize the background mass shapes, i.e. replace their RooHistPdf(zz2lJ_mass) by a parameterized Pdf. The Pdf form we chose is RooggZZPdf_v2. The new datacard can be found in [2].
+However, the new version doesn’t give a reasonable result. In both [1] and [2], you can find a log file with blinded asymptotic limits, freezing all nuisance parameters. And there is a big difference between them, which is not expected.
+I am wondering what is the reason for the difference. I checked all Pdf distributions as well as normalizations, but I don’t see any evident difference between the two datacards. Therefore I am not sure if it is a subtle issue in combine.
+
+Really appreciate it if you could help us figure this out!
+Thanks very much!
+Yours Sincerely,
+Geliang
+[1] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_Binned
+[2] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_UnBinned
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Geliang Liu geliuAugust 14
+
+Dear Massimiliano,
+Thanks for your reply. The command is:
+combine -M AsymptoticLimits -m 1000 -d hzz2l2q_M1000_mumuqq_Merged_untagged_13TeV.txt -n .mH1000_test -v 2 --run blind --cminDefaultMinimizerStrategy=0 --cminFallback Minuit2,0:0.01 --cminFallback Minuit,0:0.001 --minosAlgo=stepping --X-rtd TMCSO_AdaptivePseudoAsimov=30 --freezeParameters allConstrainedNuisances,BTAG_merged,BTAG_resolved --setParameters frac_VBF=0 > combineTest_mH1000.log
+Yours Sincerely,
+Geliang
+
+Massimiliano Galli gallimAugust 14
+
+Hi Geliang,
+could you please write the commands you ran to produce the log files?
+Thank you,
+Massimiliano
+
+Geliang Liu geliuAugust 13
+
+Dear Experts,
+I am writing to consult about an issue we are faced with when computing the asymptotic limits for HIG-23-001, searching for heavy resonances decaying to 2l2q. I tried my best but could not resolve it.
+Let me narrate the issue step by step:
+
+An example of the original datacard is in [1] on lxplus. The statistical model is 2-d with a mass variable zz2lJ_mass and a kinematic discriminant Dspin0. There are two signals (ggH_hzz, qqH_hzz) constructed as RooDoubleCB(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass), and three backgrounds constructed as RooHistPdf(zz2lJ_mass)*RooHistPdf(Dspin0 | zz2lJ_mass). You can see that the mass of the signals are parameterized, while that of backgrounds is described by histograms. This datacard works fine (as far as we understood).
+Based on some comments, we plan to parameterize the background mass shapes, i.e. replace their RooHistPdf(zz2lJ_mass) by a parameterized Pdf. The Pdf form we chose is RooggZZPdf_v2. The new datacard can be found in [2].
+However, the new version doesn’t give a reasonable result. In both [1] and [2], you can find a log file with blinded asymptotic limits, freezing all nuisance parameters. And there is a big difference between them, which is not expected.
+I am wondering what is the reason for the difference. I checked all Pdf distributions as well as normalizations, but I don’t see any evident difference between the two datacards. Therefore I am not sure if it is a subtle issue in combine.
+
+Really appreciate it if you could help us figure this out!
+Thanks very much!
+Yours Sincerely,
+Geliang
+[1] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_Binned
+[2] /afs/cern.ch/user/g/geliu/public/h2l2q_highmass/datacards_UnBinned
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

@@ -1,0 +1,67 @@
+{
+  "topic_id": 22161,
+  "title": "Postfit Distributions using Asimov Dataset",
+  "url": "https://cms-talk.web.cern.ch/t/22161",
+  "category_id": 279,
+  "created_at": "2023-03-31T19:39:04.668Z",
+  "last_posted_at": "2023-04-04T17:27:20.578Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "matariq",
+      "name": "Maida Tariq",
+      "created_at": "2023-03-31T19:39:05.206Z",
+      "updated_at": "2023-03-31T19:39:05.206Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine Experts,\nI am trying to get postfit distributions for fit to Asimov dataset in Combine using PostfitShapesFromWorkspace.\nI have my datacard named card.txt and use text2workspace.py to make a worksapce named card.root in the following way:\n\ntext2workspace.py card.txt\n\nThen I run the fit using FitDiagonistics:\n\ncombine -M FitDiagnostics --saveWorkspace --saveToys --redefineSignalPOIs yt --freezeParameters r,EWunc,mtop --robustFit 1 -t -1 --do95=1 --cminPreScan --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,Simplex,0:0.1 -m 125 -d card.root --setParameters r=1,EWunc=0,mtop=0\n\nAfter that I get postfit distributions using PostFitShapesFromWorkspace:\n\nPostFitShapesFromWorkspace -w higgsCombineTest.FitDiagnostics.mH125.123456.root -o shapes.root -m 125 -f fitDiagnostics.root:fit_s --postfit --sampling --freeze r=1,EWunc=0,mtop=0\n\nIn the above command, higgsCombineTest.FitDiagnostics.mH125.123456.root is the workspace which is saved in the 2nd command using saveWorkspace.\nHowever, the 3rd command only saves post fit distributions for the real dataset (data_obs) instead of the Asimov dataset. I also save the Asimov data set using --saveToys as in the 2nd command but that saves it as a RooDataSet named model_sData in an entirely new workspace called toy_asimov . While using PostFitShapesFromWorkspace, I think by default only the workspace named w is imported which only contains the RooDataSet data_obs.\nI know we can use the option --dataset to specify which dataset to use when running PostFitShapesFromWorkspace but since my asimov dataset dosen\u2019t get saved in the same workspace as the data_obs, when I use the option --dataset model_sData with PostFitShapesFromWorkspace I get a Segmentation violation. How to get around this?",
+      "cooked_html": "<p>Dear Combine Experts,</p>\n<p>I am trying to get postfit distributions for fit to <strong>Asimov dataset</strong> in Combine using PostfitShapesFromWorkspace.</p>\n<p>I have my datacard named card.txt and use text2workspace.py to make a worksapce named card.root in the following way:</p>\n<ol>\n<li>text2workspace.py card.txt</li>\n</ol>\n<p>Then I run the fit using FitDiagonistics:</p>\n<ol start=\"2\">\n<li>combine -M FitDiagnostics --saveWorkspace --saveToys --redefineSignalPOIs yt --freezeParameters r,EWunc,mtop --robustFit 1 -t -1 --do95=1 --cminPreScan --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,Simplex,0:0.1 -m 125 -d card.root --setParameters r=1,EWunc=0,mtop=0</li>\n</ol>\n<p>After that I get postfit distributions using PostFitShapesFromWorkspace:</p>\n<ol start=\"3\">\n<li>PostFitShapesFromWorkspace -w higgsCombineTest.FitDiagnostics.mH125.123456.root -o shapes.root -m 125 -f fitDiagnostics.root:fit_s --postfit --sampling --freeze r=1,EWunc=0,mtop=0</li>\n</ol>\n<p>In the above command, higgsCombineTest.FitDiagnostics.mH125.123456.root is the workspace which is saved in the 2nd command using saveWorkspace.<br>\nHowever, the 3rd command only saves post fit distributions for the real dataset (<strong>data_obs</strong>) instead of the Asimov dataset. I also save the Asimov data set using --saveToys as in the 2nd command but that saves it as a RooDataSet named <strong>model_sData</strong> in an entirely new workspace called <strong>toy_asimov</strong> . While using PostFitShapesFromWorkspace, I think by default only the workspace named <strong>w</strong> is imported which only contains the RooDataSet <strong>data_obs</strong>.</p>\n<p>I know we can use the option --dataset to specify which dataset to use when running PostFitShapesFromWorkspace but since my asimov dataset dosen\u2019t get saved in the same workspace as the data_obs, when I use the option --dataset model_sData with PostFitShapesFromWorkspace I get a Segmentation violation. How to get around this?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "matariq",
+      "name": "Maida Tariq",
+      "created_at": "2023-04-04T10:50:39.534Z",
+      "updated_at": "2023-04-04T10:50:39.534Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nAs a follow-up on my previous question, I tried running:\nPostFitShapesFromWorkspace -w card.root --dataset higgsCombineTest.FitDiagnostics.mH125.123456.root:toys/toy_asimov -o shapes.root -m 125 -f fitDiagnostics.root:fit_s --postfit --sampling --freeze r=1,EWunc=0,mtop=0\nI am still getting the same: *** Break *** segmentation violation error. What am I doing wrong?",
+      "cooked_html": "<p>Dear experts,</p>\n<p>As a follow-up on my previous question, I tried running:</p>\n<p>PostFitShapesFromWorkspace -w card.root --dataset higgsCombineTest.FitDiagnostics.mH125.123456.root:toys/toy_asimov -o shapes.root -m 125 -f fitDiagnostics.root:fit_s --postfit --sampling --freeze r=1,EWunc=0,mtop=0</p>\n<p>I am still getting the same: *** Break *** segmentation violation error. What am I doing wrong?</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "matariq",
+      "name": "Maida Tariq",
+      "created_at": "2023-04-04T11:10:29.504Z",
+      "updated_at": "2023-04-04T11:10:29.504Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "FYI: The files card.root and higgsCombineTest.FitDiagnostics.mH125.123456.root are located at :\n/afs/cern.ch/user/m/matariq/public",
+      "cooked_html": "<p>FYI: The files card.root and higgsCombineTest.FitDiagnostics.mH125.123456.root are located at :<br>\n/afs/cern.ch/user/m/matariq/public</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-04-04T12:52:39.088Z",
+      "updated_at": "2023-04-04T12:52:39.088Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Maida,\nRight, at the moment there\u2019s not a very intuitive way to do this.\nA workaround I\u2019ve used in the past is to first modify your nominal workspace and import the Asimov toy dataset into it. You can do this with combineTool.py, e.g.:\ncombineTool.py -M ModifyDataSet card.root:w card_with_asimov.root:w:toy_asimov -d higgsCombineTest.FitDiagnostics.mH125.123456.root:toys/toy_asimov\nThen if you run PostFitShapesFromWorkspace on card_with_asimov.root you should be able to point it at toy_asimov.\nHope this solves the problem.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Maida,</p>\n<p>Right, at the moment there\u2019s not a very intuitive way to do this.</p>\n<p>A workaround I\u2019ve used in the past is to first modify your nominal workspace and import the Asimov toy dataset into it. You can do this with combineTool.py, e.g.:</p>\n<p><code>combineTool.py -M ModifyDataSet card.root:w card_with_asimov.root:w:toy_asimov -d higgsCombineTest.FitDiagnostics.mH125.123456.root:toys/toy_asimov</code></p>\n<p>Then if you run PostFitShapesFromWorkspace on <code>card_with_asimov.root</code> you should be able to point it at <code>toy_asimov</code>.</p>\n<p>Hope this solves the problem.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "matariq",
+      "name": "Maida Tariq",
+      "created_at": "2023-04-04T17:27:20.578Z",
+      "updated_at": "2023-04-04T17:27:20.578Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThat worked! Thank you very much!\n-Maida",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>That worked! Thank you very much!</p>\n<p>-Maida</p>"
+    }
+  ]
+}

@@ -1,0 +1,2826 @@
+TOPIC: The latest recommended Combine and CombineHarvester versions
+URL: https://cms-talk.web.cern.ch/t/25462
+DATE: 2023-06-14T15:56:03.382Z
+SOLVED: no
+============================================================
+
+QUESTION (by anigamov @ 2023-06-14T15:56:03.732Z):
+Dear all,
+From now on the latest recommended versions of Combine and CombineHarvester will be announced in this forum.
+Combine: v9.1.0, setup instructions.
+CombineHarvester:  v2.0.0, setup instructions.
+Best,
+Aliya
+
+Subscribers
+
+User
+Name
+
+0
+@tapper
+Alex Tapper
+
+1
+@newbold
+nan
+
+2
+@kfjack
+Kai-Feng Chen
+
+3
+@gurpreet
+nan
+
+4
+@tvami
+Tamas Almos Vami
+
+5
+@dvalsecc
+Davide Valsecchi
+
+6
+@ineuteli
+Izaak Neutelings
+
+7
+@azecchin
+Giacomo Zecchinelli
+
+8
+@angirald
+nan
+
+9
+@swmukher
+Swagata Mukherjee
+
+10
+@mfackeld
+Manfred Peter Fackeldey
+
+11
+@arun
+Arun Kumar
+
+12
+@swertz
+nan
+
+13
+@chwalek
+Thorsten Chwalek
+
+14
+@pkeicher
+Philip Keicher
+
+15
+@mneukum
+nan
+
+16
+@swieland
+nan
+
+17
+@azotz
+Alexander Zotz
+
+18
+@smitra
+nan
+
+19
+@husemann
+Ulrich Husemann
+
+20
+@amarini
+Andrea Carlo Marini
+
+21
+@meyera
+Arnd Meyer
+
+22
+@algomez
+Alejandro Gomez Espinosa
+
+23
+@twamorka
+nan
+
+24
+@gbenelli
+Gabriele Benelli
+
+25
+@fgolf
+nan
+
+26
+@clange
+Clemens Lange
+
+27
+@steggema
+Jan Steggemann
+
+28
+@moanwar
+Mohamed Darwish
+
+29
+@mseidel
+Markus Seidel
+
+30
+@kelong
+Kenneth David Long
+
+31
+@ferrico
+Filippo Errico
+
+32
+@qili
+Qiang Li
+
+33
+@adamw
+Wolfgang Adam
+
+34
+@yofeng
+Yongbin Feng
+
+35
+@christiw
+Christina Wenlu Wang
+
+37
+@sbrommer
+Sebastian Brommer
+
+38
+@varuns
+Varun Sharma
+
+39
+@vanlaer
+nan
+
+40
+@klute
+Markus Klute
+
+41
+@ncsmith
+Nick Smith
+
+42
+@nfalterm
+Nils Faltermann
+
+43
+@mcbride
+Patricia Mc Bride
+
+44
+@amassiro
+Andrea Massironi
+
+45
+@gpetrucc
+Giovanni Petrucciani
+
+46
+@ferrif
+Federico Ferri
+
+47
+@peveraer
+Pieter Everaerts
+
+48
+@cbaldene
+Cristian Baldenegro Barrera
+
+49
+@gparaske
+Paris Gianneios
+
+50
+@adelanno
+Andres Guillermo Delannoy Sotomayor
+
+51
+@dzuolo
+Davide Zuolo
+
+52
+@amkaur
+Amandeep Kaur
+
+53
+@nmangane
+Nick Manganelli
+
+54
+@iawatson
+Ian James Watson
+
+55
+@dspitzba
+Daniel Spitzbart
+
+56
+@ftorresd
+Felipe Silva
+
+57
+@sandhya
+nan
+
+58
+@bfontana
+Bruno Alves
+
+59
+@afiqaize
+Afiq Aizuddin Anuar
+
+60
+@dmorse
+David Morse
+
+61
+@anmalara
+Andrea Malara
+
+62
+@slaurila
+Santeri Laurila
+
+63
+@predragm
+Predrag Milenovic
+
+64
+@sesanche
+Sergio Sanchez Cruz
+
+65
+@amodak
+nan
+
+66
+@zghiche
+Amina Zghiche
+
+67
+@gortona
+Giacomo Ortona
+
+68
+@scooper
+Seth Cooper
+
+69
+@ssekmen
+Sezen Sekmen
+
+70
+@jaeyserm
+nan
+
+71
+@psilva
+Pedro Vieira De Castro Ferreira Da Silva
+
+72
+@hbakhshi
+nan
+
+74
+@decosa
+Annapaola De Cosa
+
+75
+@matorras
+Francisco Matorras
+
+76
+@salerno
+Roberto Salerno
+
+77
+@jhgoh
+Junghwan Goh
+
+78
+@spigazzi
+nan
+
+79
+@nbinnorj
+Nurfikri Norjoharuddeen
+
+80
+@hmei
+nan
+
+81
+@amagnan
+Anne-Marie Magnan
+
+82
+@mbonanom
+Matteo Bonanomi
+
+83
+@kaliyana
+nan
+
+84
+@axbuchot
+Axel Newton Buchot Perraguin
+
+85
+@abdollah
+Abdollah Mohammadi
+
+86
+@cmantill
+Cristina Ana Mantilla Suarez
+
+87
+@govoni
+Pietro Govoni
+
+88
+@fabiocos
+Fabio Cossutti
+
+89
+@lmoureau
+Louis Moureaux
+
+90
+@bornheim
+Adi Bornheim
+
+91
+@paoletti
+Simone Paoletti
+
+92
+@mullerd
+Denise Muller
+
+93
+@hdyoo
+nan
+
+94
+@campore
+Tiziano Camporesi
+
+95
+@sverma
+Sadhana Verma
+
+96
+@dmytro
+Dmytro Kovalskyi
+
+97
+@efe
+Efe Yazgan
+
+98
+@lforthom
+Laurent Forthomme
+
+99
+@tjavaid
+Tahir Javaid
+
+100
+@jreicher
+Joseph Reichert
+
+101
+@bockjoo
+Bockjoo Kim
+
+102
+@agbet
+Agni Bethani
+
+103
+@andrey
+Andrey Pozdnyakov
+
+104
+@mulders
+Martijn Mulders
+
+105
+@jolsen
+nan
+
+106
+@ameyer
+Andreas Meyer
+
+107
+@slava77
+Slava Krutelyov
+
+108
+@tosi
+Mia Tosi
+
+109
+@mdonega
+Mauro Donega
+
+110
+@evourlio
+Emmanouil Vourliotis
+
+111
+@skyriaco
+nan
+
+112
+@kdeleo
+Ksenia De Leo
+
+113
+@glandsbe
+Greg Landsberg
+
+114
+@yezhenyu
+nan
+
+115
+@lcadamur
+nan
+
+116
+@lowette
+Steven Lowette
+
+117
+@vdutta
+Valentina Dutta
+
+118
+@vhegde
+Vinay Hegde
+
+119
+@ymaravin
+Yurii Maravin
+
+120
+@mazumdar
+Kajari Mazumdar
+
+121
+@ursl
+Urs Langenegger
+
+122
+@adokhani
+nan
+
+123
+@stadie
+Hartmut Stadie
+
+125
+@escalant
+Alberto Escalante Del Valle
+
+126
+@gsaha
+Gourab Saha
+
+127
+@alkaloge
+Alexis Kalogeropoulos
+
+128
+@mpieri
+Marco Pieri
+
+129
+@sewuchte
+Sebastian Wuchterl
+
+130
+@arpurohi
+Arnab Purohit
+
+131
+@mpierini
+Maurizio Pierini
+
+132
+@sdube
+nan
+
+133
+@rasharma
+Ram Krishna Sharma
+
+134
+@sdogra
+Sunil Manohar Dogra
+
+135
+@treis
+Thomas Reis
+
+136
+@agapitos
+Antonios Agapitos
+
+137
+@cuevas
+Javier Cuevas
+
+138
+@neu
+nan
+
+139
+@paulini
+Manfred Paulini
+
+140
+@mbellis
+Matthew Bellis
+
+141
+@tjkim
+Tae Jeong Kim
+
+142
+@berryhil
+Jeffrey Berryhill
+
+144
+@hqu
+Huilin Qu
+
+145
+@tmudholk
+nan
+
+146
+@vischia
+Pietro Vischia
+
+147
+@mrieger
+Marcel Rieger
+
+148
+@pellicci
+Mario Pelliccioni
+
+149
+@shoh
+nan
+
+150
+@pmeiring
+Peter Eduard Meiring
+
+151
+@adavid
+Andre David Tinoco Mendes
+
+152
+@jichoi
+Jieun Choi
+
+153
+@lanyov
+Alexander Lanev
+
+154
+@shilpi
+Shilpi Jain
+
+155
+@tulika
+Tulika Bose
+
+156
+@gutsche
+Oliver Gutsche
+
+157
+@dittmann
+Jay Dittmann
+
+158
+@kubota
+nan
+
+159
+@eno
+Sarah Eno
+
+160
+@narain
+nan
+
+161
+@uheintz
+Ulrich Heintz
+
+162
+@rwallny
+nan
+
+163
+@dalfonso
+Mariarosaria D’Alfonso
+
+164
+@pdas
+Pallabi Das
+
+165
+@schoef
+Robert Schoefbeck
+
+166
+@lathomas
+Laurent Thomas
+
+167
+@benjamin
+Benjamin Radburn-Smith
+
+168
+@soffi
+Livia Soffi
+
+169
+@devdatta
+Devdatta Majumder
+
+170
+@gouskos
+Loukas Gouskos
+
+171
+@ferencek
+Dinko Ferencek
+
+172
+@marta
+Marta Felcini
+
+173
+@mcitron
+Matthew Daniel Citron
+
+174
+@bsahu
+Bisnupriya Sahu
+
+175
+@amlevin
+Andrew Michael Levin
+
+176
+@adewit
+Adinda de Wit
+
+177
+@mratti
+nan
+
+178
+@amallamp
+Abhishikth Mallampalli
+
+179
+@apsallid
+nan
+
+180
+@prolay
+Prolay Mal
+
+181
+@jdulemba
+nan
+
+182
+@ceballos
+Guillelmo Gomez Ceballos Retuerto
+
+183
+@fiorendi
+Sara Fiorendi
+
+184
+@valuev
+Slava Valouev
+
+185
+@pompili
+nan
+
+186
+@agilbert
+Andrew Gilbert
+
+187
+@manzoni
+Riccardo Manzoni
+
+188
+@yhaddad
+Yacine Haddad
+
+189
+@fblekman
+Freya Blekman
+
+190
+@kruecker
+nan
+
+191
+@chmclean
+nan
+
+192
+@kcormier
+Kyle Cormier
+
+193
+@woodson
+Javier Mauricio Duarte
+
+194
+@mieads
+nan
+
+195
+@mschen
+Mingshui Chen
+
+196
+@vuko
+Vuko Brigljevic
+
+197
+@dellaneg
+nan
+
+198
+@phchang
+Philip Chang
+
+199
+@sfonseca
+Sandro Fonseca De Souza
+
+200
+@ochando
+Christophe Ochando
+
+201
+@khurana
+nan
+
+202
+@xjanssen
+Tahys Janssen
+
+204
+@antoniov
+Antonio Vilela Pereira
+
+206
+@acalandr
+Alessandro Calandri
+
+207
+@shreyber
+nan
+
+208
+@jruizalv
+Jose Ruiz
+
+209
+@rreyesal
+Rogelio Almanza
+
+210
+@cepeda
+nan
+
+212
+@dellaric
+Giuseppe Della Ricca
+
+213
+@sudan
+Sudarshan Paramesvaran
+
+214
+@youying
+You-Ying Li
+
+215
+@gkaratha
+Georgios Karathanasis
+
+216
+@askew
+Andrew Warren Askew
+
+217
+@tuos
+Shengquan Tuo
+
+218
+@dsr
+nan
+
+219
+@dasu
+Sridhara Dasu
+
+220
+@athachay
+nan
+
+221
+@lwiens
+Lucas Wiens
+
+222
+@iheredia
+nan
+
+223
+@petar
+nan
+
+224
+@anigamov
+Aliya Nigamova
+
+225
+@rasp
+Aliaksei Raspiareza
+
+226
+@hkaveh
+nan
+
+227
+@asaggio
+nan
+
+228
+@mwadud
+Mohammad Abrar Wadud
+
+229
+@mkomm
+Matthias Komm
+
+230
+@srappocc
+Salvatore Rappoccio
+
+231
+@mmasciov
+Mario Masciovecchio
+
+232
+@benitezj
+Jose Feliciano Benitez
+
+233
+@cmora
+nan
+
+234
+@lportale
+Louis Portales
+
+235
+@wangjin
+Jin Wang
+
+236
+@ghm
+nan
+
+237
+@mithakor
+Mitanshu Thakore
+
+238
+@lhoryn
+nan
+
+239
+@atricomi
+nan
+
+240
+@anmehta
+Ankita Mehta
+
+241
+@ntsirova
+nan
+
+242
+@rhabibul
+nan
+
+243
+@prebello
+Patricia Rebello Teles
+
+244
+@rdewanje
+nan
+
+245
+@chanon
+Nicolas Pierre Chanon
+
+246
+@rgerosa
+Raffaele Angelo Gerosa
+
+247
+@mariotti
+Chiara Mariotti
+
+248
+@xcoubez
+nan
+
+249
+@jipeng
+nan
+
+250
+@mschrode
+Matthias Schroeder
+
+251
+@kaho
+Ka Wa Ho
+
+252
+@jixiao
+Jie Xiao
+
+253
+@nckw
+Nicholas Wardle
+
+254
+@kplee
+Kyeongpil Lee
+
+255
+@jthomasw
+nan
+
+256
+@akhukhun
+Aleko Khukhunaishvili
+
+257
+@apiccine
+Andrea Piccinelli
+
+258
+@huaqiao
+nan
+
+259
+@skamble
+Samadhan Kamble
+
+260
+@tsarkar
+Tanmay Sarkar
+
+261
+@msahin
+nan
+
+262
+@ofilatov
+nan
+
+263
+@meloam
+nan
+
+264
+@arizzi
+nan
+
+265
+@lviliani
+Lorenzo Viliani
+
+266
+@abdatta
+Abhisek Datta
+
+267
+@oglez
+Oscar Gonzalez Lopez
+
+268
+@jolim
+nan
+
+269
+@kskovpen
+Kirill Skovpen
+
+270
+@missirol
+Marino Missiroli
+
+271
+@ddidar
+Didar Dobur
+
+272
+@smgascon
+Susan Shotkin Gascon-Shotkin
+
+273
+@zhyu
+nan
+
+274
+@dekumar
+nan
+
+275
+@csmoon
+nan
+
+276
+@jsw
+Jonathan Samuel Wilson
+
+277
+@xiaohu
+Xiaohu Sun
+
+278
+@cmkuo
+Chia-Ming Kuo
+
+279
+@jyothsna
+Jyothsna Rani Komaragiri
+
+280
+@aahmad
+Ashfaq Ahmad
+
+281
+@claudioc
+nan
+
+282
+@gvonsem
+Gerrit Van Onsem
+
+283
+@mukherje
+Soumya Mukherjee
+
+284
+@thaarres
+Thea Aarrestad
+
+285
+@alaha
+nan
+
+286
+@mrogulji
+Matej Roguljic
+
+287
+@rverma
+Ravindra Kumar Verma
+
+288
+@pharris
+Philip Coleman Harris
+
+289
+@zdemirag
+Zeynep Demiragli
+
+290
+@ghete
+nan
+
+291
+@jpazzini
+nan
+
+292
+@jaebak
+Jae-Bak Kim
+
+293
+@cutts
+David Cutts
+
+294
+@mwassmer
+Michael Wassmer
+
+295
+@gboldrin
+Giacomo Boldrini
+
+296
+@iashvili
+Ia Iashvili
+
+297
+@rchatter
+Rajdeep Mohan Chatterjee
+
+298
+@mkolosov
+Marina Kolosova
+
+299
+@cmatthie
+Christopher Matthies
+
+300
+@hliao
+Hongbo Liao
+
+301
+@friti
+Federica Riti
+
+302
+@rband
+Reyer Edmond Band
+
+304
+@saparede
+nan
+
+305
+@kandroso
+Konstantin Androsov
+
+306
+@neich
+Niclas Eich
+
+307
+@chatterj
+Suman Chatterjee
+
+308
+@hsaka
+Halil Saka
+
+309
+@ssyedoma
+nan
+
+310
+@drankin
+nan
+
+311
+@czhou
+Chen Zhou
+
+312
+@gregor
+Gregor Kasieczka
+
+313
+@acarvalh
+Alexandra Carvalho Antunes De Oliveira
+
+314
+@vmikuni
+nan
+
+315
+@sapta
+Saptaparna Bhattacharya
+
+316
+@cmills
+Corrinne Mills
+
+317
+@santocch
+Attilio Santocchia
+
+318
+@kjaffel
+Khawla Jaffel
+
+319
+@malcles
+Julie Malcles
+
+320
+@jleonhol
+Jaime Leon Holgado
+
+321
+@vanderli
+Jan van der Linden
+
+322
+@rseidita
+Roberto Seidita
+
+323
+@chenyi
+Yi Chen
+
+324
+@jschulte
+Jan-Frederik Schulte
+
+325
+@klamichh
+Kamal Lamichhane
+
+326
+@adloff
+nan
+
+327
+@kelmorab
+Karim El Morabit
+
+328
+@kkallone
+nan
+
+329
+@fiemmi
+Fabio Iemmi
+
+330
+@attikis
+Alexandros Attikis
+
+331
+@hjabusch
+nan
+
+332
+@rmankel
+Rainer Mankel
+
+333
+@nlu
+Nan Lu
+
+334
+@jdolen
+nan
+
+335
+@akapoor
+Anshul Kapoor
+
+336
+@smonig
+Saskia Falke
+
+337
+@wajid
+Wajid Ali Khan
+
+338
+@emanuele
+Emanuele Di Marco
+
+339
+@wvetens
+Wren Vetens
+
+340
+@yechen
+Ye Chen
+
+341
+@dmroy
+Dennis Mario Roy
+
+342
+@threiten
+nan
+
+343
+@rrabadan
+nan
+
+344
+@fbrivio
+Francesco Brivio
+
+345
+@doudko
+nan
+
+346
+@vwachira
+Vichayanun Wachirapusitanand
+
+347
+@usarica
+Ulascan Sarica
+
+348
+@jipark
+Jiwon Park
+
+350
+@cramonal
+Clara Ramon Alvarez
+
+351
+@sznajder
+Andre Sznajder
+
+352
+@jmotta
+Jona Motta
+
+353
+@ltani
+nan
+
+354
+@mburkart
+nan
+
+355
+@vao
+Vadim Oreshkin
+
+356
+@calderon
+Alicia Calderon Tazon
+
+357
+@kaehatah
+Karl Ehataht
+
+358
+@empfeffe
+Emanuel Lorenz Pfeffer
+
+359
+@acardini
+Andrea Cardini
+
+360
+@dde
+David Enterria
+
+361
+@acagnott
+Antimo Cagnotta
+
+362
+@echabert
+nan
+
+364
+@rzou
+Rui Zou
+
+365
+@ballmond
+Braden Allmond
+
+366
+@bribeiro
+Beatriz Ribeiro Lopes
+
+367
+@alejands
+nan
+
+368
+@wtford
+William Ford
+
+369
+@stuart
+David Stuart
+
+370
+@ocalan
+nan
+
+371
+@acappati
+Alessandra Cappati
+
+372
+@sixie
+Si Xie
+
+373
+@apresyan
+Artur Apresyan
+
+374
+@cericeci
+Carlos Francisco Erice Cid
+
+375
+@chensel
+Carsten Hensel
+
+376
+@snandan
+Saswati Nandan
+
+377
+@gallim
+Massimiliano Galli
+
+378
+@lenzip
+Piergiulio Lenzi
+
+379
+@dmoran
+Dermot Anthony Moran
+
+380
+@fbury
+Florian Bury
+
+381
+@ckapsiak
+Charles Maxwell Kapsiak
+
+382
+@asikdar
+Anup Kumar Sikdar
+
+383
+@akalinow
+nan
+
+385
+@wxie
+Wei Xie
+
+386
+@rraturi
+Rishabh Raturi
+
+387
+@hatake
+Kenichi Hatakeyama
+
+388
+@gkole
+Gouranga Kole
+
+389
+@jihunk
+Jihun Kim
+
+390
+@ytakahas
+Yuta Takahashi
+
+391
+@kodolova
+nan
+
+392
+@kadatta
+Kaustuv Datta
+
+393
+@tsculac
+Toni Sculac
+
+394
+@vmariani
+Valentina Mariani
+
+395
+@jlidrych
+Jindrich Lidrych
+
+396
+@aboletti
+Alessio Boletti
+
+397
+@szaleski
+Shawn Gregory Zaleski
+
+398
+@lichengz
+Licheng Zhang
+
+399
+@gruenew
+Martin Grunewald
+
+400
+@lowang
+Long Wang
+
+402
+@leac
+Lea Michaela Caminada
+
+403
+@sqian
+Sitian Qian
+
+404
+@gparida
+Ganesh Parida
+
+405
+@malbouis
+Helena Brandao Malbouisson
+
+406
+@flaecher
+nan
+
+407
+@tolange
+Torben Lange
+
+408
+@meridian
+Paolo Meridiani
+
+409
+@kakwok
+Ka Hei Martin Kwok
+
+410
+@sblancof
+Sergio Blanco Fernandez
+
+411
+@anayak
+Aruna Nayak
+
+412
+@veelken
+nan
+
+413
+@jlangfor
+Jonathon Mark Langford
+
+414
+@maldayam
+Maria Aldaya Martin
+
+415
+@castaldi
+nan
+
+416
+@gritsan
+Andrei Gritsan
+
+417
+@jiyoo
+Jieun Yoo
+
+418
+@defilip
+Nicola De Filippis
+
+419
+@mgouzevi
+nan
+
+420
+@rwolf
+Roger Wolf
+
+421
+@lmastrol
+nan
+
+422
+@rabbertz
+Klaus Rabbertz
+
+423
+@capalmer
+Chris Palmer
+
+424
+@lkardapo
+nan
+
+425
+@bendavid
+Josh Bendavid
+
+426
+@walterjr
+Walter Alda Junior
+
+427
+@yilai
+Yihui Lai
+
+428
+@daguerre
+Daniel Fernando Guerrero Ibarra
+
+429
+@jtao
+Junquan Tao
+
+430
+@crovelli
+Chiara Ilaria Rovelli
+
+431
+@grohsjea
+Alexander Grohsjean
+
+432
+@fcouderc
+Fabrice Couderc
+
+433
+@sroychow
+Suvankar Roy Chowdhury
+
+434
+@fmonti
+Fabio Monti
+
+435
+@anpotreb
+Andris Potrebko
+
+436
+@charlot
+nan
+
+437
+@jheikkil
+Jaana Heikkilae
+
+438
+@mashahza
+Muhammad Aamir Shahzad
+
+439
+@kdreiman
+Karlis Dreimanis
+
+440
+@paus
+nan
+
+441
+@klo
+nan
+
+442
+@hokawa
+nan
+
+443
+@mknight
+Charlotte Knight
+
+444
+@gomber
+Bhawna Gomber
+
+445
+@mpresill
+Matteo Presilla
+
+446
+@rslu
+nan
+
+447
+@fvazzole
+Federico Vazzoler
+
+448
+@rgoldouz
+Reza Goldouzian
+
+449
+@llista
+nan
+
+450
+@angaile
+Antra Gaile
+
+451
+@ntrevisa
+Nicolo Trevisani
+
+452
+@kaura
+nan
+
+453
+@kamon
+Teruki Kamon
+
+454
+@slee
+Sung Won Lee
+
+455
+@skonstan
+Sotiroulla Konstantinou
+
+456
+@mlizzo
+Mattia Lizzo
+
+457
+@amapane
+Nicola Amapane
+
+459
+@jacobo
+Jacobo Konigsberg
+
+460
+@mmittal
+nan
+
+461
+@kkuzn
+Katerina Kuznetsova
+
+462
+@tahuang
+nan
+
+463
+@palichik
+nan
+
+464
+@yian
+Ying An
+
+465
+@hsert
+nan
+
+466
+@vinguyen
+nan
+
+467
+@vkutzner
+Viktor Kutzner
+
+468
+@bmarzocc
+Badder Marzocchi
+
+469
+@vdamante
+Valeria D’Amante
+
+470
+@goe
+Ulrich Goerlach
+
+472
+@milee
+Ming-Yan Lee
+
+473
+@besancon
+nan
+
+474
+@smay
+nan
+
+475
+@eyigitba
+Efe Yigitbasi
+
+476
+@ecklund
+nan
+
+477
+@yjlee
+Yen-Jie Lee
+
+478
+@aakhmets
+Artur Il Darovic Gottmann
+
+479
+@ganzhur
+nan
+
+480
+@bainbrid
+Robert John Bainbridge
+
+481
+@dcolling
+nan
+
+482
+@mikumar
+Mintu Kumar
+
+483
+@savarghe
+Sanu Varghese
+
+484
+@ywen
+nan
+
+485
+@ccaputo
+nan
+
+486
+@aivanov
+Andrew Ivanov
+
+487
+@bdanzi
+Brunella D’Anzi
+
+488
+@asculac
+Ana Sculac
+
+489
+@nshadski
+Nikita Shadskiy
+
+490
+@srudrabh
+Sahithi Rudrabhatla
+
+491
+@dittmer
+Susan J Dittmer
+
+492
+@kaulmer
+Keith Ulmer
+
+493
+@nchernya
+nan
+
+494
+@subansal
+Sunil Bansal
+
+495
+@chuh
+Changgi Huh
+
+496
+@fernanpe
+Pedro Fernandez Manteca
+
+497
+@byates
+Brent Yates
+
+498
+@tomalin
+nan
+
+499
+@atalierc
+Angela Taliercio
+
+500
+@rkansal
+Raghav Kansal
+
+501
+@dnoll
+nan
+
+502
+@malberti
+Martina Malberti
+
+503
+@sdiekman
+Svenja Diekmann
+
+504
+@hsiikone
+nan
+
+505
+@davignon
+Olivier Davignon
+
+506
+@caruta
+Caterina Aruta
+
+507
+@delre
+Daniele Del Re
+
+508
+@lnoehte
+Lars Noehte
+
+509
+@jvora
+Jay Vora
+
+510
+@ptohos
+Fotios Ptochos
+
+511
+@nstrautn
+Normunds Ralfs Strautnieks
+
+512
+@xzuo
+Xunwu Zuo
+
+513
+@ekhazaie
+Elham Khazaie
+
+514
+@jordanm
+Jordan Martins
+
+515
+@ssaumya
+Saumya Phor
+
+516
+@youn
+Youn Jung Roh
+
+517
+@bko
+nan
+
+518
+@seyang
+Seungjin Yang
+
+519
+@linacre
+Jacob Thomas Linacre
+
+520
+@tocheng
+Tongguang Cheng
+
+521
+@cawest
+nan
+
+522
+@gcorreia
+Gilson Correia Silva
+
+523
+@stkaczyk
+nan
+
+524
+@fsimone
+Federica Maria Simone
+
+525
+@ccaillol
+Cecile Sarah Caillol
+
+526
+@emanuela
+nan
+
+527
+@schmittm
+nan
+
+528
+@asanchez
+nan
+
+529
+@shmatov
+nan
+
+530
+@crogan
+nan
+
+531
+@mossolov
+nan
+
+532
+@lgray
+nan
+
+533
+@lkang
+Lucas Kang
+
+534
+@eranken
+Evan Altair Ranken
+
+535
+@gbyu
+nan
+
+536
+@sbahinip
+Seema Bahinipati
+
+537
+@jhchoi
+nan
+
+538
+@dcransha
+nan
+
+539
+@gfedi
+Giacomo Fedi
+
+540
+@sukundu
+Suman Kumar Kundu
+
+541
+@ckar
+nan
+
+542
+@jruss
+nan
+
+543
+@vkim
+Victor Kim
+
+544
+@zzolkapl
+nan
+
+545
+@dsosnov
+nan
+
+546
+@yik
+Kai Yi
+
+547
+@jbhyun
+nan
+
+548
+@dwinterb
+Daniel Winterbottom
+
+549
+@dbhowmik
+Debabrata Bhowmik
+
+550
+@moameen
+Mohammad Mobassir Ameen
+
+551
+@geliu
+Geliang Liu
+
+552
+@jejeffre
+Jeffrey Davis
+
+553
+@brochero
+Javier Brochero
+
+554
+@elvira
+nan
+
+555
+@rosma
+Rosamaria Venditti
+
+556
+@zflowers
+Zachary Flowers
+
+557
+@mcremone
+Matteo Cremonesi
+
+558
+@jrgonzal
+nan
+
+559
+@amkalsi
+nan
+
+560
+@qguo
+nan
+
+561
+@olaiya
+nan
+
+562
+@davies
+nan
+
+563
+@youngwan
+Youngwan Kim
+
+564
+@jaking
+Jack King
+
+565
+@malazaro
+Margaret Rose Lazarovits
+
+566
+@ttedesch
+Tommaso Tedeschi
+
+567
+@befische
+nan
+
+569
+@kmandal
+Koushik Mandal
+
+570
+@shulga
+nan
+
+571
+@nprouvos
+Nathan Prouvost
+
+572
+@gbardell
+Giulio Bardelli
+
+573
+@elfontan
+Elisa Fontanesi
+
+574
+@anegorov
+nan
+
+575
+@dwalter
+David Walter
+
+576
+@odysei
+nan
+
+577
+@hkwon
+Hyejin Kwon
+
+578
+@yalcin
+Yalcin Guler
+
+579
+@daebi
+Devin Michael Aebi
+
+580
+@soohwan
+Soohwan Lee
+
+581
+@psadangi
+Priyanka Sadangi
+
+582
+@sawkim
+Ryan Sangwoo Kim
+
+583
+@ppalit
+Pritam Palit
+
+584
+@igv
+Igor Volobouev
+
+585
+@lennys
+nan
+
+586
+@ddesouza
+Dener De Souza Lemos
+
+587
+@fqwang
+nan
+
+588
+@lvalenci
+Lizardo Valencia Palomo
+
+589
+@mkrohn
+Michael David Krohn
+
+590
+@pmajor
+Peter Major
+
+591
+@mgadalla
+nan
+
+592
+@azarubin
+nan
+
+593
+@hrejebsf
+nan
+
+594
+@runiyal
+nan
+
+595
+@setesami
+nan
+
+596
+@dhondt
+nan
+
+597
+@benwu
+nan
+
+598
+@jbabbar
+Jyoti Babbar
+
+599
+@gerstein
+nan
+
+600
+@jelee
+Jeongeun Lee
+
+601
+@ozdemir
+Kadri Ozdemir
+
+602
+@cherepan
+Vladimir Cherepanov
+
+603
+@cjessop
+nan
+
+604
+@schhibra
+Simranjit Singh Chhibra
+
+605
+@kvellidi
+Konstantinos Vellidis
+
+606
+@adiflori
+Adriano Di Florio
+
+607
+@cgrimaul
+nan
+
+608
+@kreczko
+nan
+
+609
+@sanjay
+nan
+
+610
+@conway
+nan
+
+611
+@ahingraj
+Abhishek Hingrajiya
+
+612
+@tbevilac
+Tiziano Bevilacqua
+
+613
+@sudeshna
+nan
+
+614
+@dinardo
+nan
+
+615
+@moneta
+Lorenzo Moneta
+
+616
+@sabuzeid
+nan
+
+617
+@dsperka
+nan
+
+618
+@savina
+nan
+
+619
+@gquast
+nan
+
+620
+@cpena
+Cristian Ignacio Pena Herrera
+
+621
+@cakir
+nan
+
+622
+@bhatti
+nan
+
+623
+@jseixas
+nan
+
+624
+@kaur
+nan
+
+625
+@virdee
+nan
+
+626
+@jongho
+Jongho Lee
+
+628
+@sbaradia
+Sweta Baradia
+
+629
+@prrout
+Prasant Kumar Rout
+
+630
+@pgardner
+nan
+
+631
+@sakumar
+Sanjeev Kumar
+
+632
+@ciulli
+nan
+
+633
+@sanayak
+Samarendra Nayak
+
+634
+@lannon
+Kevin Patrick Lannon
+
+635
+@shghosh
+nan
+
+636
+@aldas
+nan
+
+637
+@prsaha
+Prafulla Saha
+
+638
+@trocino
+Daniele Trocino
+
+639
+@hkaur
+nan
+
+640
+@gdincer
+nan
+
+641
+@xisu
+Xing-Fu Su
+
+642
+@varelas
+nan
+
+643
+@ykomurcu
+Yildiray Komurcu
+
+644
+@athirumu
+nan
+
+646
+@mstamenk
+Marko Stamenkovic
+
+647
+@athachay1
+Aravind Thachayath Sugunan
+
+648
+@stizchan
+Seddigheh Tizchang
+
+649
+@ccarriva
+Costanza Carrivale
+
+650
+@kruecker1
+Dirk Krucker
+
+651
+@jalmond
+John Leslie Almond
+
+652
+@jspah
+Jan Lukas Spah
+
+653
+@abasnet
+nan
+
+654
+@kmondal
+nan
+
+655
+@tiroy
+Titas Roy
+
+656
+@ismirnov
+Igor Smirnov
+
+657
+@cazzanig
+Cesare Tiziano Cazzaniga
+
+658
+@nbreugel
+Nordin Breugelmans
+
+659
+@jerdmann
+Johannes Erdmann
+
+660
+@zhiyuanl
+Zhiyuan Li
+
+661
+@boguo
+Botao Guo
+
+662
+@momolch
+Moritz Molch
+
+663
+@msanjran
+Shahzad Sanjrani
+
+664
+@ikrommyd
+Iason Krommydas
+
+665
+@kazana
+nan
+
+666
+@jmatthie
+Johanna Matthiesen
+
+667
+@llongo
+Luigi Longo
+
+668
+@stzakhar
+Stepan Zakharov
+
+669
+@jinw
+Weijie Jin
+
+670
+@dkavtara
+David Kavtaradze
+
+671
+@nilai
+Nicolo` Lai
+
+672
+@gfloresa
+Gael Flores Avila
+
+673
+@klin
+Kuan-Yu Lin
+
+674
+@trunting
+Tom Runting
+----------------------------------------
+
+REPLY 2 (by clange @ 2023-06-15T07:47:19.081Z):
+
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2023-07-31T14:23:45.707Z):
+Dear all,
+The latest recommended tag for CombineHarvester was recently updated to v2.1.0.
+CombineHarvester: v2.1.0, setup instructions .
+Combine: v9.1.0 , setup instructions . (the same as before)
+Best,
+Aliya
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-03-25T15:53:54.156Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v9.2.0.
+Combine: v9.2.0, setup instructions .
+CombineHarvester: v2.1.0, setup instructions. (the same as before)
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by anigamov @ 2024-04-11T11:20:29.806Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v9.2.1.
+Combine: v9.2.1, setup instructions .
+CombineHarvester: v2.1.0, setup instructions. (the same as before)
+Best,
+Aliya
+----------------------------------------
+
+REPLY 6 (by anigamov @ 2024-06-12T10:06:21.852Z):
+Dear All,
+We have released a new Combine version -  v10.0.0, compatible with el9 architecture and ROOT = v6.30/07, for more details please follow the setup instructions.
+Please note that this version also includes combineTool.py scripts, so you do not have install CombineHarvester package to use them. CombineHarvester release compatible with ROOT v6.30 will follow soon.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 7 (by anigamov @ 2024-06-19T09:34:43.734Z):
+Dear all,
+The update the Combine v10 release with a patch v10.0.1 which is fixing the issue reported by @trunting here , for more details please follow the setup instructions.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 8 (by anigamov @ 2024-06-19T12:10:39.632Z):
+Dear all,
+New CombineHarvester release v3.0.0-pre1 compatible with CMSSW_14_1_X (ROOT v6.30) is now available, note that this is a pre-release, since there are known issues with parsing the datacards with RooDataHist objects.
+The latest Combine and CombineHarvester versions are:
+Combine: v10.0.1, setup instructions. (the same as before)
+CombineHarvester: v3.0.0-pre1, setup instructions .
+Best,
+Aliya
+----------------------------------------
+
+REPLY 9 (by anigamov @ 2024-07-25T13:17:10.366Z):
+Dear all,
+The latest recommended tags for Combine and CombineHarvester were recently updated.
+Combine: v10.0.2, setup instructions .
+CombineHarvester: v3.0.0 , setup instructions .
+Best,
+Aliya
+----------------------------------------
+
+REPLY 10 (by anigamov @ 2025-02-14T17:18:25.497Z):
+Dear all,
+The latest recommended tag for Combine was recently updated.
+Combine: v10.1.0, setup instructions
+CombineHarvester: v3.0.0 , setup instructions
+Best,
+Aliya
+----------------------------------------
+
+REPLY 11 (by anigamov @ 2025-04-24T09:52:41.181Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.2.0
+Combine: v10.2.0, setup instructions
+CombineHarvester: v3.0.0 , setup instructions  (the same as before).
+Best,
+Aliya
+----------------------------------------
+
+REPLY 12 (by gallim @ 2025-05-27T10:16:33.769Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.2.1
+Combine: v10.2.1, setup instructions
+CombineHarvester: v3.0.0 , setup instructions  (the same as before).
+Best,
+Massimiliano
+----------------------------------------
+
+REPLY 13 (by anigamov @ 2025-11-03T08:06:57.752Z):
+Dear all,
+The latest recommended tag for Combine was recently updated.
+It is strongly recommended to switch to v10.3.0, due to the recently discovered bug affecting statistical models with `shapeN` uncertainties (see the corresponding issue and PR fixing it), and reevaluate the analysis results if the shapeN are used with Combine releases v10.0.2-v10.2.1.
+Combine: v10.3.0, setup instructions
+CombineHarvester: v3.0.0 , setup instructions
+Best,
+Aliya
+----------------------------------------
+
+REPLY 14 (by anigamov @ 2025-11-05T12:02:47.381Z):
+Dear all,
+The latest recommended tag for Combine was recently updated.
+In the latest Combine version v10.3.0 you could have experienced issues with physics models, this issue is fixed in v10.3.1 with PR 1163, so please update the tag.
+Combine: v10.3.1, setup instructions
+CombineHarvester: v3.0.0 , setup instructions
+Best,
+Aliya
+----------------------------------------
+
+REPLY 15 (by gallim @ 2025-11-11T11:27:16.883Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.3.2
+Combine: v10.3.2, setup instructions
+CombineHarvester: v3.0.0 , setup instructions (the same as before).
+Best,
+Massimiliano
+----------------------------------------
+
+REPLY 16 (by anigamov @ 2025-11-14T15:27:34.926Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.3.3. This release addresses the bug in FastScan method, details are in the release notes. Please update your Combine setup.
+Combine: v10.3.3, setup instructions
+CombineHarvester: v3.0.0 , setup instructions (the same as before).
+Best,
+Aliya
+----------------------------------------
+
+REPLY 17 (by anigamov @ 2025-12-08T15:43:15.846Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.4.1.
+Combine: v10.4.1, setup instructions
+CombineHarvester: v3.0.0 , setup instructions (the same as before).
+Best,
+Aliya
+----------------------------------------
+
+REPLY 18 (by anigamov @ 2025-12-19T15:23:55.945Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.4.2.
+Combine: v10.4.2, setup instructions
+CombineHarvester: v3.0.0 , setup instructions (the same as before).
+Happy holidays,
+Aliya
+----------------------------------------
+
+REPLY 19 (by anigamov @ 2026-02-04T09:28:49.991Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.5.0.
+Combine: v10.5.0, setup instructions
+CombineHarvester: v3.0.0 , setup instructions (the same as before).
+Best,
+Aliya
+----------------------------------------
+
+REPLY 20 (by anigamov @ 2026-03-04T11:37:05.047Z):
+Dear all,
+The latest recommended tags for Combine and CombineHarvester were recently updated.
+Combine: v10.5.1, setup instructions .
+CombineHarvester: v3.1.0, setup instructions .
+Best,
+Aliya
+----------------------------------------
+
+REPLY 21 (by anigamov @ 2026-04-13T07:00:34.717Z):
+Dear all,
+The latest recommended tag for Combine was recently updated to v10.6.0.
+Combine: v10.6.0, setup instructions
+CombineHarvester: v3.1.0, setup instructions (the same as before).
+Best,
+Aliya
+----------------------------------------

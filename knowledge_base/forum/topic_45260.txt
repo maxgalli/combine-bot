@@ -1,0 +1,76 @@
+TOPIC: Question on parallelizing Goodness of Fit method using condor
+URL: https://cms-talk.web.cern.ch/t/45260
+DATE: 2024-08-06T20:33:26.698Z
+SOLVED: no
+============================================================
+
+QUESTION (by jongho @ 2024-08-06T20:33:26.834Z):
+Dear combine experts,
+I would like to discuss a potential approach to speed up the Goodness of Fit (GoF) method, as this step is currently taking too long in our analysis. Our group is running the GoF using the following command: “combine -M GoodnessOfFit  --algo=saturated -t 500 -s -1”. Unfortunately, after 5 days, only half of the toy generation has been completed.
+The proposed idea is to run the GoF on Condor by reducing the number of toy generations per job and assigning different seeds to each job. There are following questions if we use this idea. 1) Can the outputs be technically merged, if possible how? 2) Can this lead to incorrect fit result?
+Thanks for your helps.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-08-06T20:46:47.237Z):
+Dear Jongho,
+CombineTools provides the capabilities to parallelise combine toys on Condor, have you tried using it?
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#combinetool-for-job-submission
+On a side note, we usually recommend using --toysFreq option when running the saturated model.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by jongho @ 2024-08-07T09:29:15.523Z):
+Dear Giacomo,
+Thanks for your answer. When I looked the combineTools.py, I found some supporting methods. (Here, the group is using old higgs combine tool version, v8.1.0 for combine and v2.1.0 for combine harvester).
+
+register_method(parser, methods, EnhancedCombine)
+register_method(parser, methods, T2W)
+register_method(parser, methods, PrintWorkspace)
+register_method(parser, methods, ModifyDataSet)
+register_method(parser, methods, Impacts)
+register_method(parser, methods, ImpactsFromScans)
+register_method(parser, methods, CollectLimits)
+register_method(parser, methods, CollectGoodnessOfFit)
+register_method(parser, methods, CovMatrix)
+register_method(parser, methods, PrintFit)
+register_method(parser, methods, AsymptoticGrid)
+register_method(parser, methods, HybridNewGrid)
+register_method(parser, methods, FastScan)
+register_method(parser, methods, TaylorExpand)
+
+Following the above list, it looks like -M GoodnessOfFit is not supporting method. Could I available to use condor with GoF? Because in the instruction, it is -M HybridNew.
+Kind regards,
+Jongho
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2024-08-07T16:16:09.770Z):
+Hi Jongho,
+We don’t need a dedicated module for GoF, we can just use the functionality in EnhancedCombine, e.g. just run with your usual options, but for the seed you can set -s 1:100:1 to generate 100 jobs with different RNG seeds, and then add the appropriate options for condor submission. Can add --dry-run to check without actually submitting.
+Thanks,
+Andrew
+----------------------------------------
+
+REPLY 5 (by jongho @ 2024-08-07T20:43:19.351Z):
+Dear all,
+Thanks for your helps. This will be very useful for us.
+Kind regards,
+Jongho
+----------------------------------------
+
+REPLY 6 (by eertorer @ 2024-08-07T23:46:46.284Z):
+Dear all,
+How can we merge the GoF outputs? For reference, this is the command that we used:
+python CombineHarvester/CombineTools/scripts/combineTool.py -M GoodnessOfFit -d darkhiggs_Mz2000_mhs90_Mdm500.root --algo=saturated -t 5 -s 1:100:1 -n run --toysFreq --job-mode condor --sub-opts='+JobFlavour="workday"' --dry-run
+Thanks,
+Erdem
+----------------------------------------
+
+REPLY 7 (by amarini @ 2024-08-08T06:42:21.074Z):
+hadd
+-A
+----------------------------------------
+
+REPLY 8 (by eertorer @ 2024-08-08T14:20:20.303Z):
+Thanks!
+----------------------------------------

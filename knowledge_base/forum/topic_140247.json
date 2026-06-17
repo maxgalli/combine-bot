@@ -1,0 +1,45 @@
+{
+  "topic_id": 140247,
+  "title": "Warning when running FitDiagnostics",
+  "url": "https://cms-talk.web.cern.ch/t/140247",
+  "category_id": 279,
+  "created_at": "2025-12-19T07:44:14.542Z",
+  "last_posted_at": "2025-12-19T15:26:35.063Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "ceballos",
+      "name": "Guillelmo Gomez-Ceballos",
+      "created_at": "2025-12-19T07:44:14.988Z",
+      "updated_at": "2025-12-19T07:44:14.988Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have noticed I am now getting a warning using the hopefully latest combine version v10.4.1, which I have never seen before. I use the FitDiagnostics (actual parameters not even that important):\ncombine -M FitDiagnostics workspace_test.root -n test --saveNorm --saveShapes --saveWithUncertainties --saveOverall --keepFailures --ignoreCovWarning --rMin=-2 --rMax=3 --robustFit=1 --setParameters r_s0=1 -t -1\nI get this warning:\nWARNING! You set the NLL evaluation backend to \u201clegacy\u201d, which is not the default. This code path is not validated. Please don\u2019t use it for production!\nI don\u2019t even know what it is, but even if I explicitly use \u2018combine\u2019:\ncombine -M FitDiagnostics workspace_test.root -n test --saveNorm --saveShapes --saveWithUncertainties --saveOverall --keepFailures --ignoreCovWarning --rMin=-2 --rMax=3 --robustFit=1 --nllbackend=combine --setParameters r_s0=1 -t -1\nI am still getting the warning! What is it? And how can I switch to the default behavior?\nThanks, Guillelmo",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I have noticed I am now getting a warning using the hopefully latest combine version v10.4.1, which I have never seen before. I use the FitDiagnostics (actual parameters not even that important):</p>\n<p>combine -M FitDiagnostics workspace_test.root -n test --saveNorm --saveShapes --saveWithUncertainties --saveOverall --keepFailures --ignoreCovWarning --rMin=-2 --rMax=3 --robustFit=1 --setParameters r_s0=1 -t -1</p>\n<p>I get this warning:</p>\n<p>WARNING! You set the NLL evaluation backend to \u201clegacy\u201d, which is not the default. This code path is not validated. Please don\u2019t use it for production!</p>\n<p>I don\u2019t even know what it is, but even if I explicitly use \u2018combine\u2019:</p>\n<p>combine -M FitDiagnostics workspace_test.root -n test --saveNorm --saveShapes --saveWithUncertainties --saveOverall --keepFailures --ignoreCovWarning --rMin=-2 --rMax=3 --robustFit=1 --nllbackend=combine --setParameters r_s0=1 -t -1</p>\n<p>I am still getting the warning! What is it? And how can I switch to the default behavior?</p>\n<p>Thanks, Guillelmo</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-12-19T09:52:15.785Z",
+      "updated_at": "2025-12-19T09:52:15.785Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Guillelmo,\nThis indeed was introduced recently as a result of our developments towards auto-differentiation support in combine. The warning can be safely ignored for now and the experts are working on fixing the logic so that it doesn\u2019t appear when not necessary.\nBest,\nNick",
+      "cooked_html": "<p>Dear Guillelmo,</p>\n<p>This indeed was introduced recently as a result of our developments towards auto-differentiation support in combine. The warning can be safely ignored for now and the experts are working on fixing the logic so that it doesn\u2019t appear when not necessary.</p>\n<p>Best,</p>\n<p>Nick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-12-19T15:26:35.063Z",
+      "updated_at": "2025-12-19T15:26:35.063Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Guillelmo,\nThanks a lot for pinging us about this issue.\nIt should be resolve in the latest release v10.4.2 as announced in The latest recommended Combine and CombineHarvester versions - #18 by anigamov\nBest,\nAliya",
+      "cooked_html": "<p>Dear Guillelmo,</p>\n<p>Thanks a lot for pinging us about this issue.<br>\nIt should be resolve in the latest release v10.4.2 as announced in <a href=\"https://cms-talk.web.cern.ch/t/the-latest-recommended-combine-and-combineharvester-versions/25462/18\" class=\"inline-onebox\">The latest recommended Combine and CombineHarvester versions - #18 by anigamov</a></p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

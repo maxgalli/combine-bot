@@ -1,0 +1,45 @@
+{
+  "topic_id": 142991,
+  "title": "Is it possible to use RooParametricHist for one process and still use autoMCStats for the others",
+  "url": "https://cms-talk.web.cern.ch/t/142991",
+  "category_id": 279,
+  "created_at": "2026-03-13T14:06:02.108Z",
+  "last_posted_at": "2026-03-13T15:59:41.960Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "klin",
+      "name": "Kuan-Yu Lin",
+      "created_at": "2026-03-13T14:06:02.312Z",
+      "updated_at": "2026-03-13T14:06:02.312Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI am using RooParametricHist to account for the QCD multi-jet background. However, I found that I couldn\u2019t use TH1 as input for other MC-estimated backgrounds and signals so I have to convert them into RooDataHist. Then FitDiagnostics worked. But then it seemed that autoMCStats requires TH1 input. Does it imply that I wouldn\u2019t be able to use autoMCStats for the MC-based backgrounds?\nIf so, do you think we can make it work by allowing CMSHistSum to create CMSHistPropagator object from RooDataHist? The idea is to do Barlow-Beeston-lite for the MC-based backgrounds. Or I should implement CMS_th1x in the RooParametricHist so that I can stick to TH1 input?\nI found in this CMS talk thread suggests to use shape uncertainty for statistical uncertainties. Does it mean I should convert my MC-based background histograms into RooParametricHist as well? If so, then I probably can declare their bin-content parameters as gmN variable to account for the bin-by-bin nature of the MC-stat errrors. Since I don\u2019t have that many bins, the fit speed might be tolerable. But if modifying Combine isn\u2019t so hard, then probably that is a better long-term solution for combinations and toy-generations.\nBest regards,\nKuan",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I am using RooParametricHist to account for the QCD multi-jet background. However, I found that I couldn\u2019t use TH1 as input for other MC-estimated backgrounds and signals so I have to convert them into RooDataHist. Then <code>FitDiagnostics</code> worked. But then it seemed that autoMCStats requires TH1 input. Does it imply that I wouldn\u2019t be able to use autoMCStats for the MC-based backgrounds?</p>\n<p>If so, do you think we can make it work by allowing <code>CMSHistSum</code> to create <code>CMSHistPropagator</code> object from <code>RooDataHist</code>? The idea is to do Barlow-Beeston-lite for the MC-based backgrounds. Or I should implement <code>CMS_th1x</code> in the <code>RooParametricHist</code> so that I can stick to <code>TH1</code> input?</p>\n<p>I found in this CMS talk <a href=\"https://cms-talk.web.cern.ch/t/mc-stat-unc-and-rooparametrichisto/21686\">thread</a> suggests to use shape uncertainty for statistical uncertainties. Does it mean I should convert my MC-based background histograms into <code>RooParametricHist</code> as well? If so, then I probably can declare their bin-content parameters as <code>gmN</code> variable to account for the bin-by-bin nature of the MC-stat errrors. Since I don\u2019t have that many bins, the fit speed might be tolerable. But if modifying Combine isn\u2019t so hard, then probably that is a better long-term solution for combinations and toy-generations.</p>\n<p>Best regards,</p>\n<p>Kuan</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2026-03-13T15:03:23.308Z",
+      "updated_at": "2026-03-13T15:03:23.308Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Kuan,\nThere\u2019s unfortunately no easy way to get autoMCStats and RooParametricHist working nicely together. This request has come up a few times in the past, but it would require writing essentially an entirely new version of CMSHistErrorPropagator that can take arbitrary binned RooFit pdfs as input (which carries quite a few complications).\nSolutions are:\n\nstick with a mixture of RooParametericHist and RooHistPdf, implement MC stat uncertainties manually as shape variations per bin and per (relevant) process\nstay with TH1 input - instead of using RooParametricHist it may be possible to split your QCD template up into N separate datacard processes (where N = number of histogram bins). Then your can apply formulae for each bin yield via rateParams, and keep using autoMCStats.\n\nCheers,\nAndrew",
+      "cooked_html": "<p>Dear Kuan,</p>\n<p>There\u2019s unfortunately no easy way to get autoMCStats and RooParametricHist working nicely together. This request has come up a few times in the past, but it would require writing essentially an entirely new version of CMSHistErrorPropagator that can take arbitrary binned RooFit pdfs as input (which carries quite a few complications).</p>\n<p>Solutions are:</p>\n<ul>\n<li>stick with a mixture of RooParametericHist and RooHistPdf, implement MC stat uncertainties manually as <code>shape</code> variations per bin and per (relevant) process</li>\n<li>stay with TH1 input - instead of using RooParametricHist it may be possible to split your QCD template up into N separate datacard processes (where N = number of histogram bins). Then your can apply formulae for each bin yield via rateParams, and keep using autoMCStats.</li>\n</ul>\n<p>Cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "klin",
+      "name": "Kuan-Yu Lin",
+      "created_at": "2026-03-13T15:59:41.960Z",
+      "updated_at": "2026-03-13T15:59:41.960Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear @agilbert,\nThanks for your prompt response.\nFor the first solution, does it requires one shape version per bin to keep the per-bin autoMCStats right? But since the shape variations offered by Combine factors out normalisation variation from the the shape variations, the interpolation or extrapolation could be quite different from the per-bin variation done by CMSHistErrorPropagator. On the other hand, the Gaussian constraint plus the power-correction of the normalisation (log-normal together) also differs from the Poisson constraints adopted in CMSHistErrorPropagator. Do you think my proposal of using gmN wouldn\u2019t work?\nBest,\nKuan",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/agilbert\">@agilbert</a>,</p>\n<p>Thanks for your prompt response.</p>\n<p>For the first solution, does it requires one <code>shape</code> version per bin to keep the per-bin autoMCStats right? But since the <code>shape</code> variations offered by Combine factors out normalisation variation from the the shape variations, the interpolation or extrapolation could be quite different from the per-bin variation done by <code>CMSHistErrorPropagator</code>. On the other hand, the Gaussian constraint plus the power-correction of the normalisation (log-normal together) also differs from the Poisson constraints adopted in <code>CMSHistErrorPropagator</code>. Do you think my proposal of using <code>gmN</code> wouldn\u2019t work?</p>\n<p>Best,</p>\n<p>Kuan</p>"
+    }
+  ]
+}

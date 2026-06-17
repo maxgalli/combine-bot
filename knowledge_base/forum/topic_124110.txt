@@ -1,0 +1,1786 @@
+TOPIC: Save and use snapshot
+URL: https://cms-talk.web.cern.ch/t/124110
+DATE: 2025-04-24T15:05:46.050Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-04-24T15:05:46.314Z):
+Dear Giacomo, All
+I tried to follow instructions.  First I did S+B fit with
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+Second I run S+B and B only fit with intention to skip S+B fit and do only B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+At this step I got
+[#0] ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name MultiDimFit is available
+Please, help. What I did wrong ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-04-28T09:24:36.144Z):
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root  otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by gortona @ 2025-04-28T09:25:43.196Z):
+To be clearer, In the second command instead of using  -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2025-04-28T09:28:49.000Z):
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, April 28, 2025 11:26
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2025-04-28T15:27:02.000Z):
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, April 28, 2025 11:26
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by gortona @ 2025-04-28T16:33:53.567Z):
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2025-04-29T10:26:19.000Z):
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, April 28, 2025 18:35
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 8 (by gortona @ 2025-04-29T10:49:58.000Z):
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 9 (by anikiten @ 2025-04-29T13:12:28.000Z):
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, April 29, 2025 12:54
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 10 (by anikiten @ 2025-05-01T15:08:48.000Z):
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Tuesday, April 29, 2025 15:12
+To: CMS talk cmstalk+10564dec66b79f1a2224aceabae5537a@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, April 29, 2025 12:54
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 11 (by anikiten @ 2025-05-04T09:19:46.000Z):
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Thursday, May 1, 2025 17:08
+To: CMS talk cmstalk+10564dec66b79f1a2224aceabae5537a@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Tuesday, April 29, 2025 15:12
+To: CMS talk cmstalk+10564dec66b79f1a2224aceabae5537a@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, April 29, 2025 12:54
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 12 (by gortona @ 2025-05-05T11:29:07.000Z):
+Hi Sasha,
+indeed you are right, sorry I should have realised this before.
+Yet I think there still is one option you can try.
+Can you try adding the --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 options to both your first and second steps?
+These should provide in the output tree the NLL values with respect to the prefit conditions. Since the prefit is the same, you should then be able to compute the NLL difference between the best fit point and the fit from your initial parameters from the difference of the branches (deltanll+nll+nll0) in the outputs of the two commands.
+I hope it works. I did a quick test but I’m using a different combine version with respect to yours, so the second command doesn’t work out of the box on your inputs in my setup.
+Cheers,
+Giacomo
+
+On 4 May 2025, at 11:22, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenMay 4
+
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenMay 1
+
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 29
+
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 13 (by anikiten @ 2025-05-05T14:54:51.000Z):
+Hi Giacomo,
+I used your instructions now. But unfortunately I got the same
+value of deltaNLL
+jentry = 1 nll = 43308.5 nllo = 43296.5 deltaNLL = 12.0427
+while it should be 12.92
+As I said, I guess my input parameters are also used to recalculate
+first S+B NLL.
+My commands:
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+And
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, May 5, 2025 13:31
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaMay 5
+
+Hi Sasha,
+indeed you are right, sorry I should have realised this before.
+Yet I think there still is one option you can try.
+Can you try adding the --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 options to both your first and second steps?
+These should provide in the output tree the NLL values with respect to the prefit conditions. Since the prefit is the same, you should then be able to compute the NLL difference between the best fit point and the fit from your initial parameters from the difference of the branches (deltanll+nll+nll0) in the outputs of the two commands.
+I hope it works. I did a quick test but I’m using a different combine version with respect to yours, so the second command doesn’t work out of the box on your inputs in my setup.
+Cheers,
+Giacomo
+
+On 4 May 2025, at 11:22, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenMay 4
+
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenMay 1
+
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 29
+
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 14 (by anikiten @ 2025-05-05T15:23:04.000Z):
+Hi Giacomo,
+just in case you may want to try in:
+my Workspaces for each SR and combined.txt
+are here
+input · master · cms-analysis / SUS / SUS-23-011 / datacards · GitLab
+Cheers, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Monday, May 5, 2025 16:54
+To: CMS talk cmstalk+c507b23ea2a4673d3443aebfa3e78e05@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+Hi Giacomo,
+I used your instructions now. But unfortunately I got the same
+value of deltaNLL
+jentry = 1 nll = 43308.5 nllo = 43296.5 deltaNLL = 12.0427
+while it should be 12.92
+As I said, I guess my input parameters are also used to recalculate
+first S+B NLL.
+My commands:
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+And
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+Cheers, Sasha.
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, May 5, 2025 13:31
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaMay 5
+
+Hi Sasha,
+indeed you are right, sorry I should have realised this before.
+Yet I think there still is one option you can try.
+Can you try adding the --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 options to both your first and second steps?
+These should provide in the output tree the NLL values with respect to the prefit conditions. Since the prefit is the same, you should then be able to compute the NLL difference between the best fit point and the fit from your initial parameters from the difference of the branches (deltanll+nll+nll0) in the outputs of the two commands.
+I hope it works. I did a quick test but I’m using a different combine version with respect to yours, so the second command doesn’t work out of the box on your inputs in my setup.
+Cheers,
+Giacomo
+
+On 4 May 2025, at 11:22, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenMay 4
+
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenMay 1
+
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 29
+
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 15 (by gortona @ 2025-05-05T15:32:46.000Z):
+Hi Sasha,
+For lacking of a better terminology, I’m calling bestfit the result if the minimisation procedure from the first command, and bestfit_with_your_parameters the evaluation of the likelihood function of the best fit once you add the setParameters option.
+What you say is correct, in the second command your inputs are used to recalculate the S+B NLL, but in the first command they are not.
+So you should be getting from the first command: NLL(bestfit - prefit) and from the second command NLL(bestfit_with_your_parameters - prefit) (from the NLL branches in the output trees) as well as the deltaNLL between the B-only fit with your parameters and bestfit_with_your_parameters. With these 3 inputs you should have all the information to extract the difference between B-only and bestfit, which is what you are looking for.
+Cheers,
+Giacomo
+
+On 5 May 2025, at 17:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenMay 5
+
+Hi Giacomo,
+I used your instructions now. But unfortunately I got the same
+value of deltaNLL
+jentry = 1 nll = 43308.5 nllo = 43296.5 deltaNLL = 12.0427
+while it should be 12.92
+As I said, I guess my input parameters are also used to recalculate
+first S+B NLL.
+My commands:
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+And
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaMay 5
+
+Hi Sasha,
+indeed you are right, sorry I should have realised this before.
+Yet I think there still is one option you can try.
+Can you try adding the --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 options to both your first and second steps?
+These should provide in the output tree the NLL values with respect to the prefit conditions. Since the prefit is the same, you should then be able to compute the NLL difference between the best fit point and the fit from your initial parameters from the difference of the branches (deltanll+nll+nll0) in the outputs of the two commands.
+I hope it works. I did a quick test but I’m using a different combine version with respect to yours, so the second command doesn’t work out of the box on your inputs in my setup.
+Cheers,
+Giacomo
+
+On 4 May 2025, at 11:22, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenMay 4
+
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenMay 1
+
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 29
+
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenMay 4
+
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenMay 1
+
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 29
+
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 16 (by anikiten @ 2025-05-05T16:16:50.000Z):
+Hi Giacomo,
+Thank you very much !
+I got my 12.92 from information in two trees produced by the first and the second command.
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, May 5, 2025 17:35
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Save and use snapshot
+
+Giacomo Ortona gortonaMay 5
+
+Hi Sasha,
+For lacking of a better terminology, I’m calling bestfit the result if the minimisation procedure from the first command, and bestfit_with_your_parameters the evaluation of the likelihood function of the best fit once you add the setParameters option.
+What you say is correct, in the second command your inputs are used to recalculate the S+B NLL, but in the first command they are not.
+So you should be getting from the first command: NLL(bestfit - prefit) and from the second command NLL(bestfit_with_your_parameters - prefit) (from the NLL branches in the output trees) as well as the deltaNLL between the B-only fit with your parameters and bestfit_with_your_parameters. With these 3 inputs you should have all the information to extract the difference between B-only and bestfit, which is what you are looking for.
+Cheers,
+Giacomo
+
+On 5 May 2025, at 17:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenMay 5
+
+Hi Giacomo,
+I used your instructions now. But unfortunately I got the same
+value of deltaNLL
+jentry = 1 nll = 43308.5 nllo = 43296.5 deltaNLL = 12.0427
+while it should be 12.92
+As I said, I guess my input parameters are also used to recalculate
+first S+B NLL.
+My commands:
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+And
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaMay 5
+
+Hi Sasha,
+indeed you are right, sorry I should have realised this before.
+Yet I think there still is one option you can try.
+Can you try adding the --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 options to both your first and second steps?
+These should provide in the output tree the NLL values with respect to the prefit conditions. Since the prefit is the same, you should then be able to compute the NLL difference between the best fit point and the fit from your initial parameters from the difference of the branches (deltanll+nll+nll0) in the outputs of the two commands.
+I hope it works. I did a quick test but I’m using a different combine version with respect to yours, so the second command doesn’t work out of the box on your inputs in my setup.
+Cheers,
+Giacomo
+
+On 4 May 2025, at 11:22, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenMay 4
+
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenMay 1
+
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 29
+
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenMay 4
+
+Hi Giacomo,
+I think I understand a problem.
+In the second B only fit my input parameters I set up with --setParameters
+are also used to recalculated NLL of the first S+B fit.
+Could you check the corresponding part of the code.
+Cheers, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenMay 1
+
+Dear Giacomo,
+yes, technically it works and I can reproduce my deltaNLL=13.57
+when I did not set in the second step my parameters, so it
+must be taken it from S+B snapshot. I know that B got into local
+minimum in that case.
+With my parameters set up in the second step my deltaNLL = 12.0,
+It is not what I calculated from the best individual fits of backgrounds
+in my SRs , deltaNLL = 12.93.
+I am wondering can it be the case that combine subtract from S+B NLL some value or add some value to B NLL…
+So, my commands are
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2,a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters mean,width,r -v3 -w w --snapshotName MultiDimFit --skipInitialFit
+Thank you, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 29
+
+Dear Giacomo,
+Removing commas does help !
+So, I can play now my games.
+Thank you very much !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 29
+
+Dear Sasha,
+I’m not 100% sure, but it seems to me the commas around “MultiDimFit” are in a weird character, so I suspect this is misinterpreted when running the bash commands. Can you try removing them?
+On my side it works either removing them or using standard bash characters.
+Cheers,
+Giacomo
+
+On 29 Apr 2025, at 12:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 29
+
+Hi Giacomo,
+So, with you instructions I run first S+B fit
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot
+And second, B fit only
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+And got error message
+ERROR:ObjectHandling – RooWorkspace::loadSnapshot(w) no snapshot with name “MultiDimFit” is available
+combine: /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/src/Combine.cc:404: void Combine::run(TString, const string&, double&, double&, int&, TTree*, int): Assertion `loaded’ failed.
+Aborted (core dumped)
+If needed you can check my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombinesnapshot.MultiDimFit.mH120.root
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 28
+
+Hi Sasha,
+It’s just that since there is no “-n ” option, the output file takes the defaut “Test” suffix, and when doing your second command you overwrite the output of the first commands, hence the crash.
+Can you try adding -n snapshot to your first command and changing higgsCombineTest.MultiDimFit.mH120.root to higgsCombinesnapshot.MultiDimFit.mH120.root in your second one?
+Cheers,
+Giacomo
+
+Alexandre Nikitenko anikitenApril 28
+
+Hi Giacomo,
+So, I run two commands
+
+S+B fit
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace
+
+load snapshot and trying to do B fit
+
+combine -M MultiDimFit higgsCombineTest.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 -w w --snapshotName “MultiDimFit” --skipInitialFit
+It crashed with messages
+Could not find workspace ‘w’ in file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile** /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+TFile* /afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/higgsCombineTest.MultiDimFit.mH120.root
+KEY: TDirectoryFile toys;1 toys
+Error when running the combination:
+Missing Workspace
+What is wrong ?
+Thanks, Sasha.
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 28
+
+Ah,fine ! Will try and let you know.
+Thank you so much, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 28
+
+To be clearer, In the second command instead of using -d combined.txt you should use higgsCombineTest.MultiDimFit.mH120.root
+
+Giacomo Ortona gortonaApril 28
+
+Dear Sasha,
+Sorry for the late reply, there were holidays in Italy and I just resurfaced now.
+In your second command, you should run on the output of the first command, i.e. the file called
+higgsCombineTest.MultiDimFit.mH120.root otherwise Combine can’t know where the snapshot is stored.
+Cheers,
+Giacomo
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 17 (by anikiten @ 2025-05-30T10:31:24.570Z):
+Dear Giacomo, All,
+I have a strange behavior of MiltiDimFit with snapshot option
+
+I run first S+B fit with fixed signal mass and width:
+
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3 --saveWorkspace -n snapshot --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+
+then I run B only fit with my input parameters for background functions:
+
+combine -M MultiDimFit -d higgsCombinesnapshot.MultiDimFit.mH120.root --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters a1_17sr1=0.0622717,a2_17sr1=-0.00243581,a3_17sr1=1.96456e-05,a1_17sr2=2.59313,a2_17sr2=-0.0936498,a3_17sr2=0.000841422,a1_17sr3=-0.583303,a2_17sr3=-0.243371,a3_17sr3=0.170443,a1_18sr1=0.0331549,a2_18sr1=-0.00149685,a3_18sr1=1.21166e-05,a1_18sr2=8.34523,a2_18sr2=0.626552,a3_18sr2=-0.0331926,a4_18sr2=0.000348119,a1_18sr3=-0.60047,a2_18sr3=-0.267415,a3_18sr3=0.256406 --freezeParameters r -v3 -w w --snapshotName MultiDimFit --skipInitialFit --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+and I got Log(L) for Bkg = 43308.5
+then I run again S+B fit with different signal mass and width fixed to: mean=27.4,width=2.56
+and then run B only fit again.  Now I got Log(L) for Bkg = 43308.7, which is different from the first one, 43308.5
+I did not expect that B only fit depends on the signal mass and width …
+Can you explain it, please.
+Thanks, Sasha.
+----------------------------------------

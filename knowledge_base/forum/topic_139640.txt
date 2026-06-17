@@ -1,0 +1,117 @@
+TOPIC: Understanding different significance results
+URL: https://cms-talk.web.cern.ch/t/139640
+DATE: 2025-12-02T21:10:19.187Z
+SOLVED: no
+============================================================
+
+QUESTION (by hyeonseo @ 2025-12-02T21:10:19.638Z):
+Dear combine experts,
+Hello, I am observing different significance values by combine from two different workspaces, and I am trying to understandy why. The only difference between the two workspaces is that I am using a different BDT. Please find more details about the BDT in [1]; their performance as far as I can tell are very similar. However, there’s a significant difference in the expected significance numbers despite that the two BDTs are similar:
+
+Workspace
+Expected Significance
+
+Workspace1
+2.08443
+
+Workspace2
+1.60319
+
+Here’s the combine command I have used:
+text2workspace.py -m 125 datacard_comb_sig_all_ggh.txt
+combine -M Significance -d datacard_comb_sig_all_ggh.root -m 125 -n _signif_comb_ggh --cminDefaultMinimizerStrategy=0 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --setParameters pdf_index_ggh=0 --cminRunAllDiscreteCombinations --setParameterRanges r=0,10 --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH -v 3 > comb_expSignificance.log
+cat comb_expSignificance.log | grep "Significance:" >> significance.txt
+
+please find my datacard in [2] and workspaces in [3] that I have used to obtain the significance values. Both workspace results in a status 0 (successful fit) for combine significance method.
+Therefore, I am trying to diagnose the reason from a combine’s perspective. I have generated impact plots, NLL and FastScan to diagnose the issue.  Please see the details to impact plots in [4],  NLL curve in [5] and FastScan in [6]
+I observe little difference between the two impact plots; FastScan curves are smoothe and continuous around the minima for all the parameters for both workspaces. Lastly the NLL curves of the two workspaces are very similar too.
+Given that my three tests led to no new leads (at least to my non-expert eyes), I would appreciate if anyone could recommend other tests I could do in order to understand why combine is providing different significance values.
+Thank you,
+Hyeon-Seo
+
+References:
+BDT [1]
+The BDT in workspace1 and workspace2 are trained in exactly the same way except different class weight balance method. Please see the BDT training results below:
+Workspace1 ROC
+log_auc_all_0_workspace1.pdf
+Workspace2 ROC
+log_auc_all_0_workspace2.pdf (17.3 KB)
+Workspace1 BDT output
+Fig6_13_workspace1.pdf (23.4 KB)
+Workspace2 BDT output
+Fig6_13_workspace2.pdf (23.4 KB)
+DataCard [2]
+The datacard I have used for both workspaces are same:
+datacard_comb_sig_all_ggh.txt (16.6 KB)
+Workspace [3]
+The two workspaces are saved in the same zip file. For workspace1, see workspaces/workspace1/my_workspace and workspaces/workspace2/my_workspace for workspace2
+workspaces.zip (551.6 KB)
+Impact [4]
+Workspace1
+impacts_allyears_pdfIdx_sumExp_workspace1.pdf (31.1 KB)
+Workspace2
+impacts_allyears_pdfIdx_sumExp_workspace2.pdf (31.0 KB)
+NLL curve [5]
+Workspace1
+nll_scan_env_workspace1.pdf (14.8 KB)
+Workspace2
+nll_scan_env_workspace2.pdf (14.8 KB)
+FastScan [6]
+Workspace1
+nll_pdf_index0_workspace1.pdf (1.9 MB)
+Workspace2
+nll_pdf_index0_workspace2.pdf (1.9 MB)
+----------------------------------------
+
+REPLY 2 (by adewit @ 2025-12-03T09:46:08.862Z):
+Hi Hyeon-Seo,
+Is there a reason for all the extra options in your significance calculation command? It’s generally not recommended to add options unless they are needed. From a very quick look, the significances come out very similarly with
+`combine -M Significance -d datacard_comb_sig_all_ggh.root -m 125 -n _signif_comb_ggh -t -1 --expectSignal 1 --setParameters pdf_index_ggh=0`
+Also note that, assuming your analysis is still blinded, you should not use --toysFrequentist , as it will give you the post-fit expected significance instead of the pre-fit expected.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by hyeonseo @ 2025-12-04T11:50:18.515Z):
+Dear Adinda,
+Thank you for your quick reply. I have a long list of options because they’re taken from the saved significance script from HIG-19-006. I know that combine went through several changes since, but I didn’t think there was harm in keeping all the options.
+Since our background is fit with “Envelope” method (having discrete parameters), I believe I would need to keep  --cminRunAllDiscreteCombinations  flag.  Also since this involves discrete parameters, I think I would need to also keep --cminDefaultMinimizerStrategy 0 option.
+Would you agree with my statement above? The rest of the options/flags I can remove if that is your recommendation.
+Furthermore, you mentioned that I should not use --toysFrequentist option when I am blinded. I am still using Asimov dataset option -t -1 --expectSignal 1, which would make my significance an “expected significance.” Could you please elaborate a bit further on your statement on this matter?
+Cordially,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 4 (by adewit @ 2025-12-04T13:00:05.972Z):
+Dear Hyeon-Seo,
+Yes, it’s always better to use as few options as possible, rather than copying from previous analyses (of course if a command-line option is needed for the specific fit you’re running then there’s nothing against adding it, but ideally you can start without options and add the ones you need, rather than the other way around)
+
+hyeonseo:
+
+Since our background is fit with “Envelope” method (having discrete parameters), I believe I would need to keep --cminRunAllDiscreteCombinations  flag. Also since this involves discrete parameters, I think I would need to also keep --cminDefaultMinimizerStrategy 0 option.
+Would you agree with my statement above? The rest of the options/flags I can remove if that is your recommendation.
+
+I don’t know the details of when the --cminRunAllDiscreteCombinations flag is needed (it is not always required when using discrete profiling), but there is no harm in keeping it. At worst it will make your fit slower, but it’s not wrong. Minimizer strategy 0 is indeed safer for discrete profiling.
+
+Furthermore, you mentioned that I should not use --toysFrequentist option when I am blinded. I am still using Asimov dataset option -t -1 --expectSignal 1, which would make my significance an “expected significance.” Could you please elaborate a bit further on your statement on this matter?
+
+If you add the option --toysFrequentist a fit will first be done to the data to determine the values of the nuisance parameters which are then used in the generation of the asimov dataset. So you end up with the post-fit expected significance if you add this option, whereas without it you have the pre-fit expected significance, which does not depend on the data at all and is what is considered while the analysis is still blinded. For reference, let me also link the combine documentation on this topic.
+Hope that helps,
+Adinda
+----------------------------------------
+
+REPLY 5 (by amarini @ 2025-12-04T13:40:23.884Z):
+Hi Adinda, all,
+the RunAllDiscreteCombination flag is needed for the core pdf to be evaluated correctly. This is technical due to a different usage of the envelope wrt to Hgg, in which parameters are actually shared between different categories. (We did had dedicated studies in the group both on performance and necessity in combination of this flags, removing it from the combinations and using only the best fit core on hmm results running with it.)
+I believe that some of the studies needs to be carried out within the working group.
+The analysis is still blind and toysFrequentist should definitely not be used.
+-Andrea
+----------------------------------------
+
+REPLY 6 (by hyeonseo @ 2025-12-05T17:08:09.467Z):
+Dear Adinda and Andrea,
+Thank you for your prompt responses and apologies for the late followup. I can confirm that once we use the simplified combine options there’s very little difference between the two workspaces, which is a good starting point.
+We will look into this issue a bit further and ask more question if we have them.
+Best,
+Hyeon-Seo
+----------------------------------------

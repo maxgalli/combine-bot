@@ -1,0 +1,90 @@
+TOPIC: Guidance on Likelihood Scan for Top Quark Pair Analysis
+URL: https://cms-talk.web.cern.ch/t/33485
+DATE: 2024-01-19T05:52:06.761Z
+SOLVED: no
+============================================================
+
+QUESTION (by acotarod @ 2024-01-19T05:52:07.164Z):
+Dear Experts,
+I am currently working on an analysis involving a search for a pair of top quarks. I’ve applied cut selection to my data and have obtained control plots, background, signal and data yields.
+I am now at a stage where I need to conduct a likelihood scan. I would like to ask for advice or guidelines on how to properly approach this:
+What is the recommended procedure for performing a likelihood scan in the context of top quark pair analysis? Are there specific steps or methods that are considered best practices?
+Any insights, references, or examples from your experiences would be incredibly helpful. I want to ensure that my approach aligns with the community standards and yields reliable results.
+Many thanks.
+Best regards,
+Antonio Cota.
+----------------------------------------
+
+REPLY 2 (by byates @ 2024-01-19T13:40:18.000Z):
+Hi Antonio,
+May I ask what PAG you are performing this analysis under? If you are working within the TOP PAG, we’d love to have you present at a TMP meeting, or maybe ttX.
+In general, we recommend using the Higgs Combine tool [1] to perform statistical analysis. Depending on what you are trying to measure, this can be a simple as creating a datacard containing event counts [2], or something more sophisticated like templates or a custom physics model to account for parameters like Wilson coefficients.
+I’m sure you can iterate with the CAT experts here (I’m not one of them, so they may have more to say), and you can also reach out to the PAG conveners, again in whichever group you are performing the analysis under.
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/
+
+Brent Yates
+Postdoctoral Researcher
+Department of Physics
+3034 Physics Research Building
+
+···
+From: Antonio Cota Rodriguez via CMS talk noreply-cms-talk@cern.ch
+Sent: Friday, January 19, 2024 12:54 AM
+To: Yates, Brent yates.313@osu.edu
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Guidance on Likelihood Scan for Top Quark Pair Analysis
+Antonio Cota Rodriguez acotarod January 19 Dear Experts, I am currently working on an analysis involving a search for a pair of top quarks. I’ve applied cut selection to my data and have obtained control plots, background, signal and data yields.
+
+Antonio Cota Rodriguez acotarodJanuary 19
+
+Dear Experts,
+I am currently working on an analysis involving a search for a pair of top quarks. I’ve applied cut selection to my data and have obtained control plots, background, signal and data yields.
+I am now at a stage where I need to conduct a likelihood scan. I would like to ask for advice or guidelines on how to properly approach this:
+What is the recommended procedure for performing a likelihood scan in the context of top quark pair analysis? Are there specific steps or methods that are considered best practices?
+Any insights, references, or examples from your experiences would be incredibly helpful. I want to ensure that my approach aligns with the community standards and yields reliable results.
+Many thanks.
+Best regards,
+Antonio Cota.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2024-01-19T16:04:41.596Z):
+Hi Antonio,
+To start with it would be good to through the Combine tutorial describing the main features available at [1]. In particular at [2] you can find the instructions for the likelihood scans [2]. Also at [3] you can find the link to the previous tutorials with links [3]
+Best,
+Aliya
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#long-exercise-main-features-of-combine
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#e-signal-strength-measurement-and-uncertainty-breakdown
+[3] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/
+----------------------------------------
+
+REPLY 4 (by acotarod @ 2024-01-22T07:02:54.618Z):
+Dear Brent,
+Thank you for your response. Here are the answers to your questions/comments:
+“May I ask what PAG you are performing this analysis under?”
+I am working under the TOP PAG/TTX, focusing on the search for cross-section analysis.
+“If you are working within the TOP PAG, we’d love to have you present at a TMP meeting, or maybe ttX”
+Yes, once I obtain correct results from the Higgs combine, I can present them at any time after that.
+“…this can be a simple as creating a datacard containing event counts”
+I have already created some datacards for a likelihood scan and significance.
+“I’m sure you can iterate with the CAT experts here (I’m not one of them, so they may have more to say), and you can also reach out to the PAG conveners, again in whichever group you are performing the analysis under.”
+Many thanks for this advice. I will make sure to contact them.
+Best regards,
+Antonio Cota.
+----------------------------------------
+
+REPLY 5 (by acotarod @ 2024-01-22T07:21:37.317Z):
+Dear Aliya,
+Thanks for your response and the helpful links! I’ve actually already made some headway by creating datacards for my analysis and running a likelihood scan and significance for a one-bin experiment, focusing on the nominal case without systematics. I am currently attempting a multipoisson counting experiment to include N bins (I read that imax in datacards is for channels and not bins, is that correct?). If you have any information that could be helpful for this, I would appreciate it.
+Best regards,
+Antonio Cota.
+----------------------------------------
+
+REPLY 6 (by anigamov @ 2024-01-22T13:16:59.808Z):
+Hi Antonio,
+That is correct, “bins” in Combine datacard language refer to the analysis categories, these numbers are not strictly required and Combine can calculate them from the information you provide in the main body of your datacard. To setup the datacard for shape analysis you can follow instructions from Combine tutorial here and also consult the page with general instructions here.
+Best,
+Aliya
+----------------------------------------

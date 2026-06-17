@@ -1,0 +1,76 @@
+TOPIC: Higgs combine: How to apply background closure unc./pre-fit background unc. limited by stat. unc
+URL: https://cms-talk.web.cern.ch/t/22973
+DATE: 2023-04-20T18:53:57.995Z
+SOLVED: no
+============================================================
+
+QUESTION (by rymuelle @ 2023-04-20T18:53:58.810Z):
+Hi all,
+I have a simple binned Higgs combine datacard with a 350 crystal ball peak and a smooth, falling background estimation derived through the ABCD method.
+Visual demonstration: https://gitlab.cern.ch/bff-zprime/exo-datacards/-/blob/EXO-22-006/EXO-22-006/test/back_350.png
+Example datacard: https://gitlab.cern.ch/bff-zprime/exo-datacards/-/blob/EXO-22-006/EXO-22-006/test/datacard.txt
+I want to apply a shape fit uncertainty (~2%) and  lnN closure uncertainty (~20%) to the ABCD background, but when computing AsymptoticLimits, I noticed the effect of the 20% closure uncertainty was reduced from my expectation.
+We can see this in the diffNuisances after running  FitDiagnostics:
+https://gitlab.cern.ch/bff-zprime/exo-datacards/-/blob/EXO-22-006/EXO-22-006/test/fitResults_t0
+
+name                                              b-only fit            s+b fit         rho  approx impact
+back_closure_2016                                +0.00, 0.08     ! +0.00, 0.08!     !-0.13!      -0.001
+lumi                                             +0.00, 1.00        -0.00, 1.00       +0.00      +0.000
+
+So, in other words, I am only seeing 8% of my initial 20% uncertainty post fit. This seems to be tied to the size of the statistical uncertainty of the background:
+1.Tthe background has around 5000 events, so the statistical uncertainty is sqrt(5000)= 70 events
+
+5000*20%*8%=80 , which is around 70 events
+
+To confirm this, I also ran this with a 500 event background, and found that the post fit uncertainty shifted to match sqrt(500) = 22 events.
+Is my understanding of what is going on correct? Either way, is this an issue/what should I do to properly apply the full uncertainty?
+Best,
+Ryan
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-04-20T21:42:45.360Z):
+Dear Ryan,
+I can not access the material you linked from gitlab.
+Please, modify the permissions and I will take a look.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by rymuelle @ 2023-04-21T01:23:34.994Z):
+Hi Aliya,
+My apologies, I made a new repository I could make public.
+Here is the visual: https://github.com/rymuelle/EX0-22-006-Combine/blob/main/test/back_350.png
+And here is the card: https://github.com/rymuelle/EX0-22-006-Combine/blob/main/test/datacard.txt
+The top level directory also has more information on the environment and the root files needed to replicate the fitResults.
+See the README.md here:
+
+GitHub
+
+GitHub - rymuelle/EX0-22-006-Combine
+
+Contribute to rymuelle/EX0-22-006-Combine development by creating an account on GitHub.
+
+And here:
+
+github.com
+
+EX0-22-006-Combine/test at main · rymuelle/EX0-22-006-Combine
+
+main/test
+
+Contribute to rymuelle/EX0-22-006-Combine development by creating an account on GitHub.
+
+Let me know if there are any other technical issues, and thanks in advance.
+Best,
+Ryan
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2023-04-24T08:16:02.453Z):
+Hi Ryan,
+Thanks for updating the links!
+I think it is expected that you observe significant constraints with the way things are implemented now and I would say that your understanding of the situation is correct.
+But the best way to implement the ABCD background estimation is through the simultaneous fit of A,B,C and D regions. You can parametrise the background rates with rate parameters as described here, for more details take a look at the SUS AN linked from the same page where the ABCD method implementation in combine is described in details.
+If someone else has a more recent datacard example with ABCD background  welcome to comment, but I think this example works fine. Hope this helps and let me know if you have more questions.
+Best,
+Aliya
+----------------------------------------

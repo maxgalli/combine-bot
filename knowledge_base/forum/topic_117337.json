@@ -1,0 +1,23 @@
+{
+  "topic_id": 117337,
+  "title": "Larger post-fit uncertainties cause missing pulls",
+  "url": "https://cms-talk.web.cern.ch/t/117337",
+  "category_id": 279,
+  "created_at": "2025-03-05T15:49:31.651Z",
+  "last_posted_at": "2025-03-05T15:49:31.884Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "milee",
+      "name": "Ming-Yan Lee",
+      "created_at": "2025-03-05T15:49:31.884Z",
+      "updated_at": "2025-03-05T15:49:31.884Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nRecently we look into the unblind impact plot and observed some pulls are missing in the impact plot. As suggesting in the post[1], these nuisance has larger post-fit uncertainty which leads invalid pull definition. Following the recommendation, we have looked the likelihood scan for these nuisances. It does show larger post-fit uncertainties observed compared to the pre-fit, while no suspicious shape of the scan. We noticed that nuisance with invalid pulls are the ones with large uncertainties (above 50%), and we have a small signal for our analysis (HIG-24-009). Do you have any suggestion on how to understand these nuisance or it is an genuine effect?\nlikelihood.pdf (132.7 KB)\nHere\u2019s an example command we use to obtain the likelihood scan of the problematic nuisance.\ncombine -M MultiDimFit -n CMS_HIG24009_FS_hc --algo grid --redefineSignalPOIs r \\\n-P CMS_HIG24009_FS_hc --setParameterRanges r=-1000.00,1000.00:CMS_HIG24009_FS_hc=-2,2 \\\n--cminDefaultMinimizerStrategy 0 --robustFit 1 --X-rtd MINIMIZER_MaxCalls=99999999 \\\n--cminDefaultMinimizerTolerance 0.1 -m 125 -d cards/datacards/input/hc_emu_all_13TeV.root \\\n--setParameters r=1,rgx{CMS_SF_*.*}=1,CMS_HIG24009_FS_hc=0 \\\n--floatOtherPOIs 1 --saveInactivePOI 1\n\nThe results can be reproduced from this workspace[2].\nThank you very much for your help!\nBest regards,\nMing-Yan\n[1] Combine: warning the pull could not be computed\n[2] https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/blob/master/input/hc_emu_all_13TeV.root?ref_type=heads",
+      "cooked_html": "<p>Dear experts,</p>\n<p>Recently we look into the unblind impact plot and observed some pulls are missing in the impact plot. As suggesting in the post[1], these nuisance has larger post-fit uncertainty which leads invalid pull definition. Following the recommendation, we have looked the likelihood scan for these nuisances. It does show larger post-fit uncertainties observed compared to the pre-fit, while no suspicious shape of the scan. We noticed that nuisance with invalid pulls are the ones with large uncertainties (above 50%), and we have a small signal for our analysis (HIG-24-009). Do you have any suggestion on how to understand these nuisance or it is an genuine effect?</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/rF3GSIFxYeOuE2qIq54e5rFb29G.pdf\">likelihood.pdf</a> (132.7 KB)</p>\n<p>Here\u2019s an example command we use to obtain the likelihood scan of the problematic nuisance.</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">combine -M MultiDimFit -n CMS_HIG24009_FS_hc --algo grid --redefineSignalPOIs r \\\n-P CMS_HIG24009_FS_hc --setParameterRanges r=-1000.00,1000.00:CMS_HIG24009_FS_hc=-2,2 \\\n--cminDefaultMinimizerStrategy 0 --robustFit 1 --X-rtd MINIMIZER_MaxCalls=99999999 \\\n--cminDefaultMinimizerTolerance 0.1 -m 125 -d cards/datacards/input/hc_emu_all_13TeV.root \\\n--setParameters r=1,rgx{CMS_SF_*.*}=1,CMS_HIG24009_FS_hc=0 \\\n --floatOtherPOIs 1 --saveInactivePOI 1 \n</code></pre>\n<p>The results can be reproduced from this workspace[2].</p>\n<p>Thank you very much for your help!</p>\n<p>Best regards,<br>\nMing-Yan</p>\n<p>[1] <a href=\"https://cms-talk.web.cern.ch/t/combine-warning-the-pull-could-not-be-computed/34111\" class=\"inline-onebox\">Combine: warning the pull could not be computed</a><br>\n[2] <a href=\"https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/blob/master/input/hc_emu_all_13TeV.root?ref_type=heads\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/blob/master/input/hc_emu_all_13TeV.root?ref_type=heads</a></p>"
+    }
+  ]
+}

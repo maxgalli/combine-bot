@@ -1,0 +1,72 @@
+TOPIC: GoF saturated - are rateParams varied when generating toys
+URL: https://cms-talk.web.cern.ch/t/116756
+DATE: 2025-02-25T14:29:18.850Z
+SOLVED: yes (reply 5)
+============================================================
+
+QUESTION (by anovak @ 2025-02-25T14:29:18.968Z):
+I have a workspace failing a GoF test (saturated). On inspection the data fit looks perfectly reasonable with no 3-sigma residuals and such. The chi2 in different categories looks likewise sensible.
+Nevertheless, inspecting some of the generated toys, the do have correspondingly better model/toy agreement than model/data.
+I am wondering if the issue is that the generated toys don’t take into account the full range that the model is able to cover  -  the model has a fairly high number of rateParams and it’s not clear to me that they are being varied when generating the toys. The documentation discusses custom settings for flatParams, but not rateParams
+Cheers,
+Andrzej
+----------------------------------------
+
+REPLY 2 (by ineuteli @ 2025-02-25T15:08:36.820Z):
+Hi Andrzej,
+Apologies to jump in here, but we are also investigation failing GoF tests in CRs with rate parameters, so we happen to have a similar question for our analysis.
+We are generating the toys in our GoF test with --toysFrequentist, and so we are wondering if in that case the rate parameters are indeed fixed to their postfit value from the fit to data without randomization for toy generation? This is my interpretation from the Combine manual:
+
+--toysFrequentist the nuisance parameters in each toy are set to their nominal values which are obtained after first fitting to the observed data, with the POIs fixed, before generating the toy data sets. For evaluating likelihoods, the constraint terms are instead randomized within their PDFs around the post-fit nuisance parameter values.
+
+@anovak, are you using --toysFrequentist?
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 3 (by anovak @ 2025-02-25T15:43:42.204Z):
+Hi Izaak,
+I was seeing this issue with regular toys, but actually I just checked and see the same behaviour with --toysFrequentist
+However, it appears that if I run the toys (within FitDiag) with  --setParameters and  --setParameterRanges for the rateParam’s in my fit, I actually observe these varied in the fit result. Sadly this behaviour doesn’t seem to be documented anywhere.
+Alas when I pass the same options to GoodnessOfFit toys, the gof values I observe don’t seem to be affected much, but I haven’t been able to investigate this better yet.
+Cheers,
+Andrzej
+----------------------------------------
+
+REPLY 4 (by ineuteli @ 2025-02-25T16:04:47.375Z):
+Hi Andrzej,
+Thanks for the info.
+
+Andrzej Novak:
+
+However, it appears that if I run the toys (within FitDiag) with  --setParameters and  --setParameterRanges for the rateParam’s in my fit, I actually observe these varied in the fit result. Sadly this behaviour doesn’t seem to be documented anywhere.
+
+Are you trying to manually fix the rate parameters in toy generation with  --setParameters in FitDiagnostic? If so, did you run with --toysFrequentist  and them with --freezeParameters?
+I do not know if this behavior is to be expected, but if there’s indeed a difference between the toys generated in the FitDiagnostic and GoodnessOfFit methods, perhaps you could try generation the toys separately with the GenerateOnly method, and if it gives you the result you are looking for, pass that to GoodnessOfFit?
+Hopefully, the experts can comment better what’s going on here.
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 5 [ACCEPTED ANSWER] (by agilbert @ 2025-02-25T17:39:00.657Z):
+Hi,
+To clarify, normal rateParams are not varied in the standard toy generation (without --toysFrequentist) because they have no associated constraint PDF, nor with --toysFrequentist, as there is no associated global observable parameter (but the value of the rateParams used for the toy generation will be adjusted by the initial fit to data).
+When you come to fit each toy (with whichever method in combine you are using), the rateParam parameters are still floating in the fit, so we would expect to see some variation in their fitted values looking at the ensemble of toys.
+The influence of --setParameters: this changes the values of the rateParams before the toy generation begins, thus you will see changes in the toys. This shouldn’t have any real effect with --toysFrequentist since the rateParams are going to be adjusted in the fit to data.
+For --setParameterRanges this will only influence the allowed ranges during the fits to the toy data sets.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 6 (by anovak @ 2025-02-25T17:56:22.231Z):
+Hi Andrew,
+thanks for the clarification. To explain a bit better on what I was seeing with the setParameters/setParameterRanges.
+For these I ran a normal fit to data, extracted the vals/errs for the rateParams and set the parameters to val±err. Now if the toy doesn’t take these settings into account, I would not expect that refitting them would lead to substantially different values - at least within precision.
+----------------------------------------
+
+REPLY 7 (by agilbert @ 2025-02-26T09:39:36.736Z):
+Hi Andrzej,
+It’s not guaranteed that fluctuations on the fitted values of the rateParams will be small. For example, if there are large systematics affecting background normalisations in CRs, that are then varying a lot in the toys, you could see a larger spread on the rateParams to accommodate this.
+cheers,
+Andrew
+----------------------------------------

@@ -1,0 +1,78 @@
+{
+  "topic_id": 38712,
+  "title": "ABCD method with MC in Combine",
+  "url": "https://cms-talk.web.cern.ch/t/38712",
+  "category_id": 279,
+  "created_at": "2024-04-08T14:33:21.675Z",
+  "last_posted_at": "2024-04-12T07:25:13.995Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "cazzanig",
+      "name": "Cesare Cazzaniga",
+      "created_at": "2024-04-08T14:33:21.906Z",
+      "updated_at": "2024-04-08T14:33:21.906Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have some questions regarding the ABCD method implementation in Combine. Suppose as a preliminary study i want to apply the ABCD method on MC (and get finally some expected limits):\n\nConsider the case of a cut and count experiment. I was wondering in this case what is the most efficient way to consider the stat uncertainties from MC in the simultaneous fit for the ABCD method.\n\nThe easiest way I was thinking was to introduce in the typical ABCD datacard (with rate parameters) a systematic section implementing the  MC error for each of the control regions modeled as a log-normal.\nThe other approach I have attempted was to build a datacard with a section referring to histograms (with 1 bin) for each region. In this way I was hoping to introduce the information of the MC error in the likelihood built from the input histograms. However, for this specific implementation I am not sure of how the rate parameters interfere with the normalization taken from the histograms (since basically i would like to inform the likelihood using that MC error, and then use the ABCD relation defined by the rate parameters). Do you have any insights on this ? (since in my understanding is not going to work, unless there is some special flag i am not aware of for the rate params in this case)\n\nConsider the case of the ABCD method fit on a histogram with multiple bins. I was wondering also in this case what is the best way to consider MC statistical uncertainties. In my understanding the current suggested way to deal with ABCD on multiple bins is to use RooParametricHist. However, I think in this case the only way to take into account the MC stat is to give by-hand these variations. I wanted to know if there is a easier way that exploits autoMCStats for my use-case, or the aforementioned is the only/main way.\n\nThanks in advance,\nBest,\nCesare",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I have some questions regarding the ABCD method implementation in Combine. Suppose as a preliminary study i want to apply the ABCD method on MC (and get finally some expected limits):</p>\n<ol>\n<li>Consider the case of a cut and count experiment. I was wondering in this case what is the most efficient way to consider the stat uncertainties from MC in the simultaneous fit for the ABCD method.</li>\n</ol>\n<ul>\n<li>The easiest way I was thinking was to introduce in the typical ABCD datacard (with rate parameters) a systematic section implementing the  MC error for each of the control regions modeled as a log-normal.</li>\n<li>The other approach I have attempted was to build a datacard with a section referring to histograms (with 1 bin) for each region. In this way I was hoping to introduce the information of the MC error in the likelihood built from the input histograms. However, for this specific implementation I am not sure of how the rate parameters interfere with the normalization taken from the histograms (since basically i would like to inform the likelihood using that MC error, and then use the ABCD relation defined by the rate parameters). Do you have any insights on this ? (since in my understanding is not going to work, unless there is some special flag i am not aware of for the rate params in this case)</li>\n</ul>\n<ol start=\"2\">\n<li>Consider the case of the ABCD method fit on a histogram with multiple bins. I was wondering also in this case what is the best way to consider MC statistical uncertainties. In my understanding the current suggested way to deal with ABCD on multiple bins is to use RooParametricHist. However, I think in this case the only way to take into account the MC stat is to give by-hand these variations. I wanted to know if there is a easier way that exploits autoMCStats for my use-case, or the aforementioned is the only/main way.</li>\n</ol>\n<p>Thanks in advance,</p>\n<p>Best,</p>\n<p>Cesare</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-04-10T14:02:10.376Z",
+      "updated_at": "2024-04-10T14:02:10.376Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Cesare,\nIf I understand correctly, you would like do an ABCD fit to some MC, but the difficulty you\u2019re having is with the fact that the actual distribution of the MC expectations is not going to be poisson (as it would be for real data). Is that right?\nIf so, can I ask what you\u2019d like to do the ABCD fit to the MC for is? I am wondering if perhaps this is a situation where maybe you can actually achieve the desired result without needing this fit (or even that for your purposes maybe the differences between the actual MC uncertainties and the poisson ones from data are not so important).\nI haven\u2019t yet thought about what the best way to do it would be if you really want to treat the MC as data and take its actual distribution correctly into account. Maybe somebody else has and would like to chime in in the meantime.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Cesare,</p>\n<p>If I understand correctly, you would like do an ABCD fit to some MC, but the difficulty you\u2019re having is with the fact that the actual distribution of the MC expectations is not going to be poisson (as it would be for real data). Is that right?</p>\n<p>If so, can I ask what you\u2019d like to do the ABCD fit to the MC for is? I am wondering if perhaps this is a situation where maybe you can actually achieve the desired result without needing this fit (or even that for your purposes maybe the differences between the actual MC uncertainties and the poisson ones from data are not so important).</p>\n<p>I haven\u2019t yet thought about what the best way to do it would be if you really want to treat the MC as data and take its actual distribution correctly into account. Maybe somebody else has and would like to chime in in the meantime.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "cazzanig",
+      "name": "Cesare Cazzaniga",
+      "created_at": "2024-04-10T14:40:37.946Z",
+      "updated_at": "2024-04-10T14:40:37.946Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nthanks for your reply,\nso, the idea would be to run ABCD on MC to check the expected closure and produce expected limits. What i was doing so far was to deal with the ABCD prediction (fitting MC in the CRs) within my framework using a likelihood that can incorporate MC stat uncertainties in the ABCD fit. Then, i pass templates of the expected predicted background and signal in the SR to Combine and run limits on that. However, i think this hybrid method is not taking into account signal strength + CRs normalization floating in the same fit. So, i would like to move also the ABCD prediction from MC to Combine.\nHowever, i don\u2019t think generally for this MC-fitting use-case is the proper way to model as a Poisson each bin. I had some time ago the discussion with StatCom on the same topic (so implementing by myself the ABCD fit for MC, see post: Likelihood for ABCD method with weighted histograms - #11 by matorras). In ROOT mainly the fit exploits a scaled poisson to take into account the weights in the likelihood, or an other possibility would be to use Gaussians (probably asking for a minimum number of MC events falling in the specific bin).\nBest,\nCesare",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>thanks for your reply,</p>\n<p>so, the idea would be to run ABCD on MC to check the expected closure and produce expected limits. What i was doing so far was to deal with the ABCD prediction (fitting MC in the CRs) within my framework using a likelihood that can incorporate MC stat uncertainties in the ABCD fit. Then, i pass templates of the expected predicted background and signal in the SR to Combine and run limits on that. However, i think this hybrid method is not taking into account signal strength + CRs normalization floating in the same fit. So, i would like to move also the ABCD prediction from MC to Combine.</p>\n<p>However, i don\u2019t think generally for this MC-fitting use-case is the proper way to model as a Poisson each bin. I had some time ago the discussion with StatCom on the same topic (so implementing by myself the ABCD fit for MC, see post: <a href=\"https://cms-talk.web.cern.ch/t/likelihood-for-abcd-method-with-weighted-histograms/33213/11\" class=\"inline-onebox\">Likelihood for ABCD method with weighted histograms - #11 by matorras</a>). In ROOT mainly the fit exploits a scaled poisson to take into account the weights in the likelihood, or an other possibility would be to use Gaussians (probably asking for a minimum number of MC events falling in the specific bin).</p>\n<p>Best,</p>\n<p>Cesare</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-04-10T14:56:38.892Z",
+      "updated_at": "2024-04-10T14:56:38.892Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Cesare,\nIf what you\u2019d like to do is to produce expected (based on the MC) values of quantities like closure and limits, is there a reason not to generate psuedodata (potentially from the MC sample directly) and then run the fits from your nominal fit model?\nThis seems to be the best way to do it to me, both from a technical and high-level point of view, but maybe there is something I\u2019m missing or have misunderstood.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Cesare,</p>\n<p>If what you\u2019d like to do is to produce expected (based on the MC) values of quantities like closure and limits, is there a reason not to generate psuedodata (potentially from the MC sample directly) and then run the fits from your nominal fit model?</p>\n<p>This seems to be the best way to do it to me, both from a technical and high-level point of view, but maybe there is something I\u2019m missing or have misunderstood.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "cazzanig",
+      "name": "Cesare Cazzaniga",
+      "created_at": "2024-04-11T16:04:38.624Z",
+      "updated_at": "2024-04-11T16:04:38.624Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nthanks for your suggestions ! I think is a good solution as you said both from a technical and high-level point of view. However, i think that if i want to assess the effect of MC stat, then probably the best would be also to pass up and down variations of the pseudodata (within the MC uncertainty) that will be modeled by Poisson distributions.\nHowever, now i am wondering how in Combine is treated the case of background subtraction from MC for the ABCD method. Say you want to subtract from data the expected MC for some processes, and just estimate the background via ABCD for a given process. Then, you will end up with non-integers for each bin with some uncertainty also from MC. How this case can be modelled in Combine ?\nBest,\nCesare",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>thanks for your suggestions ! I think is a good solution as you said both from a technical and high-level point of view. However, i think that if i want to assess the effect of MC stat, then probably the best would be also to pass up and down variations of the pseudodata (within the MC uncertainty) that will be modeled by Poisson distributions.</p>\n<p>However, now i am wondering how in Combine is treated the case of background subtraction from MC for the ABCD method. Say you want to subtract from data the expected MC for some processes, and just estimate the background via ABCD for a given process. Then, you will end up with non-integers for each bin with some uncertainty also from MC. How this case can be modelled in Combine ?</p>\n<p>Best,</p>\n<p>Cesare</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-04-12T07:25:13.995Z",
+      "updated_at": "2024-04-12T07:25:13.995Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Cesare,\nI\u2019m not sure if I understood what you meant in your first paragraph correctly, but I think that what you\u2019re saying is that you would like your pseudodata generation to also include fluctuations due to the MC statistical uncertainty (and not just from the poisson fluctuations of the model). This can be done by nuisance parameter fluctuations when generating the observed pseudodata, you just need to make sure those nuisance parameters are in the model.\nFor the second part, the way the models are constructed, there is no explicit subtraction. Instead, the model fits the likelihood of its parameters given the data. This includes all the model parameters, in particular those that affect the background normalization of the MC estimated backgrounds as well as those for the ABCD estimate. This has the advantage of simultaneously taking into account the entire model, rather than e.g. subtracting some fixed number of events from the data first.  So if your goal was to estimate e.g. some parameter of the ABCD method, or the ABCD yields on the data, you would setup your full model, including your other backgrounds from MC, and then set whichever parameters you are interested in as your POIs.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Cesare,</p>\n<p>I\u2019m not sure if I understood what you meant in your first paragraph correctly, but I think that what you\u2019re saying is that you would like your pseudodata generation to also include fluctuations due to the MC statistical uncertainty (and not just from the poisson fluctuations of the model). This can be done by nuisance parameter fluctuations when generating the observed pseudodata, you just need to make sure those nuisance parameters are in the model.</p>\n<p>For the second part, the way the models are constructed, there is no explicit subtraction. Instead, the model fits the likelihood of its parameters given the data. This includes all the model parameters, in particular those that affect the background normalization of the MC estimated backgrounds as well as those for the ABCD estimate. This has the advantage of simultaneously taking into account the entire model, rather than e.g. subtracting some fixed number of events from the data first.  So if your goal was to estimate e.g. some parameter of the ABCD method, or the ABCD yields on the data, you would setup your full model, including your other backgrounds from MC, and then set whichever parameters you are interested in as your POIs.</p>\n<p>Best,<br>\nKyle</p>"
+    }
+  ]
+}

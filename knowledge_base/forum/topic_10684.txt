@@ -1,0 +1,34 @@
+TOPIC: MultiPdf in limit estimation
+URL: https://cms-talk.web.cern.ch/t/10684
+DATE: 2022-05-20T09:59:50.347Z
+SOLVED: no
+============================================================
+
+QUESTION (by lguzzi @ 2022-05-20T09:59:50.631Z):
+Dear experts,
+I am working on the tau->3mu analysis, which looks for a bump in the three-muon invariant mass distribution at the tau mass value. The analysis aims to set an upper limit on the tau->3mu decay rate.
+To do so, we use combine and the HybridNew method.
+I am implementing discrete profiling [1] into the analysis workflow to allow for multiple choices of the background function. Having defined a list of pdfs which goes into the RooMultiPdf (which is the object I feed to combine to use as the background pdf), which one will be used by combine to generate toys?
+thank you,
+Luca
+[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-05-20T10:11:29.000Z):
+The default one or the one you set with --setParameters pdfindex=0/1/2
+-A
+On Fri, May 20, 2022 at 12:01 PM Luca Guzzi via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Luca Guzzi lguzziMay 20
+
+Dear experts,
+I am working on the tau->3mu analysis, which looks for a bump in the three-muon invariant mass distribution at the tau mass value. The analysis aims to set an upper limit on the tau->3mu decay rate.
+To do so, we use combine and the HybridNew method.
+I am implementing discrete profiling [1] into the analysis workflow. Having defined a list of pdfs which goes into the RooMultiPdf, which one will be used by combine to generate toys?
+thank you,
+Luca
+[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

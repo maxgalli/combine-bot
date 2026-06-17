@@ -1,0 +1,45 @@
+TOPIC: Multi-analysis impact and pulls
+URL: https://cms-talk.web.cern.ch/t/141947
+DATE: 2026-02-12T10:35:08.849Z
+SOLVED: no
+============================================================
+
+QUESTION (by amassiro @ 2026-02-12T10:35:09.425Z):
+Dear colleagues,
+I was wondering if the following tool already exists: a multi-analysis pull/impact.
+Let me contextualise: in view of combination efforts, but also analysis spanning over several years of data taking, given the json files of the different pulls and impacts, it would be of great usefulness to have a visual comparison of the common nuisances, to check pulls and constraints of the different groups of datacard.
+The goal would be to have:
+
+rows: nuisances
+columns: pulls (and impacts)
+
+With this tool it would be easily feasible to check possible issues when combining, tensions, or see if all is expected to be ok.
+Best regards,
+Andrea
+----------------------------------------
+
+REPLY 2 (by amarini @ 2026-02-12T10:49:33.245Z):
+Hi Andrea,
+the information from combine on pulls and impacts are collected in json files. I am not aware of the implementation of the tool that you mentioned (though people did it by hand/eye spotting in the past), but it shouldn’t be too complicated to do.
+On the other hand, you should always pay attention to interpret nuisance parameters as poi, eventually understanding if some part of the nuisance is due to different effect in different categories (/analyses/channels).
+-Andrea
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2026-02-12T10:52:14.890Z):
+Hi Andrea,
+To my knowledge we don’t have anything like that in combine right now. The closest, and not really what you want, is a somewhat hidden feature in the impacts script to summarise which channels of a combination are affected by a given nuisance:
+image1906×1212 372 KB
+It would be a nice thing to have, but probably easiest to start a new script from scratch than hack around with the existing one.
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 4 (by amassiro @ 2026-02-12T12:43:23.183Z):
+Dear Andrea, Andrew,
+thanks for the feedback.
+I like the “which channel is affected by a nuisance” plot. Could you remind me the command to get it (being a hidden feature  )?
+I agree it’s better to have a small script from scratch.
+Once implemented (I cannot promise a time scale  ), I’ll post it here, as I think it might be of use by the whole collaboration.
+Best regards,
+Andrea
+----------------------------------------

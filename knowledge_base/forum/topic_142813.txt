@@ -1,0 +1,148 @@
+TOPIC: Pulls for nuisances could not be computed
+URL: https://cms-talk.web.cern.ch/t/142813
+DATE: 2026-03-09T20:07:42.087Z
+SOLVED: no
+============================================================
+
+QUESTION (by gmelachr @ 2026-03-09T20:07:42.306Z):
+Dear experts,
+I am plotting the impact plots for an analysis with many POIs and I would like your help in order to understand these plots.
+I see that the pulls (blue x’s) are not drawn for many nuisances, as seen here:
+image1172×549 72.5 KB
+Moreover, while I am drawing the impacts I see this message:
+```
+Warning, the pull for BDT could not be computed
+Warning, the pull for BRB0ToJpsiK0 could not be computed
+```
+and while I run the doFits command, I don’t see any message indicating that the fits for these nuisances are failing. So, I apart from undertstanding that there is an issue with the post fit pull, I have no other idea what this might mean. Could you please help me to understand what is happening and what I could do in order to investigate and improve these plots?
+Best regards,
+Giorgos
+----------------------------------------
+
+REPLY 2 (by nckw @ 2026-03-09T20:33:35.000Z):
+Hi Giorgos,
+I don’t think there’s any issues here, everything is working as expected.
+The reason why some pulls are not calculated is that the definition of the pull used for the blue markers involves a denominator that has a difference between the pre and post fit uncertainty (see the definition here https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#nuisance-parameter-impacts). In the case where this difference is zero, the pull is not defined and so the tool simply leaves it off. This seems to be the case here.
+Best
+Nick
+
+···
+
+From: Georgios Melachroinos noreply-cms-talk@cern.ch
+Sent: Monday, March 9, 2026 8:19:10 PM
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Pulls for nuisances could not be computed
+
+Georgios Melachroinos gmelachrMarch 9
+
+Dear experts,
+I am plotting the impact plots for an analysis with many POIs and I would like your help in order to understand these plots.
+I see that the pulls (blue x’s) are not drawn for many nuisances, as seen here:
+
+Moreover, while I am drawing the impacts I see this message:
+Warning, the pull for BDT could not be computed
+Warning, the pull for BRB0ToJpsiK0 could not be computed
+
+and while I run the doFits command, I don’t see any message indicating that the fits for these nuisances are failing. So, I apart from undertstanding that there is an issue with the post fit pull, I have no other idea what this might mean. Could you please help me to understand what is happening and what I could do in order to investigate and improve these plots?
+Best regards,
+Giorgos
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by gmelachr @ 2026-03-10T00:09:41.133Z):
+Dear Nick,
+Thank you for your answer, I was aware of this part of the documentation.
+I opened the root files, because I couldn’t understand what is happening from the json file.
+Given that the σΙ is the uncertaity of the nuisance from the --doInitialFit and that σ is the uncertainty from the –doFits, I found in the MultiDimFit snapshots the variables, for which the pull can’t be computed and I calculated it by myself. An then I realized that the reason that they can’t be calculated is that σ_Ι is smaller than the σ, and thefore, the radicand is negative.
+So, my question is why do we define the pull like this and why we don’t subtracted the smaller value from the bigger one in order to avoid this case. I kept searching where the pull is calculated and right above this calculation:
+
+github.com/cms-analysis/HiggsAnalysis-CombinedLimit
+
+python/calculate_pulls.py
+
+main
+
+sxo = 1.0 / ((1.0 / (sx * sx)) - (1.0 / sx0 * sx0))
+xo = (x - (1.0 / (sx0 * sx0)) * x0) * sxo
+return [(x - xo) / (sx * sx + sxo * sxo) ** 0.5, 0]
+
+def diffPull(x, x0, sx, sx0):
+# as defined in http://physics.rockefeller.edu/luc/technical_reports/cdf5776_pulls.pdf
+# The following protection checks the relative size of the constraint wrt the input uncertainty
+if abs((sx * sx - sx0 * sx0) / (sx0 * sx0)) < 0.001:
+return [0, 999]
+elif sx > sx0:
+return [0, 999]
+else:
+return [(x - x0) / (sx0 * sx0 - sx * sx) ** 0.5, 0]
+
+def compatAsym(x, x0, sxu, sxu0, sxd, sxd0):
+# as above but we choose the uncertainties depending on whether x > x0 or x < x0
+if x > x0:
+ret = compat(x, x0, sxd, sxd0)
+else:
+
+this paper is mentioned: https://hep-physics.rockefeller.edu/luc/technical_reports/cdf5776_pulls.pdf
+I did’t read it yet, but I hope to find there the reason that leads us to this definition of the pull.
+I forgot to add in my first email that this behavior is observed in both lnN ad shape systematics.
+Best regards,
+Giorgos
+----------------------------------------
+
+REPLY 4 (by gmelachr @ 2026-03-10T09:44:34.971Z):
+Hi,
+I read the paper. All these things, assume that the pulls are distributed as a normal Gaussians, or equivalently, that the likelihood is parabolic. In this case, we have a simultaneous multiD fit, with 46 channels ad 43 POIs. There are POIs, though, for which the projections of the likelihood [1] is assymetric, due to low statistics [2].
+The pull is defined like this: θ-θ_Ι/sqrt(σ_Ι^2 - σ^2) because this is what maths says. But the σ’s are evaluated from fits in data, and therefore the radicand can be negative in some cases.
+Do you think that a different definition of the pull could be used or if this explanation due to the non-parabolic behavior is not enough in order to explain the fact that these pulls can’t be calculated?
+Best,
+Giorgos
+
+1
+
+https://gmelachr.web.cern.ch/2022_2023_2024/likelihoods/combination/mumuLambda/scan_systematics_dBdq2L_q1.png
+https://gmelachr.web.cern.ch/2022_2023_2024/likelihoods/combination/mumuLambda/scan_systematics_dBdq2L_q2.png
+https://gmelachr.web.cern.ch/2022_2023_2024/likelihoods/combination/mumuLambda/scan_systematics_dBdq2L_q3.png
+
+2
+
+https://gmelachr.web.cern.ch/2022_2023_2024/Data/mumuLambda/merged_years/fit_with_components_Lambdaq01.png
+https://gmelachr.web.cern.ch/2022_2023_2024/Data/mumuLambda/merged_years/fit_with_components_Lambdaq02.png
+https://gmelachr.web.cern.ch/2022_2023_2024/Data/mumuLambda/merged_years/fit_with_components_Lambdaq03.png
+----------------------------------------
+
+REPLY 5 (by nckw @ 2026-03-10T10:18:27.586Z):
+Hi Giorgos,
+Yes indeed, that’s the paper where the definition comes from. You’re right in that sometimes we can get these cases where the denominator is 0 or even a sqrt of a -ve although in the latter case, this says that the uncertainty after looking at the data is larger than the uncertainty before. This is clearly pointing to something strange unless its really just they are ~ equal within the noise of the numerical precision of our fits.
+There are other definitions of the pull, which we have implemented in combine (you can see here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#pulls), but I admit that I am not sure if this particular tool has an option to plot them as the blue markers. Perhaps you can just calculate them using the other tool and check those for which the pull definition you have currently isn’t applicable.
+Best,
+Nick
+----------------------------------------
+
+REPLY 6 (by gmelachr @ 2026-03-10T10:35:54.191Z):
+Hi Nick,
+okay, I will have a look in these definitions. But before this, let me mention that:
+
+nckw:
+
+this says that the uncertainty after looking at the data is larger than the uncertainty before.
+
+for this analysis, we are looking directly at the observed results, similar to what is happening in the parametric tutorial.
+Best,
+Giorgos
+----------------------------------------
+
+REPLY 7 (by nckw @ 2026-03-10T10:38:07.125Z):
+Hi,
+Sure, but for the constrained nuisance parameters, they have an uncertainty before the fit (without using the data), which you can think of kind of like their prior. Then the data should only be able to add constraints (reduce their uncertainty). That’s all I meant.
+Best,
+Nick
+----------------------------------------
+
+REPLY 8 (by gmelachr @ 2026-03-10T15:40:14.723Z):
+hi,
+I used the other options for the pull definitions that are provided. Tbh, I understood/thought that the blue markers would be different. However, the black bars are different and the blue markers are still not calculated. Given that pulls from one of the two definitions are calculated without problems and the second definiton doesn’t calculate all the pulls but some of them due to the negative radicand, i.e. the uncertainties of the nuisances, I would leave it as it is now. Please let me know if you have any other proposals or suggestions.
+Thank you,
+Giorgos
+image1147×948 136 KB
+----------------------------------------

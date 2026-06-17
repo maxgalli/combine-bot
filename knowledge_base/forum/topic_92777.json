@@ -1,0 +1,89 @@
+{
+  "topic_id": 92777,
+  "title": "Issue with 'combine' command for Run2 datacard in SUSY Analysis",
+  "url": "https://cms-talk.web.cern.ch/t/92777",
+  "category_id": 279,
+  "created_at": "2025-01-07T16:11:47.152Z",
+  "last_posted_at": "2025-01-16T11:24:29.367Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "trmishra",
+      "name": "Tribeni Mishra",
+      "created_at": "2025-01-07T16:11:47.304Z",
+      "updated_at": "2025-01-07T16:11:47.304Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am working on a SUSY analysis with a lepton+photon final state. I am performing the full analysis chain separately for each year: 2016-preVFP, 2016-postVFP, 2017, and 2018, resulting in four sets of data cards for each year. To obtain the Run 2 expected limit, these data cards are combined using the combineCards.py script.\nWhile the combine command [0] works fine for the individual data cards [3-6], I encounter an issue [2] when running the combine command for the Run 2 data card [1]. I believe the Run 2 card might not be correct. I have saved the error output generated when using the Run 2 card with the combine command [0] in a text file [7].\nPlease advise if I am missing something and suggest how to resolve this issue.\nThank you in advance for your help. I look forward to hearing from you soon.\nBest regards,\nTribeni\n[0] combine -M AsymptoticLimits counting_t5Wg_1400_625.txt -t -1 --expectSignal=1 -n t5wg | tee limit_1400_625.txt\n[1] Run 2 Card\n[2]\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset__with_constr) evaluation error\n\n[3] 2016-preVFP Card\n[4] 2016-postVFP Card\n[5] 2017 Card\n[6] 2018 Card\n[7] Combine Output Log",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am working on a SUSY analysis with a lepton+photon final state. I am performing the full analysis chain separately for each year: 2016-preVFP, 2016-postVFP, 2017, and 2018, resulting in four sets of data cards for each year. To obtain the Run 2 expected limit, these data cards are combined using the <code>combineCards.py</code> script.</p>\n<p>While the <code>combine</code> command [0] works fine for the individual data cards [3-6], I encounter an issue [2] when running the <code>combine</code> command for the Run 2 data card [1]. I believe the Run 2 card might not be correct. I have saved the error output generated when using the Run 2 card with the <code>combine</code> command [0] in a text file [7].</p>\n<p>Please advise if I am missing something and suggest how to resolve this issue.</p>\n<p>Thank you in advance for your help. I look forward to hearing from you soon.</p>\n<p>Best regards,<br>\nTribeni</p>\n<p>[0] <code>combine -M AsymptoticLimits counting_t5Wg_1400_625.txt -t -1 --expectSignal=1 -n t5wg | tee limit_1400_625.txt</code></p>\n<p>[1] <a href=\"https://trmishra.web.cern.ch/trmishra/Plots/cards/Run2/counting_t5Wg_1400_625.txt\" rel=\"noopener nofollow ugc\">Run 2 Card</a></p>\n<p>[2]</p>\n<pre><code class=\"lang-auto\">[#0] ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,  \n[#0] ERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,  \n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,  \n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,  \n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset__with_constr) evaluation error\n</code></pre>\n<p>[3] <a href=\"https://trmishra.web.cern.ch/trmishra/Plots/cards/2016_preVFP/counting_t5Wg_1400_625.txt\" rel=\"noopener nofollow ugc\">2016-preVFP Card</a><br>\n[4] <a href=\"https://trmishra.web.cern.ch/trmishra/Plots/cards/2016_postVFP/counting_t5Wg_1400_625.txt\" rel=\"noopener nofollow ugc\">2016-postVFP Card</a><br>\n[5] <a href=\"https://trmishra.web.cern.ch/trmishra/Plots/cards/2017/counting_t5Wg_1400_625.txt\" rel=\"noopener nofollow ugc\">2017 Card</a><br>\n[6] <a href=\"https://trmishra.web.cern.ch/trmishra/Plots/cards/2018/counting_t5Wg_1400_625.txt\" rel=\"noopener nofollow ugc\">2018 Card</a></p>\n<p>[7] <a href=\"https://trmishra.web.cern.ch/trmishra/Plots/cards/Run2/Combine_output.txt\" rel=\"noopener nofollow ugc\">Combine Output Log</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-01-07T16:26:14.252Z",
+      "updated_at": "2025-01-07T16:26:14.252Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi @trmishra ,\nI\u2019ll have to look into this a little more closely, but I noticed that you run your blinded AsymptoticLimits in [0] with the -t -1 option. Note that this is not recommended for this method, see e.g. the docs under blinded limits.\nCan you try running your command with --run blind instead of -t -1? Just to verify that it\u2019s not a unwanted effect from this set of options.\nAdditionally, can you run the text2workspace.py script on your combined datacard and see if that runs correctly? This is also done under the hood if you give combine the datacard itself, but you might be able to gain further insights about a potential problem if you can\u2019t build the workspace in the first place.\nSide note: Particularly for larger combinations (such as full Run2 combinations), it\u2019s generally recommended to run the text2workspace step once in a separate command. That way, you don\u2019t have to spend the time it takes to create the workspace for every method you run with combine.\nHope this helps! Cheers,\nPhilip",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/trmishra\">@trmishra</a> ,</p>\n<p>I\u2019ll have to look into this a little more closely, but I noticed that you run your blinded AsymptoticLimits in [0] with the <code>-t -1</code> option. Note that this is <em>not</em> recommended for this method, see e.g. the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#asymptotic-frequentist-limits\" rel=\"noopener nofollow ugc\">docs</a> under blinded limits.</p>\n<p>Can you try running your command with <code>--run blind</code> instead of <code>-t -1</code>? Just to verify that it\u2019s not a unwanted effect from this set of options.</p>\n<p>Additionally, can you run the <code>text2workspace.py</code> script on your combined datacard and see if that runs correctly? This is also done under the hood if you give combine the datacard itself, but you might be able to gain further insights about a potential problem if you can\u2019t build the workspace in the first place.</p>\n<p>Side note: Particularly for larger combinations (such as full Run2 combinations), it\u2019s generally recommended to run the text2workspace step once in a separate command. That way, you don\u2019t have to spend the time it takes to create the workspace for every method you run with combine.</p>\n<p>Hope this helps! Cheers,<br>\nPhilip</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "trmishra",
+      "name": "Tribeni Mishra",
+      "created_at": "2025-01-07T16:53:27.739Z",
+      "updated_at": "2025-01-07T16:53:27.739Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi @pkeicher\nThanks for your prompt suggestions.\nWhen using the command with --run blind [0], it gives the same error as before [1] with -t -1.\nI checked the text2workspace command [2], and it doesn\u2019t give any errors except for some warnings, which are quite obvious [3].\nThanks\nTribeni\n\n[0]. combine -M AsymptoticLimits cards_Run2/counting_t5Wg_1400_625.txt --run blind --expectSignal=1 -n t5wg | tee limit_1400_625.txt\n[1].\nERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,\nERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,\nERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,\nERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,\nERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset__with_constr) evaluation error\n\n[2]. text2workspace.py cards_Run2/counting_t5Wg_1400_625.txt -o Run2_text2workspace.root\n[3].\nWarning: Bin ch1_bin1 has no signal processes contributing to it\nWarning: Bin ch1_bin2 has no signal processes contributing to it\nWarning: Bin ch1_bin3 has no signal processes contributing to it\nWarning: Bin ch1_bin4 has no signal processes contributing to it",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/pkeicher\">@pkeicher</a></p>\n<p>Thanks for your prompt suggestions.</p>\n<p>When using the command with <code>--run blind</code> [0], it gives the same error as before [1] with <code>-t -1</code>.</p>\n<p>I checked the <code>text2workspace</code> command [2], and it doesn\u2019t give any errors except for some warnings, which are quite obvious [3].</p>\n<p>Thanks<br>\nTribeni</p>\n<hr>\n<p>[0]. <code>combine -M AsymptoticLimits cards_Run2/counting_t5Wg_1400_625.txt --run blind --expectSignal=1 -n t5wg | tee limit_1400_625.txt</code></p>\n<p>[1].</p>\n<pre><code class=\"lang-auto\">ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,  \nERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,  \nERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,  \nERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,  \nERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset__with_constr) evaluation error\n</code></pre>\n<p>[2]. <code>text2workspace.py cards_Run2/counting_t5Wg_1400_625.txt -o Run2_text2workspace.root</code></p>\n<p>[3].</p>\n<pre><code class=\"lang-auto\">Warning: Bin ch1_bin1 has no signal processes contributing to it  \nWarning: Bin ch1_bin2 has no signal processes contributing to it  \nWarning: Bin ch1_bin3 has no signal processes contributing to it  \nWarning: Bin ch1_bin4 has no signal processes contributing to it\n</code></pre>"
+    },
+    {
+      "post_number": 4,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-01-08T09:57:01.441Z",
+      "updated_at": "2025-01-08T09:57:01.441Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Tribeni,\nthanks for the follow up. I had a closer look at your full Run2 card, and noticed that the signal process SUSY is empty in many channels. I assume that\u2019s because most of your channels are actually control regions, right?\nI did a very quick test where I removed the gmN uncertainties to simply for the model and also remove the empty SUSY processes and their associated stat uncertainties. I was able to successfully run your AsymptoticLimits command afterwards. Based on this, I think the problem might be that you try to evaluate lnN uncertainties on empty processes. Can you maybe remove the empty processes at your end and try again (also including the gmN uncertainties where appropriate of course)? Of course, if a given uncertainty only has an effect on empty processes, I\u2019d also recommend removing it for this test.\nCheers,\nPhilip",
+      "cooked_html": "<p>Hi Tribeni,</p>\n<p>thanks for the follow up. I had a closer look at your full Run2 card, and noticed that the signal process <code>SUSY</code> is empty in many channels. I assume that\u2019s because most of your channels are actually control regions, right?</p>\n<p>I did a very quick test where I removed the <code>gmN</code> uncertainties to simply for the model and also remove the empty <code>SUSY</code> processes and their associated stat uncertainties. I was able to successfully run your AsymptoticLimits command afterwards. Based on this, I think the problem might be that you try to evaluate lnN uncertainties on empty processes. Can you maybe remove the empty processes at your end and try again (also including the <code>gmN</code> uncertainties where appropriate of course)? Of course, if a given uncertainty only has an effect on empty processes, I\u2019d also recommend removing it for this test.</p>\n<p>Cheers,<br>\nPhilip</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "trmishra",
+      "name": "Tribeni Mishra",
+      "created_at": "2025-01-10T16:45:06.366Z",
+      "updated_at": "2025-01-10T16:45:06.366Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi @pkeicher,\nall the channels here are signal regions, not control regions. Thank you for taking the time to look closely into this issue. I couldn\u2019t reproduce your observation where you successfully ran the AsymptoticLimits. Could you please share the modified datacard that worked for you?\nThanks again.\nBest regards\nTribeni",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/pkeicher\">@pkeicher</a>,<br>\nall the channels here are signal regions, not control regions. Thank you for taking the time to look closely into this issue. I couldn\u2019t reproduce your observation where you successfully ran the AsymptoticLimits. Could you please share the modified datacard that worked for you?<br>\nThanks again.</p>\n<p>Best regards<br>\nTribeni</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-01-16T10:39:38.925Z",
+      "updated_at": "2025-01-16T10:39:38.925Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Tribeni,\nsorry for the late reply! You can find the datacard attached to this message. As I said, I removed the gmN uncertainties as well as the empty signal processes, so this would need to be studied a little more. I used these commands (*), which produced this output.\n<<< Combine >>>\n<<< v10.0.2 >>>\n>>> Random number generator seed is 123456\nWill use a-priori instead of a-posteriori expected background.\n>>> Method used is AsymptoticLimits\n\n-- AsymptoticLimits ( CLs ) --\nExpected  2.5%: r < 0.0497\nExpected 16.0%: r < 0.0691\nExpected 50.0%: r < 0.1025\nExpected 84.0%: r < 0.1581\nExpected 97.5%: r < 0.2380\n\nDone in 0.10 min (cpu), 0.10 min (real)\n\nHope this helps!\nCheers,\nPhilip\nfull_run2_validated.txt (884.9 KB)\n(*)\ntext2workspace.py -m 125 full_run2_validated.txt\ncombine -M AsymptoticLimits full_run2_validated.root --run blind --expectSignal=1",
+      "cooked_html": "<p>Hi Tribeni,</p>\n<p>sorry for the late reply! You can find the datacard attached to this message. As I said, I removed the gmN uncertainties as well as the empty signal processes, so this would need to be studied a little more. I used these commands (*), which produced this output.</p>\n<pre><code class=\"lang-auto\">&lt;&lt;&lt; Combine &gt;&gt;&gt;\n &lt;&lt;&lt; v10.0.2 &gt;&gt;&gt;\n&gt;&gt;&gt; Random number generator seed is 123456\nWill use a-priori instead of a-posteriori expected background.\n&gt;&gt;&gt; Method used is AsymptoticLimits\n\n -- AsymptoticLimits ( CLs ) --\nExpected  2.5%: r &lt; 0.0497\nExpected 16.0%: r &lt; 0.0691\nExpected 50.0%: r &lt; 0.1025\nExpected 84.0%: r &lt; 0.1581\nExpected 97.5%: r &lt; 0.2380\n\nDone in 0.10 min (cpu), 0.10 min (real)\n</code></pre>\n<p>Hope this helps!</p>\n<p>Cheers,<br>\nPhilip</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/pYAV8ZFUIxplXyBGZe2WsBkZ9yP.txt\">full_run2_validated.txt</a> (884.9 KB)</p>\n<p>(*)</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">text2workspace.py -m 125 full_run2_validated.txt\ncombine -M AsymptoticLimits full_run2_validated.root --run blind --expectSignal=1\n</code></pre>"
+    },
+    {
+      "post_number": 7,
+      "username": "trmishra",
+      "name": "Tribeni Mishra",
+      "created_at": "2025-01-16T11:24:29.367Z",
+      "updated_at": "2025-01-16T11:24:29.367Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi @pkeicher\nThanks a lot.\nBest regards\nTribeni",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/pkeicher\">@pkeicher</a><br>\nThanks a lot.</p>\n<p>Best regards<br>\nTribeni</p>"
+    }
+  ]
+}

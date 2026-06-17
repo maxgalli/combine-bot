@@ -1,0 +1,44 @@
+TOPIC: Question about descrite profilling method
+URL: https://cms-talk.web.cern.ch/t/37938
+DATE: 2024-03-29T12:11:18.213Z
+SOLVED: no
+============================================================
+
+QUESTION (by gkaratha @ 2024-03-29T12:11:18.387Z):
+Dear experts,
+I am doing an analysis using a parametric type fit. The background is fitted with few analytical functions following the discrete profiling method. In the simplest case we have two functions: a Chebychev pol and a sum of exponentials. I was making a bias test, were I generate toys with the sum of exponentials and fitted back with the full envelope. For every toy I scan signal strength (r) with 20 points from -5 to 5, saving the NLL of the envelope and the index of the PDF used by the envelope. Then I plot the 2NLL as a function of r for every toy, similar to the plot shown in “advanced use cases”
+The result is that in most toys the envelope selects the r with the minimum NLL as one expects, but there is though a subset of toys for which it takes a different point. I am not sure what can cause this.  I am attaching two plots one that we take the minimum NLL and one that is problematic.
+The commands I used are here:
+To generate toys:
+combine -M GenerateOnly param_datacard.root -m 91 -t 10 -n .generate_truth_index_Expo --expectSignal 0 --saveToys -setParameters pdf_index=1 --freezeParameters pdf_index
+To scan toys:
+combine -M MultiDimFit param_datacard.root -m 91 -t 10 -n .bias_grid_truth_file_fit_envelop --toysFile   --algo grid --points 20  --rMin -5 --rMax 5 --saveNLL --cminDefaultMinimizerStrategy 0 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --saveWorkspace --saveSpecifiedIndex pdf_index
+Any ideas what could cause this behaviour?
+Best regards,
+George
+cscan_correct796×572 9.53 KB
+cscan_wrong796×572 8.73 KB
+----------------------------------------
+
+REPLY 2 (by mimacken @ 2024-04-03T14:25:03.084Z):
+Dear experts,
+I also see this problem when using a RooMultiPdf with Combine and profiling the discrete index. I particularly notice this issue occurring when using the flag --X-rtd MINIMIZER_freezeDisassociatedParams recommended to avoid fit failures here. I’m attaching here a script to generate a toy workspace/data card with a Chebychev polynomial and an exponential that exhibits this issue, as well as a script to perform this fit with/without  --X-rtd MINIMIZER_freezeDisassociatedParams.
+workspace script
+test script
+plot the envelope
+Here are figures showing the NLL scan with/without this flag along with the MultiDimFit fit minimum, where the red star indicates the fit minimum:
+envelope_1696×472 4.17 KB envelope_2696×472 4.19 KB
+And here is the Combine command that produces the second figure:
+combine -d ${WORKSPACE} -M MultiDimFit -s ${SEED} -t 1 --saveNLL --saveSpecifiedIndex cat --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --cminDefaultMinimizerStrategy=0 --algo grid --points 40 --setParameterRanges r=-2,6 --X-rtd MINIMIZER_freezeDisassociatedParams
+
+Is this a known issue? Is there an issue with the combine arguments? Please let me know when you have a chance.
+Best,
+Michael
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2024-04-04T08:34:28.120Z):
+Dear all,
+Just to note we had some private discussion about this, and there is workaround that is finding the true minimum correctly in all cases, but some odd behaviour with MINIMIZER_freezeDisassociatedParams remains to be investigated.
+cheers,
+Andrew
+----------------------------------------

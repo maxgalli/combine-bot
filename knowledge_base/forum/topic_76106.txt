@@ -1,0 +1,1031 @@
+TOPIC: Need help
+URL: https://cms-talk.web.cern.ch/t/76106
+DATE: 2024-12-09T17:30:00.255Z
+SOLVED: no
+============================================================
+
+QUESTION (by sakumar @ 2024-12-09T17:30:00.335Z):
+Dear Experts,
+I am using combine tool to get upper limits. It is not optimising.
+Can you please help me to correct it or remove the bug?
+I am attaching here datacard[1], details about all parameters[2], input pdf is at https://github.com/sanjeevphys/bph/tree/master/combine
+Thanks and regards, Sanjeev
+[1] datacard
+# Datacard example for combine tutorial 2023 (part 1)
+---------------------------------------------
+imax 1
+jmax 1
+kmax *
+---------------------------------------------
+
+shapes      Bs           Tag0      workspace_sig_c0.root            workspace_sig:model
+shapes      bkg_mass     Tag0      blind_workspace_bkg_c0.root      workspace_bkg:bkg
+shapes      data_obs     Tag0      blind_workspace_bkg_c0.root      workspace_bkg:BDTG_bkg
+
+---------------------------------------------
+bin             Tag0
+observation     -1
+---------------------------------------------
+bin             Tag0         Tag0
+process         Bs           bkg_mass
+process         0            1
+rate            0.229953     1.0
+---------------------------------------------
+uncert_tsf  lnN 0.9896/1.01  -
+
+[2] other details
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+CARD :  nocat_datacard.txt
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+--------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process               rate       shape
+--------------------------------------------------------------------------------------------------------
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   data_obs              99         1
+--------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process          sig  rate       shape
+--------------------------------------------------------------------------------------------------------
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   Bs               1    0.22995    1
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   bkg_mass         0    99         1
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process          sig  nuisance                                      type     value         sh_d sh_u
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   Bs               1    uncert_tsf                                    lnN      0.9896/1.01   0    0
+-----------------------------------------------------------------------------------------------------------------
+name                                                                   value      error_d   error_u frozen groups
+-----------------------------------------------------------------------------------------------------------------
+#alpha_{L}                                                             0.5478     -0.0676   0.0681  0
+#alpha_{R}                                                             -0.8688    -0.1198   0.1201  0
+Mean                                                                   5.3630     -0.0015   0.0015  0
+b0                                                                     0.9987     -1.4133   1.4133  0
+bkg_norm                                                               99.0000    0.0000    0.0000  0
+fsig                                                                   0.6270     -0.0662   0.0663  0
+n_{L}                                                                  16.5732    -10.0546  16.2267 0
+n_{R}                                                                  10.9926    -4.9540   4.7609  0
+sigma_Bs_mass                                                          0.0590     -0.0020   0.0020  0
+tau                                                                    -5.4909    -2.2199   2.2199  0
+uncert_tsf                                                             0.0000     -1.0000   1.0000  0
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-12-09T20:10:42.000Z):
+Dear Sanjeev,
+Can you please specify what is the error you get? You don’t get any value? Or are the values unrealistic? What is the output of combine?
+Can you also provide the actual commands you are using?
+Thank you,
+Best regards,
+Giacomo
+
+On 9 Dec 2024, at 18:31, Sanjeev Kumar via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Sanjeev Kumar sakumarDecember 9
+
+Dear Experts,
+I am using combine tool to get upper limits. It is not optimising.
+Can you please help me to correct it or remove the bug?
+I am attaching here datacard[1], details about all parameters[2], input pdf is at https://github.com/sanjeevphys/bph/tree/master/combine
+Thanks and regards, Sanjeev
+[1] datacard
+# Datacard example for combine tutorial 2023 (part 1)
+---------------------------------------------
+imax 1
+jmax 1
+kmax *
+---------------------------------------------
+
+shapes      Bs           Tag0      workspace_sig_c0.root            workspace_sig:model
+shapes      bkg_mass     Tag0      blind_workspace_bkg_c0.root      workspace_bkg:bkg
+shapes      data_obs     Tag0      blind_workspace_bkg_c0.root      workspace_bkg:BDTG_bkg
+
+---------------------------------------------
+bin             Tag0
+observation     -1
+---------------------------------------------
+bin             Tag0         Tag0
+process         Bs           bkg_mass
+process         0            1
+rate            0.229953     1.0
+---------------------------------------------
+uncert_tsf  lnN 0.9896/1.01  -
+
+[2] other details
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+CARD :  nocat_datacard.txt
+= = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = = =
+--------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process               rate       shape
+--------------------------------------------------------------------------------------------------------
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   data_obs              99         1
+--------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process          sig  rate       shape
+--------------------------------------------------------------------------------------------------------
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   Bs               1    0.22995    1
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   bkg_mass         0    99         1
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+mass   analysis  era    channel  bin                          id  process          sig  nuisance                                      type     value         sh_d sh_u
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+5.36688 Bs2EMu    13TeV  emu      Tag0                         0   Bs               1    uncert_tsf                                    lnN      0.9896/1.01   0    0
+-----------------------------------------------------------------------------------------------------------------
+name                                                                   value      error_d   error_u frozen groups
+-----------------------------------------------------------------------------------------------------------------
+#alpha_{L}                                                             0.5478     -0.0676   0.0681  0
+#alpha_{R}                                                             -0.8688    -0.1198   0.1201  0
+Mean                                                                   5.3630     -0.0015   0.0015  0
+b0                                                                     0.9987     -1.4133   1.4133  0
+bkg_norm                                                               99.0000    0.0000    0.0000  0
+fsig                                                                   0.6270     -0.0662   0.0663  0
+n_{L}                                                                  16.5732    -10.0546  16.2267 0
+n_{R}                                                                  10.9926    -4.9540   4.7609  0
+sigma_Bs_mass                                                          0.0590     -0.0020   0.0020  0
+tau                                                                    -5.4909    -2.2199   2.2199  0
+uncert_tsf                                                             0.0000     -1.0000   1.0000  0
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by sakumar @ 2024-12-13T05:45:08.853Z):
+Dear Giacomo,
+I ran simply with combine -t -1 datacard.txt -m 5.36688  and output is:
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 441.8823
+
+Done in 0.04 min (cpu), 0.04 min (real)
+
+Which doesn’t have any statistical uncertainity.
+When I give some more parameters in input:
+combine -t -1 nocat_datacard.txt -m 5.36688 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --cminDefaultMinimizerStrategy=0 --cminDefaultMinimizerTolerance=0.0001  --expectSignal=0
+Then output shows:
+<<< Combine >>>
+<<< v10.0.2 >>>
+
+Random number generator seed is 123456
+Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Observed Limit: r < 141.0363
+Expected  2.5%: r < 531.1085
+Expected 16.0%: r < 532.6830
+Expected 50.0%: r < 537.4062
+Expected 84.0%: r < 548.1169
+Expected 97.5%: r < 562.9653
+
+Done in 0.01 min (cpu), 0.01 min (real)
+
+Which shows a complete mis-match observed and expected limits.
+Thanks and regards, Sanjeev
+----------------------------------------
+
+REPLY 4 (by pkeicher @ 2024-12-13T09:14:58.947Z):
+Hi @sakumar ,
+the issue is probably that you use a different set of options in the commands that you shared above. Since this generally has an impact on the exact minimization process in the background, it’s not really surprising that you results also change.
+Generally, it’s always a good idea to use one consistent set of options if possible. See also the documentation on the Asymptotic limits routine - for example, it’s not recommended to use the options -t -1 with that, but rather the --run option (more information in the previous link).
+Additionally, I’m not sure why you would expect the observed and expected datasets to be the same - it’s two different datasets afterall. Can you explain this expectation a little more?
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 5 (by gortona @ 2024-12-13T09:29:08.808Z):
+Hi @sakumar,
+On top of what @pkeicher just said, the reason you don’t get any expected results with your first command is that you should set a reasonable range for your signal strength. The default range is [0:20], way too small to accomodate your case.
+Something like --rMin 100 --rMax 600 should do the trick, judging from your output. The algorithm is more tolerant against this range for the observed result, and some other options like --cminDefaultMinimizerStrategy=0 also can work around it, that’s why you get the output of the second command, but the best strategy is always to identify a proper range and use that.
+Finally, I’m not sure you need the --X-rtd REMOVE_CONSTANT_ZERO_POINT option. This is usually intended for discrete profiling, which does not appear to be your case.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 6 (by sakumar @ 2024-12-16T10:28:47.860Z):
+Dear @pkeicher and @gortona
+Thanks a lot for help. Now it looks like it is working. I still have some doubt.
+When I give different values of rMin and rMax, the output depends on these values. Which looks like still there is some problem.
+I am copy pasting 4 sets of rMin and rMax values, and it gives different results.
+[1] For --rMin 100 and --rMax 600: r value is outside our given range.
+[2] For --rMin 100 and --rMax 1000: looks like a good approximation.
+[3] For --rMin 100 and rMax 10000: Lower values are lower than rMin
+[4] For rMin 300 and rMax 1000: similar to [2]
+Which one should I believe if these are not consistent.
+[1]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 600
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 384.2212
+Expected 16.0%: r < 389.9615
+Expected 50.0%: r < 391.8750
+Expected 84.0%: r < 788.6307
+Expected 97.5%: r < 1188.4862
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[2]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 335.5042
+Expected 16.0%: r < 337.1750
+Expected 50.0%: r < 342.1875
+Expected 84.0%: r < 354.4633
+Expected 97.5%: r < 374.5632
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[3]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 10000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 17.6919
+Expected 16.0%: r < 141.6039
+Expected 50.0%: r < 142.0898
+Expected 84.0%: r < 285.9494
+Expected 97.5%: r < 430.9329
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[4]
+combine nocat_datacard.txt --run blind --rMin 300 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 335.5042
+Expected 16.0%: r < 337.1750
+Expected 50.0%: r < 342.1875
+Expected 84.0%: r < 354.4633
+Expected 97.5%: r < 374.5632
+
+Done in 0.00 min (cpu), 0.00 min (real)
+----------------------------------------
+
+REPLY 7 (by gortona @ 2024-12-19T14:04:48.046Z):
+Dear @sakumar ,
+I was taking a deeper look at your workspaces, and it seems like the background function you are using is not continuous, but has a hole in the region [4.8,5.8], can you please check if this is true? Did you blind the background function instead of the data? Moreover, it also seems to depend on the signal via a fsig variable. Are you sure this is an intended behaviour?
+I can’t tell for sure, but I doubt the asymptotic formula will give meaningful results in these conditions, so if this setup is intended I would encourage you to try with toy-based limit computations and see if those are more stable.
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 8 (by sakumar @ 2024-12-20T12:37:51.701Z):
+Dear @gortona ,
+Yes, I blinded the region [4.8,5.8] in data. Function fitted with side bands. I printed the function in png file which shows continuous function in blinded region also. I blinded data.
+I was trying Double Sided Crystal Ball function in v9, but that was not working. So, I used two single sided crystal ball function in v9 and now I continued with v10 with same function. There I had a variable named fsig. Now I have updated with DoubleSided Crystal Ball function which does not have fsig variable. Still behaviour is same.
+From your last message, I found that I was using same variable name (fsig) for background and signal pdf. But I did not find much change after this.[1]
+Thanks and regards, Sanjeev
+[1]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 600
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 428.9282
+Expected 16.0%: r < 436.0991
+Expected 50.0%: r < 451.8750
+Expected 84.0%: r < 468.0857
+Expected 97.5%: r < 501.7068
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 10000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 356.4796
+Expected 16.0%: r < 367.5730
+Expected 50.0%: r < 381.8359
+Expected 84.0%: r < 404.6662
+Expected 97.5%: r < 438.6469
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 300 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+----------------------------------------
+
+REPLY 9 (by sakumar @ 2024-12-26T05:29:53.931Z):
+Dear @gortona ,
+You suggested toy-based limit computation. Is it the one given at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+Thanks and regards, Sanjeev
+----------------------------------------
+
+REPLY 10 (by sakumar @ 2024-12-27T13:49:32.832Z):
+Dear Giacomo,
+I tried toy based limit computations as described at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+It gives me following warning message:
+FASTEXIT from pdf_binTag0_obsOnly
+WARNING: underflow to nan in pdf_binTag0_obsOnly for bin 0, weight 1
+
+I tried to check which pdf bin has nan in it. But could not find it.
+I also tried to give unblinded input (as you mentioned in previous email). But could not get any difference. Updated workspace is kept at https://github.com/sanjeevphys/bph/blob/master/combine/nocat_datacard.root
+Thanks and regards, Sanjeev
+----------------------------------------
+
+REPLY 11 (by sakumar @ 2025-01-08T05:11:33.733Z):
+Dear @gortona and @pkeicher
+When I am running combine with changed fit functions (parameters are changed due to change in pre-selection),  combine does not give any value. I have tried with[1] and without[2] rMin and rMax parameters.
+Thanks and regards, Sanjeev
+[1]
+combine nocat_datacard.txt --run blind -m 5.36688
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.33 min (cpu), 0.33 min (real)
+
+[2]
+combine nocat_datacard.txt --run blind -m 5.36688 --rMin 100 --rMax 100000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.00 min (cpu), 0.00 min (real)
+----------------------------------------
+
+REPLY 12 (by gortona @ 2025-01-08T09:52:32.000Z):
+Dear Sanjeev,
+Sorry I’m still going through the mails arrived during the holidays.
+If you don’t get any value it means the fit failed. Running with a verbose mode (-v 5) should give you more details about when/where this happens.
+Are the datacards still in the same folder?
+Cheers,
+Giacomo
+
+On 8 Jan 2025, at 06:12, Sanjeev Kumar via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Sanjeev Kumar sakumarJanuary 8
+
+Dear @gortona and @pkeicher
+When I am running combine with changed fit functions (parameters are changed due to change in pre-selection), combine does not give any value. I have tried with[1] and without[2] rMin and rMax parameters.
+Thanks and regards, Sanjeev
+[1]
+combine nocat_datacard.txt --run blind -m 5.36688
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.33 min (cpu), 0.33 min (real)
+
+[2]
+combine nocat_datacard.txt --run blind -m 5.36688 --rMin 100 --rMax 100000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Sanjeev Kumar sakumarDecember 27, 2024
+
+Dear Giacomo,
+I tried toy based limit computations as described at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+It gives me following warning message:
+FASTEXIT from pdf_binTag0_obsOnly
+WARNING: underflow to nan in pdf_binTag0_obsOnly for bin 0, weight 1
+
+I tried to check which pdf bin has nan in it. But could not find it.
+I also tried to give unblinded input (as you mentioned in previous email). But could not get any difference. Updated workspace is kept at https://github.com/sanjeevphys/bph/blob/master/combine/nocat_datacard.root
+Thanks and regards, Sanjeev
+
+Sanjeev Kumar sakumarDecember 26, 2024
+
+Dear @gortona ,
+You suggested toy-based limit computation. Is it the one given at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+Thanks and regards, Sanjeev
+
+Sanjeev Kumar sakumarDecember 20, 2024
+
+Dear @gortona ,
+Yes, I blinded the region [4.8,5.8] in data. Function fitted with side bands. I printed the function in png file which shows continuous function in blinded region also. I blinded data.
+I was trying Double Sided Crystal Ball function in v9, but that was not working. So, I used two single sided crystal ball function in v9 and now I continued with v10 with same function. There I had a variable named fsig. Now I have updated with DoubleSided Crystal Ball function which does not have fsig variable. Still behaviour is same.
+From your last message, I found that I was using same variable name (fsig) for background and signal pdf. But I did not find much change after this.[1]
+Thanks and regards, Sanjeev
+[1]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 600
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 428.9282
+Expected 16.0%: r < 436.0991
+Expected 50.0%: r < 451.8750
+Expected 84.0%: r < 468.0857
+Expected 97.5%: r < 501.7068
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 10000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 356.4796
+Expected 16.0%: r < 367.5730
+Expected 50.0%: r < 381.8359
+Expected 84.0%: r < 404.6662
+Expected 97.5%: r < 438.6469
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 300 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Giacomo Ortona gortonaDecember 19, 2024
+
+Dear @sakumar ,
+I was taking a deeper look at your workspaces, and it seems like the background function you are using is not continuous, but has a hole in the region [4.8,5.8], can you please check if this is true? Did you blind the background function instead of the data? Moreover, it also seems to depend on the signal via a fsig variable. Are you sure this is an intended behaviour?
+I can’t tell for sure, but I doubt the asymptotic formula will give meaningful results in these conditions, so if this setup is intended I would encourage you to try with toy-based limit computations and see if those are more stable.
+Cheers,
+Giacomo
+
+Sanjeev Kumar sakumarDecember 16, 2024
+
+Dear @pkeicher and @gortona
+Thanks a lot for help. Now it looks like it is working. I still have some doubt.
+When I give different values of rMin and rMax, the output depends on these values. Which looks like still there is some problem.
+I am copy pasting 4 sets of rMin and rMax values, and it gives different results.
+[1] For --rMin 100 and --rMax 600: r value is outside our given range.
+[2] For --rMin 100 and --rMax 1000: looks like a good approximation.
+[3] For --rMin 100 and rMax 10000: Lower values are lower than rMin
+[4] For rMin 300 and rMax 1000: similar to [2]
+Which one should I believe if these are not consistent.
+[1]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 600
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 384.2212
+Expected 16.0%: r < 389.9615
+Expected 50.0%: r < 391.8750
+Expected 84.0%: r < 788.6307
+Expected 97.5%: r < 1188.4862
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[2]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 335.5042
+Expected 16.0%: r < 337.1750
+Expected 50.0%: r < 342.1875
+Expected 84.0%: r < 354.4633
+Expected 97.5%: r < 374.5632
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[3]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 10000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 17.6919
+Expected 16.0%: r < 141.6039
+Expected 50.0%: r < 142.0898
+Expected 84.0%: r < 285.9494
+Expected 97.5%: r < 430.9329
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[4]
+combine nocat_datacard.txt --run blind --rMin 300 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 335.5042
+Expected 16.0%: r < 337.1750
+Expected 50.0%: r < 342.1875
+Expected 84.0%: r < 354.4633
+Expected 97.5%: r < 374.5632
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 13 (by sakumar @ 2025-01-08T11:59:30.982Z):
+Dear Giacomo,
+Yes, datacards are still there https://github.com/sanjeevphys/bph/tree/master/combine
+I have also uploaded the updated workspace which I mentioned in my previous email at https://github.com/sanjeevphys/bph/blob/master/combine/m4p5/nocat_datacard.root
+When I am using -v 5 while running the command, I get following message multiple times[1]
+Thanks and regards, Sanjeev
+[1]
+Number of iterations 3
+----------> Iteration 0
+FVAL = 0 Edm = 941.479867387 Nfcn = 59
+Error matrix change = 1
+Parameters :  p0 = 0.553083 p1 = -1.0592 p2 = 0.407976 p3 = 5.36305 p4 = 0.311713 p5 = 0.716139 p6 = 20 p7 = 20 p8 = 1.87907 p9 = 320 p10 = 0.000525654 p11 = 0.0477222 p12 = -5.26168
+----------> Iteration 1
+FVAL = 0 Edm = 941.479867387 Nfcn = 68
+Error matrix change = 1
+Parameters :  p0 = 0.553083 p1 = -1.0592 p2 = 0.407976 p3 = 5.36305 p4 = 0.311713 p5 = 0.716139 p6 = 20 p7 = 20 p8 = 1.87907 p9 = 320 p10 = 0.000525654 p11 = 0.0477222 p12 = -5.26168
+----------> Iteration 2
+FVAL = 0 Edm = 941.479867387 Nfcn = 91
+Error matrix change = 1
+Parameters :  p0 = 0.553083 p1 = -1.0592 p2 = 0.407976 p3 = 5.36305 p4 = 0.311713 p5 = 0.716139 p6 = 20 p7 = 20 p8 = 1.87907 p9 = 320 p10 = 0.000525654 p11 = 0.0477222 p12 = -5.26168
+Warning in <Minuit2>: Minuit2Minimizer::Minimize Minimization did NOT converge, Edm is above max
+Minuit2Minimizer : Invalid Minimum - status = 3
+----------------------------------------
+
+REPLY 14 (by gortona @ 2025-01-08T16:39:31.000Z):
+Dear Sanjeev,
+I’m still running more test, but my guess is that you have some correlation between the parameters of the signal and background model, and the fit isn’t able to resolve the ambiguity. One possible cause is that you have more parameters than your (blind) data is able to resolve, so what I believe is happening is that you end up in a situation where it is always possible for the fit to play with the parameters of the model and fit the results, so it can’t find an actual minimum.
+This is all a bit of speculation on my side, but for example I was able to obtain a result by freezing the background parameters and constraining a bit more the signal ones:
+combine nocat_datacard.root --run blind -m 5.36688 --freezeParameters=p_{0},tau,f --rMin 0 --rMax 100000 --setParameterRanges sigma_{L}=0,1:#alpha_{R}=-1,1:#alpha_{L}=-1,1
+A similar outcome (with different numbers of course) can be obtained by freezing most of the signal parameters.
+Can you check if this does make sense? And if so, are there any model parameters you can freeze safely beforehand?
+Best regards,
+Giacomo
+
+On 8 Jan 2025, at 13:00, Sanjeev Kumar via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Sanjeev Kumar sakumarJanuary 8
+
+Dear Giacomo,
+Yes, datacards are still there https://github.com/sanjeevphys/bph/tree/master/combine
+I have also uploaded the updated workspace which I mentioned in my previous email at https://github.com/sanjeevphys/bph/blob/master/combine/m4p5/nocat_datacard.root
+When I am using -v 5 while running the command, I get following message multiple times[1]
+Thanks and regards, Sanjeev
+[1]
+Number of iterations 3
+----------> Iteration 0
+FVAL = 0 Edm = 941.479867387 Nfcn = 59
+Error matrix change = 1
+Parameters :  p0 = 0.553083 p1 = -1.0592 p2 = 0.407976 p3 = 5.36305 p4 = 0.311713 p5 = 0.716139 p6 = 20 p7 = 20 p8 = 1.87907 p9 = 320 p10 = 0.000525654 p11 = 0.0477222 p12 = -5.26168
+----------> Iteration 1
+FVAL = 0 Edm = 941.479867387 Nfcn = 68
+Error matrix change = 1
+Parameters :  p0 = 0.553083 p1 = -1.0592 p2 = 0.407976 p3 = 5.36305 p4 = 0.311713 p5 = 0.716139 p6 = 20 p7 = 20 p8 = 1.87907 p9 = 320 p10 = 0.000525654 p11 = 0.0477222 p12 = -5.26168
+----------> Iteration 2
+FVAL = 0 Edm = 941.479867387 Nfcn = 91
+Error matrix change = 1
+Parameters :  p0 = 0.553083 p1 = -1.0592 p2 = 0.407976 p3 = 5.36305 p4 = 0.311713 p5 = 0.716139 p6 = 20 p7 = 20 p8 = 1.87907 p9 = 320 p10 = 0.000525654 p11 = 0.0477222 p12 = -5.26168
+Warning in <Minuit2>: Minuit2Minimizer::Minimize Minimization did NOT converge, Edm is above max
+Minuit2Minimizer : Invalid Minimum - status = 3
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaJanuary 8
+
+Dear Sanjeev,
+Sorry I’m still going through the mails arrived during the holidays.
+If you don’t get any value it means the fit failed. Running with a verbose mode (-v 5) should give you more details about when/where this happens.
+Are the datacards still in the same folder?
+Cheers,
+Giacomo
+
+On 8 Jan 2025, at 06:12, Sanjeev Kumar via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Sanjeev Kumar sakumarJanuary 8
+
+Dear @gortona and @pkeicher
+When I am running combine with changed fit functions (parameters are changed due to change in pre-selection), combine does not give any value. I have tried with[1] and without[2] rMin and rMax parameters.
+Thanks and regards, Sanjeev
+[1]
+combine nocat_datacard.txt --run blind -m 5.36688
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.33 min (cpu), 0.33 min (real)
+
+[2]
+combine nocat_datacard.txt --run blind -m 5.36688 --rMin 100 --rMax 100000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Sanjeev Kumar sakumarDecember 27, 2024
+
+Dear Giacomo,
+I tried toy based limit computations as described at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+It gives me following warning message:
+FASTEXIT from pdf_binTag0_obsOnly
+WARNING: underflow to nan in pdf_binTag0_obsOnly for bin 0, weight 1
+
+I tried to check which pdf bin has nan in it. But could not find it.
+I also tried to give unblinded input (as you mentioned in previous email). But could not get any difference. Updated workspace is kept at https://github.com/sanjeevphys/bph/blob/master/combine/nocat_datacard.root
+Thanks and regards, Sanjeev
+
+Sanjeev Kumar sakumarDecember 26, 2024
+
+Dear @gortona ,
+You suggested toy-based limit computation. Is it the one given at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+Thanks and regards, Sanjeev
+
+Sanjeev Kumar sakumarDecember 20, 2024
+
+Dear @gortona ,
+Yes, I blinded the region [4.8,5.8] in data. Function fitted with side bands. I printed the function in png file which shows continuous function in blinded region also. I blinded data.
+I was trying Double Sided Crystal Ball function in v9, but that was not working. So, I used two single sided crystal ball function in v9 and now I continued with v10 with same function. There I had a variable named fsig. Now I have updated with DoubleSided Crystal Ball function which does not have fsig variable. Still behaviour is same.
+From your last message, I found that I was using same variable name (fsig) for background and signal pdf. But I did not find much change after this.[1]
+Thanks and regards, Sanjeev
+[1]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 600
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 428.9282
+Expected 16.0%: r < 436.0991
+Expected 50.0%: r < 451.8750
+Expected 84.0%: r < 468.0857
+Expected 97.5%: r < 501.7068
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 10000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 356.4796
+Expected 16.0%: r < 367.5730
+Expected 50.0%: r < 381.8359
+Expected 84.0%: r < 404.6662
+Expected 97.5%: r < 438.6469
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 300 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Giacomo Ortona gortonaDecember 19, 2024
+
+Dear @sakumar ,
+I was taking a deeper look at your workspaces, and it seems like the background function you are using is not continuous, but has a hole in the region [4.8,5.8], can you please check if this is true? Did you blind the background function instead of the data? Moreover, it also seems to depend on the signal via a fsig variable. Are you sure this is an intended behaviour?
+I can’t tell for sure, but I doubt the asymptotic formula will give meaningful results in these conditions, so if this setup is intended I would encourage you to try with toy-based limit computations and see if those are more stable.
+Cheers,
+Giacomo
+
+Sanjeev Kumar sakumarDecember 16, 2024
+
+Dear @pkeicher and @gortona
+Thanks a lot for help. Now it looks like it is working. I still have some doubt.
+When I give different values of rMin and rMax, the output depends on these values. Which looks like still there is some problem.
+I am copy pasting 4 sets of rMin and rMax values, and it gives different results.
+[1] For --rMin 100 and --rMax 600: r value is outside our given range.
+[2] For --rMin 100 and --rMax 1000: looks like a good approximation.
+[3] For --rMin 100 and rMax 10000: Lower values are lower than rMin
+[4] For rMin 300 and rMax 1000: similar to [2]
+Which one should I believe if these are not consistent.
+[1]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 600
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 384.2212
+Expected 16.0%: r < 389.9615
+Expected 50.0%: r < 391.8750
+Expected 84.0%: r < 788.6307
+Expected 97.5%: r < 1188.4862
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[2]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 335.5042
+Expected 16.0%: r < 337.1750
+Expected 50.0%: r < 342.1875
+Expected 84.0%: r < 354.4633
+Expected 97.5%: r < 374.5632
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[3]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 10000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 17.6919
+Expected 16.0%: r < 141.6039
+Expected 50.0%: r < 142.0898
+Expected 84.0%: r < 285.9494
+Expected 97.5%: r < 430.9329
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+[4]
+combine nocat_datacard.txt --run blind --rMin 300 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 335.5042
+Expected 16.0%: r < 337.1750
+Expected 50.0%: r < 342.1875
+Expected 84.0%: r < 354.4633
+Expected 97.5%: r < 374.5632
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Sanjeev Kumar sakumarJanuary 8
+
+Dear @gortona and @pkeicher
+When I am running combine with changed fit functions (parameters are changed due to change in pre-selection), combine does not give any value. I have tried with[1] and without[2] rMin and rMax parameters.
+Thanks and regards, Sanjeev
+[1]
+combine nocat_datacard.txt --run blind -m 5.36688
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.33 min (cpu), 0.33 min (real)
+
+[2]
+combine nocat_datacard.txt --run blind -m 5.36688 --rMin 100 --rMax 100000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Sanjeev Kumar sakumarDecember 27, 2024
+
+Dear Giacomo,
+I tried toy based limit computations as described at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+It gives me following warning message:
+FASTEXIT from pdf_binTag0_obsOnly
+WARNING: underflow to nan in pdf_binTag0_obsOnly for bin 0, weight 1
+
+I tried to check which pdf bin has nan in it. But could not find it.
+I also tried to give unblinded input (as you mentioned in previous email). But could not get any difference. Updated workspace is kept at https://github.com/sanjeevphys/bph/blob/master/combine/nocat_datacard.root
+Thanks and regards, Sanjeev
+
+Sanjeev Kumar sakumarDecember 26, 2024
+
+Dear @gortona ,
+You suggested toy-based limit computation. Is it the one given at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#advanced-section-b-computing-limits-with-toys
+Thanks and regards, Sanjeev
+
+Sanjeev Kumar sakumarDecember 20, 2024
+
+Dear @gortona ,
+Yes, I blinded the region [4.8,5.8] in data. Function fitted with side bands. I printed the function in png file which shows continuous function in blinded region also. I blinded data.
+I was trying Double Sided Crystal Ball function in v9, but that was not working. So, I used two single sided crystal ball function in v9 and now I continued with v10 with same function. There I had a variable named fsig. Now I have updated with DoubleSided Crystal Ball function which does not have fsig variable. Still behaviour is same.
+From your last message, I found that I was using same variable name (fsig) for background and signal pdf. But I did not find much change after this.[1]
+Thanks and regards, Sanjeev
+[1]
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 600
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 428.9282
+Expected 16.0%: r < 436.0991
+Expected 50.0%: r < 451.8750
+Expected 84.0%: r < 468.0857
+Expected 97.5%: r < 501.7068
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 100 --rMax 10000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 356.4796
+Expected 16.0%: r < 367.5730
+Expected 50.0%: r < 381.8359
+Expected 84.0%: r < 404.6662
+Expected 97.5%: r < 438.6469
+
+Done in 0.00 min (cpu), 0.00 min (real)
+$ combine nocat_datacard.txt --run blind --rMin 300 --rMax 1000
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 197.5693
+Expected 16.0%: r < 217.5143
+Expected 50.0%: r < 272.6562
+Expected 84.0%: r < 341.1259
+Expected 97.5%: r < 594.6478
+
+Done in 0.00 min (cpu), 0.00 min (real)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

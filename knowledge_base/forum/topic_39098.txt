@@ -1,0 +1,172 @@
+TOPIC: Confidence Bands with HybridNew for low (~O(1)) background prediction
+URL: https://cms-talk.web.cern.ch/t/39098
+DATE: 2024-04-15T18:04:26.858Z
+SOLVED: no
+============================================================
+
+QUESTION (by wvetens @ 2024-04-15T18:04:27.020Z):
+Dear Experts,
+I am using the HybridNew approach in combine for a simple counting experiment, and am encountering some bizarre behavior where the confidence bands are very jagged and asymmetrical, in particular for the -1 and -2 sigma bands:
+WonkyBottomLimits1846×1323 140 KB
+Here is a datacard for one of the mass points - what I suspect is the cause of this behavior is that the background prediction is of order ~1:
+datacard_1p85GeV_BDTCUT0p355_signalRate_0p49.txt (532 Bytes)
+The commands which generated the median and bands for this mass point (similar treatment for the other mass points in the plot) were as follows:
+text2workspace.py datacard_1p85GeV_BDTCUT0p355_signalRate_0p49.txt -o ws.root
+combine -M GenerateOnly ws.root -t -1  --saveToys
+combine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.5
+combine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.84
+combine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.16
+combine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.975
+combine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.025
+
+Is this low count indeed the cause of these asymmetrical confidence bands? And if that is the case, is there some other treatment which would be more appropriate for the regime of extremely low statistics, or is this the correct approach, and the asymmetrical uncertainty bands are simply an inescapable feature of the low (expected) number of events?
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-04-15T20:56:26.022Z):
+Hi,
+can you, e.g., increase the n. of toys?  e.g., -T 10000
+-Andrea
+[*] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#accuracy
+----------------------------------------
+
+REPLY 3 (by nckw @ 2024-04-16T12:51:00.984Z):
+Hi,
+In addition to checking what happens with more Toys, you can also explicitly check the distributions of the test statistic for each value of the signal strength (see https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting and scroll down to the part about the test/plotTestStatCLs.py script). If you see very jagged behaviour, then this can be the cause of the behaviour in the bands you see.
+Now, if you have extremely small backgrounds and you do see the jagged behaviour, it could simply be that the procedure used to calculate the limits is not appropriate. We have an alternative method which behaves better for small yields, which was most recently used in the \tau\to3\mu search - you can find a description of that here : https://indico.cern.ch/event/1284926/#13-cousins-highland-in-zero-ba . This may not be necessary if your test statistic distributions look ok
+Best,
+Nick
+----------------------------------------
+
+REPLY 4 (by wvetens @ 2024-04-17T12:37:38.936Z):
+Hi Andrea and Nicholas,
+
+can you, e.g., increase the n. of toys? e.g., -T 10000
+
+This must be a feature in a newer version of Combine, because when I try it I get an “unrecognized option” error
+$ combine -M GenerateOnly ws_test.root -t -1 -T 10000 --saveToys
+<<< Combine >>>
+Invalid options: unrecognised option '-T'
+Invalid options: unrecognised option '-T'
+Use combine --help to get a list of all the allowed options
+
+Regarding the Test statistic distribution, I have some condor jobs producing it right now, so I will update shortly and in the meantime read about this new method.
+Thanks,
+Wren
+----------------------------------------
+
+REPLY 5 (by amarini @ 2024-04-17T12:41:06.341Z):
+Hi,
+in the HybridNew step.
+-Andrea
+----------------------------------------
+
+REPLY 6 (by wvetens @ 2024-04-17T14:52:07.402Z):
+Hi Andrea,
+Thanks, running the test now. I will report back here once it finishes.
+For Nicholas,
+It looks relatively smooth to me, so for now peraps HybridNew is still best
+gridscan691×471 6.12 KB
+----------------------------------------
+
+REPLY 7 (by wvetens @ 2024-04-19T09:19:43.755Z):
+Hi, it seems that when I try to run with many toys (i.e. 10000), the task gets killed (both locally and condor) for using too much wall clock time. Is there a workaround strategy for this?
+----------------------------------------
+
+REPLY 8 (by nckw @ 2024-04-19T10:01:38.000Z):
+Hi Wren,
+Thanks for this check, my apologies that I probably wasn’t very clear in what I was asking about. I was interested in the distributions of the test statistic that goes into this calculation that you’re showing.
+As an example, you can see one that we have in the docs (if you check here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting and scroll down the the drop down box, you’ll see the plot attached below) – you can see in this case its very smooth but that’s because its for an analysis that has pretty decent statistics. You can make these plots using the script we have (python test/plotTestStatCLs.py --input mygrid.root --poi r --val all --mass MASS) as explained in the same part of the docs.
+My point was that if that distribution looks jagged, then you can easily see the jagged behaviour in the bands on the limits too. As Andreas pointed out too, increasing the toys can help but if these plots are intrinsically bumpy, using a larger -T won’t help.
+Apologies again for not being clear enough before,
+Nick
+A graph showing the results of a test Description automatically generated with medium confidence1424×1090 224 KB
+----------------------------------------
+
+REPLY 9 (by wvetens @ 2024-04-19T11:26:30.649Z):
+Hi Nicholas,
+I see. Though, when I execute this command, the root file is full of many canvases and I am not sure how useful the information in any of them is or which would be best to show… here is an example:
+TestStat2216×1176 34.9 KB
+----------------------------------------
+
+REPLY 10 (by nckw @ 2024-04-19T11:57:23.000Z):
+Aha! This indeed looks like you’re unlikely to get smooth limit bands,
+You could check one of the figures corresponding to an r value near the expected limit just to see if it looks much better there .
+I would think that in this case it makes sense to use the version of toys that I describe in the slides I pointed to in my first mail. That version typically smooths things out a bit so you may find it solves the jagged limit bands. In the end this method is known to behave a little better than the standard approach when event yields are small (but it’s a bit slower to run and one has to abandon the purely frequentist way of thinking)
+Best
+Nick
+----------------------------------------
+
+REPLY 11 (by wvetens @ 2024-04-22T10:32:09.103Z):
+Hi Nick and Andrea,
+Thanks so much for all your help and recommendations. As I understand it, the LHC-style test statistic is still used with the “HybridNew” approach, and only the Toy model would change. Is that right?
+Is this method of toy model generation something which is implemented within the combine tool or would I need to create a custom model? I am also a bit confused if it is the priors of the nuisance parameters which must be generated with flat priors or if it is the value of the background yield?
+----------------------------------------
+
+REPLY 12 (by nckw @ 2024-04-22T10:54:36.323Z):
+Hi Wren,
+Right, its just the way the toys are handled thats different. You can certainly run this method in combine. You just need to remove the option --LHC-model LHC-limits and replace it with --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC
+The subtlety about the flat priors in the \tau \to 3\mu analysis is really only important if you have “free floating” parameters in your model (i.e things other than log-normals, or param type nuisances). for small yields, one can argue that the major effect is from the background normalisation but you could produce flat priors for any/all such parameters. Note that in combine, we only talk about priors on parameters so if the background yield is fixed, there’s no prior but if you usually let it float (eg rateParam or similar), then you should include a flat prior for that in this setup. Let me know, as there is an extra step in this case to get things to work properly.
+Best,
+Nick
+----------------------------------------
+
+REPLY 13 (by wvetens @ 2024-04-22T14:02:37.636Z):
+Hi Nick,
+Thanks for the many detailed responses. For now our background yield is fixed, so I will try with this method.
+I notice that when I run the method, I get a few warnings of the following form, should they be a cause for concern?
+[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+----------------------------------------
+
+REPLY 14 (by nckw @ 2024-04-22T14:08:13.000Z):
+Hi Wren,
+Ok, let me know how it goes. This warning might be harmless but I wouldn’t have expected it if you have systematic uncertainties in your datacard. Let’s follow up once you get some results back with this method of running HybridNew
+Best,
+Nick
+----------------------------------------
+
+REPLY 15 (by wvetens @ 2024-04-22T16:06:40.495Z):
+UhOh1796×1300 143 KB
+Well, the method runs, but the results now seem rather nonsensical…
+----------------------------------------
+
+REPLY 16 (by nckw @ 2024-04-22T16:33:24.000Z):
+Hmm,
+Did you also make the any example plots of the test statistic distribution like before?
+Best
+Nick
+
+| Wren Vetens wvetensApril 22 |
+
+| - |
+
+Well, the method runs, but the results now seem rather nonsensical…
+----------------------------------------
+
+REPLY 17 (by wvetens @ 2024-04-23T11:15:48.298Z):
+Hi Nicholas,
+Here is a plot of the test statistic distribution for 1.8 GeV/c^2 since that may give an idea of some of the wonky behavior we are seeing. This r value is the r value of the median.
+TestStats1p82370×1280 54.1 KB
+I will also include the commands I ran and the datacard so there’s no ambiguity about what I did:
+datacard_1p8GeV_BDTCUT0p355_signalRate_0p5.txt (530 Bytes)
+text2workspace.py datacard_1p8GeV_BDTCUT0p355_signalRate_0p5.txt  -o ws_1p8.root
+combine -d ws_1p8.root -M GenerateOnly -t -1 --saveToys -n 1p8
+combine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.500
+combine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.840
+combine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.160
+combine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.975
+combine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.025
+
+And then to make the grid and plot
+combine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --singlePoint 7.64644 --saveHybridResult
+python test/plotTestStatCLs.py --input higgsCombine1p8GeV.HybridNew.mH120.root --poi r --val all --mass 120
+----------------------------------------
+
+REPLY 18 (by nckw @ 2024-04-23T15:07:32.928Z):
+Hi Wren,
+Thanks for checking and sending the commands + datacard. Indeed, nothing you’ve written seems wrong to me.
+I think given what you see here, we really are stuck into the discrete nature of Poisson statistics. Bascially, each of these spikes corresponds to a specific number of events that gets generated (0,1,2) which yields a specific value of the test statistic. The method you tried here can sometimes help to smoothen out the distribution since generating this way convolutes the Poisson with the log-normal terms but given the size of the systematics you have, it won’t make a huge effect (which is what you see here)
+I don’t think there’s more that can be, or indeed should be done as I think you have essentially proven here that for your analysis, the distribution of the test statistic is discrete (and not due to lack of toys or the way in which the toys are generated) and so there will necessarily be jumps in the bands due to this. My only piece of advice then would be to not try to connect the bands when you draw the brazil plot since it could be misleading for points inbetween those that you calculate the limit for (if that makes sense).
+Thanks again for the detailed checks, feel free to pick this thread up again later in the review in case things change or if there are questions during the review about it.
+All the best,
+Nick
+----------------------------------------

@@ -1,0 +1,23 @@
+{
+  "topic_id": 125651,
+  "title": "B2G-24-016 questions regarding significance and limits results",
+  "url": "https://cms-talk.web.cern.ch/t/125651",
+  "category_id": 279,
+  "created_at": "2025-06-06T01:11:33.936Z",
+  "last_posted_at": "2025-06-06T01:11:34.035Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dpilipov",
+      "name": "Dragana Nikola Pilipovic",
+      "created_at": "2025-06-06T01:11:34.035Z",
+      "updated_at": "2025-06-06T07:45:04.447Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nKuan-Yu suggested we consult you with regards to the following remaining questions we have about limits and significance results (as summarized by Kuan-Yu):\n1. Why the toy limits zigzag between signal masses, especially the -2\\sigma band?\n\n2. Why the expected limit\u2019s band is not symmetric in r, i.e., r_{2\\sigma}-r_\\text{median} \\neq r_\\text{median}-r_{-2\\sigma}?\n\n3. Why the p-values of the significance are above 2$\\sigma$ for the 0.9 TeV signals while the limit is within the 1\\sigma of the expected limit?\n\nYou can see Kuan-Yu\u2019s excellent answers to the above questions in https://cms-pub-talk.web.cern.ch/t/please-unblind/35298/67 as well as the slides with the limits (both 2D and rolled out 1D) and significance calculation.\nWe would appreciate your thoughts on the above as well as recommendations on the next steps.  This is our final step in unblinding.\nBest Regards,\nDragana",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>Kuan-Yu suggested we consult you with regards to the following remaining questions we have about limits and significance results (as summarized by Kuan-Yu):</p>\n<pre><code>1. Why the toy limits zigzag between signal masses, especially the -2\\sigma band?\n\n2. Why the expected limit\u2019s band is not symmetric in r, i.e., r_{2\\sigma}-r_\\text{median} \\neq r_\\text{median}-r_{-2\\sigma}?\n\n3. Why the p-values of the significance are above 2$\\sigma$ for the 0.9 TeV signals while the limit is within the 1\\sigma of the expected limit?\n</code></pre>\n<p>You can see Kuan-Yu\u2019s excellent answers to the above questions in <a href=\"https://cms-pub-talk.web.cern.ch/t/please-unblind/35298/67\" rel=\"noopener nofollow ugc\">https://cms-pub-talk.web.cern.ch/t/please-unblind/35298/67</a> as well as the slides with the limits (both 2D and rolled out 1D) and significance calculation.</p>\n<p>We would appreciate your thoughts on the above as well as recommendations on the next steps.  This is our final step in unblinding.</p>\n<p>Best Regards,<br>\nDragana</p>"
+    }
+  ]
+}

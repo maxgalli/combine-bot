@@ -1,0 +1,115 @@
+TOPIC: Large datacard in combine
+URL: https://cms-talk.web.cern.ch/t/2145
+DATE: 2021-08-11T14:21:50.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Brent_Yates @ 2021-08-11T14:21:50.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+I'm working on an EFT analysis (full Run II follow-up to TOP-19-001)
+where we have quadratic parameterizations of various event yields. We
+fit 5 different signal processes with 35 event channels, each with 16
+Wilson coefficients, resulting in thousands of variables in final
+datacard. The text2workspace step seems to take several hours, and I'm
+looking for a way to cut this down. I tried generating a workspace for
+each of the 35 channels, which was much faster, but ran into issues when
+trying to merge these workspaces. Part of the issue is each one
+contained functions with identical names (expected since we use names
+like "func_sm_ctW" for the ctW SM interference), and I was hoping to
+just ignore the errors. However, at the end of the merge script, it
+seems to crash. Our custom combine model is here [1] where we fit linear
+combinations of the the various constant, linear, and quadratic
+histograms to avoid negative bin contents. I've also placed my merge
+script here [2].
+Thanks,
+Brent
+[1]
+
+github.com
+
+TopEFT/EFTFit/blob/master/Fitter/python/AnomalousCouplingEFTNegative.py
+
+from HiggsAnalysis.CombinedLimit.PhysicsModel import *
+from HiggsAnalysis.CombinedLimit.SMHiggsBuilder import SMHiggsBuilder
+import ROOT, os
+import json
+
+#
+# See derivation and explanation, validation, tests in AN-20-204
+#
+
+class AnaliticAnomalousCouplingEFTNegative(PhysicsModel):
+
+"Float independently cross sections and branching ratios"
+def __init__(self):
+PhysicsModel.__init__(self)
+self.mHRange = []
+self.poiNames = []
+self.alternative = False
+self.verbose = False
+self.numOperators = {}
+
+This file has been truncated. show original
+
+[2] https://github.com/cms-govner/EFTFit/blob/merge/Fitter/test/merge.py
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-08-11T14:56:54.000Z):
+*** Discussion title: Higgs Combination
+Dear Brent,
+While it is possible to merge workspaces after they are created, it is
+probably more trouble than it is worth to do it correctly and then
+validate that everything is working - there are various other things
+that are needed on top of importing all the objects into the same
+workspace, e.g. creating the simultaneous pdf manually.
+If you want to use MultiDimFit and are not intending to use
+FitDiagnostics with this workspace, I would recommend using the
+--for-fits and --no-wrappers options in the text2workspace step for the
+combined datacard, which will save a lot of time.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by Brent_Yates @ 2021-10-29T14:36:18.000Z):
+*** Discussion title: Higgs Combination
+Hi all,
+I wanted to return to this topic, since we are still seeing some issues.
+We are using a slightly modified version of this model [1], and the
+authors had contacted me privately. We're at the point now where we've
+started including systematics in our datacards, and are seeing a huge
+slowdown. With a total of 35 categories, each with 26 operators, and so
+far just 2 systematic terms, it takes about 8 hours to make a workspace
+for a differential distribution! I'm not sure if this is a slowdown due
+to text2workspace being written in Python, with a lot of for loops, or
+if it is something in the model itself. Each of the 35 categories has
+about 2,200 entries and histograms, corresponding to the different parts
+of the quadratic fits (SM, linear, pure quadratic, and interference
+between EFT operators). Is combine expected to still perform well with
+this many bins? Any help in speeding up the datacard to workspace stage
+would be appreciated.
+Thanks,
+Brent
+[1]
+https://github.com/amassiro/AnalyticAnomalousCoupling/blob/master/python/AnomalousCouplingEFTNegative.py
+----------------------------------------
+
+REPLY 4 (by amarini @ 2021-10-29T19:36:17.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+I think you need to study the datacards and the model you are using for the combination and understand where the limitations come from. In general, large combination requires a 'little bit' of work in order not to hit limits,
+although we try to keep up the code when doing the higgs combination.
+You can check the summary at the last Higgs PAG meeting of some of the things we are doing in the full run2 couplings combination to keep things under control, and refer back to the corresponding Higgs Combination meeting for more info. Some of the things there may be experimental and may not work outside of the cards we are using and constantly validating against and on the methods we are not using.
+A good place to start is from the beginning. You should consider the following as an hint over a direction to take, and not an actual todo list of commands to run; for instance (not exhaustive), you should start asking yourself:
+- what is the overall memory/time for the text2workspace process with the current model and all datacard?
+- what is the overall memory/time for t2w with the default model?
+- what is the overall memory/time for t2w with each of the datacard in both the default and current model?
+- Is there any obvious outliers?
+- what are the nature of the datacard you are combining? unbinned, binned-parametric, template?
+- for template: do you use autoMCstats for stat uncertainties? does all the cards use a cut for no poisson split? if not is there a reason? how many Poisson parameters are you introducing?
+- for parametric: how many RooFormulaVar do you use? (I think this may be a problematic point for you model as well, but I'm waiting for answers to 1. and 2. to say). Is there any obvious place where you are not optimized?
+- do you have a lot of process contributing little to the total yields?
+[...]
+Cheers,
+-Andrea
+----------------------------------------

@@ -1,0 +1,62 @@
+{
+  "topic_id": 19916,
+  "title": "Error warning while using Combine",
+  "url": "https://cms-talk.web.cern.ch/t/19916",
+  "category_id": 279,
+  "created_at": "2023-02-02T09:52:44.417Z",
+  "last_posted_at": "2023-02-06T19:41:54.265Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "ptiwari",
+      "name": "Praveen Chandra Tiwari",
+      "created_at": "2023-02-02T09:52:44.878Z",
+      "updated_at": "2023-02-15T13:49:51.582Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am trying to run simple datacard  in combine tool:\n# Simple counting experiment, with one signal and a few background processes\n# Simplified version of the 35/pb Z'->Chi2 Chi2, analysis for mChi2 = 50 GeV\nimax 1  number of channels\njmax *  number of backgrounds\nkmax *  number of nuisance parameters (sources of systematical uncertainties)\n-----------------------------------------------\n# we have just one channel, in which we observe 0 events\nbin             MONOZee\nobservation     0\n-----------------------------------------------\n# now we list the expected events for signal and all backgrounds in that bin\n# the second 'process' line must have a positive number for backgrounds, and 0 for signal\n# then we list the independent sources of uncertainties, and give their effect (syst. error)\n# on each process and bin\nbin             MONOZee     MONOZee     MONOZee     MONOZee     MONOZee\nprocess         SIGNAL      DY          Top         Diboson     Triboson\nprocess          0          1            2          3           4\nrate             255      250.138     2541.28     220.607      8.50404\n------------------------------------------------\n\nRunning above card gives the limits using combine -M AsymptoticLimits command as follows:\n<<< Combine >>>\n>>> random number generator seed is 123456\n>>> method used is AsymptoticLimits\n\n-- AsymptoticLimits ( CLs ) --\nObserved Limit: r < 2.0061\nExpected  2.5%: r < 0.2306\nExpected 16.0%: r < 0.3076\nExpected 50.0%: r < 0.4277\nExpected 84.0%: r < 0.5965\nExpected 97.5%: r < 0.7973\n\nDone in 0.00 min (cpu), 0.00 min (real)\n\nHowever, when I change rate of signal from 255 to 256, then I start getting error warning as follows:\n<<< Combine >>>\n>>> random number generator seed is 123456\n>>> method used is AsymptoticLimits\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,\norigin       : RooProdPdf::model_s[ pdf_binMONOZee ]\nmessage      : getLogVal() top-level p.d.f evaluates to zero\nserver values: !pdfs=(pdf_binMONOZee = 0/1)\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,\norigin       : RooNLLVar::nll_model_s__Asymptotic_asimovDataset_[ paramSet=(n_exp_binMONOZee_proc_DY,n_exp_binMONOZee_proc_Diboson,n_exp_binMONOZee_proc_Top,n_exp_binMONOZee_proc_Triboson,r) ]\nmessage      : function value is NAN\nserver values: paramSet=(n_exp_binMONOZee_proc_DY = 250.138,n_exp_binMONOZee_proc_Diboson = 220.607,n_exp_binMONOZee_proc_Top = 2541.28,n_exp_binMONOZee_proc_Triboson = 8.50404,r = 10 +/- 18.2947)\n\n-- AsymptoticLimits ( CLs ) --\nObserved Limit: r < 2.0061\nExpected  2.5%: r < 0.2295\nExpected 16.0%: r < 0.3062\nExpected 50.0%: r < 0.4258\nExpected 84.0%: r < 0.5938\nExpected 97.5%: r < 0.7937\n\nDone in 0.00 min (cpu), 0.00 min (real)\n\nI still get the limit output however I do not understand why I am getting the error message just by moving from 255 to 256\nCan you please let me know the reason for this ?\nThanks and Regards,\nPraveen Chandra",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am trying to run simple datacard  in combine tool:</p>\n<pre><code class=\"lang-auto\"># Simple counting experiment, with one signal and a few background processes\n# Simplified version of the 35/pb Z'-&gt;Chi2 Chi2, analysis for mChi2 = 50 GeV\nimax 1  number of channels\njmax *  number of backgrounds\nkmax *  number of nuisance parameters (sources of systematical uncertainties)\n-----------------------------------------------\n# we have just one channel, in which we observe 0 events\nbin             MONOZee\nobservation     0\n-----------------------------------------------\n# now we list the expected events for signal and all backgrounds in that bin\n# the second 'process' line must have a positive number for backgrounds, and 0 for signal\n# then we list the independent sources of uncertainties, and give their effect (syst. error)\n# on each process and bin\nbin             MONOZee     MONOZee     MONOZee     MONOZee     MONOZee\nprocess         SIGNAL      DY          Top         Diboson     Triboson\nprocess          0          1            2          3           4\nrate             255      250.138     2541.28     220.607      8.50404\n------------------------------------------------\n</code></pre>\n<p>Running above card gives the limits using <code>combine -M AsymptoticLimits</code> command as follows:</p>\n<pre><code class=\"lang-auto\"> &lt;&lt;&lt; Combine &gt;&gt;&gt;\n&gt;&gt;&gt; random number generator seed is 123456\n&gt;&gt;&gt; method used is AsymptoticLimits\n\n -- AsymptoticLimits ( CLs ) --\nObserved Limit: r &lt; 2.0061\nExpected  2.5%: r &lt; 0.2306\nExpected 16.0%: r &lt; 0.3076\nExpected 50.0%: r &lt; 0.4277\nExpected 84.0%: r &lt; 0.5965\nExpected 97.5%: r &lt; 0.7973\n\nDone in 0.00 min (cpu), 0.00 min (real)\n</code></pre>\n<p>However, when I change rate of signal from 255 to 256, then I start getting error warning as follows:</p>\n<pre><code class=\"lang-auto\"> &lt;&lt;&lt; Combine &gt;&gt;&gt;\n&gt;&gt;&gt; random number generator seed is 123456\n&gt;&gt;&gt; method used is AsymptoticLimits\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,\n origin       : RooProdPdf::model_s[ pdf_binMONOZee ]\n message      : getLogVal() top-level p.d.f evaluates to zero\n server values: !pdfs=(pdf_binMONOZee = 0/1)\n[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,\n origin       : RooNLLVar::nll_model_s__Asymptotic_asimovDataset_[ paramSet=(n_exp_binMONOZee_proc_DY,n_exp_binMONOZee_proc_Diboson,n_exp_binMONOZee_proc_Top,n_exp_binMONOZee_proc_Triboson,r) ]\n message      : function value is NAN\n server values: paramSet=(n_exp_binMONOZee_proc_DY = 250.138,n_exp_binMONOZee_proc_Diboson = 220.607,n_exp_binMONOZee_proc_Top = 2541.28,n_exp_binMONOZee_proc_Triboson = 8.50404,r = 10 +/- 18.2947)\n\n -- AsymptoticLimits ( CLs ) --\nObserved Limit: r &lt; 2.0061\nExpected  2.5%: r &lt; 0.2295\nExpected 16.0%: r &lt; 0.3062\nExpected 50.0%: r &lt; 0.4258\nExpected 84.0%: r &lt; 0.5938\nExpected 97.5%: r &lt; 0.7937\n\nDone in 0.00 min (cpu), 0.00 min (real)\n</code></pre>\n<p>I still get the limit output however I do not understand why I am getting the error message just by moving from 255 to 256</p>\n<p>Can you please let me know the reason for this ?</p>\n<p>Thanks and Regards,<br>\nPraveen Chandra</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2023-02-02T10:22:19.338Z",
+      "updated_at": "2023-02-02T10:22:19.338Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\ntry with fake shapes for counting analyses.\ncombineCards -S ... or add shapes * * FAKE to the datacard.\nhttp://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#combination-of-multiple-datacards\n-Andrea\n-Andrea",
+      "cooked_html": "<p>Hi,<br>\ntry with fake shapes for counting analyses.<br>\n<code>combineCards -S ...</code> or add <code>shapes * * FAKE</code> to the datacard.</p>\n<p><a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#combination-of-multiple-datacards\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#combination-of-multiple-datacards</a></p>\n<p>-Andrea</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "ptiwari",
+      "name": "Praveen Chandra Tiwari",
+      "created_at": "2023-02-02T11:03:32.499Z",
+      "updated_at": "2023-02-02T11:03:32.499Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Andrea,\nUsing shapes * * FAKE  datacard indeed works.\nCan you please let me know what is the reason for this behaviour in combine tool?\nThanks and Regards,\nPraveen Chandra",
+      "cooked_html": "<p>Dear Andrea,</p>\n<p>Using <code>shapes * * FAKE </code> datacard indeed works.</p>\n<p>Can you please let me know what is the reason for this behaviour in combine tool?</p>\n<p>Thanks and Regards,<br>\nPraveen Chandra</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-02-06T19:41:54.265Z",
+      "updated_at": "2023-02-06T19:41:54.265Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Praveen,\nI\u2019m not sure if you got a reply to this. The reason for this behaviour is explained here: https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1085/1/1/1/1/1.html - basically the way the log-likelihood is evaluated is slightly different in the two cases. The way that is used for the pure counting experiment is to take the log of the pdf value (ie the log of the poisson probability). For very large numbers of events, Pois(Nobs,Nexp)=0, and we cannot take the log. For shape-based datacards (even \u201cFake\u201d shapes) a different method is used (taking the log and only then filling in the numbers of events), which doesn\u2019t have this feature.\nBest,\nAdinda\nPS Combine support is moving to the CAT-statistical tools subgroup, the new forum for queries is: https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279. If you run into any further problems, please post there!",
+      "cooked_html": "<p>Hi Praveen,</p>\n<p>I\u2019m not sure if you got a reply to this. The reason for this behaviour is explained here: <a href=\"https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1085/1/1/1/1/1.html\">https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1085/1/1/1/1/1.html</a> - basically the way the log-likelihood is evaluated is slightly different in the two cases. The way that is used for the pure counting experiment is to take the log of the pdf value (ie the log of the poisson probability). For very large numbers of events, Pois(Nobs,Nexp)=0, and we cannot take the log. For shape-based datacards (even \u201cFake\u201d shapes) a different method is used (taking the log and only then filling in the numbers of events), which doesn\u2019t have this feature.</p>\n<p>Best,<br>\nAdinda</p>\n<p>PS Combine support is moving to the CAT-statistical tools subgroup, the new forum for queries is: <a href=\"https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279\">https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279</a>. If you run into any further problems, please post there!</p>"
+    }
+  ]
+}

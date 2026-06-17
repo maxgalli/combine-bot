@@ -1,0 +1,30 @@
+TOPIC: File access issues within cmssw
+URL: https://cms-talk.web.cern.ch/t/33793
+DATE: 2024-01-29T17:05:36.217Z
+SOLVED: no
+============================================================
+
+QUESTION (by wvetens @ 2024-01-29T17:05:36.372Z):
+Dear Experts,
+I am having some xrootd and DAVS issues accessing a file on lxplus which I know from local tests should be accessible.
+If I try to open the file through xrootd inside of root by using i.e.:
+TFile.Open(root:/cmsxrootd.hep.wisc.edu//store/user/wvetens/<file>.root)
+I get the following error:
+:Error in <TNetXNGFile::Open>: [ERROR] Server responded with an error: [3011] Too many attempts to gain dfs read access to the file
+And the same happens if i use cms-xrd-global instead.
+Similarly using davs:
+TFile.Open(davs://cmsxrootd.hep.wisc.edu:1094/store/user/wvetens/<file>.root) I instead get the following error:
+Error in <DavixStat>: can not stat the file with davix: Result HTTP 404 : File not found  after 3 attempts (18)
+However, on a gfal-ls, the file is there:
+gfal-ls davs://cmsxrootd.hep.wisc.edu:1094/store/user/wvetens/;
+Likewise the file cannot be copied through gfal-copy, but local tests at hep.wisc.edu show the file is there and accessible.
+Now for the weird part. Without cmsenv, a command like
+root -l davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/<file>.root
+DOES work. But if I then try to copy the file over locally so that I can then work with it inside cmssw, the following error occurs:
+$ gfal-cp-wisc davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/crmc_Sexaq/FlatTree_BDT/BlockAPUReweighed_Signal_1p8_M2S.root BlockAPUReweighed_Signal_1p8_M2S.root Copying davs://cmsxrootd.hep.wisc.edu:1094//store/user/wvetens/crmc_Sexaq/FlatTree_BDT/BlockAPUReweighed_Signal_1p8_M2S.root   [FAILED]  after 3s                                                                                                                                        gfal-copy error: 13 (Permission denied) - TRANSFER ERROR: Copy failed (3rd pull). Last attempt: copy HTTP 401 : Authentication Error
+What on earth is going on? Is this perhaps something to do with the recent LXPLUS upgrade?
+----------------------------------------
+
+REPLY 2 (by wvetens @ 2024-01-30T12:41:55.163Z):
+Oops, I accidentally put this in the wrong topic. Please ignore and see this: File access issues on lxplus
+----------------------------------------

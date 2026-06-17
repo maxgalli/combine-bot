@@ -1,0 +1,141 @@
+TOPIC: Shape (for signal) and LnN (for minor backgrounds) implementation for a nuisance parameter in datacard
+URL: https://cms-talk.web.cern.ch/t/122712
+DATE: 2025-04-08T14:25:23.628Z
+SOLVED: no
+============================================================
+
+QUESTION (by gparida @ 2025-04-08T14:25:23.843Z):
+Dear Experts,
+I am currently implementing the tes systematic in my datacard with the following treatment:
+
+As a log-normal (lnN) uncertainty for all minor backgrounds labeled as others
+As a shape uncertainty for the signal (radion)
+And excluded for the major background top, as it is estimated from data.
+
+However, when generating the datacard using CombineHarvester, I noticed the following entry:
+image804×113 2.61 KB
+Specifically, the shape? label appears for the tes systematic, which I have not commonly seen in other datacards. I am unsure if this is the expected behavior when mixing lnN and shape treatments across different processes.
+I performed a check (printout attached below) on the root workspace generated from this datacard - and it does appear that all channels related to others (*_proc_others) process are assigned an lnN unc, and all channels for radion (*__radion_morph) are assigned shape systematic.
+$ root -l combined_lt_2000.root
+root [0]
+Attaching file combined_lt_2000.root as _file0...
+(TFile *) 0x16632f00
+root [1] w->var("tes")->Print("v")
+--- RooAbsArg ---
+Value State: clean
+Shape State: clean
+Attributes:  [optimizeBounds]
+Address: 0x1a51e190
+Clients:
+(0x1a51eb60,V-) SimpleGaussianConstraint::tes_Pdf "tes_Pdf"
+(0x1a53e4e0,V-) ProcessNormalization::n_exp_binlt_RANGE_750_900_SB_2000_proc_others ""
+(0x1a63bb70,V-) ProcessNormalization::n_exp_binlt_RANGE_900_1050_SB_2000_proc_others ""
+(0x1aa27a90,V-) ProcessNormalization::n_exp_binlt_RANGE_1050_1200_SB_2000_proc_others ""
+(0x1b0236e0,V-) ProcessNormalization::n_exp_binlt_RANGE_1200_1350_SB_2000_proc_others ""
+(0x1aee39b0,V-) ProcessNormalization::n_exp_binlt_RANGE_1350_1500_SB_2000_proc_others ""
+(0x1b0506f0,V-) ProcessNormalization::n_exp_binlt_RANGE_1500_1650_SB_2000_proc_others ""
+(0x1b07d7c0,V-) ProcessNormalization::n_exp_binlt_RANGE_1650_1800_SB_2000_proc_others ""
+(0x1ad84aa0,V-) ProcessNormalization::n_exp_binlt_RANGE_1800_1950_SB_2000_proc_others ""
+(0x1b0a5d00,V-) ProcessNormalization::n_exp_binlt_RANGE_1950_2200_SB_2000_proc_others ""
+(0x1b0d1c60,V-) ProcessNormalization::n_exp_binlt_RANGE_2200_2450_SB_2000_proc_others ""
+(0x1a7e6110,V-) ProcessNormalization::n_exp_binlt_RANGE_2450_5500_SB_2000_proc_others ""
+(0x1b10cac0,V-) ProcessNormalization::n_exp_binlt_RANGE_750_900_SR_2000_proc_others ""
+(0x1a8219f0,V-) ProcessNormalization::n_exp_binlt_RANGE_900_1050_SR_2000_proc_others ""
+(0x1a8d4d30,V-) ProcessNormalization::n_exp_binlt_RANGE_1050_1200_SR_2000_proc_others ""
+(0x1aa5f840,V-) ProcessNormalization::n_exp_binlt_RANGE_1200_1350_SR_2000_proc_others ""
+(0x1aab2a70,V-) ProcessNormalization::n_exp_binlt_RANGE_1350_1500_SR_2000_proc_others ""
+(0x1b136bb0,V-) ProcessNormalization::n_exp_binlt_RANGE_1500_1650_SR_2000_proc_others ""
+(0x1b1378f0,V-) ProcessNormalization::n_exp_binlt_RANGE_1650_1800_SR_2000_proc_others ""
+(0x1a6d3ce0,V-) ProcessNormalization::n_exp_binlt_RANGE_1800_1950_SR_2000_proc_others ""
+(0x1a7193f0,V-) ProcessNormalization::n_exp_binlt_RANGE_1950_2200_SR_2000_proc_others ""
+(0x1a764980,V-) ProcessNormalization::n_exp_binlt_RANGE_2200_2450_SR_2000_proc_others ""
+(0x1b138680,V-) ProcessNormalization::n_exp_binlt_RANGE_2450_5500_SR_2000_proc_others ""
+(0x180b6b00,V-) CMSHistFunc::shapeSig_lt_RANGE_750_900_SB_2000_radion_morph ""
+(0x1b207bc0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_750_900_SB_2000_radion_tes ""
+(0x1a476e90,V-) CMSHistFunc::shapeSig_lt_RANGE_900_1050_SB_2000_radion_morph ""
+(0x1a6902b0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_900_1050_SB_2000_radion_tes ""
+(0x1a493c00,V-) CMSHistFunc::shapeSig_lt_RANGE_1050_1200_SB_2000_radion_morph ""
+(0x1b04deb0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1050_1200_SB_2000_radion_tes ""
+(0x1a49b200,V-) CMSHistFunc::shapeSig_lt_RANGE_1200_1350_SB_2000_radion_morph ""
+(0x1ada6900,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1200_1350_SB_2000_radion_tes ""
+(0x1a4a2720,V-) CMSHistFunc::shapeSig_lt_RANGE_1350_1500_SB_2000_radion_morph ""
+(0x1aa41c80,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1350_1500_SB_2000_radion_tes ""
+(0x1a4a9ca0,V-) CMSHistFunc::shapeSig_lt_RANGE_1500_1650_SB_2000_radion_morph ""
+(0x1adc9d30,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1500_1650_SB_2000_radion_tes ""
+(0x1a4b13f0,V-) CMSHistFunc::shapeSig_lt_RANGE_1650_1800_SB_2000_radion_morph ""
+(0x1ae0bda0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1650_1800_SB_2000_radion_tes ""
+(0x1a4b8d50,V-) CMSHistFunc::shapeSig_lt_RANGE_1800_1950_SB_2000_radion_morph ""
+(0x1ae30300,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1800_1950_SB_2000_radion_tes ""
+(0x1a4c03e0,V-) CMSHistFunc::shapeSig_lt_RANGE_1950_2200_SB_2000_radion_morph ""
+(0x1ae56580,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1950_2200_SB_2000_radion_tes ""
+(0x1a4c7920,V-) CMSHistFunc::shapeSig_lt_RANGE_2200_2450_SB_2000_radion_morph ""
+(0x1ae7d7f0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_2200_2450_SB_2000_radion_tes ""
+(0x1a4ceeb0,V-) CMSHistFunc::shapeSig_lt_RANGE_2450_5500_SB_2000_radion_morph ""
+(0x1adef690,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_2450_5500_SB_2000_radion_tes ""
+(0x1879b3d0,V-) CMSHistFunc::shapeSig_lt_RANGE_750_900_SR_2000_radion_morph ""
+(0x1ae90b30,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_750_900_SR_2000_radion_tes ""
+(0x1a4e0ec0,V-) CMSHistFunc::shapeSig_lt_RANGE_900_1050_SR_2000_radion_morph ""
+(0x1aea3b00,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_900_1050_SR_2000_radion_tes ""
+(0x1a4e8400,V-) CMSHistFunc::shapeSig_lt_RANGE_1050_1200_SR_2000_radion_morph ""
+(0x1aef9ec0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1050_1200_SR_2000_radion_tes ""
+(0x1a4ef950,V-) CMSHistFunc::shapeSig_lt_RANGE_1200_1350_SR_2000_radion_morph ""
+(0x1a9f10b0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1200_1350_SR_2000_radion_tes ""
+(0x1a4f6ff0,V-) CMSHistFunc::shapeSig_lt_RANGE_1350_1500_SR_2000_radion_morph ""
+(0x1a9cfeb0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1350_1500_SR_2000_radion_tes ""
+(0x1a4fe710,V-) CMSHistFunc::shapeSig_lt_RANGE_1500_1650_SR_2000_radion_morph ""
+(0x1af1e3d0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1500_1650_SR_2000_radion_tes ""
+(0x1a506610,V-) CMSHistFunc::shapeSig_lt_RANGE_1650_1800_SR_2000_radion_morph ""
+(0x1aa869b0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1650_1800_SR_2000_radion_tes ""
+(0x1a50da30,V-) CMSHistFunc::shapeSig_lt_RANGE_1800_1950_SR_2000_radion_morph ""
+(0x1af965b0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1800_1950_SR_2000_radion_tes ""
+(0x1a5150e0,V-) CMSHistFunc::shapeSig_lt_RANGE_1950_2200_SR_2000_radion_morph ""
+(0x1afdcd30,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_1950_2200_SR_2000_radion_tes ""
+(0x1a51c6e0,V-) CMSHistFunc::shapeSig_lt_RANGE_2200_2450_SR_2000_radion_morph ""
+(0x1b02e6a0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_2200_2450_SR_2000_radion_tes ""
+(0x1a523b70,V-) CMSHistFunc::shapeSig_lt_RANGE_2450_5500_SR_2000_radion_morph ""
+(0x1afc11e0,V-) AsymPow::systeff_CHANNEL_lt_YEAR_2018_RANGE_2450_5500_SR_2000_radion_tes ""
+Servers:
+Proxies:
+--- RooAbsReal ---
+
+Plot label is "tes"
+Batch data access not initialised.
+--- RooAbsRealLValue ---
+Fit range is [ -7 , 7 ]
+--- RooRealVar ---
+Error = 1
+
+The fit also converges with this implementation, but I wanted to confirm whether this implementation achieves, within COMBINE, what I intended — or if there is a more appropriate way to handle this kind of mixed systematic treatment.
+Thanks and regards,
+Ganesh
+----------------------------------------
+
+REPLY 2 (by adewit @ 2025-04-08T14:33:10.784Z):
+Dear Ganesh,
+yes, it’s expected - this tells combine to look for the shape templates if they exist, and otherwise treat the uncertainty as lognormal. It is mentioned in the documentation, with a little bit more information, here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#template-shape-uncertainties (you have to scroll down to the “warning” box)
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by gparida @ 2025-04-08T14:52:19.705Z):
+Hi Adinda,
+Thank you for the clarification and documentation link!
+A quick follow-up for my own understanding - in this instance, for others I did have the tes up and down templates present in the input root files - However, from the workspace printouts it appears it still treated as lnN?
+I can remove the templates from the input files for tes for others  to be consistent with what is described in the documentation.
+Regards,
+Ganesh
+----------------------------------------
+
+REPLY 4 (by adewit @ 2025-04-08T15:06:17.898Z):
+Hi Ganesh,
+When you mention input root files, you mean the ones that you feed to CombineHarvester, right? I think this is fine - CombineHarvester produces its own input files that go with the datacards, and since within CombineHarvester you said to treat the uncertainty as lnN for others, the up/down templates for that process will not be in the input file that goes with the datacards that CombineHarvester produces.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by gparida @ 2025-04-08T15:16:04.994Z):
+Yes, by “input root files” I was referring to the ones passed to CombineHarvester. I understand this better and it is clear to me now.
+Thanks again for all your help!
+Regards,
+Ganesh
+----------------------------------------

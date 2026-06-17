@@ -1,0 +1,36 @@
+TOPIC: Pulls and impacts on the Asimov dataset
+URL: https://cms-talk.web.cern.ch/t/12889
+DATE: 2022-07-14T14:54:43.132Z
+SOLVED: no
+============================================================
+
+QUESTION (by lguzzi @ 2022-07-14T14:54:43.374Z):
+Dear experts,
+I am trying to compute the pulls for the Asimov dataset on a simple expo+gaussian model with 50 nuisance parameters. I run the commands I found on the twiki
+>> combine -M FitDiagnostics -d /gwpool/users/lguzzi/Tau3Mu/2017_2018/combine_test/T3MuCombine/T3MCombineAll/March_16_2022/datacards/W/CMS_T3MSignal_13TeV_W_Combined.txt -t -1 --expectSignal 0 --plots --rMin "-1" --rMax "10" --minos all --setParameterRanges $PARS
+>> python $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py -a fitDiagnostics.root -g plots.root
+>> text2workspace.py /gwpool/users/lguzzi/Tau3Mu/2017_2018/combine_test/T3MuCombine/T3MCombineAll/March_16_2022/datacards/W/CMS_T3MSignal_13TeV_W_Combined.txt -m 1.777 -o CMS_T3MSignal_13TeV_W_Combined.root -D data_obs
+>> combineTool.py -M Impacts -d CMS_T3MSignal_13TeV_W_Combined.root -m 1.777 -t -1 --expectSignal 0 --doInitialFit --robustFit=1 --rMin "-1" --rMax "10"
+>> combineTool.py -M Impacts -d CMS_T3MSignal_13TeV_W_Combined.root -m 1.777 -t -1 --expectSignal 0 --doFits --parallel 5 --rMin "-1" --rMax "10"
+>> combineTool.py -M Impacts -d CMS_T3MSignal_13TeV_W_Combined.root -m 1.777 -t -1 --expectSignal 0 --rMin "-1" --rMax "10" -o impacts.json
+>> plotImpacts.py -i impacts.json -o impacts
+
+The results I get are shown in Fig. 46 [1] (page 56). For the case r=0, many low-impact parameters have a one-sided impact, is this expected? Should I expect a regular behaviour as for the “real data” case (see for example Fig. 47 of [1] at page 58)?
+thanks,
+Luca
+[1] https://gitlab.cern.ch/tdr/notes/AN-20-127/-/blob/master/build/AN-20-127_temp.pdf
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-08-01T15:59:00.501Z):
+Hi Luca,
+Sorry for the slow reply on this. I’m not sure exactly why these low ranked inputs give one-sided impacts. Could be some small jump the in fit minimum when doing the scan for the impacts (I noticed that the b-only Asimov doesn’t exactly recover r=0). Given the impacts are so small though (and the main ones are well behaved) I don’t think it’s anything to worry about.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by lguzzi @ 2022-08-01T17:21:26.832Z):
+Hi Andrew,
+thnks you for your reply. I actually found the problem. My model has 51 parameters, but the x variable was set to 40 bins (for plotting purposes only, the final fit is unbinned). I thought combine would set the binning correctly for the Asimov generation, but later I found out itì uses the one of the RooRealVar. Changing the binning to 100 fixed the problem (now background impacts are meaningful on the r=0 case, while signal impacts are zero within the fit precision, as expected)
+best,
+Luca
+----------------------------------------

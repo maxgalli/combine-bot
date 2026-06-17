@@ -1,0 +1,100 @@
+{
+  "topic_id": 29995,
+  "title": "\u201cNuisance parameter pulls\u201d tests",
+  "url": "https://cms-talk.web.cern.ch/t/29995",
+  "category_id": 279,
+  "created_at": "2023-09-27T15:02:38.771Z",
+  "last_posted_at": "2025-03-03T16:09:43.049Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2023-09-27T15:02:38.956Z",
+      "updated_at": "2023-09-27T15:02:38.956Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts\nI am working in B2G-23-002, the partial combination of X > HH analyses.\nIn the statistical reviews in B2G there is one required test called \u201cNuisance parameter pulls\u201d [1]\nThat is based on a script called \u201cdiffNuisances.py\u201d, which seems to be deprecated in combine 9 (or at least moved somewhere we cannot find)\nIt is possible to use this script as described in the above-mentioned TWIKI in combine 8 (for definitiveness, we are using the 102x-comb2021 tag). To produce results for large combinations or complex analyses, (that may have more than 2000 nuisances as B2G-23-002) the script is not user-friendly if we want, for example, to parse the results based on the size of the pull, or try to apply some order.\nWhat would be your recommendation regarding the continuation of requiring this test and/or integrating it and maintaining it in combine9?\nIn principle, all the information provided by this test can be looked at in the impact plots\u2026\nCheers\nXanda\n[1] See \u201cB2G Requested Statistical Tests\u201d https://twiki.cern.ch/twiki/bin/view/CMS/B2GStatisticsRecommendations#statistical_health_checks",
+      "cooked_html": "<p>Dear experts</p>\n<p>I am working in B2G-23-002, the partial combination of X &gt; HH analyses.</p>\n<p>In the statistical reviews in B2G there is one required test called \u201cNuisance parameter pulls\u201d [1]</p>\n<p>That is based on a script called \u201cdiffNuisances.py\u201d, which seems to be deprecated in combine 9 (or at least moved somewhere we cannot find)</p>\n<p>It is possible to use this script as described in the above-mentioned TWIKI in combine 8 (for definitiveness, we are using the 102x-comb2021 tag). To produce results for large combinations or complex analyses, (that may have more than 2000 nuisances as B2G-23-002) the script is not user-friendly if we want, for example, to parse the results based on the size of the pull, or try to apply some order.</p>\n<p>What would be your recommendation regarding the continuation of requiring this test and/or integrating it and maintaining it in combine9?</p>\n<p>In principle, all the information provided by this test can be looked at in the impact plots\u2026</p>\n<p>Cheers</p>\n<p>Xanda</p>\n<p>[1] See \u201cB2G Requested Statistical Tests\u201d <a href=\"https://twiki.cern.ch/twiki/bin/view/CMS/B2GStatisticsRecommendations#statistical_health_checks\" rel=\"noopener nofollow ugc\">https://twiki.cern.ch/twiki/bin/view/CMS/B2GStatisticsRecommendations#statistical_health_checks</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-09-28T09:59:22.015Z",
+      "updated_at": "2023-09-28T10:00:16.363Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Xanda,\nthe diffNuisances.py script is still in v9 of combine, see here (for v9.1.0) [1]\nI think part of the difficulty is perhaps that /test/ is not an often used subdirectory and it is not parth of the path, so it won\u2019t be found from the command line if you just use diffNuisances.py\nIn fact, there is an open PR which should address this issue (along with some other updates to diffNuisances) [2]/\nwhich we have been a slow to merge; that\u2019s our fault. We will work it into the next version of combine.\nMaybe we should also add some documentation for this into the main combine documentation, which the twiki could then link to (which will make it more likely that the B2G instructions dont go out of date or become obsolete).\nFurther developments of this script for making it more user friendly and flexible for additional use cases are also more than welcome. We\u2019d be very happy to have contributions to that effect, please talk to us (@anigamov and I) if you\u2019d like to work on it; just to coordinate. e.g. developments should probably be made on top of the version in the PR linked above to avoid conflicts.\nWe can also help with some developments of the script, but the primary limitation in updates and developments is the person power for doing them so if interested parties help contribute that\u2019s the best way to ensure it is done.\nBest,\nKyle\n[1] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py\n[2] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/827/files#diff-1b6eb30a3f539bd4763c5b5cc905b59aabedf158c25c6083b9c47bc902a5dc83",
+      "cooked_html": "<p>Hi Xanda,</p>\n<p>the <code>diffNuisances.py</code> script is still in v9 of combine, see here (for v9.1.0) [1]</p>\n<p>I think part of the difficulty is perhaps that <code>/test/</code> is not an often used subdirectory and it is not parth of the path, so it won\u2019t be found from the command line if you just use <code>diffNuisances.py</code></p>\n<p>In fact, there is an open PR which should address this issue (along with some other updates to diffNuisances) [2]/</p>\n<p>which we have been a slow to merge; that\u2019s our fault. We will work it into the next version of combine.</p>\n<p>Maybe we should also add some documentation for this into the main combine documentation, which the twiki could then link to (which will make it more likely that the B2G instructions dont go out of date or become obsolete).</p>\n<p>Further developments of this script for making it more user friendly and flexible for additional use cases are also more than welcome. We\u2019d be very happy to have contributions to that effect, please talk to us (<a class=\"mention\" href=\"/u/anigamov\">@anigamov</a> and I) if you\u2019d like to work on it; just to coordinate. e.g. developments should probably be made on top of the version in the PR linked above to avoid conflicts.</p>\n<p>We can also help with some developments of the script, but the primary limitation in updates and developments is the person power for doing them so if interested parties help contribute that\u2019s the best way to ensure it is done.</p>\n<p>Best,<br>\nKyle</p>\n<p>[1] <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py</a><br>\n[2] <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/827/files#diff-1b6eb30a3f539bd4763c5b5cc905b59aabedf158c25c6083b9c47bc902a5dc83\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/827/files#diff-1b6eb30a3f539bd4763c5b5cc905b59aabedf158c25c6083b9c47bc902a5dc83</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2023-09-28T10:16:28.976Z",
+      "updated_at": "2023-09-28T10:16:47.454Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Just to add, the diffNuisances.py script has a \u201c--sortBy\u201d option (https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py#L130-L137) which allows you to sort the results by approximate impact or correlation - this option could be extended for other sorting options easily enough,\nNick",
+      "cooked_html": "<p>Just to add, the <code>diffNuisances.py</code> script has a \u201c<code>--sortBy</code>\u201d option (<a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py#L130-L137\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py#L130-L137</a>) which allows you to sort the results by approximate impact or correlation - this option could be extended for other sorting options easily enough,</p>\n<p>Nick</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2023-10-02T07:26:30.761Z",
+      "updated_at": "2023-10-02T07:26:30.761Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank you Kyle and Nick\nThank you for the information, I see that since the branch I last found it the script has evolved quite a lot.\nI will use it from the PR and feedback on the proper channel if any problems/suggestions.\n\nMaybe we should also add some documentation for this into the main combined documentation, which the twiki could then link to (which will make it more likely that the B2G instructions dont go out of date or become obsolete).\n\nThat is a good idea. I will point this thread to the statistics contacts in B2G.\ncheers\nXanda",
+      "cooked_html": "<p>Thank you Kyle and Nick</p>\n<p>Thank you for the information, I see that since the branch I last found it the script has evolved quite a lot.</p>\n<p>I will use it from the PR and feedback on the proper channel if any problems/suggestions.</p>\n<blockquote>\n<p>Maybe we should also add some documentation for this into the main combined documentation, which the twiki could then link to (which will make it more likely that the B2G instructions dont go out of date or become obsolete).</p>\n</blockquote>\n<p>That is a good idea. I will point this thread to the statistics contacts in B2G.</p>\n<p>cheers<br>\nXanda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2025-02-28T02:46:47.557Z",
+      "updated_at": "2025-02-28T02:46:47.557Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI apologize for reviving this topic, but has there been an integration of diffNuisances.py into combine proper? I am on Combine v10.0.2 and I don\u2019t see diffNuisances.py available in my list of commands on my terminal.\nBest,\nHyeon-Seo",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I apologize for reviving this topic, but has there been an integration of diffNuisances.py into combine proper? I am on Combine v10.0.2 and I don\u2019t see diffNuisances.py available in my list of commands on my terminal.</p>\n<p>Best,</p>\n<p>Hyeon-Seo</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-02-28T11:15:04.622Z",
+      "updated_at": "2025-02-28T11:15:04.622Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Hyeon-Seo,\nI\u2019m not sure why diffNuisances.py isn\u2019t available in the PATH anymore, but you should be able to find it in ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py. Hope this helps for the time being!\nCheers,\nPhilip",
+      "cooked_html": "<p>Hi Hyeon-Seo,</p>\n<p>I\u2019m not sure why <code>diffNuisances.py</code> isn\u2019t available in the <code>PATH</code> anymore, but you should be able to find it in <code>${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py</code>. Hope this helps for the time being!</p>\n<p>Cheers,<br>\nPhilip</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "ineuteli",
+      "name": "Izaak Neutelings",
+      "created_at": "2025-02-28T11:22:09.596Z",
+      "updated_at": "2025-02-28T11:22:09.596Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Hyeon-Seo,\nIt is in Combine as HiggsAnalysis/CombinedLimit/test/diffNuisances.py. As Kyle pointed out above, it does not appear in the list of commands because it\u2019s in test/ instead of in scripts/. CMSSW only picks up scripts in $CMSSW_BASE/src/<Package>/<Module>/script. When you compile CMSSW with scram b, the python script is not converted to a command. This is documented in https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBuildFile#CmsswSrcCodeDir.\nI typically do something like\npython3 $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root -g pulls.root --pullDef diffPullAsym\n\nI guess you could promote it to a command yourself. For example, in BASH:\nalias diffNuisances.py=\"python3 $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root\"\n\nalthough I would advocate of moving it to scripts/ in Combine itself by merging Kyle\u2019s PR #827.\nCheers,\nIzaak",
+      "cooked_html": "<p>Hi Hyeon-Seo,</p>\n<p>It is in Combine as <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/tree/main/test\" rel=\"noopener nofollow ugc\"><code>HiggsAnalysis/CombinedLimit/test/diffNuisances.py</code></a>. As Kyle pointed out above, it does not appear in the list of commands because it\u2019s in <code>test/</code> instead of in <code>scripts/</code>. CMSSW only picks up scripts in <code>$CMSSW_BASE/src/&lt;Package&gt;/&lt;Module&gt;/script</code>. When you compile CMSSW with <code>scram b</code>, the python script is not converted to a command. This is documented in <a href=\"https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBuildFile#CmsswSrcCodeDir\" rel=\"noopener nofollow ugc\">https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBuildFile#CmsswSrcCodeDir</a>.</p>\n<p>I typically do something like</p>\n<pre><code class=\"lang-auto\">python3 $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root -g pulls.root --pullDef diffPullAsym\n</code></pre>\n<p>I guess you could promote it to a command yourself. For example, in BASH:</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">alias diffNuisances.py=\"python3 $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root\"\n</code></pre>\n<p>although I would advocate of moving it to <code>scripts/</code> in Combine itself by merging Kyle\u2019s <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/827/files#diff-1b6eb30a3f539bd4763c5b5cc905b59aabedf158c25c6083b9c47bc902a5dc83\" rel=\"noopener nofollow ugc\">PR #827</a>. <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/stuck_out_tongue.png?v=12\" title=\":stuck_out_tongue:\" class=\"emoji\" alt=\":stuck_out_tongue:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>Cheers,<br>\nIzaak</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2025-03-03T16:09:43.049Z",
+      "updated_at": "2025-03-03T16:09:43.049Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear @pkeicher @ineuteli\nThank you very much for your quick responses and informative replies. I didn\u2019t know you could use the rest of the HiggsAnalysis functions by using the $CMSSW_BASE path.\nI was trying bunch of other paths but that, but it makes a lot of sense in retrospect. Now things are working as expected!\nThank you,\nHyeon-Seo",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/pkeicher\">@pkeicher</a> <a class=\"mention\" href=\"/u/ineuteli\">@ineuteli</a></p>\n<p>Thank you very much for your quick responses and informative replies. I didn\u2019t know you could use the rest of the HiggsAnalysis functions by using the $CMSSW_BASE path.</p>\n<p>I was trying bunch of other paths but that, but it makes a lot of sense in retrospect. Now things are working as expected!</p>\n<p>Thank you,</p>\n<p>Hyeon-Seo</p>"
+    }
+  ]
+}

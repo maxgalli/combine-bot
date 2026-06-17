@@ -1,0 +1,45 @@
+{
+  "topic_id": 122522,
+  "title": "How to debug text2workspace.py Segfault",
+  "url": "https://cms-talk.web.cern.ch/t/122522",
+  "category_id": 279,
+  "created_at": "2025-04-07T14:07:08.232Z",
+  "last_posted_at": "2025-04-07T14:46:15.933Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anovak",
+      "name": "Andrzej Novak",
+      "created_at": "2025-04-07T14:07:08.657Z",
+      "updated_at": "2025-04-07T14:07:08.657Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "How can I debug a text2workspace.py segfault? I am merging a large (I guess) number of categories 108 due to combining the 4 \u201cyears\u201d of Run2 and when trying to merge all 4 I get a segfault.\n\nAny combination of 3 of the 4 seems to work fine.\nIncreasing verbosity with (-v) doesn\u2019t seem to yield any useful info.\nI am on a machine with 16GB ram, which doesn\u2019t hit anywhere near the limit, keeping a look with htop. (I thought this was the issue originally but seems not)\n\nAny way to work around this? Is there some internal roo(t/fit) limit on mem?",
+      "cooked_html": "<p>How can I debug a <code>text2workspace.py</code> segfault? I am merging a large (I guess) number of categories 108 due to combining the 4 \u201cyears\u201d of Run2 and when trying to merge all 4 I get a segfault.</p>\n<ul>\n<li>Any combination of 3 of the 4 seems to work fine.</li>\n<li>Increasing verbosity with (-v) doesn\u2019t seem to yield any useful info.</li>\n<li>I am on a machine with 16GB ram, which doesn\u2019t hit anywhere near the limit, keeping a look with <code>htop</code>. (I thought this was the issue originally but seems not)</li>\n</ul>\n<p>Any way to work around this? Is there some internal roo(t/fit) limit on mem?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2025-04-07T14:42:29.260Z",
+      "updated_at": "2025-04-07T14:42:29.260Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi @anovak ,\nDid you try issuing the ulimit -s unlimited command before calling text2workspace?\nCheers,\nGiacomo",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/anovak\">@anovak</a> ,</p>\n<p>Did you try issuing the ulimit -s unlimited command before calling text2workspace?</p>\n<p>Cheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anovak",
+      "name": "Andrzej Novak",
+      "created_at": "2025-04-07T14:46:15.933Z",
+      "updated_at": "2025-04-07T14:46:15.933Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Thanks! That was that.",
+      "cooked_html": "<p>Thanks! That was that.</p>"
+    }
+  ]
+}

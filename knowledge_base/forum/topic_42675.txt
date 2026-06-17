@@ -1,0 +1,22 @@
+TOPIC: Combine tutorial today and tomorrow
+URL: https://cms-talk.web.cern.ch/t/42675
+DATE: 2024-06-24T06:37:59.436Z
+SOLVED: no
+============================================================
+
+QUESTION (by clange @ 2024-06-24T06:37:59.594Z):
+Hello everyone,
+Also posting here to make sure this reaches everybody potentially interested:
+There will be a Combine tutorial this week, today and tomorrow (Monday and Tuesday) in the CERN morning (9:00-13:00), i.e. starting in ~20 min. The format will be hybrid, Zoom information is available from the agenda and the room is 354/1-019 (CMS Centre – in case you do not have access, please knock and wait a bit or send a message in Mattermost, e.g. to @anigamov or @kcormier).
+
+The session today (Monday) is aimed at new users or users who want to understand the statistical tests and routines better: https://indico.cern.ch/event/1394373/timetable/?showDate=2024-06-24&view=standard&showSession=3#20240622
+The session on Tuesday is aimed at people who already have some combine knowledge (maybe from the Monday session, but also previous experience) but want to learn to use combine more effectively for their complicated use case: https://indico.cern.ch/event/1394373/timetable/?showDate=2024-06-25&view=standard&showSession=3#20240622
+
+There is no need to register (registration is largely meant for the ongoing hackathon).
+Best regards,
+Aliya, Kyle, Giulio, and Clemens
+----------------------------------------
+
+REPLY 2 (by clange @ 2024-06-24T07:04:34.405Z):
+Due to trouble in CERN IT, Indico might not be accessible at the moment (at least if you haven’t logged in to Indico over the last couple of days). Direct Zoom link for the tutorials: https://cern.zoom.us/j/62756569133?pwd=TEFLUlloTjFLVWszaXVXcytldUMxZz09
+----------------------------------------

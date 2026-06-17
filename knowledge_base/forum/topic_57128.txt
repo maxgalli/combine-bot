@@ -1,0 +1,107 @@
+TOPIC: Toys vs. AsymptoticLimits
+URL: https://cms-talk.web.cern.ch/t/57128
+DATE: 2024-10-28T16:51:55.462Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmeiring @ 2024-10-28T16:51:55.759Z):
+Dear experts,
+As part of the Statistics Questionnaire for EXO-23-017, I’m comparing limits computed with toys versus the asymptotic approximation. My working setup and results are given below [1-2].
+My questions are the following:
+
+For some of the results (eg. the expected 2.5%, 16% & 50% for 200_170_0) the limits with toys seem to be inaccurate since they each state a limit of r<0.6±0. I’ve tried playing with the number of toys and the clsAcc option, but without success so far. Do you know what causes this behaviour in the toys limits?
+The analysis has generally very low event counts in the search regions. With an older version of the analysis region binnings, there were (by mistake) a few bins with 0 background. When doing the same test at that time, I saw that the ±1/2 sigma uncertainties (corresponding to 2.5, 16, 84 and 97.5% expected) got closer to the central (50%) expected limits when using toys compared to asymptotic limits. Do you know what it means if the ±1/2 bands get more narrow with toys, and if it’s indeed due to the fact that a few bins had no background?
+
+Thanks a lot!
+Best,
+Peter Meiring
+[1] Combine commands:
+# Prepare workspace
+CARD=/eos/user/p/pmeiring/www/SUSY_SOS/datacards/20241017_newparametric_merged/cards/TChiWZ_Disp_200_190_10p0/card_TChiWZ_Disp_200_190_10p0_allEEMM.txt
+text2workspace.py $CARD
+WS=${CARD/.txt/.root}
+
+# Run AsymptoticLimits
+combine $WS -M AsymptoticLimits -n asymp -m 200
+
+# Run limits with toys on condor & hadd outputs
+combineTool.py -d $WS -M HybridNew -n 200_190_10p0_T1000 --LHCmode LHC-limits --clsAcc 0  -T 1000 -s -1 --singlePoint 0.01:0.30:0.01 --saveToys --saveHybridResult --job-mode condor --task-name 200_190_10p0_T1000 --sub-opts='+JobFlavour="tomorrow"'
+hadd higgsCombine200_190_10p0_T1000_hadded.root higgsCombine200_190_10p0_T1000.POINT.*
+
+# Read toy results from hadded file
+combine $WS -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=higgsCombine200_190_10p0_T1000_hadded.root
+combine $WS -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=higgsCombine200_190_10p0_T1000_hadded.root --expectedFromGrid 0.025
+combine $WS -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=higgsCombine200_190_10p0_T1000_hadded.root --expectedFromGrid 0.16
+combine $WS -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=higgsCombine200_190_10p0_T1000_hadded.root --expectedFromGrid 0.5
+combine $WS -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=higgsCombine200_190_10p0_T1000_hadded.root --expectedFromGrid 0.84
+combine $WS -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=higgsCombine200_190_10p0_T1000_hadded.root --expectedFromGrid 0.975
+
+[2] Results for 3 different signal hypotheses
+afbeelding970×966 90.7 KB
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-10-29T11:44:41.646Z):
+Hi Peter,
+I tried to take a look at your files and outputs directly, but couldn’t as it seems I don’t have permissions to that space in your eos.
+But, indeed, some (at first) surprising results often appear when running with very low statistics. When using HybridNew, one of the best ways to better understand what is going on is by making a few plots. You can plot both the estimated CLs values and their interpolation that combine is using as a function of the POI (using --plot=limit_scan.png), and the values of the test statistic at specific points (using the test/plotTestStatCLs.py script) [1] .
+Unlike in the case of high-statistics (where often the asymptotic calculation is fine anyway), the test statistic distributions can have multiple distinct peaks, intermediate regions with no entries, or even be fully discrete. This is due to the discrete nature of the observed results of counting experiments, which constrains the possible values of observed test statistics.
+You can see some examples of this kind of behaviour also in other analyses [2], you might be seeing similar effects to them. In particular I think when you had the very small uncertainty bands around the expected, with the mistaken bin inputs, that this is indeed most likely a normal effect from having very low expected bin contents.
+In either case, I would make the plots as mentioned above and they should tell us more clearly what’s going on, and whether the extraction of the limits needs to be improved or if this is the correct behaviour given the model, etc. You could make the limit scan plot, and the test statistic distributions for a few points around the limit values you’re investigating. I realize the plots can often be a little confusing if it’s your first time looking at them, so feel free to post them here if you need some help interpreting.
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/?h=hybridnew#plotting
+[2] Questions on HybridNew results - #10 by kcormier
+----------------------------------------
+
+REPLY 3 (by pmeiring @ 2024-10-29T15:27:27.055Z):
+Hi Kyle,
+Thanks a ton for your reply! Sorry for not being able to access my cards, I just added you via cernbox, so you should have permission now.
+I just produced the CLs-versus-r and the test-statistic distributions. They can be found here for the three signal points considered above:
+https://pmeiring.web.cern.ch/pmeiring/tmp/toystest/
+Looking at the CLs plots, it seems that indeed for some of the suspicious points (eg the 2.5%, 16% and 50% expected for 200_170_0) the CLs plots are poorly populated. Also it seems the entries for some of the r-values in the toy grid are missing. Is this something that can be solved by eg. running more toys, different grid, fit-options?
+The test-statistic distributions are there as well, but I struggle to interpret them, as also here there seem to be few entries. When making the plots, I noticed messages like “Saved test statistics distributions for 1000 signal toys and 250 background toys to tmp_out.root.”. I expected to have 1000 toys for both s+b and b-only hypotheses (as I used -T 1000 in the combineTool). Would higher number of toys make the test-statistic distributions more clear? How to do this for the background toys?
+Thanks again for the help. Any pointers are much appreciated!
+Cheers,
+Peter
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2024-10-29T17:20:06.088Z):
+Hi Peter,
+No problem.
+Yes, the CLs plots are very poorly populated for the lower quantiles. From the test distribution plots I think we can get an idea of what’s happening.
+In those test-statistic plots, each plot is for a different signal hypothesis (and accordingly different test statistic).  Low values mean the distribution looks similar to what is expected for that signal strength, high values mean the distribution looks very different. In blue is the distribution from toy fits with the signal, and in green+yellow is toy fits to the background hypothesis.  For any given point the CLs value is calculated using the right-tail “integral” of the two distributions. Where the “point” from which the tail is taken depends on wether you are talking about observed, or which expected value.
+In your plots the background distribution is particularly hard to see (I’'m not sure why, but maybe its a plotting issue related to using an older combine version).  But the quantiles of the background distribution should be shown in different colours, and these are the points used for the expected values. Taking your 200_170_0 signal as an example, it looks like there are just no signal events above the 0.16 and 0.025 quantiles of the background distribution for any of the the signal hypothesis you check. That means that the CLs will be 0 for these points, and I think then 0.6 is just being chosen as its the lowest value in the scan.  You can also see for the median expected value, that the plot never reaches the 0.05 threshold that it is trying to find the crossing for when doing a 95% CLs limit. In other words – for that model you need to extend down to smaller signal values.
+The number of toys used to estimate the background distribution by default is only 1/4 of whatever is used for the signal distribution. you can add --fullBToys if you want to increase the number of background toys to the same as the number of signal toys. Given the plots, I had the impression that perhaps some fits were failing and you had fewer entries than expected, but your printout should be counting the number of entries and seems like that’s not the case, at least for the printout point you shared, so maybe its a plotting issue. If you point me to where the test result (.root files used as inputs to the plotting) are stored, I can take a bit of a closer look, I didn’t find them immediately in the directory you shared.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 5 (by pmeiring @ 2024-10-29T18:54:08.826Z):
+Hi Kyle,
+Thanks for the quick reply!
+I just put the hadded toys files (inputs to plotTestStatCLs.py) in the same webpage.
+For the 200_170_0 point indeed I see now that HybridNew did not finish for some of r-value (below 0.6), even after 24h of running (!). I’ll resubmit with longer runtime and remake those plots. Sorry for not spotting that earlier.
+Instead, for 200_190_10p0, all jobs finished succesfully and still the CLs plots for the 0.16 and 0.025 quantiles are poorly populated, as well as the test-statistic distributions. Would you have an idea what could cause that?
+Lastly, if - after rerunning the failed jobs - the asymptotic limits and toy-based limits are in agreement, do you think it’s save to use asymptotic limits (also for the other signal mass-hypotheses), or do the CLs/test-statistics distributions still look off to you?
+Thanks,
+Peter
+----------------------------------------
+
+REPLY 6 (by kcormier @ 2024-10-31T07:58:18.297Z):
+Hi Peter,
+No problem. For the other points where the low quantiles are poorly populated, I think the issue is still coming from the same underlying effect, the toys have almost no signal events above those quantiles of the background distribution, so they are statistically limited.
+I made a small edit to my local plotting script, just modifying the y-axis lower bound to be smaller, so that your distributions would be more visible, and am attaching one (randomly chosen) example output, for your 200_190_10p0 model at the signal strength point 0.07. You can see the distribution much better. You can see that there are no signal events above the 0.025 expected quantile of the background (which is the part of the red histogram coloured in yellow, the rightmost part being 0.025, and leftmost being 0.975).
+The width of your background-only distribution at these signal hypothesis is still pretty wide compared to the signal distribution and so it seems you’d benefit a little bit from more signal toys to be able to cover them.  I think the relatively large width is also why the plotting script is not finding a very good lower bound of the y-axis.
+I haven’t checked in great detail (all the hypothesis and signal strengths) but the distributions themselves don’t look off, except that its a bit strange that the test statistics distributions are a bit wider than usual around the expected limit. Under most conditions, the width of these distributions and the limit values are related to each other. This is why the plotting scripts are not displaying very well. I don’t think this necessarily indicates a problem, but I also don’t fully understand what it is about your model that’s causing this behaviour.
+Best,
+Kyle
+test_stat_distributions.root_qmu_120.0_0.07.pdf (20.9 KB)
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2024-10-31T08:09:26.970Z):
+Hi Peter,
+Sorry, I spoke a little bit too soon. I realized a couple of mistakes in my earlier post the yellow area is not the 0.975 and 0.025 quantiles, they are the 0.16 and 0.84 quantiles.
+Also, I took a quick look at a few other plots, and I think your background distribution may not be as much wider as I had been thinking, I think if you carry on with more toys it should probably look fine.
+Best,
+Kyle
+----------------------------------------

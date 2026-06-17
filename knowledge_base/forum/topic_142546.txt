@@ -1,0 +1,26 @@
+TOPIC: Impact order changes after renaming of nuisance parameters
+URL: https://cms-talk.web.cern.ch/t/142546
+DATE: 2026-03-02T15:36:30.746Z
+SOLVED: no
+============================================================
+
+QUESTION (by jipark @ 2026-03-02T15:36:31.058Z):
+Dear Combine experts,
+During the Combine review [1] of TOP-25-011 [2], we observed some unexpected behavior in the impact calculation. In short, we found small differences in the impact values and their ranking before and after renaming some of the nuisance parameters.
+Although these differences are negligible for the expected uncertainties on POIs (r, CMS_TOP25011_mass, CMS_TOP25011_width), the ordering of impacts changes slightly in a few places. We cross-checked this using the latest version of Combine (v10.5) and confirmed that the effect persists. The contents of the datacard and the input shapes have been double-checked and found to be consistent.
+Our current understanding is that the differences may be related to the internal ordering of the nuisance parameters, possibly affected by their names. To investigate this further, we partially restored some parameter names from the original datacard and also manually modified several parameter names on top of the datacard provided in the repository [1]. By doing so, we were able to alter some of the impact rankings, as shown in the attached slides.
+We are not sure if this is a known or expected behavior. We would greatly appreciate any advice on further tests or checks we could perform.
+Best,
+Jiwon
+[1] https://gitlab.cern.ch/cms-analysis/top/top-25-011/datacards
+[2] https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=TOP-25-011
+260302_TOP-25-011_combine_tests.pdf (397.0 KB)
+----------------------------------------
+
+REPLY 2 (by gallim @ 2026-03-20T14:20:20.375Z):
+Dear Jiwon,
+I just tried the commands in the repo with the latest Combine version (built locally with ROOT 6.34 and Python 3.12) and I get the impacts attached. If I’m not mistaken, this corresponds to the “left” version of your slides page 3, but with the correct naming scheme. This means that I’m not able to reproduce the problem at the moment. Did you figure out the issue in the meantime? If not, and in case I didn’t see them, could you please upload the non-renamed version of the datacards such that I can investigate further?
+Best,
+Massimiliano
+impacts_expected.pdf (83.4 KB)
+----------------------------------------

@@ -1,0 +1,50 @@
+TOPIC: How to use combine tool to perform the ABCD method bin by bin
+URL: https://cms-talk.web.cern.ch/t/12736
+DATE: 2022-07-11T12:37:43.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by pengn1 @ 2022-07-11T12:37:43.000Z):
+Dear Experts:
+I am trying to use combine tool to perform the background estimation with the ABCD method, which predicts both shape and normalization. The instructions in the following link: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters is normalization only, and I find a link to use RooParametricHist to achieve bin by bin estimation.
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/SWGuideNonStandardCombineUses#GammaN_with_shapes_using_RooPara
+In this case, I’m wondering :
+a) if using RooParametricHist is the suggested way to apply the ABCD method bin by bin? or do you have any other suggestions (As the website looks outdated)
+b) how should we deal with the shape systematic uncertainties? Implemented by ourselves in the workspace as described in the above link? Could you give us more detailed suggestions?
+Thanks advanced for your help!
+Best regards,
+Na
+----------------------------------------
+
+REPLY 2 (by nckw @ 2022-07-11T12:55:33.000Z):
+Dear Na,
+I suggest you follow the up-to-date documentation (the Twiki is indeed outdated)
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes
+You will see there how to include systematic variations via providing up/down templates (RooDataHists) just like you would do for TH1 based analyses.
+Best,
+Nick
+
+On 11 Jul 2022, at 13:40, 娜娜 via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+娜娜 pengn1July 11
+
+Dear Experts:
+I am trying to use combine tool to perform the background estimation with the ABCD method, which predicts both shape and normalization. The instructions in the following link: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters is normalization only, and I find a link to use RooParametricHist to achieve bin by bin estimation.
+https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/SWGuideNonStandardCombineUses#GammaN_with_shapes_using_RooPara
+In this case, I’m wondering :
+a) if using RooParametricHist is the suggested way to apply the ABCD method bin by bin? or do you have any other suggestions (As the website looks outdated)
+b) how should we deal with the shape systematic uncertainties? Implemented by ourselves in the workspace as described in the above link? Could you give us more detailed suggestions?
+Thanks advanced for your help!
+Best regards,
+Na
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by pengn @ 2022-07-11T14:11:06.861Z):
+Dear Nick:
+Thanks a lot. It is indeed what I need.
+Cheers,
+Na
+----------------------------------------

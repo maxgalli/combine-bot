@@ -1,0 +1,45 @@
+{
+  "topic_id": 37889,
+  "title": "ABCD Statistical Uncertainties on Sideband Regions",
+  "url": "https://cms-talk.web.cern.ch/t/37889",
+  "category_id": 279,
+  "created_at": "2024-03-28T18:51:23.171Z",
+  "last_posted_at": "2024-04-02T14:19:58.190Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "rband",
+      "name": "Reyer Edmond Band",
+      "created_at": "2024-03-28T18:51:23.348Z",
+      "updated_at": "2024-03-28T18:51:23.348Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear HiggsCombine experts,\nI\u2019m running a datacard for a simple counting experiment that uses the ABCD method to predict the total background in bin A. Bins B,C, and D are also fit in the datacard simultaneously. A barebones version of our card would look something like:\nimax 4 number of channels\njmax 1 number of backgrounds\nkmax * number of nuisance parameters\n--------------------------------------------------------------------------------------------------------------------------------\nbin                                                     A           B           C           D\nobservation                                             1           80          12          1052\n--------------------------------------------------------------------------------------------------------------------------------\nbin                                                     A           B           C           D           A           B           C           D\nprocess                                                 Bkg         Bkg         Bkg         Bkg         sig         sig sig    sig\nprocess                                                 1           1           1           1           0           0           0           0\nrate                                                    1           1           1           1           3.73     1.20     0.85    0.51\n--------------------------------------------------------------------------------------------------------------------------------\n(uncertainties)\n--------------------------------------------------------------------------------------------------------------------------------\na rateParam                  A  Bkg    (@0*@1/@2) b,c,d\nb rateParam                  B  Bkg    80\nc rateParam                  C  Bkg    12\nd rateParam                  D  Bkg    1052\n\nWhat I\u2019m confused about is how to include the statistical uncertainty on the B,C,D bins in this card. Should it only affect bin A, or affect the yield in B/C/D as well? For example:\nabcd_statB            lnN   1.11180   1.11180   -         -         -         -         -         -\nabcd_statC            lnN   1.28868   -         1.28868   -         -         -         -         -\nabcd_statD            lnN   1.03083   -         -         1.03083   -         -         -         -\n\nThis datacard, where the numbers come from sqrt(N_obs)/N_obs, applies the error to both signal and sideband channels. Does this seem correct, or should each entry only apply to Bkg in bin A?\nThanks in advance for any advice!\n-Reyer",
+      "cooked_html": "<p>Dear HiggsCombine experts,</p>\n<p>I\u2019m running a datacard for a simple counting experiment that uses the ABCD method to predict the total background in bin A. Bins B,C, and D are also fit in the datacard simultaneously. A barebones version of our card would look something like:</p>\n<pre><code class=\"lang-auto\">imax 4 number of channels\njmax 1 number of backgrounds\nkmax * number of nuisance parameters\n--------------------------------------------------------------------------------------------------------------------------------\nbin                                                     A           B           C           D\nobservation                                             1           80          12          1052\n--------------------------------------------------------------------------------------------------------------------------------\nbin                                                     A           B           C           D           A           B           C           D\nprocess                                                 Bkg         Bkg         Bkg         Bkg         sig         sig sig    sig\nprocess                                                 1           1           1           1           0           0           0           0\nrate                                                    1           1           1           1           3.73     1.20     0.85    0.51\n--------------------------------------------------------------------------------------------------------------------------------\n(uncertainties)\n--------------------------------------------------------------------------------------------------------------------------------\na rateParam                  A  Bkg    (@0*@1/@2) b,c,d\nb rateParam                  B  Bkg    80\nc rateParam                  C  Bkg    12\nd rateParam                  D  Bkg    1052\n</code></pre>\n<p>What I\u2019m confused about is how to include the statistical uncertainty on the B,C,D bins in this card. Should it only affect bin A, or affect the yield in B/C/D as well? For example:</p>\n<pre><code class=\"lang-auto\">abcd_statB            lnN   1.11180   1.11180   -         -         -         -         -         -\nabcd_statC            lnN   1.28868   -         1.28868   -         -         -         -         -\nabcd_statD            lnN   1.03083   -         -         1.03083   -         -         -         -\n</code></pre>\n<p>This datacard, where the numbers come from sqrt(N_obs)/N_obs, applies the error to both signal and sideband channels. Does this seem correct, or should each entry only apply to Bkg in bin A?</p>\n<p>Thanks in advance for any advice!<br>\n-Reyer</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "wtford",
+      "name": "William Ford",
+      "created_at": "2024-03-28T21:47:14.327Z",
+      "updated_at": "2024-03-28T21:47:14.327Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Reyer,\nI\u2019m not a Combine expert, but I think I can answer this one (and I trust the experts will correct me if necessary).  You don\u2019t need those three lnN nuisance parameter lines; they would double count the statistical uncertainties.  Each of your rateParam lines will introduce, as a multiplicative factor in the overall pdf, a Poisson function for the corresponding channel.  For example, in the background-only fit (r = 0), for channel b this function will be\nP(B; b) = b^B * exp(-b) / B!\nIn the full fit, b will be replaced by b + r * 1.20, where 1.20 is the signal prediction from the \u201crate\u201d line in your datacard:\nP(B; r, b) = (b + 1.20r)^B * exp[-(b + 1.20r)] / B!\nEither way, the statistical uncertainty connected with the observation B will be accounted for.\nFor channel a, the pdf is\nP(A; r, b, c, d) = (bc/d + 3.73r)^A * exp[-(bc/d + 3.73r)] / A!\nOf course, to account for systematic uncertainties you\u2019d add lines for the associated nuisance parameters.\nBill",
+      "cooked_html": "<p>Hi Reyer,</p>\n<p>I\u2019m not a Combine expert, but I think I can answer this one (and I trust the experts will correct me if necessary).  You don\u2019t need those three lnN nuisance parameter lines; they would double count the statistical uncertainties.  Each of your rateParam lines will introduce, as a multiplicative factor in the overall pdf, a Poisson function for the corresponding channel.  For example, in the background-only fit (r = 0), for channel b this function will be</p>\n<p>P(B; b) = b^B * exp(-b) / B!</p>\n<p>In the full fit, b will be replaced by b + r * 1.20, where 1.20 is the signal prediction from the \u201crate\u201d line in your datacard:</p>\n<p>P(B; r, b) = (b + 1.20<em>r)^B * exp[-(b + 1.20</em>r)] / B!</p>\n<p>Either way, the statistical uncertainty connected with the observation B will be accounted for.</p>\n<p>For channel a, the pdf is</p>\n<p>P(A; r, b, c, d) = (b<em>c/d + 3.73</em>r)^A * exp[-(b<em>c/d + 3.73</em>r)] / A!</p>\n<p>Of course, to account for systematic uncertainties you\u2019d add lines for the associated nuisance parameters.</p>\n<p>Bill</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "rband",
+      "name": "Reyer Edmond Band",
+      "created_at": "2024-04-02T14:19:58.190Z",
+      "updated_at": "2024-04-02T14:19:58.190Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Bill, thanks for the clear explanation! That makes sense to me now.\nReyer",
+      "cooked_html": "<p>Hi Bill, thanks for the clear explanation! That makes sense to me now.</p>\n<p>Reyer</p>"
+    }
+  ]
+}

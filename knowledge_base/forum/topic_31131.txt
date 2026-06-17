@@ -1,0 +1,39 @@
+TOPIC: What distribution to use for uncertainties in a Smoothed background in Combine
+URL: https://cms-talk.web.cern.ch/t/31131
+DATE: 2023-10-30T21:38:46.741Z
+SOLVED: no
+============================================================
+
+QUESTION (by wvetens @ 2023-10-30T21:38:46.949Z):
+Hi Experts,
+I had a question about what distribution would be best suited to modeling the statistical uncertainty in a smoothed background.
+At the moment, we have a background with very low statistics, even zero in some bins. This background also has an extrapolation factor associated with it. To counteract the low background statistics, it was suggested by our PAG to smooth the background for this region of low statistics, but that presents a problem:
+Gamma seems to be the recommended distribution for statistical uncertainty in an integer number of events, with the extrapolation factor allowing for a non-integer reported final rate. But, because we are smoothing our background, the quoted “count” is no longer an integer…
+Would it be best to:
+a) instead treat the uncertainty as log-normal, with “poisson-like” uncertainty? (i.e. the square root of the smoothed count times extrapolation factor).
+b) use gmN, and report the real count (i.e. without smoothing) but change the extrapolation factor to provide the smoothed rate prediction? (there would thus still be some bins which would have a rate of zero, which to me would seem to counteract the benefit of the smoothing.)
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-11-02T15:13:59.803Z):
+Hi Wren,
+Let me start by saying that I think some of these questions about how to treat the uncertainties of smoothed estimates may be more suited to the statistics committee forum [1], rather than the statistical tools forum. So it could be worth reposting this there if you want to use the smoothing and extrapolation.
+That being said, I’ll give my initial thoughts, though I’m not entirely clear on the setup, so please correct me if I’ve misunderstood.
+When you talk about ‘a background with low statistics that also has an extrapolation factor associated with it’, its unclear to me exactly what this means.
+Does this mean that you have  background whose contribution in some Singal Region (SR) is being estimated from  raw event counts of real data in some control region (CR) by multiplying it by an extrapolation factor, and that in this CR you have very low statistics, so that some bins of the CR have no events?
+From the statistical tools side, I will say that using a gmN uncertainty in combine does require the first parameter to be an integer. This is not because of a technical limitation (i.e. technically, it would be very straightforward for combine to allow this first parameter to be a float), but rather, I think, to stop users from constructing poor uncertainty models. If you have a real data events in a control region they will follow an integer count, and poisson statistics, and the gmN uncertainty essentially includes this poisson expectation on the observed count in the background region as part of the likelihood. .
+However, if your ‘control region’ is MC or ‘smoothed’ it will not in general be an integer count – and in general it will also not follow poisson statistics, so the gmN uncertainty is not (in general) appropriate. Though in some specific situations it may be.
+In any case, If I’ve understood the situation correctly, the best solution might be to include the data from the CR directly in the fit (without any smoothing!). If the initial rates for the CR and SR are set correctly (by which I mean their ratio is equal to the extrapolation factor) then you can add a rate parameter which scales them both simultaneously. By doing so, the SR count will be constrained by the agreement of the CR expectation (=SR*extrapolation factor) and this will take a Poisson likelihood as appropriate for the actual observed number of counts. You can see a simple example of a datacard using a gmN uncertainty rewritten as one using a control region with rateparam explicilty in this github issue post [2].
+I hope that helps, let me know if you have further questions.
+Cheers,
+Kyle
+[1] https://cms-talk.web.cern.ch/c/physics/stats/142
+[2]https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues/161#issuecomment-1406794570
+----------------------------------------
+
+REPLY 3 (by kcormier @ 2023-11-02T15:18:18.625Z):
+Hi Wren,
+Sorry, one correction to my above post (unfortunately its too late to remove the wrong things I said!). There would be a technical issue in changing the first parameter to a float, because it is the observation of the poisson distribution, not the mean (as I was incorrectly imagining when I wrote that).
+The rest of what I said should still be correct, you can just ignore the 5th and 6th paragraphs from that post.
+Cheers,
+Kyle
+----------------------------------------

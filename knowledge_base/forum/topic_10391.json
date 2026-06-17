@@ -1,0 +1,56 @@
+{
+  "topic_id": 10391,
+  "title": "Binned shape analysis",
+  "url": "https://cms-talk.web.cern.ch/t/10391",
+  "category_id": 279,
+  "created_at": "2022-05-12T23:54:48.804Z",
+  "last_posted_at": "2022-05-17T09:54:14.829Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "minxi",
+      "name": "Minxi Yang",
+      "created_at": "2022-05-12T23:54:49.039Z",
+      "updated_at": "2023-02-07T11:02:49.154Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nCombine can do the binned shape analysis with either TH1 histogram or RooDataHist and RooHistPdf. However, these two methods do not give identical results with the same input data. So my question is why the output of the two methods is not the same?.\nHere, I provide an example written by myself.\nThis code is used to generate the pseudo data\nCombine-flavorRatio/generate.py at main \u00b7 minxiyang/Combine-flavorRatio (github.com)\nThis code is used to run the combine (datacards can be found in the same dir of my GitHub)\nCombine-flavorRatio/run.sh at main \u00b7 minxiyang/Combine-flavorRatio (github.com)\nThis plot shows the NLL as a function of the flavor ratio, and you can see the NLL curves are different\nCombine-flavorRatio/testhistPdfVsTH1all_massCut_10000.pdf at main \u00b7 minxiyang/Combine-flavorRatio (github.com)",
+      "cooked_html": "<p>Dear experts,</p>\n<p>Combine can do the binned shape analysis with either TH1 histogram or RooDataHist and RooHistPdf. However, these two methods do not give identical results with the same input data. So my question is why the output of the two methods is not the same?.</p>\n<p>Here, I provide an example written by myself.</p>\n<p>This code is used to generate the pseudo data<br>\n<a href=\"https://github.com/minxiyang/Combine-flavorRatio/blob/main/example/generate.py#L1\" rel=\"noopener nofollow ugc\">Combine-flavorRatio/generate.py at main \u00b7 minxiyang/Combine-flavorRatio (github.com)</a></p>\n<p>This code is used to run the combine (datacards can be found in the same dir of my GitHub)<br>\n<a href=\"https://github.com/minxiyang/Combine-flavorRatio/blob/main/example/run.sh\" rel=\"noopener nofollow ugc\">Combine-flavorRatio/run.sh at main \u00b7 minxiyang/Combine-flavorRatio (github.com)</a></p>\n<p>This plot shows the NLL as a function of the flavor ratio, and you can see the NLL curves are different<br>\n<a href=\"https://github.com/minxiyang/Combine-flavorRatio/blob/main/example/testhistPdfVsTH1all_massCut_10000.pdf\" rel=\"noopener nofollow ugc\">Combine-flavorRatio/testhistPdfVsTH1all_massCut_10000.pdf at main \u00b7 minxiyang/Combine-flavorRatio (github.com)</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-05-13T08:11:39.228Z",
+      "updated_at": "2022-05-13T08:11:39.228Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Can you double check the creation of the datasets?\nI got (from your repository w/o rerunning) different content in the data histogram:\n\nimage1604\u00d71248 57.5 KB\n\nLikely, the difference is in the binning and the overflow.\n-Andrea",
+      "cooked_html": "<p>Can you double check the creation of the datasets?</p>\n<p>I got (from your repository w/o rerunning) different content in the data histogram:<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/6/6e798bffed7a521a79093cf9829c1bd3d2b326b0.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/6e798bffed7a521a79093cf9829c1bd3d2b326b0\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6e798bffed7a521a79093cf9829c1bd3d2b326b0_2_642x500.png\" alt=\"image\" data-base62-sha1=\"fLiVX5j6nFCj5TfLeu4IngF5dhS\" width=\"642\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6e798bffed7a521a79093cf9829c1bd3d2b326b0_2_642x500.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6e798bffed7a521a79093cf9829c1bd3d2b326b0_2_963x750.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6e798bffed7a521a79093cf9829c1bd3d2b326b0_2_1284x1000.png 2x\" data-small-upload=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6e798bffed7a521a79093cf9829c1bd3d2b326b0_2_10x10.png\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1604\u00d71248 57.5 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>\n<p>Likely, the difference is in the binning and the overflow.</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "minxi",
+      "name": "Minxi Yang",
+      "created_at": "2022-05-13T18:37:15.163Z",
+      "updated_at": "2022-05-13T18:37:15.163Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nThere is an issue in the previous code and I have already fixed it and updated my Github.\nHowever, I can still observe the difference. I think now my question is much clear.\nI can create a TH1\nh_data = ROOT.TH1D(\u201cdata_obs\u201d, \u201ctoy data\u201d, 100, 0, 100)\nAnd convert it into a RooDataHist\ndatahist = ROOT.RooDataHist(\u201cdata_obs\u201d, \u201cdata_obs\u201d, ROOT.RooArgList(massVar), ROOT.RooFit.Import(h_data))\nI can also create a RooDataHist from RooDataset\nmassVar = ROOT.RooRealVar(\u201cmassVar\u201d, \u201cmassVar\u201d, 50.0, 0.0, 100.0)\nmassVar.setBins(100)\ndatahist = ROOT.RooDataHist(\u201cdata_obs\u201d, \u201c\u201d, ROOT.RooArgSet(massVar), dataset)\nHowever,  it looks like that massVar.setBins(100) do not provide the same binning as h_data = ROOT.TH1D(\u201cdata_obs\u201d, \u201ctoy data\u201d, 100, 0, 100)?",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>There is an issue in the previous code and I have already fixed it and updated my Github.</p>\n<p>However, I can still observe the difference. I think now my question is much clear.</p>\n<p>I can create a TH1<br>\nh_data = ROOT.TH1D(\u201cdata_obs\u201d, \u201ctoy data\u201d, 100, 0, 100)</p>\n<p>And convert it into a RooDataHist<br>\ndatahist = ROOT.RooDataHist(\u201cdata_obs\u201d, \u201cdata_obs\u201d, ROOT.RooArgList(massVar), ROOT.RooFit.Import(h_data))</p>\n<p>I can also create a RooDataHist from RooDataset<br>\nmassVar = ROOT.RooRealVar(\u201cmassVar\u201d, \u201cmassVar\u201d, 50.0, 0.0, 100.0)<br>\nmassVar.setBins(100)<br>\ndatahist = ROOT.RooDataHist(\u201cdata_obs\u201d, \u201c\u201d, ROOT.RooArgSet(massVar), dataset)</p>\n<p>However,  it looks like that massVar.setBins(100) do not provide the same binning as h_data = ROOT.TH1D(\u201cdata_obs\u201d, \u201ctoy data\u201d, 100, 0, 100)?</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-05-17T09:54:14.829Z",
+      "updated_at": "2022-05-17T09:54:14.829Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Minxi,\nI ran your example script. As far as I can tell, the binning is consistent, but you need to take care of the overflow (data points with value > 100). These are effectively ignored when you convert from TH1 to RooDataHist, however it appears the constructor from RooDataSet will put them in the last bin. If I exclude these when building the RooDataSet, they appear identical (see attached).\ncheers,\nAndrew\n\ndatahistVsTH1567\u00d7550 20.4 KB",
+      "cooked_html": "<p>Hi Minxi,</p>\n<p>I ran your example script. As far as I can tell, the binning is consistent, but you need to take care of the overflow (data points with value &gt; 100). These are effectively ignored when you convert from TH1 to RooDataHist, however it appears the constructor from RooDataSet will put them in the last bin. If I exclude these when building the RooDataSet, they appear identical (see attached).</p>\n<p>cheers,<br>\nAndrew</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/e/e5f5c52424440970f4ed71d3d5b4d71966aad7da.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/e5f5c52424440970f4ed71d3d5b4d71966aad7da\" title=\"datahistVsTH1\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e5f5c52424440970f4ed71d3d5b4d71966aad7da_2_515x500.png\" alt=\"datahistVsTH1\" data-base62-sha1=\"wOjTQjBuOvEd4dKwdqQhBw6wSRc\" width=\"515\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e5f5c52424440970f4ed71d3d5b4d71966aad7da_2_515x500.png, https://cms-talk.web.cern.ch/uploads/default/original/2X/e/e5f5c52424440970f4ed71d3d5b4d71966aad7da.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/e/e5f5c52424440970f4ed71d3d5b4d71966aad7da.png 2x\" data-small-upload=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e5f5c52424440970f4ed71d3d5b4d71966aad7da_2_10x10.png\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">datahistVsTH1</span><span class=\"informations\">567\u00d7550 20.4 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>"
+    }
+  ]
+}

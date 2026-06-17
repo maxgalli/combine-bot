@@ -1,0 +1,34 @@
+{
+  "topic_id": 26109,
+  "title": "How separate syst. and stat. uncertainties",
+  "url": "https://cms-talk.web.cern.ch/t/26109",
+  "category_id": 279,
+  "created_at": "2023-06-28T12:47:08.234Z",
+  "last_posted_at": "2023-06-28T13:35:18.639Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "sibashir",
+      "name": "Sima Bashiri Kahjoq",
+      "created_at": "2023-06-28T12:47:08.389Z",
+      "updated_at": "2023-06-28T12:47:08.389Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI have a specific requirement regarding obtaining both statistical and systematic uncertainty values. I have a tree named \u201climit\u201d which includes a \u201csystematics\u201d branch, but unfortunately, there are no statistical branches available.\nimage751\u00d7152 19 KB\nAdditionally, when I ran the command mentioned below, I obtained a combined uncertainty value. However, I would like to have the statistical and systematic uncertainties separately. Could you please assist me in achieving this?\ncombine -M MultiDimFit o/ee_output_17.root -n .singles --algo singles\n\nimage751\u00d7125 14.3 KB\nI would greatly appreciate it if you could advise me on how to obtain distinct statistical and systematic uncertainty values.\nSima",
+      "cooked_html": "<p>Hi,</p>\n<p>I have a specific requirement regarding obtaining both statistical and systematic uncertainty values. I have a tree named \u201climit\u201d which includes a \u201csystematics\u201d branch, but unfortunately, there are no statistical branches available.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7d90d7ed81d8f32d2ab885b56bc1862af4adf06c.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/7d90d7ed81d8f32d2ab885b56bc1862af4adf06c\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/7/7d90d7ed81d8f32d2ab885b56bc1862af4adf06c.png\" alt=\"image\" data-base62-sha1=\"hUO0Axf9q3iwW336rDfW3COkQ4A\" width=\"690\" height=\"139\" data-dominant-color=\"3D1932\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">751\u00d7152 19 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>Additionally, when I ran the command mentioned below, I obtained a combined uncertainty value. However, I would like to have the statistical and systematic uncertainties separately. Could you please assist me in achieving this?</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit o/ee_output_17.root -n .singles --algo singles\n</code></pre>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/b/bc1c267d1e7727a0cedd1d20c3c18f795a4b3ab6.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/bc1c267d1e7727a0cedd1d20c3c18f795a4b3ab6\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/b/bc1c267d1e7727a0cedd1d20c3c18f795a4b3ab6.png\" alt=\"image\" data-base62-sha1=\"qQ64JeBWMp1cEsICFNbeIvLhoMK\" width=\"690\" height=\"114\" data-dominant-color=\"3B172F\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">751\u00d7125 14.3 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>I would greatly appreciate it if you could advise me on how to obtain distinct statistical and systematic uncertainty values.</p>\n<p>Sima</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-06-28T13:35:18.639Z",
+      "updated_at": "2023-06-28T13:35:18.639Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sima,\nIf I\u2019ve understood correctly that you are trying to get a breakdown of the uncertainties into different sources for your fit, you should take a look at this section of the documentation:\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties\nAs you can see, running such a breakdown requires running a number of additional fits, and defining an ordering in which the uncertainties are applied. So this is not done by the default fits.\nAlso, just to clarify, the syst branch of the limit tree output by combine is indicating whether or not the fit was run with systematics, its not indicating the size of the statistical uncertainties.\nI hope this answers your questions, if not please feel free to follow up.\nCheers,\nKyle",
+      "cooked_html": "<p>Hi Sima,</p>\n<p>If I\u2019ve understood correctly that you are trying to get a breakdown of the uncertainties into different sources for your fit, you should take a look at this section of the documentation:<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#breakdown-of-uncertainties</a></p>\n<p>As you can see, running such a breakdown requires running a number of additional fits, and defining an ordering in which the uncertainties are applied. So this is not done by the default fits.</p>\n<p>Also, just to clarify, the <code>syst</code> branch of the <code>limit</code> tree output by combine is indicating whether or not the fit was run with systematics, its not indicating the size of the statistical uncertainties.</p>\n<p>I hope this answers your questions, if not please feel free to follow up.</p>\n<p>Cheers,<br>\nKyle</p>"
+    }
+  ]
+}

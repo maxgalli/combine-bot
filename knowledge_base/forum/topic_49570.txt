@@ -1,0 +1,51 @@
+TOPIC: Help for Goodness-of-Fit results
+URL: https://cms-talk.web.cern.ch/t/49570
+DATE: 2024-09-18T14:35:21.754Z
+SOLVED: no
+============================================================
+
+QUESTION (by santocch @ 2024-09-18T14:35:22.141Z):
+Hello,
+I’m here again for help. I wrote yesterday [0] about my analysis and now I have a different request. I was trying to do a GoF test following the tutorial and instruction I found in the combine page but what I get doesn’t make sense to me so I need an expert to help me understanding what’s wrong. To summarize:
+
+The analysis is a search of a gaussian bump over a smooth background. The background is parametrized using one of the standard CMS function already used in other analysis and in [0] you can see what is the background distribution and the fitted function (I’m using function #1 from the plot).
+The signal is a gaussian function with a variable width (it’s the dimuon mass resolution fitted with a 2-degree poly from simulated signals) defined like this:
+
+RooFormulaVar sigmaVar ("sigmaVar","sigmaVar","-0.747946 + 0.0128591*@0 + 3.13343e-05*@0*@0",RooArgList(mean3));
+RooGaussian signal("signal","signal",dimuomass,mean3,sigmaVar);
+
+The fit of the background is good, the significance mass scan of my dataset is OK and the result I get from a ProfileLikelihoodCalculator mass scan is identical to what I get from combine when I dont consider systematics effects (which are present in Combine but not in the ProfileLikelihoodCalculator)
+
+So everything looks good to me… then I tried the GoF test. The first thing was to get a RooDataHist (100 bins) from the RooDataSet (I’m working with unbinned fit) and run the GoF test for data_obs which gives the following result:
+combine -M GoodnessOfFit --algo=saturated  -d simple-shapes-parametric_binned.txt
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use saturated model to compute goodness of fit for a binned likelihood
+>>> Method used is GoodnessOfFit
+RooSimultaneousOpt: number of channel masks must equal number of channels
+--- GoodnessOfFit ---
+Best fit test statistic: 187.021
+
+Then I produced 1000 toys with the following command:
+combine -M GoodnessOfFit --algo=saturated -s 200 -t 1000 -d simple-shapes-parametric_binned.txt
+
+The distribution I get is the following:
+gof_data_p698×474 7.42 KB
+and as far I understand the GoF test fails completely. I did some check and test changing the range of dimuon mass distribution but nothing worked. So I produced a new workspace where the data_obs RooDataHist was the same distribution you see in [0] which is used to extract the parametric function. I used the same commands above and what I get for the data_obs is the following
+--- GoodnessOfFit ---
+Best fit test statistic: 122.729
+
+and the same distribution for the toys (this was expected because the parametric function and the seed didn’t change)
+So my question is simple: why when I do a GoF test using the same datasample for data_obs and to extract the background function I get this kind of result? I would have expected something completely different so I suspect there is something wrong in what I’m doing… Any hint?
+Thanks for helpin
+Attilio
+[0] Help for systematics study on parametric function
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2024-10-09T08:13:35.728Z):
+Hi @santocch ,
+sorry for the late reply! I noticed that you don’t use the --toysFreq when generating the toys, i.e. you are not using frequentist toys for your test. Using this option is recommended (see the docs) as you then sample the toys from the posterior likelihood which should be much more similar to the data. This might expect why the value you obtain for your data_obs object is different. Is there a specific reason you want to perform this test with a-priori toys? If not, can you try it again with the --toysFreq option?
+Cheers,
+Philip
+----------------------------------------

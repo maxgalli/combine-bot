@@ -1,0 +1,32 @@
+TOPIC: Two different PhysicsModels
+URL: https://cms-talk.web.cern.ch/t/22869
+DATE: 2023-04-18T15:26:04.775Z
+SOLVED: no
+============================================================
+
+QUESTION (by jsw @ 2023-04-18T15:26:05.062Z):
+Hi,
+I am working on a combination of two EFT analyses.  Each analysis uses a different PhysicsModel.  Is it necessary to adapt one analysis to use the same PhysicsModel as the other, or is it possible to create a combined data card and/or workspace using two different PhysicsModels?
+Regards,
+Jon
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-04-18T15:55:21.785Z):
+Hi Jon,
+Off the top of my head, I think the first way is essentially the best. Could write a new overall physics model that initialises the two individual ones internally, applying the appropriate one depending on the channel. Some care might then be needed with the parts defining the set of POIs, but imagine this could be worked around.
+Maybe others have better suggestions though.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by clange @ 2023-04-19T12:08:21.934Z):
+I moved this thread to the Statistical Interpretation Tools subcategory.
+Clemens
+----------------------------------------
+
+REPLY 4 (by jsw @ 2023-04-19T14:52:02.892Z):
+Hi Andrew,
+Thanks.  I was hoping there was some way to combine the workspaces after creating them with text2workspace, but if there is not, then there is not.
+Best regards,
+Jon
+----------------------------------------

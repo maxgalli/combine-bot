@@ -1,0 +1,227 @@
+TOPIC: AsymptoticLimits failed for "search for crossing of r_bbH between 0.000266 and 0.001063 failed"
+URL: https://cms-talk.web.cern.ch/t/122839
+DATE: 2025-04-09T07:59:52.786Z
+SOLVED: no
+============================================================
+
+QUESTION (by zhiyuanl @ 2025-04-09T07:59:53.062Z):
+Dear Combine Expert,
+I am using combine under the CMSSW_14_1_0_pre4 environment. I have a rather large siganl espeically in the last bin (total yields around ~1k and background ~ 70k, but in the last bin of input signal/MC histogram, about 0.5 k signal and ~1 background!)
+I am using combineTool.py -M AsymptoticLimits -d “mt_totbbH_signal_ws.root” -m “3500”  --redefineSignalPOIs r_bbH --setParameterRanges r_ggH=0,0.1:r_bbH=0,0.1 --there -n .limit --parallel 20 --run blind   --freezeParameters allConstrainedNuisances -v3  to make the fit. The fit terminates unexpectly and the last few lines of the output reads:
+Median for expected limits = 0.0010625, Sigma for expected limits = 0.000542102
+Will search for NLL crossing by bisection
+Minimization configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+Minuit2Minimizer: Minimize with max-calls 500 convergence for edm < 0.1 strategy 1
+Minuit2Minimizer::Minuit  - Changing default options
+StorageLevel :               0
+Minuit2Minimizer : Valid minimum - status = 0
+FVAL  = 6.82121026329696178e-13
+Edm   = 2.03009102912808951e-11
+Nfcn  = 15
+r_ggH	  = 3.45647e-16	 +/-  0.000277082	(limited)
+Minimization finished with status=0
+Minimization success! status=0
+At r_bbH = 0.000531:	delta(nll) = 0.62664
+
+Will search for NLL crossing by bisection
+[WARNING] search for crossing of r_bbH between 0.000266 and 0.001063 failed
+
+I wonder if this is due to the limit being too small and combine could not converge?
+The data cards, input histograms and the workspace are placed at: /afs/cern.ch/user/z/zhiyuanl/public/Combine_issue. To reproduce the error, run the command under  CMSSW_14_1_0_pre4 : combineTool.py -M AsymptoticLimits -d “mt_totbbH_signal_ws.root” -m “3500”  --redefineSignalPOIs r_bbH --setParameterRanges r_ggH=0,0.1:r_bbH=0,0.1 --there -n .limit --parallel 20 --run blind   --freezeParameters allConstrainedNuisances -v3
+Cheers,
+Jordan
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-04-09T08:18:56.888Z):
+Dear Jordan,
+I couldn’t test your setup yet, but Combine is optimised for r~1.
+May I suggest you to try to scale down your signal, for example using a rateParam to multiply the expected signal rate?
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by zhiyuanl @ 2025-04-09T09:22:32.796Z):
+Hi Giacomo,
+Thanks a lot for your reply. I tried adding to the end of each data card:
+"beta  rateParam * bbH_signal_ 0.1"
+"alpha  rateParam * ggH_signal_ 0.1"
+
+to set the yield of the ggH signal and bbH signal by 0.1.
+then during fiting I got a lot of warning like:
+[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum!
+Warning in <Minuit2>: MnPosDef Matrix forced pos-def by adding to diagonal 331269
+Warning in <Minuit2>: Minuit2Minimizer::Minimize Covar was made pos def
+
+The fit then returns:
+[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum.
+Minimization finished with status=1
+Minimization success! status=0
+At r_bbH = 1.969242:	delta(nll) = -0.00000
+
+Minimization configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+Minuit2Minimizer: Minimize with max-calls 1500 convergence for edm < 0.1 strategy 1
+Minuit2Minimizer::Minuit  - Changing default options
+StorageLevel :               0
+Minuit2Minimizer : Valid minimum - status = 1
+FVAL  = -1.18539219679501557e-10
+Edm   = 1.35151441327208355e-15
+Nfcn  = 57
+alpha	  = 0.0042348	 +/-  1527.17
+beta	  = -1.05029e-10	 +/-  2.85737e-07
+r_ggH	  = 6.64794e-09	 +/-  0.00775064	(limited)
+[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum.
+Minimization finished with status=1
+Minimization success! status=0
+At r_bbH = 1.984871:	delta(nll) = -0.00000
+
+Will search for NLL crossing by bisection
+[WARNING] search for crossing of r_bbH between 1.992686 and 2.000500 failed
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.19 min (cpu), 0.22 min (real)
+20979 log messages saved to combine_logger.out
+~/CMSSW/CMSSW_14_1_0_pre4/src/Run3_limit/stat_only_highmass_testarea/tt_Run3/bbH_signal_3500_2022_2023_combined
+
+``
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-04-09T09:58:28.000Z):
+Hi Jordan,
+I think a 0.1 factor is probably not enough given you have 500 signal vs 1 background. Can you try 0.01? Also, you should remember to freeze alpha and beta when running combine.
+Cheers,
+Giacomo
+
+On 9 Apr 2025, at 11:23, Zhiyuan Li via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Zhiyuan Li zhiyuanlApril 9
+
+Hi Giacomo,
+Thanks a lot for your reply. I tried adding to the end of each data card:
+"beta  rateParam * bbH_signal_ 0.1"
+"alpha  rateParam * ggH_signal_ 0.1"
+
+to set the yield of the ggH signal and bbH signal by 0.1.
+then during fiting I got a lot of warning like:
+[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum!
+Warning in <Minuit2>: MnPosDef Matrix forced pos-def by adding to diagonal 331269
+Warning in <Minuit2>: Minuit2Minimizer::Minimize Covar was made pos def
+
+The fit then returns:
+[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum.
+Minimization finished with status=1
+Minimization success! status=0
+At r_bbH = 1.969242:	delta(nll) = -0.00000
+
+Minimization configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+Minuit2Minimizer: Minimize with max-calls 1500 convergence for edm < 0.1 strategy 1
+Minuit2Minimizer::Minuit  - Changing default options
+StorageLevel :               0
+Minuit2Minimizer : Valid minimum - status = 1
+FVAL  = -1.18539219679501557e-10
+Edm   = 1.35151441327208355e-15
+Nfcn  = 57
+alpha	  = 0.0042348	 +/-  1527.17
+beta	  = -1.05029e-10	 +/-  2.85737e-07
+r_ggH	  = 6.64794e-09	 +/-  0.00775064	(limited)
+[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum.
+Minimization finished with status=1
+Minimization success! status=0
+At r_bbH = 1.984871:	delta(nll) = -0.00000
+
+Will search for NLL crossing by bisection
+[WARNING] search for crossing of r_bbH between 1.992686 and 2.000500 failed
+
+-- AsymptoticLimits ( CLs ) --
+
+Done in 0.19 min (cpu), 0.22 min (real)
+20979 log messages saved to combine_logger.out
+~/CMSSW/CMSSW_14_1_0_pre4/src/Run3_limit/stat_only_highmass_testarea/tt_Run3/bbH_signal_3500_2022_2023_combined
+
+``
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 9
+
+Dear Jordan,
+I couldn’t test your setup yet, but Combine is optimised for r~1.
+May I suggest you to try to scale down your signal, for example using a rateParam to multiply the expected signal rate?
+Cheers,
+Giacomo
+
+Zhiyuan Li zhiyuanlApril 9
+
+Dear Combine Expert,
+I am using combine under the CMSSW_14_1_0_pre4 environment. I have a rather large siganl espeically in the last bin (total yields around ~1k and background ~ 70k, but in the last bin of input signal/MC histogram, about 0.5 k signal and ~1 background!)
+I am using combineTool.py -M AsymptoticLimits -d “mt_totbbH_signal_ws.root” -m “3500” --redefineSignalPOIs r_bbH --setParameterRanges r_ggH=0,0.1:r_bbH=0,0.1 --there -n .limit --parallel 20 --run blind --freezeParameters allConstrainedNuisances -v3 to make the fit. The fit terminates unexpectly and the last few lines of the output reads:
+Median for expected limits = 0.0010625, Sigma for expected limits = 0.000542102
+Will search for NLL crossing by bisection
+Minimization configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+Minuit2Minimizer: Minimize with max-calls 500 convergence for edm < 0.1 strategy 1
+Minuit2Minimizer::Minuit  - Changing default options
+StorageLevel :               0
+Minuit2Minimizer : Valid minimum - status = 0
+FVAL  = 6.82121026329696178e-13
+Edm   = 2.03009102912808951e-11
+Nfcn  = 15
+r_ggH	  = 3.45647e-16	 +/-  0.000277082	(limited)
+Minimization finished with status=0
+Minimization success! status=0
+At r_bbH = 0.000531:	delta(nll) = 0.62664
+
+Will search for NLL crossing by bisection
+[WARNING] search for crossing of r_bbH between 0.000266 and 0.001063 failed
+
+I wonder if this is due to the limit being too small and combine could not converge?
+The data cards, input histograms and the workspace are placed at: /afs/cern.ch/user/z/zhiyuanl/public/Combine_issue. To reproduce the error, run the command under CMSSW_14_1_0_pre4 : combineTool.py -M AsymptoticLimits -d “mt_totbbH_signal_ws.root” -m “3500” --redefineSignalPOIs r_bbH --setParameterRanges r_ggH=0,0.1:r_bbH=0,0.1 --there -n .limit --parallel 20 --run blind --freezeParameters allConstrainedNuisances -v3
+Cheers,
+Jordan
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by zhiyuanl @ 2025-04-09T10:41:21.471Z):
+Hi Giacomo,
+Thanks so much for your advice!
+I tried freezing the rate alpha and beta, with scale 0.1, and now the fit seems to be successful:
+Minimization configured with Type=Minuit2, Algo=Migrad, strategy=1, tolerance=0.1
+Minuit2Minimizer: Minimize with max-calls 500 convergence for edm < 0.1 strategy 1
+Minuit2Minimizer::Minuit  - Changing default options
+StorageLevel :               0
+Minuit2Minimizer : Valid minimum - status = 0
+FVAL  = 8.64019966684281826e-12
+Edm   = 5.44145234170061393e-13
+Nfcn  = 15
+r_ggH	  = 7.05974e-15	 +/-  0.00106548	(limited)
+Minimization finished with status=0
+Minimization success! status=0
+At r_bbH = 0.025575:	delta(nll) = 6.55128
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r_bbH < 0.0051
+Expected 16.0%: r_bbH < 0.0069
+Expected 50.0%: r_bbH < 0.0109
+Expected 84.0%: r_bbH < 0.0169
+Expected 97.5%: r_bbH < 0.0253
+
+Done in 0.01 min (cpu), 0.01 min (real)
+1247 log messages saved to combine_logger.out
+~/CMSSW/CMSSW_14_1_0_pre4/src/Run3_limit/stat_only_highmass_testarea/tt_Run3/bbH_signal_3500_2022_2023_combined
+
+I also tried scaling with 0.01, the limit just increased by a factor of 10 with the limit numbers changed slightly.
+So is the solution to mannually scale down the yield of signal to allow the fit to work, and scale back the limit results?
+----------------------------------------
+
+REPLY 6 (by gortona @ 2025-04-09T13:31:39.000Z):
+Yes exactly, this is the suggested strategy
+Cheers,
+Giacomo
+
+On 9 Apr 2025, at 12:42, Zhiyuan Li via CMS talk noreply-cms-talk@cern.ch wrote:
+So is the solution to mannually scale down the yield of signal to allow the fit to work, and scale back the limit results?
+----------------------------------------

@@ -1,0 +1,20 @@
+TOPIC: MultiDimFit options
+URL: https://cms-talk.web.cern.ch/t/15891
+DATE: 2022-10-04T21:31:36.270Z
+SOLVED: no
+============================================================
+
+QUESTION (by okarache @ 2022-10-04T21:31:36.480Z):
+Dear experts,
+apologies, if I did not understand it from the help menu…
+Is there MultiDimFit option, which restricts the bet fit to be positive defined?
+Thank you in advance!
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-10-04T21:59:14.267Z):
+Hi Olena,
+if you want a parameter in a certain range, you can use the --setParameterRanges option to set it.
+The minimization will try to find the minimum inside that region, if it exist.
+Cheers,
+-Andrea
+----------------------------------------

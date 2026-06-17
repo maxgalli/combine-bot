@@ -1,0 +1,197 @@
+TOPIC: Difference in excess between AsymptoticLimits and Significance
+URL: https://cms-talk.web.cern.ch/t/2189
+DATE: 2021-10-21T19:03:04.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Michael_Krohn @ 2021-10-21T19:03:04.000Z):
+*** Discussion title: Higgs Combination
+Dear Combine experts,
+I must have a misunderstanding of how these commands work, but when I
+calculate the significance for one of our mass points using:
+combine -M Significance datacard.txt
+I get a significance of 2.95sigma, but when I run:
+combine -M AsymptoticLimits datacard.txt
+I get:
+Observed Limit: r < 28.6607 Expected 2.5%: r < 3.2632 Expected 16.0%: r
+< 5.2647 Expected 50.0%: r < 10.1875 Expected 84.0%: r < 20.5019
+Expected 97.5%: r < 30.8968
+so here the observed limits is below the 2sigma expected result. Should
+I not expect the significance to be the same from both of these
+commands? The datacard and workspaces can be found in [1] in case anyone
+wants to reproduce this.
+Thanks, Michael
+[1]
+
+drive.google.com
+
+IngredientsZip.tar.gz
+
+Google Drive file.
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2021-10-22T11:00:42.000Z):
+Hi Michael,
+I expect the main difference is that the limit is computed using the CLs criterion. You can force combine to use just s+b p-value (CLs+b) by adding the option --rule CLsplusb. Then the comparison between the two is fairer, and you should see observed above the 2sigma expected.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by Matej_Roguljic @ 2021-10-27T07:25:20.000Z):
+*** Discussion title: Higgs Combination
+Hi all,
+we observed something similar and are interested in the follow-up on
+this.
+1) Question to Michael: Did the switch to CLsplusb criterion bring the
+observed limit above the 2sigma expected?
+2) Question to experts: If both criteria give the same result (i.e.
+observed is 2sigma above expected, while significance is 3 sigma), are
+there other reasons for the discrepancy?
+Best regards,
+Matej
+----------------------------------------
+
+REPLY 4 (by amarini @ 2021-10-27T10:02:42.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+1. can you confirm that your two Asimov fits are healthy? (r=0, r~expected limit)
+The Asimov fit is used to estimated the variance for the Asymptotic behaviour.
+2. can you confirm that you are in a reasonably Asymptotic behaviour?
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 5 (by Matej_Roguljic @ 2021-10-27T11:45:58.000Z):
+*** Discussion title: Higgs Combination
+Hello Andrea,
+> 1. can you confirm that your two Asimov fits are healthy? (r=0, r~expected limit)
+The Asimov fit is used to estimated the variance for the Asymptotic behaviour.
+We get "Minimization success! status=0" in all the fits. I copied the
+output of the asymptotic limit with verbosity=3 in public area in case
+you want to have a look.
+/afs/cern.ch/user/m/mrogulji/work/public/Combine_output/asymptotic_limits_v3.txt
+> 2. can you confirm that you are in a reasonably Asymptotic behaviour?
+We ran full CLs (HybridNew method, LHC criterion) and the
+expected(observed) limit differences w.r.t asymptotic are 3%(7%). Is
+this in line with reasonably Asymptotic behaviour?
+Cheers,
+Matej
+----------------------------------------
+
+REPLY 6 (by amarini @ 2021-10-27T12:03:05.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+I mean the closure checks on the Asimov, since this is assume to work in asymptotic to get the correct estimation. [See CCGV paper]
+https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsPAGPreapprovalChecks
+-Andrea
+----------------------------------------
+
+REPLY 7 (by Matej_Roguljic @ 2021-10-27T12:21:51.000Z):
+*** Discussion title: Higgs Combination
+Thanks for the link and apologies for the misunderstanding. I thought
+you were interested in the fits which run during the Asymptotic Limit
+calculation. The Asimov fit for r=0 and r=0.42 (expected exclusion
+limit) return the same values of r. Also, the nuisances do not move, as
+is expected.
+Matej
+----------------------------------------
+
+REPLY 8 (by Michael_Krohn @ 2021-10-27T14:21:20.000Z):
+*** Discussion title: Higgs Combination
+Hi Matej,
+Yes, when I run with the CLsplusb criterion I see that the observed
+limit is now 2sigma above the expected. For comparison to the limits I
+sent in the first message using the CLs criterion, I'm seeing the
+following with the CLsplusb:
+Observed Limit: r < 27.2464
+Expected 2.5%: r < 0.6621
+Expected 16.0%: r < 1.6122
+Expected 50.0%: r < 7.0625
+Expected 84.0%: r < 15.5828
+Expected 97.5%: r < 24.1697
+Regards, Michael
+----------------------------------------
+
+REPLY 9 (by Matej_Roguljic @ 2021-11-02T15:48:32.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrew,
+could you help me understand the relationships between the CLs, CLsplusb
+criteria and the Significance test? Please let me know if this is
+outside of the scope of this discussion and we can move this elsewhere.
+As I understand, the purpose of using CLs, which is CLs+b/CLb, over
+CLs+b is to prevent overly-optimistic limits in case the background
+fluctuates down. As the observation fluctuates more below the expected
+background, CLb value decreases so the correction on the CLs+b is
+larger. However, if there is an excess, the CLb should be closer to
+unity so the correction to CLs+b should be smaller. Is this correct?
+Following this, one would expect the difference in exclusion limits when
+comparing CLs and CLs+b criteria to be mostly at the lowest limits,
+i.e., exclusion at 2.5% and 16% confidence level, while the limits at
+84% and 97.5% should not change much. And really, looking at the numbers
+provided by Michael, the relative difference between the CLs+b and CLs
+limits at 2.5% is almost five times (CLs+b gives 5 times lower limits
+than CLs+b!), while at 97.5%, the relative difference is 28%. The
+observed limit also goes up by just 5%.
+All this then leads to the observed limit going from +2sigma (up from
+the expected limit) up to +2.35 sigma with the switch to CLs+b. However,
+the Significance test returns 2.95 sigma significance. Therefore, event
+with CLs+b, there is a mismatch between the limits and the significance.
+Lower than when using CLs, but it's still there.
+Could there be "statistical" reasons why the two tests, CLs(+b) and
+Significance, may give different significances?
+If so, which result should be quoted as the observed significance? The
+one from the limits or the one from the Significance test?
+Thanks.
+Cheers, Matej
+----------------------------------------
+
+REPLY 10 (by agilbert @ 2021-11-05T14:55:44.000Z):
+Hi Matej,
+Few replies inline below..
+cheers,
+Andrew
+
+*** Discussion title: Higgs Combination
+Hi Andrew,
+could you help me understand the relationships between the CLs, CLsplusb
+criteria and the Significance test? Please let me know if this is
+outside of the scope of this discussion and we can move this elsewhere.
+As I understand, the purpose of using CLs, which is CLs+b/CLb, over
+CLs+b is to prevent overly-optimistic limits in case the background
+fluctuates down. As the observation fluctuates more below the expected
+background, CLb value decreases so the correction on the CLs+b is
+larger. However, if there is an excess, the CLb should be closer to
+unity so the correction to CLs+b should be smaller. Is this correct?
+
+Right, exactly.
+
+Following this, one would expect the difference in exclusion limits when
+comparing CLs and CLs+b criteria to be mostly at the lowest limits,
+i.e., exclusion at 2.5% and 16% confidence level, while the limits at
+84% and 97.5% should not change much. And really, looking at the numbers
+provided by Michael, the relative difference between the CLs+b and CLs
+limits at 2.5% is almost five times (CLs+b gives 5 times lower limits
+than CLs+b!), while at 97.5%, the relative difference is 28%. The
+observed limit also goes up by just 5%.
+
+Yes. I think this pattern in the quantiles of the expected limits between CLs+b and CLs is normal.
+
+All this then leads to the observed limit going from +2sigma (up from
+the expected limit) up to +2.35 sigma with the switch to CLs+b.
+
+How did you determine this is 2.35 sigma? The expected limits give you the [0,025, 0.16, 0.5, 0.84, 0.95] quantiles, but you seem to be making some extra step to go from the observed limit into a p-value, and then a z score, that is not entirely clear to me.
+
+However,
+the Significance test returns 2.95 sigma significance. Therefore, event
+with CLs+b, there is a mismatch between the limits and the significance.
+Lower than when using CLs, but it's still there.
+Could there be "statistical" reasons why the two tests, CLs(+b) and
+Significance, may give different significances?
+
+The limit and significance are not the same test (different null hypotheses), and while under some specific conditions there might be a correspondence, it will not be true in general (e.g. to the extent the asymptotic approximation holds).
+
+If so, which result should be quoted as the observed significance? The
+one from the limits or the one from the Significance test?
+
+If the null hypothesis is background-only, then we would quote the number from the significance test.
+----------------------------------------

@@ -1,0 +1,25 @@
+TOPIC: FitDiagnostics file generated from uneven bins
+URL: https://cms-talk.web.cern.ch/t/3373
+DATE: 2021-12-14T12:14:39.537Z
+SOLVED: no
+============================================================
+
+QUESTION (by vwachira @ 2021-12-14T12:14:39.714Z):
+Dear Combine experts,
+I have been working on a new set of datacards provided by my colleague, and they contain histogram templates with different number of histogram bins. I ran FitDiagnostics on the workspace file generated from those datacards with options --saveShapes --saveNormalizations --saveWithUncertainties added, but I noticed that FitDiagnostics output file contains prefit and postfit plots with the same number of binnings for all histogram templates. The number of bins in both distributions also appears to be the maximum number of histogram bins across different templates. Is this an expected behaviour, and how do I fix FitDiagnostics distributions to contain correct number of bins?
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-12-14T13:45:38.358Z):
+Hi Vichayanun,
+Is the issue that different categories have different numbers of bins? You might want to try remaking the workspace with --X-no-optimize-bins - this removes the padding to the maximum number of bins in the model. IIRC it makes the fit a little slower, though.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by vwachira @ 2021-12-15T07:35:09.036Z):
+--X-no-optimize-bins option works! Thank you!
+Regards,
+Vichayanun
+----------------------------------------

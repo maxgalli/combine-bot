@@ -1,0 +1,70 @@
+TOPIC: Error bars calculation in combine on data
+URL: https://cms-talk.web.cern.ch/t/28010
+DATE: 2023-08-04T16:07:06.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by beaucero @ 2023-08-04T16:07:06.000Z):
+Hi all,
+Playing with the post Fit plots from combine, I am noticing that combine is having asymmetric errors on data even with large statistics:
+i 0 DataObserved 2 ErrorLow 1.29181 Errorhigh 2.63786 sqrt(N) 1.41421
+i 1 DataObserved 3 ErrorLow 1.63271 Errorhigh 2.91819 sqrt(N) 1.73205
+i 2 DataObserved 4 ErrorLow 1.91434 Errorhigh 3.16275 sqrt(N) 2
+i 3 DataObserved 5 ErrorLow 2.15969 Errorhigh 3.38247 sqrt(N) 2.23607
+i 4 DataObserved 7 ErrorLow 2.58147 Errorhigh 3.77028 sqrt(N) 2.64575
+i 5 DataObserved 4 ErrorLow 1.91434 Errorhigh 3.16275 sqrt(N) 2
+i 6 DataObserved 13 ErrorLow 3.55866 Errorhigh 4.69757 sqrt(N) 3.60555
+i 7 DataObserved 14 ErrorLow 3.6965 Errorhigh 4.83038 sqrt(N) 3.74166
+i 8 DataObserved 29 ErrorLow 5.35393 Errorhigh 6.44702 sqrt(N) 5.38516
+i 9 DataObserved 43 ErrorLow 6.53183 Errorhigh 7.60828 sqrt(N) 6.55744
+i 10 DataObserved 31 ErrorLow 5.53756 Errorhigh 6.6276 sqrt(N) 5.56776
+i 11 DataObserved 22 ErrorLow 4.6545 Errorhigh 5.76137 sqrt(N) 4.69042
+i 12 DataObserved 19 ErrorLow 4.32022 Errorhigh 5.4352 sqrt(N) 4.3589
+i 13 DataObserved 25 ErrorLow 4.96633 Errorhigh 6.06659 sqrt(N) 5
+i 14 DataObserved 13 ErrorLow 3.55866 Errorhigh 4.69757 sqrt(N) 3.60555
+i 15 DataObserved 14 ErrorLow 3.6965 Errorhigh 4.83038 sqrt(N) 3.74166
+i 16 DataObserved 13 ErrorLow 3.55866 Errorhigh 4.69757 sqrt(N) 3.60555
+i 17 DataObserved 15 ErrorLow 3.82938 Errorhigh 4.95874 sqrt(N) 3.87298
+i 18 DataObserved 7 ErrorLow 2.58147 Errorhigh 3.77028 sqrt(N) 2.64575
+i 19 DataObserved 3 ErrorLow 1.63271 Errorhigh 2.91819 sqrt(N) 1.73205
+i 20 DataObserved 4 ErrorLow 1.91434 Errorhigh 3.16275 sqrt(N) 2
+i 21 DataObserved 9 ErrorLow 2.94346 Errorhigh 4.1102 sqrt(N) 3
+i 22 DataObserved 5 ErrorLow 2.15969 Errorhigh 3.38247 sqrt(N) 2.23607
+i 23 DataObserved 4 ErrorLow 1.91434 Errorhigh 3.16275 sqrt(N) 2
+i 24 DataObserved 3 ErrorLow 1.63271 Errorhigh 2.91819 sqrt(N) 1.73205
+What is surprising me is that the ‘low part (minus)’ of the error bar is always lower than the standard sqrt(N) and the error bar ‘high (plus)’ are always larger (and such even when we have 43 events observed…). [the value are the same for pre-fit].
+I can understand that we are using poissonian errors for low number of events but at 43 events…
+So we are saying 43 - 6.5 +7.6 (sqrt = 6.6) → So the fit can reach 50 “more easily” than 35? (50 will be seen as 1 sigma, while 35 will be seen as 2 sigma…)
+As the high error is always larger than sqrt(N), are we not increasing the probability to observe an upward fluctuation when the fit is made?
+ie: 43 observed data, the fit is happy with [37,50] (1 sigma) and [31,57] (2 sigma), 43 events can be fitted with a S+B at 52, so considering 9 events of signal?
+I am just wondering if we have a region with an excess, as there is larger freedom to consider more event than observed, is there a risk to see always a small excess? In the meantime, I understand that the number of sigma is also lower when we have a small excess of events.
+Thanks for any explanations,
+Cheers,
+Stephanie
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-08-08T15:31:04.088Z):
+Hi Stephanie,
+Yes, the asymmetric Poisson errors are expected. As with all confidence intervals, there is some freedom of choice in how the interval is defined, but I think these are the commonly used intervals and agree with the intervals given in the pdg review of statistics [1] for poisson data. You can check the expected error values e.g. using python [2], and should see that they match what you are getting. So I think this is all expected based on the standard confidence interval construction methods we are using, and I don’t think there is anything that combine is doing strangely here (in fact I think the error values you are seeing are constructed by ROOT, not directly by combine).
+As for the effect that this has on the fit, the confidence intervals themselves will not have any effect, as the Poisson error bars, as well as the error bands drawn for the prediction are not used directly in the fit, they are only “summarizing” (and providing a visualization) for the information. When the fit is actually performed it uses the full likelihood, and any confidence intervals (or uncertainties/errors more generally) are constructed from the likelihood used in the fit, not the other way around.
+The likelihood does use a Poisson term, and so your observation about the asymmetry is correct in the sense that for some observed count, the Poisson portion of the likelihood for the “true” number of expected events being n+b will generally be higher than that for it being n-b, and the fit will not treat them equally. But this is exactly because the probability of observing n events when the “true” expectation is n+b is higher than the probability of observing n counts when the “true” expectation is n-b.
+I don’t think I fully understood what you are asking when you ask if we are increasing the probability to observe an upward fluctuation when the fit is made; If you’d like to clarify I’ll follow up. But as I wrote above, the intervals you quote are not directly used as part of the fit, which is done using the full likelihood function, so they will not directly influence the outcome of the fit.
+Similarly for your last paragraph, I think I might not have fully understood your question, so please chime in again if I’ve misunderstood what you’re asking. We do expect to regularly see small excesses, even when there is no signal, but it shouldn’t always be the case. The frequency of  excesses of given sizes should be as expected in standard frequentist approaches, e.g. if the background only hypothesis (including the detector modelling, details of the statistical model etc) is a sufficiently good model for whats really happening, we would expect a 1 sigma or larger excess approximately one third of the time. If the statistical model including the background hypothesis isn’t a sufficiently good model of the real underlying process, then the frequency  is unknown as it depends on the way(s) in which the model fails to capture reality.
+I hope that helps to clarify.
+Best,
+Kyle
+[1] https://pdg.lbl.gov/2023/web/viewer.html?file=../reviews/rpp2022-rev-statistics.pdf#subsubsection.40.4.2.3 gives details on confidence intervals for poisson counts.
+Some more details on the general theory of how these confidence intervals are defined and constructed can be found in section 40.4.2 of the same document: https://pdg.lbl.gov/2023/web/viewer.html?file=../reviews/rpp2022-rev-statistics.pdf#subsection.40.4.2
+[2]
+using the formula for poisson intervals from [1], implementing the calculation in python, the intervals are given by:
+import scipy.stats as st
+
+obs = 43
+half_alpha = st.norm(0).cdf(-1)
+err_lo = obs - 0.5*st.chi2(2*obs).ppf(half_alpha)
+err_hi = 0.5*st.chi2(2*(obs+1)).ppf(1-half_alpha) - obs
+print(err_lo, err_hi)
+
+which gives
+6.531834005213682 7.608278275352639
+----------------------------------------

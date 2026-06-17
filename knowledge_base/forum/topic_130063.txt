@@ -1,0 +1,19 @@
+TOPIC: Shape-only analysis
+URL: https://cms-talk.web.cern.ch/t/130063
+DATE: 2025-08-25T09:50:37.303Z
+SOLVED: no
+============================================================
+
+QUESTION (by omanzani @ 2025-08-25T09:50:37.416Z):
+Hi!
+We are performing a shape-only analysis (total MC entries set to match data entries). Is it already implemented in Combine or is there an easy way of doing it? (so that, for example, when one bkgd goes up, the other MCs go down to compensate during the fit).
+We have considered introducing a global normalization parameter in the fit, with large uncertainty, to fix the MC normalization; or introducing the systematics with multiplicative factors in the datacards to maintain the MC normalization during the fit.
+Greetings
+Oliver
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-08-25T10:38:16.865Z):
+Hi,
+based on what you wrote, you should implement a template analysis with a rate param on the background and/or signals. In this way, the uncertainty on the rates is also accounted for.
+A
+----------------------------------------

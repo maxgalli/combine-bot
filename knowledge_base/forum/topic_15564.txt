@@ -1,0 +1,54 @@
+TOPIC: Shape Systematic Uncertainties in Unbinned Parametric Fit Model
+URL: https://cms-talk.web.cern.ch/t/15564
+DATE: 2022-09-28T08:26:07.879Z
+SOLVED: no
+============================================================
+
+QUESTION (by shigginb @ 2022-09-28T08:26:08.467Z):
+Hello Combine Experts,
+In my unbinned parametric shape analysis I’ve been requested to include shapes directly as systematics. I don’t know how to do this technically… and no documentation on github to describe this type of systematic inclusion with an unbinned model. Even the Higgs gammagamma 2014 tutorial doesn’t cover this case afaik.
+Currently I can include the parameters of the shape, the normalization, and log normal effects as systematic uncertainties.
+However, I’ve been requested to include directly shape uncertainties. This boils down to two types of shape uncertainties I want to include:
+
+Systematic background shape as a nth order RooBernstein polynomial
+Systematic shape for RooFormulaVar (I use a spline function for signal in the form of a RooVoigtian)
+
+I would love to have a datacard work like the one below (marked as NEW for the shape uncertainty)[1].
+So to further clarify:
+Bkg_mmmt would be the nominal bernstein and something like scale_m_etalt1p22018_Bkg_mmmt would be the PDF-also a bernstein-that is slightly different for the systematic variation and both saved to my workspace. I also want to do this for the spline function.
+Is this possible? Or do I have to do something different? Or consider a different statistical inference model?
+Thanks so much for your time!
+Sam
+[1]
+imax 1
+jmax 1
+kmax *
+---------------
+shapes * bin1 HToAAWorkspace_full_2018_mmmt.root w:$PROCESS
+---------------
+bin         bin1
+observation   -1
+------------------------------
+bin                     bin1  bin1
+process                 signal_mmmt               Bkg_mmmt
+process                0 1
+rate                   1 1
+------------------------------
+lumi     lnN              1.01     1.01
+(NEW) scale_m_etalt1p22018_Bkg_mmmt       shape    0  1
+(NEW) scale_m_etalt1p22018_signal_mmmt    shape    1  0
+c0_Bkg_Nominal_2018_mmmt  param 0.808309   0.411798
+c1_Bkg_Nominal_2018_mmmt  param 3.046414   1.888231
+c2_Bkg_Nominal_2018_mmmt  param 0.475983   0.277631
+intMean  param 39.947472   0.039947
+intAlpha  param 0.270000   0.054000
+intSigma  param 0.280000   0.056000
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-09-29T08:33:47.216Z):
+Hi Sam,
+Is there a reason you cannot parameterise these uncertainties as uncertainties on the parameters of the functional form, which is how this would usually be handled?
+Depending on exactly how your pdfs behave you may be able to include shape uncertainties this way, but it is indeed nonstandard and I’m not sure if it’s possible to give generic advice on how to achieve this. Perhaps others have something in mind already.
+Best,
+Adinda
+----------------------------------------

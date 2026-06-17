@@ -1,0 +1,42 @@
+TOPIC: Bin-to-bin correlations in combine
+URL: https://cms-talk.web.cern.ch/t/140468
+DATE: 2026-01-06T14:29:29.468Z
+SOLVED: no
+============================================================
+
+QUESTION (by deschwar @ 2026-01-06T14:29:29.642Z):
+Dear combine experts,
+I am working on an analysis where each event contributes to multiple bins in a histogram and keeping track of correlations across bins becomes important. I already constructed covariance matrices (Nbins x Nbins) for data and each simulated process which contain the statistical uncertainties and the corresponding correlations. Now I am wondering if there is a way to run combine with this setup. For the simulated processes I can create nuisance parameters that encode the correlations but I am not sure how I would do this for data. As I understand, combine always assumes poisson uncertainties for data. I already tried to construct the RooWorkspace from scratch but run into various problems, such that I would like to ask a few questions first.
+Was something like this done in the past? Is there maybe even an example I can look at? Or is there even functionality in combine to plug in custom covariance matrices? Or are there tools to deal with this?
+Thanks and cheers,
+Dennis
+----------------------------------------
+
+REPLY 2 (by nckw @ 2026-01-06T14:49:52.865Z):
+Hi Dennis,
+This is not something that Combine was ever designed to do and generally it’s not obvious how to do this when regions (bins) are combined that have the same entries. A couple of ideas come to mind, which may help - but its likely that combine is not the right tool for this job,
+
+You could try to use multivariate datasets and properly model the (conditional if needed) pdf that describes the data. This is useful for example if the event ends up in more than one bin because the bins represent different observables. We have analyses that do this (eg the Higgs 4l) in combine
+You might be able to explicitly check whether accounting for the correlation or not has any large impact in a simple (Gaussian approximated) version of the analysis. If you can avoid needing to model the dependence of the counts in each bin, it would make things easier. Note that even in the case above (1.), if you are using multiple features from an event that are independent, it doesn’t matter if the event appears in separate bins for those features as the pdf is still factorizable and so the assumptions of combine are satisfied.
+
+Sorry I can’t be more helpful,
+Nick
+----------------------------------------
+
+REPLY 3 (by ncsmith @ 2026-01-06T16:14:40.953Z):
+A potential workaround, if the event does not enter into too many bins at once, would be to calculate the expected and observed yield in product-bins representing all the possible exclusive yields, i.e. if event x_i lands in bins B_1,B_3, then it contributes uniquely to the product-bin \{x: x \in B_1 \wedge x \notin B_2 \wedge x \in B_3 \wedge \ldots \}. You’ll end up with a combinatorial explosion of these product-bins, but if you know the event only lands in up to 2 bins it may be manageable.
+One analysis where this is needed is in energy-energy correlators, SMP-25-009. Perhaps @srothman can share how they approach this. (if I understand their AN correctly it is by making the gaussian approximation, using the observed data to estimate the correlation)
+----------------------------------------
+
+REPLY 4 (by deschwar @ 2026-01-07T09:55:06.934Z):
+Hi all,
+Thank you very much for your input. This mostly confirms what I was expecting. I am aware of SMP-25-009 and will get in contact with @srothman about the technical details.
+Thanks and cheers,
+Dennis
+----------------------------------------
+
+REPLY 5 (by srothman @ 2026-01-07T17:46:17.253Z):
+Hi all,
+Indeed we run into the same problem in SMP-25-009, and are currently running a likelihood fit with our own internal tool (ie not combine). I will follow up with @deschwar about the details.
+Simon
+----------------------------------------

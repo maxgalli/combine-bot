@@ -1,0 +1,24 @@
+TOPIC: Regarding ABCD method for QCD estimation
+URL: https://cms-talk.web.cern.ch/t/132401
+DATE: 2025-09-22T04:43:08.600Z
+SOLVED: no
+============================================================
+
+QUESTION (by sanskar @ 2025-09-22T04:43:08.729Z):
+Hello everyone,
+I am currently working on the tt̄ semi-leptonic electron+jets channel and I am applying the ABCD method for QCD estimation.
+For defining the regions, I have used the cut-based electron ID and mT as my two variables.My region definitions are as follows:
+A: cutBased = Veto, mT < 40
+B: cutBased = Tight, mT < 40
+C: cutBased = Veto, mT > 50
+D: cutBased = Tight, mT > 50 (signal region)
+As a first check, I estimated the QCD yield in each region using:
+N_i=N_data−N_nonQCDMC, i∈{A,B,C,D}
+When I computed the ratios, I found:
+NA/NC=0.909
+NB/ND=0.48
+So as you can see the ratios are not even close. So, this had led me to rethink my variable choices. Has anyone encountered a similar issue? Could you kindly advise me on which variables are generally considered good choices for defining the ABCD regions for analysis involving electrons?
+I would be very grateful for any advice or insights on this.
+Best Regards,
+Sanskar Nanda
+----------------------------------------

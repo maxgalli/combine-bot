@@ -1,0 +1,55 @@
+TOPIC: Correlation in combine
+URL: https://cms-talk.web.cern.ch/t/30374
+DATE: 2023-10-09T09:05:52.277Z
+SOLVED: no
+============================================================
+
+QUESTION (by hhua @ 2023-10-09T09:05:52.474Z):
+Hello experts，
+I am trying to figure out how to implement correlation of NP aross different years in combine tool, but couldn’t find any instructions in the combine webpage, could you help me with this?
+I also don’t understand how the ‘correlation’ is treated behind the hood of combine, especially in the case of search or limit setting. If you could point me to some materials to read I would be grateful.
+Thank you!
+Best,
+Huiling
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-10-10T08:31:00.946Z):
+Dear Huiling,
+Correlating parameters in combine language just means assigning the same names for them in the datacard. In case of lnN,  rateParam it is rather straight-forward, you just need to change the names in the datacard .txt file. Note that you also need to make sure that the up/down template associated to the NP are renamed.
+In case you are using CombineHarvester to manage your datacards there is a method which can help you with renaming:
+cb.cp().channel(['chan_name']).process(['proc_name']).RenameSystematic(cb,'old_name','new_name')
+Hope this helps, let me know if something is unclear.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by hhua @ 2023-11-06T03:35:56.568Z):
+Hi Aliya,
+Thank you very much for your clear answer!
+If my understanding is corret then for the case of correlation of NP, there are only 2 cases, which are fully correlated(same name in datacard accross years or processes)  and un-correlated(different name in different years). But lately I came across this recommendation from LUM POG which involves some neither 1 nor 0 correlation parameter such as 0.6. How can I understand this and how this is implemented in Combine then?
+
+Many thanks!
+Cheers,
+Huiling
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2023-11-07T10:15:18.948Z):
+Hi Huiling,
+Indeed the latest recommendation from LUMI POG is to introduce the 5 nuisances for the full Run 2 analyses including 3 parameters which are fully uncorrelated, 1 correlated in 2017 and 2018 and another one fully correlated in Run 2.
+The entries in this table are not the correlation coefficients but the values for the correlated/uncorrelated luminosity uncertainty components. So in the 2018 datacard you should have the following:
+lumi_13TeV_1718                     lnN     1.002
+lumi_13TeV_2018                          lnN     1.015
+lumi_13TeV_correlated                         lnN     1.02
+
+2017:
+lumi_13TeV_1718                     lnN     1.006
+lumi_13TeV_2017                          lnN     1.02
+lumi_13TeV_correlated                         lnN     1.009
+
+2016:
+lumi_13TeV_2016                          lnN     1.01
+lumi_13TeV_correlated                         lnN     1.006
+
+Best,
+Aliya
+----------------------------------------

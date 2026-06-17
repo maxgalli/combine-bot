@@ -1,0 +1,166 @@
+TOPIC: Running combine with 2 POIs and HybridNew
+URL: https://cms-talk.web.cern.ch/t/36024
+DATE: 2024-02-27T13:27:27.100Z
+SOLVED: no
+============================================================
+
+QUESTION (by regartne @ 2024-02-27T13:27:27.259Z):
+Dear combine experts,
+I want to use the HybridNew method to compute upper limits with combine. For one POI this works for me. However, I have 2 POIs. From the documentation I know that usually one can use the MultiDimFit method for multi-signal models. But MultiDimFit uses asymptotic formulas, right? Is there a way to compute the limits of a multi-signal model in combine without using asymptotic formulas?
+Thanks in advance for your help.
+Best,
+Rebecca
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-02-27T14:18:45.649Z):
+Hi Rebecca,
+It really depends on what these two POIs mean and what you are trying to exclude.
+One scenario is if you could imagine having two signal processes corresponding to two new states (like heavy Higgs bosons). Their cross-sections could depend on their masses or other parameters of the model. You could then scan these parameters and at each point, set an upper limit on a common signal strength multiplier ( the usual r ) and if that upper limit is less than one, you can say that parameter point is excluded. This could be done with either toys or using the asymptotic formulae if it makes sense to do so .
+Instead, if you have say two couplings that your signal process depends on, it might make more sense to find 68% confidence regions in that coupling space. This can be done with MultiDimFit (and you can use Wilks’ theorem to obtain the region from the likelihood) or with Feldman-Cousins if you can’t apply Wilks.
+Unless we know more about the model and what you’re trying to do, we can’t really say what is correct,
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by regartne @ 2024-02-27T16:06:22.350Z):
+Hi Nick,
+my signals are two B decays, B0 and B0_s decaying in the same final state. The masses of B0 and B0_s are very similar. So in my data, I want to simultaneously fit the B0 and B0_s decay. The B0 and the B0_s decays have their own PDFs. My POIs are the two signal strength multipliers. I don’t want to use a common signal strength multiplier because I don’t know the proportions between the two signals.
+----------------------------------------
+
+REPLY 4 (by regartne @ 2024-03-05T16:06:42.806Z):
+Hi Nick,
+I’ve specified my physics case in my previous answer. It is still not clear to me what exactly I need to do in my case. Could you specify?
+Thanks in advance.
+Best,
+Rebecca
+----------------------------------------
+
+REPLY 5 (by regartne @ 2024-03-12T08:32:01.257Z):
+Is there anything else I should provide? Any feedback is welcome
+----------------------------------------
+
+REPLY 6 (by kcormier @ 2024-03-12T08:52:28.585Z):
+Hi Rebecca,
+It sounds to me like what you are looking to do is the second case Nick mentioned, where there are two signal strength parameters and you’d like to estimate a confidence region in the space of both couplings. This is really a question about the physics goals and statistical framework, rather than the tools – which is more something to be decided by the analysis team and PAG (occasionally with input from the statistics committee) –  but that’s my two cents! One could, for example, set CL_s limits on one parameter while scanning another. That doesn’t seem particularly useful to me in your case, but that’s a question of the physics goals, the statistical tools will let you do either.
+If you decide that the second case Nick mentioned is what you’re trying to do; then from the technical side this can be done using MultiDimFit [1] if Wilks’ theorem provides a good enough approximation in your case, or Feldman-Cousins [2] if it doesn’t.
+Let us know if something is unclear or you’re not sure how to run some of the methods or tests you need.
+Hope that helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+[2]https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#feldman-cousins
+----------------------------------------
+
+REPLY 7 (by regartne @ 2024-03-13T12:53:47.041Z):
+Dear Kyle,
+thanks a lot for your reply. I have some follow-up questions:
+In my physics case I expect to set an upper limit on both of my signals. As far as I know, the FC method was invented in order to deal with cases where you decide based on the data whether to set a one- or two-sided CI. So in my case I don’t really see the statistical motivation of why I should be using it. Unless there’s no other way in combine to deal with multiple POIs using HybridNew.
+Do I see it correctly that the only difference between the standard HybridNew method and the Feldman Cousins method is the use of the LHC test statistic in case of standard HybridNew and the PL test statistic in case of FC? What is the PL statistic? I couldn’t find the definition anywhere in the documentation. It is my understanding that in the FC method, I construct the confidence interval based on this specific Feldman-Cousins ordering principle. Why is the test statistic used relevant for this? Or is the ordering step to construct the CI in the combine implementation somehow connected to the used test statistic?
+Another issue with the FC method in my case is, that I need to set
+–generateNuisances=1 --generateExternalMeasurements=0
+since I’m dealing with almost 0 background events (similar to the tau → 3 mu search). However, it seems like when I use --LHCmode LHC-feldman-cousins, the default is
+–LHCmode LHC-feldman-cousins:
+–generateNuisances=0
+–generateExternalMeasurements=1
+–fitNuisances=1 --testStat=PL
+(Q_Profile, includes boundaries) --rule
+Pmu
+(taken from combine —help)
+Can I overwrite this by specifying
+combine workspace.root -M HybridNew --LHCmode LHC-feldman-cousins --generateNuisances=1 --generateExternalMeasurements=0
+?
+Thanks in advance.
+Best,
+Rebecca
+----------------------------------------
+
+REPLY 8 (by kcormier @ 2024-03-15T11:10:38.379Z):
+Hi Rebecca,
+The Feldman-Cousins approach does unify the treatment of limits and two-sided confidence intervals, but that doesn’t mean it shouldn’t or can’t be used in cases where you expect you will set a limit. In fact its suitable for both cases, that’s the point!
+But again, to me this is a physics/statistical interpretation question, not really one about the tools. @cousins may have some thoughts, and you may want to pose those kinds of questions in the statistics comittee cms-talk forum [1] or at one of the statistics committee meetings, where all members of the committee can weight in.
+There are a few differences between the Feldman-Cousins method and the HybridNew --LHC-style LHC-limits.  First is the test statistic, as you pointed out. The ‘PL’ test statistic is the ‘Profile Likelihood Ratio’ test statistic, which is given directly in the documentation section on Feldman-Cousins [2]. It is simply the ratio of likelihood at the given POI parameter values with the nuisances profiled, to the likelihood at the best fit point. As is noted in the documentation, the Feldman-Cousins procedure actually involves restricting the parameters to physical values, so that the denominator is the best fit point within the physically allowed range.
+This is very similar to the typical test-statistic used for limit setting [3], but in that case there is an extra special treatment for when the parameter point under consideration is less than the best fit value (i.e. \mu < \hat{\mu}. This is what forces the limit setting to always be one sided, whereas FC can give two-sided intervals.
+Another difference is that, the LHC-mode LHC-feldman-cousins uses the p-value of the test statistic under the signal model directly  (--rule Pmu) to set the confidence interval, whereas in typical LHC limits we use the \mathrm{CL}_{s} criterion [4] (--rule CLs) which also depends on the p-value of the test-statistic under the background model.
+Note as well, that the typical limit setting is only defined for a single parameter of interest. If you want to set a limit on one parameter, you need to decide what you are doing with the other (e.g. set a limit in one parameter scanning the other, or setting a limit on one parameter leaving the other freely floating). The Feldman-Cousins case however is readily extended to multiple POIs, and is implemented that way in combine.
+I am not sure I fully understood your reason for wanted to randomize the nuisance parameter values themselves in the toy generation rather than randomizing the constraint terms, and I don’t recall the the \tau \to 3 \mu search at the moment. Maybe someone else wants to chime in. Although these parameters can be changed on the command line (they are just proxies for the set of arguments shown) the question is if it makes statistical sense to do so.
+I hope that helps,
+Kyle
+[1] https://cms-talk.web.cern.ch/c/physics/stats/142
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#feldman-cousins
+[3] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/what_combine_does/statistical_tests/#limit-setting-using-the-likelihood-ratio
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/what_combine_does/statistical_tests/#the-mathrmcl_smathrmcl_s-criterion
+[5] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys
+----------------------------------------
+
+REPLY 9 (by nckw @ 2024-03-15T12:57:21.169Z):
+Hi,
+Just to chime-in about the \tau\to3\mu search, I think Rebecca means BPH-21-005. In that case, there is a need to modify the way in which the toys are generated (see my slides here : https://indico.cern.ch/event/1284926/contributions/5416351/attachments/2650985/4589955/nobackground.pdf ). It should indeed be possible to do this also with the FC routine, I would be interested to see if this changes things in this case.
+All the best,
+Nick
+----------------------------------------
+
+REPLY 10 (by regartne @ 2024-03-15T15:10:03.466Z):
+Hi Kyle and Nick,
+In my search, I can do two things to get the limits: Since I have an overlap of my two signals, I can either fit to the signal 1, pretending signal 2 doesnt exist, set the (expected, blind) limit using
+combine -M HybridNew workspace.root --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC -T 10000 --rule CLs --expectedFromGrid 0.5
+and vice versa for the limit on signal 2.
+Or, I can do the more physical thing and assume that both signals exist at the same time, but I don’t know the proportions between the signals. In this case I then have two POIs. To me at least, the second option sounds more reasonable and therefore my question is indeed on the technical feasibility of this case.
+I am for sure in the quasi-zero background regime, so using MultiDimFit is not an option. I attach two mass plots for my two signals B0 → 4 muons and B0_s → 4 muons (signal region blinded) to show this. As you can also see, the B0 and the B0_s signal overlap quite much.
+I am aware that the Feldman Cousins approach can also be used just for limit setting. However, since it has issues like a too-good sensitivity in case of background underfluctuations, I thought it is better to not use it in my case (since the Flip-Flop problem doesn’t occur), unless it’s the only way to use HybridNew with two POIs.
+Is there a way to use HybridNew with two POIs without using the Feldman-Cousins method?
+If not, here some more follow-up questions:
+It seems to me like when I don’t restrict the parameters to physical values, the PL test statistic is the same as the usual LHC test statistic. It’s unclear to me where combine applies the ordering principle described in the Feldman-Cousins paper. How does combine know from my command that it now needs to apply this ordering principle? Is it in the  --rule Pmu?
+In the case of one POI and no physical restriction applied, is it equivalent to do
+combine workspace.root -M HybridNew --LHCmode LHC-feldman-cousins
+and
+combine workspace.root -M HybridNew —generateNuisances=0
+–generateExternalMeasurements=1
+–fitNuisances=1 --testStat=PL
+and
+combine workspace.root -M HybridNew —generateNuisances=0
+–generateExternalMeasurements=1
+–fitNuisances=1 --testStat=LHC --rule Pmu
+Thanks in advance for your help.
+Best,
+Rebecca
+massBs0L796×572 7.24 KB
+massBd0L796×572 7.04 KB
+----------------------------------------
+
+REPLY 11 (by kcormier @ 2024-03-19T08:29:05.662Z):
+Hi Rebecca,
+
+Rebecca Gartner:
+
+Or, I can do the more physical thing and assume that both signals exist at the same time, but I don’t know the proportions between the signals. In this case I then have two POIs. To me at least, the second option sounds more reasonable and therefore my question is indeed on the technical feasibility of this case.
+
+Part of the issue here is that this isn’t a purely technical question. Its really a question of what you are intending to do, i.e. what limit you are actually trying to set (as you mention in your first paragraph). One could provide individual limits on each parameter – in which case you must define what is being done with the other parameter (e.g. is it being fixed? scanned? profiled? marginalized?). Or you will be reporting the joint limits.
+The problem with using the normal LHC-limit setting test-statistic for the joint case is that it is defined in terms of a single POI, \mu. One could imagine similar test statistics defined for multiple POIs, but then you need to define how this is being handled. In particular, what do you do with the normal condition that the test-statistic is 0 if \mu \lt \hat{\mu}?  e.g. what is being done if \mu_1 \lt \hat{\mu}_1, and  \mu_2 > \hat{\mu}_2? What value should the test statistic take?  In the 1-dimensional case, this condition in the test-statistic is exactly what ensures that the limit is one-sided – which is not a concept which has a unique way of being extended to the multidimensional case.
+
+It seems to me like when I don’t restrict the parameters to physical values, the PL test statistic is the same as the usual LHC test statistic.
+
+The profile-likelihood test statistic is similar to, but not  the same as the typical LHC limit setting test statistic. You can see this in the documentation [1],  The profile-likelihood test statistic is denoted t_{\mu}, whereas the typical LHC limit setting test statistic is \tilde{q}_\mu. The treatment in \tilde{q}_\mu of the case when \mu \lt \hat{\mu} is what guarantees the limits will be one-sided and also what makes it’s generalization to higher dimensional cases ambiguous.
+The typical LHC limit setting test statistic also has the boundary condition (with the boundary fixed at \mu = 0). This is similar to what happens in the Feldan-Cousins prescription. But the boundaries are treated slightly differently because you could have a case where \hat{\mu} is outside of the physically allowed region, but of all the values in the physically allowed region, the best fit \hat{\mu}_\mathrm{bounded} is not actually on the boundary.  In this case the two are not actually the same.  This is also mentioned explicitly in the section on Feldman-Cousins [2].
+
+I am aware that the Feldman Cousins approach can also be used just for limit setting. However, since it has issues like a too-good sensitivity in case of background underfluctuations, I thought it is better to not use it in my case (since the Flip-Flop problem doesn’t occur), unless it’s the only way to use HybridNew with two POIs.
+
+The handling of background under-fluctuations is actually handled by the use of the \mathrm{CL}_s criterion, not the particular test-statistic being used. Note however, that if you expect 0 background, there’s  probably not much need to protect against under fluctuations! Very tricky for event counts to fluctuate below 0.   Though there may be exceptions if you e.g. have many channels where you expect ~0, but summed up they are sizeable.
+
+It’s unclear to me where combine applies the ordering principle described in the Feldman-Cousins paper. How does combine know from my command that it now needs to apply this ordering principle?
+
+A test-statistic is an ordering principle. That’s actually the point of defining test-statistics, a test-statistic takes a high-dimensional (read: unordered) observation, and reduces it to a 1-dimensional (read: ordered) value. If you look at the ordering principle in the paper (eq. 4.1 in [3] ) and substitute the likelihood for the probability of the data conditioned on the parameters, you’ll see its what is implemented in combine (and is in fact the Profile Likelihood, restricted to the physical values of the parameters).
+
+How does combine know from my command that it now needs to apply this ordering principle? Is it in the --rule Pmu?
+
+The --rule Pmu is instructing combine to use the p-value of the test statistic (typically \tilde{q}_{\mu}, but which test statistic is being used) under the signal hypothesis directly to set the limit, rather than using the \mathrm{CL}_{s} criterion which also invloves the p-value of this test statistic under the background-only hypothesis. As explained here [4].
+
+In the case of one POI and no physical restriction applied, is it equivalent to do …
+
+No, Since the two test-statistics are different, as explained above, the two commands you gave are not the same. Additionally the default --rule is CLs, which will be another difference between the two example commands you gave.
+NB: Here is my usual disclaimer that none of this constitutes official medical  analysis advice, and you should make sure to decide on your analysis methodology in discussion with the PAG (and perhaps stat comm, in cases like these, where there are statistical questions).
+I hope that helps,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/what_combine_does/statistical_tests/#limit-setting-using-the-likelihood-ratio
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#feldman-cousins
+[3] https://arxiv.org/abs/physics/9711021
+[4] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/what_combine_does/statistical_tests/#the-cls-criterion
+----------------------------------------

@@ -1,0 +1,31 @@
+TOPIC: Issue with Observed Limir When Combining Data from 2016, 2017, and 2018
+URL: https://cms-talk.web.cern.ch/t/68867
+DATE: 2024-11-26T10:14:27.649Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by shachary @ 2024-11-26T10:14:28.705Z):
+Dear all,
+I am currently working on computing the limits using the full Run2 data, and I have encountered an issue when combining datasets from different years.
+When I combine the 2017 and 2018 data, both the expected limits and observed limits improve, which is as expected. However, when I add the 2016 data to the combination (i.e., combining 2016 with 2017+2018), the expected limits increases, but the observed limits decrease.
+I have shared the relevant datacards and input files through the following link for reference:Datacards and input files
+The Instructions_updated.txt file contains details on all the input files and the macro used to process the limits
+Has anyone encountered a similar issue or could provide insights into why this discrepancy in observed limits is happening? Any advice or suggestions would be greatly appreciated.
+Thank you in advance for your help!
+Best regards,
+Shriniketan Acharya
+PhD Student
+c/o
+Dr Bhawna Gomber
+Assistant professor
+CASEST, University of Hyderabad
+Hyderabad, India
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by gortona @ 2024-11-26T10:59:03.175Z):
+Dear Shriniketan,
+While it is correct to say the expected limit should improve when adding more data, the same is not necessarily true with the observed limit. If in one year you have a data excess/deficit, this will reflect on the combined limit as well.
+You should compare the combined limit with the limits from the 3 years separately, to see if the combined result make sense.
+Best regards,
+Giacomo
+----------------------------------------

@@ -1,0 +1,67 @@
+{
+  "topic_id": 33903,
+  "title": "Splitting statistical uncertainty in counting experiments",
+  "url": "https://cms-talk.web.cern.ch/t/33903",
+  "category_id": 279,
+  "created_at": "2024-02-01T10:14:51.575Z",
+  "last_posted_at": "2024-02-01T13:53:38.905Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jleonhol",
+      "name": "Jaime Leon Holgado",
+      "created_at": "2024-02-01T10:14:51.702Z",
+      "updated_at": "2024-02-01T10:14:51.702Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am working on a Dark QCD analysis, where we obtain limits for different signal samples against background (QCD samples enriched in muons). We classify our data into several categories; in the categories where we see enough signal events, we do a parametric fit, while in the other categories we just do a counting experiment (signal vs full background). My question is regarding how to include the background statistical uncertainties in the counting experiments, since we are merging several QCD samples and each of them have different number of events ending up in the analysis categories. I tried including 1 gmN per QCD sample (as shown in https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#a-simple-counting-experiment), but it seems only 1 stat. uncertainty is allowed for the whole background (attached is a minimal datacard that shows the structure I was following).\nThank you very much,\nJaime\ndatacard_example.txt (863 Bytes)\n.",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am working on a Dark QCD analysis, where we obtain limits for different signal samples against background (QCD samples enriched in muons). We classify our data into several categories; in the categories where we see enough signal events, we do a parametric fit, while in the other categories we just do a counting experiment (signal vs full background). My question is regarding how to include the background statistical uncertainties in the counting experiments, since we are merging several QCD samples and each of them have different number of events ending up in the analysis categories. I tried including 1 gmN per QCD sample (as shown in <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#a-simple-counting-experiment\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#a-simple-counting-experiment</a>), but it seems only 1 stat. uncertainty is allowed for the whole background (attached is a minimal datacard that shows the structure I was following).</p>\n<p>Thank you very much,<br>\nJaime</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/dGJoapTmaEckL1Al5KniFO0cjK2.txt\">datacard_example.txt</a> (863 Bytes)<br>\n.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-02-01T12:10:35.871Z",
+      "updated_at": "2024-02-01T12:10:35.871Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jaime,\nThat\u2019s right - you can only use a single gmN for a given background process since there is only 1 scale factor allowed in the datacard line.\nHowever, if you want to take account of the different QCD samples each having different numbers of events available in MC, why not also split the background into each of these samples - there\u2019s nothing that says all of the backgrounds need to be merged into one process.\nHave a look at the datacard below, where I have assumed a 50/50 split of the background (assuming each process has 2 MC events) into two background processes. Would something like this work in your case?\nBest,\nNick\nimax  *\njmax  *\nkmax  *\n--------------------------------------------------\nbin          muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA\nobservation  0.0\n--------------------------------------------------\nbin                   muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA  muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA\nprocess               scenarioA_mpi_4_mA_1p33_ctau_10                     background_1                                       background_2\nprocess               0                                                   1                                                  2\nrate                  9.26                                                0.01                                               0.01\n--------------------------------------------------\npu              lnN   1.03                                                -                                                  -\nqcd_stat_1      gmN 2 -                                                   0.005                                              -\nqcd_stat_2      gmN 2 -                                                   -\t                                             0.005",
+      "cooked_html": "<p>Hi Jaime,</p>\n<p>That\u2019s right - you can only use a single gmN for a given background process since there is only 1 scale factor allowed in the datacard line.</p>\n<p>However, if you want to take account of the different QCD samples each having different numbers of events available in MC, why not also split the background into each of these samples - there\u2019s nothing that says all of the backgrounds need to be merged into one process.</p>\n<p>Have a look at the datacard below, where I have assumed a 50/50 split of the background (assuming each process has 2 MC events) into two background processes. Would something like this work in your case?</p>\n<p>Best,<br>\nNick</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">imax  *\njmax  *\nkmax  *\n--------------------------------------------------\nbin          muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA\nobservation  0.0\n--------------------------------------------------\nbin                   muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA  muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA\nprocess               scenarioA_mpi_4_mA_1p33_ctau_10                     background_1                                       background_2\nprocess               0                                                   1                                                  2\nrate                  9.26                                                0.01                                               0.01\n--------------------------------------------------\npu              lnN   1.03                                                -                                                  -\nqcd_stat_1      gmN 2 -                                                   0.005                                              -\nqcd_stat_2      gmN 2 -                                                   -\t                                             0.005\n</code></pre>"
+    },
+    {
+      "post_number": 3,
+      "username": "jleonhol",
+      "name": "Jaime Leon Holgado",
+      "created_at": "2024-02-01T12:20:18.423Z",
+      "updated_at": "2024-02-01T12:20:18.423Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nYes, I also considered that. However, as in some analysis categories we perform a parametric fit and in that case we want to have all background processes merged together, I guess it doesn\u2019t make a lot of sense to have one set of processes for the counting bins and another one for the parametric bins.\nCheers,\nJaime",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>Yes, I also considered that. However, as in some analysis categories we perform a parametric fit and in that case we want to have all background processes merged together, I guess it doesn\u2019t make a lot of sense to have one set of processes for the counting bins and another one for the parametric bins.</p>\n<p>Cheers,<br>\nJaime</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-02-01T13:32:02.051Z",
+      "updated_at": "2024-02-01T13:32:02.051Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nWhy does it matter if the backgrounds are merged in one category and not in another? There is no reason why every category needs to have the same set of backgrounds or split to the same level (otherwise we would never be able to combine all of the different Higgs decay channels for example).\nNick",
+      "cooked_html": "<p>Hi,</p>\n<p>Why does it matter if the backgrounds are merged in one category and not in another? There is no reason why every category needs to have the same set of backgrounds or split to the same level (otherwise we would never be able to combine all of the different Higgs decay channels for example).</p>\n<p>Nick</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jleonhol",
+      "name": "Jaime Leon Holgado",
+      "created_at": "2024-02-01T13:53:38.905Z",
+      "updated_at": "2024-02-01T13:53:38.905Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nThat makes total sense, thank you very much!\nJaime",
+      "cooked_html": "<p>Hi Nick,</p>\n<p>That makes total sense, thank you very much!</p>\n<p>Jaime</p>"
+    }
+  ]
+}

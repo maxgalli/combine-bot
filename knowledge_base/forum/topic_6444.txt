@@ -1,0 +1,22 @@
+TOPIC: The effect of --StepSize option on all POI's
+URL: https://cms-talk.web.cern.ch/t/6444
+DATE: 2022-02-14T12:51:06.237Z
+SOLVED: no
+============================================================
+
+QUESTION (by ekhazaie @ 2022-02-14T12:51:06.411Z):
+Dear combine experts,
+I would like to make an impact plot using combine and I am wondering:
+Does the " --stepSize" option in Multidim fit affect all POI’s?
+How can we make sure that all POI’s have a given StepSize?
+Any feedback or information would be greatly appreciated.
+Cheers,
+Elham
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-02-14T18:04:27.297Z):
+Dear Elham,
+Yes, it does. If you require a specific --stepSize for a given parameter, you can run that one separately by running the --doFits step with the --named option: https://github.com/cms-analysis/CombineHarvester/blob/master/CombineTools/python/combine/Impacts.py#L36  (e.g --named “Parameter1”)
+Hope that helps,
+Adinda
+----------------------------------------

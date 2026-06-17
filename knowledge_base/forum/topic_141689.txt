@@ -1,0 +1,132 @@
+TOPIC: PostFitShapesFromWorkspace: histogram errors smaller than printed fractions
+URL: https://cms-talk.web.cern.ch/t/141689
+DATE: 2026-02-03T19:13:12.233Z
+SOLVED: no
+============================================================
+
+QUESTION (by jmhogan @ 2026-02-03T19:13:12.473Z):
+Dear Combine experts,
+I am using PostFitShapesFromWorkspace to produce a post-fit table of numbers of events.
+I’m finding that the errors stored in the resulting histograms appear much smaller than the function’s printout of the relative background uncertainty per channel. We need to make sure that we aren’t underestimating the uncertainties in our post-fit plots and in our table.
+Command options:
+PostFitShapesFromWorkspace -w workspace.root --output test5000samples.root -f fitDiagnosticsTest.root:fit_b --postfit --sampling 1 --samples 5000 --print --covariance --skip-prefit 0 --skip-proc-errs 0
+As the command runs I see the following printout for prefit and postfit:
+Bin                       Total relative bkg uncert. (prefit)
+----------------------------------------------------------
+Case1_D                   0.27302
+Case2_D                   0.05747
+Case3_D                   0.03850
+Case4_D                   0.08400
+
+Bin                       Total relative bkg uncert. (postfit)
+----------------------------------------------------------
+Case1_D                   0.00930
+Case2_D                   0.00576
+Case3_D                   0.00436
+Case4_D                   0.00401
+
+The prefit relative uncertainty percentages agree with our own calculation on the input files, and the post-fit relative uncertainties do not seem too surprising given the constraints on our major background.
+However, when I open the root file and scan the histograms, the errors appear much smaller:
+Attaching file test5000samples.root as _file0...
+(TFile *) 0x3e011e0
+root [1] _file0->cd("Case1_D_prefit")
+(bool) true
+root [2] double error;
+root [3] TotalBkg->IntegralAndError(1,TotalBkg->GetNbinsX()+1,error)
+(double) 13127.815
+root [4] cout << error << endl;
+425.523
+root [5] _file0->cd("Case1_D_postfit")
+(bool) true
+root [6] TotalBkg->IntegralAndError(1,TotalBkg->GetNbinsX()+1,error)
+(double) 13139.410
+root [7] cout << error << endl;
+39.3295
+
+The prefit uncertainty here is more like 3%, and the post-fit uncertainty is more like 0.2%. There is no contribution from underflow or overflow.
+Can you help me understand the source of the discrepancy? Hopefully I am doing something naive, either in setting up the function or in studying the histograms.
+Thank you,
+Julie Hogan
+----------------------------------------
+
+REPLY 2 (by nckw @ 2026-02-03T20:03:07.000Z):
+Hi Julie,
+I’m not super familiar with this particular tool but when you use TotalBkg->IntegralAndError(), I imagine that the uncertainty in each bin is being summed in quadrature and the total is summed linearly of course.
+The package should use the toys to estimate the variance of the total which accounts for correlations between each of the bins. I’d probably not rely on the IntegralAndError method unless you know the uncertainties are uncorrelated.
+As a test, you could try running with single bin histograms. In that case I’d expect both to agree.
+Hopefully someone more familiar with this tool can confirm/provide a better explanation
+Best
+Nick
+
+···
+
+From: Julie Hogan noreply-cms-talk@cern.ch
+Sent: Tuesday, February 3, 2026 7:14:43 PM
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] PostFitShapesFromWorkspace: histogram errors smaller than printed fractions
+
+Julie Hogan jmhoganFebruary 3
+
+Dear Combine experts,
+I am using PostFitShapesFromWorkspace to produce a post-fit table of numbers of events.
+I’m finding that the errors stored in the resulting histograms appear much smaller than the function’s printout of the relative background uncertainty per channel. We need to make sure that we aren’t underestimating the uncertainties in our post-fit plots and in our table.
+Command options:
+PostFitShapesFromWorkspace -w workspace.root --output test5000samples.root -f fitDiagnosticsTest.root:fit_b --postfit --sampling 1 --samples 5000 --print --covariance --skip-prefit 0 --skip-proc-errs 0
+As the command runs I see the following printout for prefit and postfit:
+Bin                       Total relative bkg uncert. (prefit)
+----------------------------------------------------------
+Case1_D                   0.27302
+Case2_D                   0.05747
+Case3_D                   0.03850
+Case4_D                   0.08400
+
+Bin                       Total relative bkg uncert. (postfit)
+----------------------------------------------------------
+Case1_D                   0.00930
+Case2_D                   0.00576
+Case3_D                   0.00436
+Case4_D                   0.00401
+
+The prefit relative uncertainty percentages agree with our own calculation on the input files, and the post-fit relative uncertainties do not seem too surprising given the constraints on our major background.
+However, when I open the root file and scan the histograms, the errors appear much smaller:
+Attaching file test5000samples.root as _file0...
+(TFile *) 0x3e011e0
+root [1] _file0->cd("Case1_D_prefit")
+(bool) true
+root [2] double error;
+root [3] TotalBkg->IntegralAndError(1,TotalBkg->GetNbinsX()+1,error)
+(double) 13127.815
+root [4] cout << error << endl;
+425.523
+root [5] _file0->cd("Case1_D_postfit")
+(bool) true
+root [6] TotalBkg->IntegralAndError(1,TotalBkg->GetNbinsX()+1,error)
+(double) 13139.410
+root [7] cout << error << endl;
+39.3295
+
+The prefit uncertainty here is more like 3%, and the post-fit uncertainty is more like 0.2%. There is no contribution from underflow or overflow.
+Can you help me understand the source of the discrepancy? Hopefully I am doing something naive, either in setting up the function or in studying the histograms.
+Thank you,
+Julie Hogan
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by jmhogan @ 2026-02-03T20:59:39.939Z):
+Thanks Nick,
+Indeed, IntegralAndError gives the same result as summing the bin errors in quadrature by hand. I think I see what you’re saying: the bin-by-bin errors in the output histograms (and therefore the post-fit plots) are real outputs from the toys pulled from the covariance matrix, but we’re underestimating if we try to extract the total in any manual way since we don’t know the bin-to-bin correlations.
+So perhaps for the table we can try to:
+
+find a way to get PostFitShapes to print the relative uncertainties for each process as well as the total.
+find a way to get PostFitShapes to produce the histograms as single bins (I assume collapsing wouldn’t be reasonable before since each bin has a nuisance…)
+
+Regards,
+Julie
+----------------------------------------
+
+REPLY 4 (by jmhogan @ 2026-02-03T22:22:39.302Z):
+Turns out adding to the print was painless, and the results are all consistent with the previous printout, so I think that solves the problem!
+Thanks,
+Julie
+----------------------------------------

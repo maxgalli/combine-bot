@@ -1,0 +1,45 @@
+{
+  "topic_id": 36736,
+  "title": "ln(Lb)-Ln(Ls+b) from RooFit and \"FINAL NLL - NLL0 VALUE\" from MultiDimFit",
+  "url": "https://cms-talk.web.cern.ch/t/36736",
+  "category_id": 279,
+  "created_at": "2024-03-12T14:18:55.663Z",
+  "last_posted_at": "2024-03-13T06:55:11.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-12T14:18:55.836Z",
+      "updated_at": "2024-03-12T14:18:55.836Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI do unbinned fit for S+B and B only model and extract ln(Lb) - ln(Ls+b)\nfrom my .C macro at\n/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/13TeV_2017UL_RooFitTest_SR1.C\nit gives me ln(Lb) - ln(Ls+b) = 1.47978\nand corresponding significance 1.7. The same significance I get from\ncombine -M Significance 2017UL_dimuon_SR1.txt  --significance\nBut when I run\ncombine -M MultiDimFit 2017UL_dimuon_SR1.txt --robustFit=1 -v 3 --rMin 0 --rMax 100\nit print me out\nFINAL NLL - NLL0 VALUE = -408.6334054\nWhat is this value ? And how can I get ln(Lb)-ln(Ls+b) from MultiDimFit\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I do unbinned fit for S+B and B only model and extract ln(Lb) - ln(Ls+b)<br>\nfrom my .C macro at</p>\n<p>/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/13TeV_2017UL_RooFitTest_SR1.C</p>\n<p>it gives me ln(Lb) - ln(Ls+b) = 1.47978<br>\nand corresponding significance 1.7. The same significance I get from</p>\n<p>combine -M Significance 2017UL_dimuon_SR1.txt  --significance</p>\n<p>But when I run<br>\ncombine -M MultiDimFit 2017UL_dimuon_SR1.txt --robustFit=1 -v 3 --rMin 0 --rMax 100</p>\n<p>it print me out</p>\n<p>FINAL NLL - NLL0 VALUE = -408.6334054</p>\n<p>What is this value ? And how can I get ln(Lb)-ln(Ls+b) from MultiDimFit</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-03-12T16:28:52.747Z",
+      "updated_at": "2024-03-12T16:28:52.747Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nIn general, its not a great idea to pick some line from the verbose output and try to guess what it means. RooFit (and combine) has several optimisations to subtract large values of the NLL and NLL0 doesn\u2019t refer to the NLL at mu=0.\nInstead, as described in the documentation here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans , you can calculate the difference in the negative-log-likelihood (NLL) at a fixed point vs the best fit point by using the fixed algo. In your case, this would be the fixed point of zero so you set --algo fixed --fixedPointPOIs r=0.\nThe output ROOT file contains a TTree (called limit) which you can find the value calculated in ROOT using limit->Scan(\"deltaNLL\"). The  2nd row is the number you\u2019re looking for,\nBest,\nNick",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>In general, its not a great idea to pick some line from the verbose output and try to guess what it means. RooFit (and combine) has several optimisations to subtract large values of the NLL and NLL0 doesn\u2019t refer to the NLL at mu=0.</p>\n<p>Instead, as described in the documentation here : <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans</a> , you can calculate the difference in the negative-log-likelihood (NLL) at a fixed point vs the best fit point by using the <code>fixed</code> algo. In your case, this would be the fixed point of zero so you set <code>--algo fixed --fixedPointPOIs r=0</code>.</p>\n<p>The output ROOT file contains a TTree (called <code>limit</code>) which you can find the value calculated in ROOT using <code>limit-&gt;Scan(\"deltaNLL\")</code>. The  2nd row is the number you\u2019re looking for,</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-13T06:55:11.000Z",
+      "updated_at": "2024-03-13T06:57:08.239Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Thank you, Nick ! It is great.\nCheers, Sasha.\n\n\u00b7\u00b7\u00b7\n\nFrom: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch\nSent: Tuesday, March 12, 2024 17:29\nTo: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch\nSubject: [Common Analysis Tools/Statistical Interpretation Tools] ln(Lb)-Ln(Ls+b) from RooFit and \u201cFINAL NLL - NLL0 VALUE\u201d from MultiDimFit\n\nNicholas Wardle nckw Higgs convenerMarch 12\n\nHi Sasha,\nIn general, its not a great idea to pick some line from the verbose output and try to guess what it means. RooFit (and combine) has several optimisations to subtract large values of the NLL and NLL0 doesn\u2019t refer to the NLL at mu=0.\nInstead, as described in the documentation here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans , you can calculate the difference in the negative-log-likelihood (NLL) at a fixed point vs the best fit point by using the fixed algo. In your case, this would be the fixed point of zero so you set --algo fixed --fixedPointPOIs r=0.\nThe output ROOT file contains a TTree (called limit) which you can find the value calculated in ROOT using limit->Scan(\"deltaNLL\"). The 2nd row is the number you\u2019re looking for,\nBest,\nNick\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Thank you, Nick ! It is great.<br>\nCheers, Sasha.</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<hr>\n<p><strong>From:</strong> Nicholas Wardle via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a><br>\n<strong>Sent:</strong> Tuesday, March 12, 2024 17:29<br>\n<strong>To:</strong> Alexandre Nikitenko <a href=\"mailto:Alexandre.Nikitenko@cern.ch\">Alexandre.Nikitenko@cern.ch</a><br>\n<strong>Subject:</strong> [Common Analysis Tools/Statistical Interpretation Tools] ln(Lb)-Ln(Ls+b) from RooFit and \u201cFINAL NLL - NLL0 VALUE\u201d from MultiDimFit</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img title=\"nckw\" width=\"45\" height=\"45\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/n/e36b37/45.png\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/nckw\">Nicholas Wardle</a> nckw Higgs convener<br>March 12</th>\n</tr>\n</thead>\n</table>\n</div><p>Hi Sasha,</p>\n<p>In general, its not a great idea to pick some line from the verbose output and try to guess what it means. RooFit (and combine) has several optimisations to subtract large values of the NLL and NLL0 doesn\u2019t refer to the NLL at mu=0.</p>\n<p>Instead, as described in the documentation here : <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans</a> , you can calculate the difference in the negative-log-likelihood (NLL) at a fixed point vs the best fit point by using the <code>fixed</code> algo. In your case, this would be the fixed point of zero so you set <code>--algo fixed --fixedPointPOIs r=0</code>.</p>\n<p>The output ROOT file contains a TTree (called <code>limit</code>) which you can find the value calculated in ROOT using <code>limit-&gt;Scan(\"deltaNLL\")</code>. The 2nd row is the number you\u2019re looking for,</p>\n<p>Best,<br>\nNick</p>\n<p><a href=\"https://cms-talk.web.cern.ch/t/ln-lb-ln-ls-b-from-roofit-and-final-nll-nll0-value-from-multidimfit/36736/2\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/0f5a81fc66c70cfcd065b34eba4c25eeeba540bc635ecd9bf8a313d9768d5894\">click here</a>.</p>\n<hr>\n</details>"
+    }
+  ]
+}

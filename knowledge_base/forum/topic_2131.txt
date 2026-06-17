@@ -1,0 +1,126 @@
+TOPIC: Errors bars on data points from FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/2131
+DATE: 2021-07-26T15:23:25.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by jmotta @ 2021-07-26T15:23:25.000Z):
+*** Discussion title: Higgs Combination
+Dear Combine Experts,
+We have been using FitDiagnostic for the calculation of the postfit
+shapes in our analysis and we have encountered some unexpected behaviour
+of the error bars on data.
+As reported in the combine documentation âThe vertical error bars [on
+data] correspond to the 68% interval for a Poisson distribution centered
+on the observed count.â However, as you can see from these plots [1-2]
+the uncertainty bars are definitely not as expected. For example, in the
+last bin of both the distributions the lower error is completely wrong.
+As we don't see any reasons why postfit errors on data would change from
+their original Poisson interval, we are coming to you for some insight.
+This is the specific command that we are running for the production of
+such postfit shapes.
+combine -M FitDiagnostics workspace.root \
+--verbose 1 \
+--mass 125.0  \
+--redefineSignalPOIs r \
+--setParameters r_qqhh=1.0,r_gghh=1.0,kl=1.0,kt=1.0,CV=1.0,C2V=1.0 \
+--freezeParameters r_qqhh,r_gghh,kl,kt,CV,C2V \
+--skipBOnlyFit \
+--saveNLL \
+--saveNormalizations \
+--saveOverallShapes \
+--saveShapes \
+--saveToys \
+--saveWithUncertainties \
+--saveWorkspace \
+--cminDefaultMinimizerType Minuit2 \
+--cminDefaultMinimizerStrategy 1 \
+--cminFallbackAlgo Minuit2,1:1.0
+For comparison I also attach the plots as we would expect them [3-4]
+(here the intervals are calculated âmanuallyâ to be the 68% interval for
+a Poisson distribution centered on the observed count).
+Is this a behaviour that was observed before or is it the first time?
+Can it be due to an error in the command we are using?
+Thanks a lot for the help.
+Best,
+Jona Motta
+on behalf of the HH->bbtautau analysis team
+[1]
+
+[2]
+
+[3]
+
+[4]
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-07-26T16:40:51.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+can you give us a minimal datacard (one cat. maybe the 3 bin one) so we can try to understand a bit more.
+can you also tell us the version of combine, CMSSW and ROOT that you are using, and which tgraph you're taking?
+I don't recall recent changes to this part.
+Data are computed as Poisson counts as density here (meaning that they are divided by the bin-width, that should be 1 if you use TH1 inputs for combine):
+https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/7bffa8b8758a5dc6824b8b93c098ce9afb1c32a4/src/utils.cc#L548
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by jmotta @ 2021-07-26T17:17:02.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrea,
+Thanks a lot for your fast answer.
+At this path [1] you can find the datacard and the shapes for the 3bin
+category.
+For what concerns combine, we are using the standalone version with the
+latest recommended tag (v8.2.0) which comes with ROOT 6.12.07.
+For what concerns the TGraph, I am plotting for each channel the data
+taken from fitdisgnostic.root/shapes_fit_s/ch*/data .
+Thanks for the help.
+Best,
+Jona
+[1] /afs/cern.ch/user/j/jmotta/public/hh_boosted_2016_HNhelp
+----------------------------------------
+
+REPLY 4 (by amarini @ 2021-07-26T19:59:40.000Z):
+*** Discussion title: Higgs Combination
+Hi Jona,
+for some reasons your bin counts (in data) are non integers (they should be).
+inside the input file you gave me
+TH1.Print Name  = data_obs, Entries= 1002, Total sum= 4.99999
+fSumw[0]=0, x=-0.166667, error=0  (*underflow, ignored in combine*)
+fSumw[1]=3.99954, x=0.175, error=1.9996
+fSumw[2]=0.000468908, x=0.5845, error=2.16521e-05
+fSumw[3]=0.999981, x=0.9095, error=0.999801
+fSumw[4]=0, x=1.16667, error=0 (*overflow, ignored in combine*)
+The TH1 kPoisson option of TH1 returns the value you see with these non integers counts.
+(inside combine)
+DEBUG GREP MEdata (0): 0.5: y=3.99954 bw=1 el=2.63224 eh=1.91865
+DEBUG GREP MEdata (1): 1.5: y=0.000468908 bw=1 el=0 eh=1.84055
+DEBUG GREP MEdata (2): 2.5: y=0.999981 bw=1 el=0 eh=0.841041
+You can test it in plain ROOT as:
+root [0] TH1D h ("name","name",10,0,10)
+root [1] h.SetBinContent(1,0.999981)
+root [2] h.SetBinErrorOption(TH1::kPoisson)
+root [3] h.GetBinErrorLow(1)
+(double) 0.0000000
+root [4] h.GetBinErrorUp(1)
+(double) 0.84104064
+root [5] h.SetBinContent(2,1)
+root [6] h.GetBinErrorLow(2)
+(double) 0.82724622
+root [7] h.GetBinErrorUp(2)
+(double) 2.2995266
+Apparently, the implementation in ROOT [*] uses a mix of the value in double and its int cast (= floor).  The int casting inside root makes the large difference for this because the it takes the values for the interval at 0 but computes the error as difference with respect to the nominal double value (except 0, whose lower error is hard coded to 0). I suggest to clean up the observation to be integer values. (which should describe better the likelihood, although I don't think this will make a large difference in the fit values)
+Cheers,
+-Andrea
+[*] https://root.cern.ch/doc/master/TH1_8cxx_source.html#l08913
+----------------------------------------
+
+REPLY 5 (by jmotta @ 2021-08-17T09:05:12.000Z):
+Hi Andrea,
+Thanks a lot for your help (and sorry for the late answer, we actually encountered some concern with the unblinding ‘safety' after fixing the error you pointed out).
+So, your insight was correct and having integer data the error bars are now as they should be.
+Cheers,
+Jona
+----------------------------------------

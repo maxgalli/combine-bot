@@ -1,0 +1,96 @@
+TOPIC: combineCards functionality in combineTool
+URL: https://cms-talk.web.cern.ch/t/2163
+DATE: 2021-09-15T16:14:34.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Peter_Major @ 2021-09-15T16:14:34.000Z):
+*** Discussion title: Higgs Combination
+Dear Experts,
+To properly implement the ABCD method into our statistical analysis I
+crate N+1 datacards now. N for the different signal points and the
+search bins and 1 which contains the ABC regions for the relevant
+background. I am wondering if it is possible to use the combineTool to
+buch combine my cards or I should write a bash script that calls
+combineCards N times.
+Sorry if this is not the best place to ask about this, unfortunately I
+couldn't find this information anywhere.
+Cheers, Peter
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-09-15T17:09:08.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+you can call combineCards one time. Is this your question?
+combineCards.py [ch1=]datacard1.txt [ch2=]datacard2.txt ... > datacard_comb.txt
+if specified, the part before equal sign will be pretented in the channel names. Normally, it is ch1, ch2, ....
+Alternatively, you can also use combine tools.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by Peter_Major @ 2021-09-15T20:08:20.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrea,
+thank you for the answer. This wasn't exactly what I meant to ask, let me try again.
+What I did before:
+I have N signal samples with different gluino masses and my aim is to compute an exclusion plot. I make a datacard for each of these N samples with all search bins in each of the cards. The cards are saved in directories labeled by the corresponding gluino mass, such as
+m_gluino1000/card.txt
+
+then I run all these cards separately using
+combineTool.py -M AsymptoticLimits -d  ./m_gluino*/card.txt --there --job-mode condor ...
+
+and finally, gather the results with a python script and make my plot.
+What I am trying to do now:
+One of our backgrounds is computed with the ABCD method. Thus far we just inserted the resulting central value into the datacard with a nuisance parameter representing the uncertainty, but now I implemented it in the datacard using rateParams in accordance with the documentation. For this, it seemed easier to have a separate datacard for the ABC regions. (D=B*C/A)
+I am looking to simplify the following process:
+# for all X
+combineCards.py Name1=abc.txt Name2=m_gluino<X>/card.txt > m_gluino<X>/card2.txt
+combineTool.py -M AsymptoticLimits -d  ./m_gluino*/card2.txt --there --job-mode condor ...
+
+Cheers,
+Peter
+----------------------------------------
+
+REPLY 4 (by amarini @ 2021-09-15T20:37:31.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+I don't think that you can skip the combineCards or equivalent step (either as combineCards or combineHarvester),
+as I doubt that the combineTool (for job submission) allows you to do it on the fly (maybe you can have it as a prepend command, but this will not change a lot ...).
+The idea behind it is that the card should represent a complete input statistical model.
+Although, (I don't see the full cmd line nor the dc, so you may already do it or may not be in the condition of doing it), if you are interested in a limit on other than 'r' parameters, do you know you can run the 'singlePoint' cls and check only the 'r=1' point to be (<>0.05); with great benefit on the timing for the limit computations, since you ran only two fits? (instead of eg. comparing the limit on r<>1)
+Furthermore, quite a lot of time actually goes into the model building of the workspace creation (text2workspace), so it may be convenient to factorize out that step, especially if the model is large or if you want a convenient all-in file to ship somewhere (at the prize of fixing the physics model).
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 5 (by Peter_Major @ 2021-09-20T10:48:07.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrea,
+this sounds like an interesting option, as at some point I would like to
+extract the ABCD estimates from Combine, to compare them with the values
+we get from multiplying and dividing histograms.
+I think I would want to do this with r=0 however.
+Does your comment refer to this functionality?
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/debugging/#analyzing-the-nll-shape-in-each-parameter
+----------------------------------------
+
+REPLY 6 (by amarini @ 2021-09-20T11:24:39.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+the fast scan option, evaluates the likelihood without profiling it.
+(so it plots L( v, \hat{theta}), rather than L(v,\hat{theta}_v) for any parameter v). This can be useful for if 1) minimizing the likelihood is consuming and you want a quick view of its value or 2) there is no other parameters (\vec{theta}==empty) and thus there is nothing to minimize.
+You can check the value of the ABCD parameters, by looking at their postfit results (with or without r, accordingly to your preference). If you want to freeze r, you may define a new [set] of POIs, to make sure that r is not float (depending on the method used).
+In MultiDimFit, if you are interested only in the central value of a parameter, you can use for instance:
+--saveSpecifiedNuis arg               Save specified parameters (default =
+none)
+--saveSpecifiedFunc arg               Save specified function values (default
+= none)
+or the --saveWorkspace that will save the full workspace with a snapshot ('MultiDimFit) of the fit parameters at the best fit.
+if you want to derive (profiled) likelihood scans on a parameter A, you can use:
+-M MultiDimFit --redefineSignalPOIs A,B,C --algo grid --setParameterRanges A=... [--points 50] [--freezeParameters r=0] -P A --floatOtherPOIs=0/1 [--saveInactivePOIs=1]
+On your original question, I forgot to mention -- at least if you use bash -- that you could in principle do the combineCards step with process substitution (i.e. bash constructs <(), combine -M ... -d <(combineCards.py ... ) ... ),
+but I discourage it as the final card represents the inputs to your statistical results and it is useful to have them to debug, to understand what is inside, and to preserve.
+Cheers,
+-Andrea
+----------------------------------------

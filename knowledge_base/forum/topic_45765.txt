@@ -1,0 +1,98 @@
+TOPIC: Unsufficient number of entries when producing impact plots
+URL: https://cms-talk.web.cern.ch/t/45765
+DATE: 2024-08-13T08:52:31.665Z
+SOLVED: no
+============================================================
+
+QUESTION (by ntrevisa @ 2024-08-13T08:52:31.876Z):
+Dear combine experts,
+I am observing an unexpected behavior when producing impact plots for my analysis. Some of the jobs produce output rootfiles with only two of the three expected entries in the limit TTree, in the branch named after the target nuisance. I understand this may happen if the fit convergence is not good, but looking at the .out and .err files, I see the three values and to warning or error messages. Do you know how this can happen?
+For completeness, let me add the commands I am using [1], the output message [2], and the output rootfile [3].
+I am using combine v10.0.1 inside CMSSW_14_1_0_pre4.
+Thank you in advance and best regards,
+Nicolò Trevisani
+[1]: combine command, as in the condor_combine_task.sh file:
+combine -M MultiDimFit -n _paramFit_FullRun2_CMS_WH_hww_fake_e_0j_2016noHIPM --algo impact --redefineSignalPOIs r_WH -P CMS_WH_hww_fake_e_0j_2016noHIPM --floatOtherPOIs 1 --saveInactivePOI 1 --setParameterRanges r_WH=-5,5 --freezeParameters r_higgs --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,0:0.1 --stepSize 0.01 --cminPreScan -m 125 -d ../Combination/WH_chargeAsymmetry_WH_FullRun2_v9_binning_WH_strength.root --setParameters r_WH=1,r_higgs=1
+
+[2]: job output:
+combine -M MultiDimFit -n _paramFit_FullRun2_CMS_WH_hww_fake_e_0j_2016noHIPM --algo impact --redefineSignalPOIs r_WH -P CMS_WH_hww_fake_e_0j_2016noHIPM --floatOtherPOIs 1 --saveInactivePOI 1 --setParameterRanges r_WH=-5,5 --freezeParameters r_higgs --cminDefaultMinimizerStrategy 0 --stepSize 0.01 --cminPreScan -m 125 -d ../Combination/WH_chargeAsymmetry_WH_FullRun2_v9_binning_WH_strength.root --setParameters r_WH=1,r_higgs=1
+<<< Combine >>>
+<<< v10.0.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is MultiDimFit
+ModelConfig 'ModelConfig' defines more than one parameter of interest. This is not supported in some statistical methods.
+Set Range of Parameter r_WH To : (-5,5)
+Set Default Value of Parameter r_WH To : 1
+Set Default Value of Parameter r_higgs To : 1
+>>> 0 out of 124 channels masked
+
+Doing initial fit:
+
+--- MultiDimFit ---
+Parameter impacts:
+Parameter                       :   Best-fit               r_WH
+
+CMS_WH_hww_fake_e_0j_2016noHIPM :   +0.332  -1.532/+0.965  -0.005/+0.004
+Done in 3.17 min (cpu), 3.22 min (real)
+
+[3]: output rootfile content:
+root -l higgsCombine_paramFit_FullRun2_CMS_WH_hww_fake_e_0j_2016noHIPM.MultiDimFit.mH125.root
+root [0]
+Attaching file higgsCombine_paramFit_FullRun2_CMS_WH_hww_fake_e_0j_2016noHIPM.MultiDimFit.mH125.root as _file0...
+(TFile *) 0x4c683a0
+root [1] limit->Scan("CMS_WH_hww_fake_e_0j_2016noHIPM")
+************************
+*    Row   * CMS_WH_hw *
+************************
+*        0 * 0.3320722 *
+*        1 * -1.199520 *
+************************
+(long long) 2
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-08-19T10:48:46.232Z):
+Hi Nicolò,
+That seems strange, this is indeed not expected. Would you be able to share the workspace you’re running on (WH_chargeAsymmetry_WH_FullRun2_v9_binning_WH_strength.root) as well as the root file that is produced during the initial fit of the impacts? Then one of us can try to investigate in more detail.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by ntrevisa @ 2024-08-19T14:29:53.377Z):
+Hi Adinda,
+Sure, the two rootfiles are here:
+~ntrevisa/public/CombineWH/
+Thank you,
+Nicolò
+----------------------------------------
+
+REPLY 4 (by adewit @ 2024-08-20T16:11:38.589Z):
+Dear Nicolò,
+Thanks for sharing the files. I confirm your observation that what is printed to the screen looks like the fit working fine, but only 2 out of 3 entries appearing in the output file. However, cranking up the verbosity (even to -v 1) I see that the last fit that’s performed actually fails. I expect this is why the entry doesn’t appear in the output tree.
+I quickly scanned this nuisance parameter (using --algo grid) and the shape of the likelihood as a function of this parameter seems a little odd (there are possibly multiple minima). You could investigate this more with the FastScan method of CombineTool (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/debugging/?h=fastscan#analyzing-the-nll-shape-in-each-parameter). As for the reasons for this: is the uncertainty highly asymmetric for some processes? It’s not the only cause of such issues, but could explain what you are seeing.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by ntrevisa @ 2024-08-22T15:14:57.543Z):
+Dear Adinda,
+Thank you for checking and for the suggestions.
+Looking at the fast scans (e.g., page 3), the systematic uncertainties affecting non-prompt leptons have multiple minima, and maybe this is causing the issue.
+I had a quick look in particular at the shape of CMS_WH_hww_fake_e_0j_2016noHIPM directly in the datacard histograms, and for some bins, both the up and down variations go in the same direction (see attached plots). Is this what you meant by asymmetric uncertainty?
+Additionally, the fake_e or fake_m nuisances are related to the systematic uncertainty on the fake rate in the non-prompt leptons background estimation. Checking the nominal electron fake rate, together with the up and down systematic variations, I see that for some (pT,eta) bins, the fake rate move in the same direction. In other words, the asymmetry may be genuine. I will have a closer look at the fake rates to understand if this is expected.
+Interestingly, for these uncertainties, running the jobs using --cminPreFit 2 instead of --stepSize 0.01 produces an output with the expected number of entries for the <nuisance_name> branch.
+I attach a few slides summarizing what I have described.
+The next thing I want to check if the one-sided variations in the fake rates are expected. If you have further suggestions, they are of course welcome.
+Thank you again and best regards,
+Nicolò
+Unblinding_WH_2024_08_22.pdf (1.1 MB)
+----------------------------------------
+
+REPLY 6 (by amarini @ 2024-08-22T16:25:18.274Z):
+Hi Nicolo’,
+Yes, multiple minima can be a problem in fit convergence, as minimum finding algorithms usually try to find local minima.
+With Asymmetric uncertainties, we usually mean both the effect that can be induced by a same-sized variation (as the one you pointed out), but also large asymmetric effects between the Up and Down variation, like (possibly) the second bin of slide 7. (Further details are here )
+A tool developed a while ago by Adinda for this purpose was ValidateCards. It may point out against the more problematic regions that are worth an investigation.
+All these effects induce a non-linear behavior in the expected number of events (vs the nuisance parameters), thus possible multiple minima in the likelihood function.
+Changing the step size or the initial value can change the convergence of the fit (for the reason explained above), but it may not be easy to find a stable configuration.
+-Andrea
+----------------------------------------

@@ -1,0 +1,31 @@
+TOPIC: How to Profile Signal Samples Discretely
+URL: https://cms-talk.web.cern.ch/t/123829
+DATE: 2025-04-15T15:37:45.216Z
+SOLVED: no
+============================================================
+
+QUESTION (by msrivast @ 2025-04-15T15:37:45.922Z):
+Hello Combine experts,
+My dilemma is as such:
+
+I have a series of templates that describe my parameter of interest at a series of discrete values (100, 500, 1000, etc.) (so imagine a template named T_i for a given value of parameter i. They would be properly scaled to the expected yield and (would) have a series of corrections and whatnot applied from a nontrivial reweighting process.
+
+Since the method to get these discretized templates is nontrivial, the templates would not scale nicely in a given physics model. As such, my idea is to compare all of these templates with the template that describes the expectation value (let’s call this T_{SM}) to make scan over possible values..
+
+I am reluctant to create a RooHistPDF as they involve random sampling, which would introduce an element of randomness I do not want. As such, I’m not sure I can use discrete profiling.
+
+What should I do here? Would it suffice to get the raw value of 2*(deltaNLL+nll+nll0) for each point as it compares to T_{SM} - or is there a more elegant solution available with combine?
+I would appreciate some guidance on what to do in my situation!
+Thank you,
+Mohit Srivastav
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-04-16T11:47:51.985Z):
+Dear Mohit,
+There might be more efficient ways, but in principle I think that discrete profiling should be working in your case. Is there any particular reason you do not want to use it?
+Since you only want to test a set of discrete points, for each point you can freeze the value of the template index and you will be selecting a given template.
+Another possibility is simply to create a different datacard for each template and fit them separately.
+I hope it helps.
+Best,
+Giacomo
+----------------------------------------

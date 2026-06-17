@@ -1,0 +1,75 @@
+TOPIC: Switch from 1 sigma input histograms to 3 sigma variations
+URL: https://cms-talk.web.cern.ch/t/32255
+DATE: 2023-11-30T12:38:25.613Z
+SOLVED: no
+============================================================
+
+QUESTION (by mmyllyma @ 2023-11-30T12:38:25.842Z):
+Dear Combine experts,
+I’m working with a top mass measurement where by default the mass is fitted using one sigma
+variation histograms (±1GeV) for top mass. Now I would like to perform a fit to pseudodata of ±1GeV variations using ±3GeV variations as input, which would approximately correspond to 3 sigma variations.
+
+If I just run the fit without any changes I obtain around 0.32 ± 0.022 GeV mass shift and uncertainty
+from the central value. I assume I could then just multiply these by factor of 3 to obtain the real effect?
+
+Another method mentioned in one Combine tutorial [1] is to include 1/3 factor in the datacards
+for the corresponding parameter (top mass). Using this method I obtain around 0.98 ± 0.07 GeV
+which is close to the previous method but not exactly the same.
+
+So my question is: Which one of these approaches is more sensible? I expected same result with both methods but depending on the channel the results are significantly different.
+Best,
+Mikael
+[1] https://indico.cern.ch/event/1227742/contributions/5240049/attachments/2587253/4463854/Combine_03022023.pdf
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-11-30T13:24:53.833Z):
+Dear Mikael,
+I’m not sure I fully understood your question.
+Is the top mass the parameter of interest in your measurement? In such a case it would usually be unconstrained (i.e. freely floating) and then the meaning of N \sigma is not clear to me.
+Or is the top mass a constrained parameter (presumably then a nuisance parameter) and you would like to test the effect of loosening the constraint on this parameter?   In this case its important to note that the effect of changing the input uncertainty on a parameter is not simply to inflate the postfit uncertainties on that parameter. I am not sure I really understood exactly what you are doing for (1), but assuming that you are trying to estimate the effect of inflating the prefit uncertainty on the parameter by simply inflating the postfit uncertainty by the same value, this is not correct in general.
+Sorry if I’ve misunderstood the question.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by mmyllyma @ 2023-11-30T13:42:31.762Z):
+Dear Kyle,
+Yes apologies, it is the parameter of interest and yes you are right it is unconstrained.
+Now when I think about this it might not make sense to talk about the number of sigmas in this case.
+It is just more of a question to let Combine know that the scale of standard 1GeV input variations
+has been increased to 3GeV and in that case the first approach should make sense?
+Thank you for a prompt answer,
+Mikael
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-12-01T00:18:40.830Z):
+Dear Mikael,
+Okay, I understand.
+Just to be clear, in the second case  the value you are getting in the fit is the scaling of the parameter (e.g. I assume the fit is returning 0.98 +/- 0.07), but it is not the parameter value in GeV. By changing the value in the datacard to 1/3 you’ve told combine that these \pm 1 GeV templates correspond to a parameter value of 3. What it actually does in the code is for a given value of that parameter it will multiply it by the value in the datacard line before evaluating the effect on the expected observation.
+Therefore if you call your parameter r, in your parameterization the top mass is m_t = m_{t0} + r (1/3) GeV, and the physical result is m_{t0} + 0.98 * (1/3) GeV, not m_{t0} + 0.98 GeV. This isn’t so far off from what you get running the fit with your original parameterization, its not clear if the two fits are actually giving different values, or the difference is just due to the numerical accuracy here.
+If you’re interested in more details they are below.
+Cheers,
+Kyle
+
+details:
+In principle the fits should give slightly different values as this does alter the model a bit. Though in practice the difference should be negligible and I think that there is no a priori “correct” answer.
+The fundamental problem is that what you’d really like to know is the expected observations for every possible value of the top mass. However, this is computationally intractable, so instead you provide sample observations at three different values of the top mass and then use an interpolation function.
+The interpolation that combine uses for shape morphing effects includes a normalization portion and a morphing of the bin fractions.  Piecewise functions are used to interpolate both of these portions and there are different functional forms for the different pieces. Without being too inaccurate, when you change the value from 1 to 1/3 in the datacard, you change where different functional forms are stitched together. So you modify slightly the interpolation.
+And, of course, by using different interpolations your fit results can be modified. If you were instead to actually generate the \pm 3 GeV templates and put those into the fit, you would more than likely get a slightly different interpolation and different answer again. And another different one if you used the \pm 3 GeV template scaled with a factor 3 in the datacard.
+The interpolation can also be changed by using shapeN parameters instead of shape parameters, as is also documented in [1], with some accompanying plots showing the difference.
+I don’t think there is any a priori correct choice, since there is no way to know the shape of the actual mapping between parameter value and observations given only three points.
+Ideally, one would generate a whole bunch of points in the parameter space and check how well the interpolated values of the function match the actual mapping of the parameter value on to the expectations. However, this is probably not feasible in most cases.
+The best general advice that I think I can give is therefore that you should probably use templates which are of the same approximate size as the actual measurement sensitivity. I think that in that case you should minimize the effect of the unknown shape of the function away from the points where you’ve actually generated your templates. Maybe someone else who has thought about these things has something more useful to say though.
+For most purposes we’d hope that these details don’t make a substantial difference, but its not to say they can’t.
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#binned-shape-analysis
+----------------------------------------
+
+REPLY 5 (by mmyllyma @ 2023-12-19T17:13:05.362Z):
+Dear Kyle,
+Just wanted to get back to you and thank you for this very detailed answer which helped to clarify this
+problem for me. Since this is more of a sanity check to test that the fit is capable of returning the expected ±1 GeV mass shift, it is enough to know that what we do makes sense.
+I now understand that in this case there is no clear answer for preferred method.
+In the analysis we will just use the ±1 GeV templates as variations and there is no ambiguity.
+Thank you again, this was really helpful.
+-Mikael
+----------------------------------------

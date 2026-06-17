@@ -1,0 +1,34 @@
+TOPIC: Problem running Combine on CRAB
+URL: https://cms-talk.web.cern.ch/t/141934
+DATE: 2026-02-11T21:35:07.275Z
+SOLVED: no
+============================================================
+
+QUESTION (by blhennin @ 2026-02-11T21:35:07.852Z):
+While running combine using CRAB, we run the following line on CRAB using a Python script:
+combine file_name.root -M MarkovChainMC –freezeParameters realHiggsMass,b_ee,b_eu –setParameters realHiggsMass={mass},b_ee=1,b_eu=1 -m 1000 -L RooPDF_BKG_cxx.so -L RooPDF_DSCB_cxx.so -i 20000 -b 20 -t 1 -s str(random.randint(1,999999)) –toysNoSystematics -v 3
+However, whenever I run the combine script on CRAB, I receive the following error:
+== CMSSW: cling::DynamicLibraryManager::loadLibrary(): libnss_altfiles.so.2: cannot open shared object file: No such file or directory
+== CMSSW: Warning in TClass::Init: no dictionary for class RooPDF_DSCB is available
+== CMSSW: Warning in TClass::Init: no dictionary for class RooPDF_BKG is available
+== CMSSW: Error in TBufferFile::ReadObject: trying to read an emulated class (RooPDF_DSCB) to store in a compiled pointer (RooAbsArg)
+followed by a segmentation fault.
+I made sure to include the files RooPDF_DSCB_cxx.so and  RooPDF_BKG_cxx.so and ensured that the files are passed on to CRAB by an ls command which shows the files are present in the directory.  Can you suggest what might be causing this?
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2026-02-12T11:15:37.567Z):
+Hi Blake,
+I don’t know exactly what causes this, it’s not a very common workflow.
+What might work better is compiling your custom classes with CMSSW (adding them to the combine interface/ and src/ directories as our other custom classes are, and modifying classes.h and classes_def.xml).
+Then, you can let crab take care of shipping the CMSSW libraries, and running combine in your user script should then work without the need for the -L option.
+Cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by clange @ 2026-02-13T16:51:35.947Z):
+Hi Blake,
+Which version of Combine are you running? And did you set up through CMSSW or how?
+My guess is that the default crab CMS container might have some missing dependencies.
+Cheers,
+Clemens
+----------------------------------------

@@ -1,0 +1,46 @@
+TOPIC: Covariance matrix for CR included and not included
+URL: https://cms-talk.web.cern.ch/t/51642
+DATE: 2024-10-04T10:44:11.521Z
+SOLVED: no
+============================================================
+
+QUESTION (by vhegde @ 2024-10-04T10:44:11.723Z):
+Dear experts,
+I am trying to get covariance matrix for combination of different analyses (SUS-21-008). The goal is to obtain this matrix by using datacards from several analyses and make this info available for theorists outside CMS for reinterpretation.
+I have two analyses, A and B, and A has CRs included in the fit and B has no CR included in the fit. What is the correct procedure to evaluate the matrix for combination of A and B? This document has commands for A and B separately. Should I mask all SRs from analysis A and B both and run the fit?
+Also, is there a way to check the validity of covariance matrix other than running the simplified likelihood? I believe one check is sqrt(diagonal entry) = uncertainty on the background. Is there some other way to validate it?
+Thanks,
+Vinay
+----------------------------------------
+
+REPLY 2 (by vhegde @ 2024-10-07T16:55:27.881Z):
+Dear experts,
+A gentle reminder about the question.
+Regards,
+Vinay
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2024-10-08T09:54:02.239Z):
+Dear Vinay,
+If the categories included in analyses A and B are independent you can combine them using combineCards.py script as described in the docs here. You might want to correlate some systematic uncertainties, and the script will do this automatically if they have the same name, you can also rename systematic uncertainties as described here.
+To make sure that covariance matrix is accurate check the fit status stored in RooFitResult within the FitDiagnostics output file as described here. Let me know of something is not clear.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 4 (by vhegde @ 2024-10-08T10:30:50.482Z):
+Dear Aliya,
+The two analyses A and B are combined with all the correlations taken into account by naming the uncertainties accordingly. The main question I have is about running FitDiagnostics for the combined cards. Should I use CR included strategy or CR not included strategy? My understanding is that I could mask all the SRs from analysis A and B and do the fits to CRs only (which is relevant for analysis A only since analysis B has no CRs in the cards). Is this the correct approach?
+I will check fit status for covariance matrix. In some cases at least, covariance matrix quality: Full, accurate covariance matrix Status : MINIMIZE=0 HESSE=0 . So the fit results are good from this perspective.
+Thanks,
+Vinay
+----------------------------------------
+
+REPLY 5 (by anigamov @ 2024-10-08T11:11:30.163Z):
+Dear Vinay,
+thanks for following up, I misunderstood what you were asking originally.
+Now I see that you want to extract the covariance matrix for expected background for the combination of A and B, and in A you have a CR, while the analysis B is SR-only analysis.
+I think it makes more sense to treat A as Type-A and B as Type-B (as defined in the docs) in the combination too, so mask type-A SR only and run the fit with --preFitValue 0 to extract bkg-only covariance matrix. I will let others to comment too.
+Best,
+Aliya
+----------------------------------------

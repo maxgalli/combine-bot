@@ -1,0 +1,46 @@
+TOPIC: Question on how to veto within combine
+URL: https://cms-talk.web.cern.ch/t/22034
+DATE: 2023-03-29T20:44:28.531Z
+SOLVED: no
+============================================================
+
+QUESTION (by anlyon @ 2023-03-29T20:44:28.862Z):
+Dear Experts,
+I am contacting you to ask how to correctly veto a mass region within combine.
+I would like to perform a fit on a mass spectrum with a veto on a region with a SM resonance. In the example below, we consider the J/psi resonance around mass 3.1 GeV.
+Prior to the combine fit, the mass distribution is modeled with a set of functions (envelope method), using as an input a workspace containing a histogram depleted from the vetoed events [1]. As can be seen in [2], the functions and their normalisation behave well. The content of the envelope is saved together with the histogram in an output workspace [3], that is then given to combine.
+The combine fit is run using the FitDiagnostics method with the datacard [4] and command [5]. The obtained background-only postfit plot is shown in [6]. It is clear from this plot that the vetoed region is not ignored and rather influences the fit.
+My question is therefore how to avoid this situation, and implement correctly a veto within combine?
+Thank you very much in advance for your help!
+Best,
+Anne-Mazarine
+[1] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/input_workspace.root
+[2] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/multipdf.png
+[3] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/output_workspace.root
+[4] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/datacard.txt
+[5] combine -M FitDiagnostics datacard.txt --cminDefaultMinimizerStrategy=0 --X-rtd MINIMIZER_freezeDisassociatedParams --plots
+[6] https://anlyon.web.cern.ch/anlyon/BHNL/question_combine/postfit_bonly.png
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-03-30T13:49:38.302Z):
+Dear Anne-Mazarine,
+It is true that the bins with 0 data events are not removed from the likelihood. If you want to run the fits on data in side-band regions with combine you should split events into signal and side-band categories – “bins” in combine language with common parametric pdf for background. Then you can run simultaneous fits with masked signal categories.
+In principle I think there is usually no need to do this, since to keep data blinded you can use toys generated according to background-only or signal+background hypothesis, with background model  extracted from sidebands, the same way you do it now. See detailed instructions on this topic here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2023-03-30T13:59:24.827Z):
+Just adding the link to the instructions for fits with toys [1].
+Let me know if you have questions,
+Aliya
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation
+----------------------------------------
+
+REPLY 4 (by adewit @ 2023-03-31T12:52:34.689Z):
+Dear Anne-Mazarine,
+I just wanted to strengthen Aliya’s second suggestion - ie using the background parameterization that you extracted with RooFit before passing the workspace to combine, and then using this to generate an asimov dataset (adding -t -1 to the command) or toys if needed.
+I am not aware of any analyses where this was not sufficient.
+Best,
+Adinda
+----------------------------------------

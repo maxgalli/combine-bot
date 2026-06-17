@@ -1,0 +1,34 @@
+{
+  "topic_id": 2193,
+  "title": "Question about limit calculation",
+  "url": "https://cms-talk.web.cern.ch/t/2193",
+  "category_id": 279,
+  "created_at": "2021-10-29T22:48:58.000Z",
+  "last_posted_at": "2021-10-30T21:12:47.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "SHI_Kun",
+      "name": "SHI,Kun",
+      "created_at": "2021-10-29T22:48:58.000Z",
+      "updated_at": "2023-02-07T10:55:45.228Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Higgs combine group,\nI was trying to calculate the limit for Z\u2019 searching. And found that there is a veto range between 8GeV to 10GeV. Within this range, the command \u201ccombine -M AsymptoticLimits datacard.root\u201d does not working properly.\nHere is an example of that, between 8 and 10 GeV, it is just a straight line connecting them without the actual calculation value.\nThe version of HiggsAnalysis is updated. I checked the output datacards are normal, only the AsymptoticLimits_Out.txt file didn\u2019t show the expected limits like the other mass points. Do you know what is the problem of that and how to fix that? Thank you.\nBest regards,\nKun",
+      "cooked_html": "<p>Hi Higgs combine group,</p>\n<p>I was trying to calculate the limit for Z\u2019 searching. And found that there is a veto range between 8GeV to 10GeV. Within this range, the command \u201ccombine -M AsymptoticLimits datacard.root\u201d does not working properly.<br>\nHere is an example of that, between 8 and 10 GeV, it is just a straight line connecting them without the actual calculation value.<br>\nThe version of HiggsAnalysis is updated. I checked the output datacards are normal, only the AsymptoticLimits_Out.txt file didn\u2019t show the expected limits like the other mass points. Do you know what is the problem of that and how to fix that? Thank you.</p>\n<p>Best regards,<br>\nKun<br>\n<img src=\"https://cms-talk.web.cern.ch/images/transparent.png\" alt=\"Screen Shot 2021-10-29 at 6.42.54 PM.png\" data-orig-src=\"upload://ijFREpJOizP6DYk7asFxTWOi91R.png\" width=\"690\" height=\"491\"></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-10-30T21:12:47.000Z",
+      "updated_at": "2021-11-17T08:39:56.028Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Kun,\nSomething went wrong in one of the fits that are needed to set the\nlimits - it's impossible to say what exactly the problem is without\nstudying the fit a bit more. Since you mention it's a Z' search, perhaps\nyou can discuss with the combine contact [*] for the PAG in which your\nanalysis is reviewed (EXO?) how best to investigate what is happening.\nIf after discussing with your PAG's combine contact you still can't\nsolve the issue, we can of course try to help, but you would need to\nshare your workspace/datacard and the exact commands you are running.\nBest,\nAdinda\n[*]\nhttps://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Kun,</p>\n<p>Something went wrong in one of the fits that are needed to set the<br>\nlimits - it's impossible to say what exactly the problem is without<br>\nstudying the fit a bit more. Since you mention it's a Z' search, perhaps<br>\nyou can discuss with the combine contact [*] for the PAG in which your<br>\nanalysis is reviewed (EXO?) how best to investigate what is happening.</p>\n<p>If after discussing with your PAG's combine contact you still can't<br>\nsolve the issue, we can of course try to help, but you would need to<br>\nshare your workspace/datacard and the exact commands you are running.</p>\n<p>Best,<br>\nAdinda</p>\n<p>[*]<br>\n<a href=\"https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsCombination#Organizational_matters</a></p>"
+    }
+  ]
+}

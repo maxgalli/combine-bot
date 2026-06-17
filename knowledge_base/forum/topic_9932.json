@@ -1,0 +1,45 @@
+{
+  "topic_id": 9932,
+  "title": "Why running FitDiagnostics take too much time",
+  "url": "https://cms-talk.web.cern.ch/t/9932",
+  "category_id": 279,
+  "created_at": "2022-05-02T08:01:11.100Z",
+  "last_posted_at": "2022-05-02T09:07:09.077Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2022-05-02T08:01:11.236Z",
+      "updated_at": "2023-02-07T10:57:33.792Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI am running FitDiagnostic with full Run2 data for my analysis and I see it takes more than three days to finish while for limit it takes 2-3 hrs with same data. For FitDiagnostic, I use following command\ncombineTool.py -M FitDiagnostics datacard --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-100,100  --saveShapes --saveWithUncertainties --saveNormalization --saveOverallShapes --saveWorkspace --saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,1:1.0  --robustHesse 1\nwhile for limit use the command\ncombineTool.py  -M AsymptoticLimits datacard\nIt would be nice if someone tells why there is so time difference between limit calculation and postfit plots using same data.\nThanks and Regards,\nSaswati",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I am running FitDiagnostic with full Run2 data for my analysis and I see it takes more than three days to finish while for limit it takes 2-3 hrs with same data. For FitDiagnostic, I use following command</p>\n<p>combineTool.py -M FitDiagnostics datacard --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-100,100  --saveShapes --saveWithUncertainties --saveNormalization --saveOverallShapes --saveWorkspace --saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,1:1.0  --robustHesse 1</p>\n<p>while for limit use the command<br>\ncombineTool.py  -M AsymptoticLimits datacard</p>\n<p>It would be nice if someone tells why there is so time difference between limit calculation and postfit plots using same data.</p>\n<p>Thanks and Regards,<br>\nSaswati</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-05-02T08:27:44.000Z",
+      "updated_at": "2022-05-02T08:28:29.952Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "The things that are slow are the followings:\n\u2013saveWithUncertainties runs several toys to derive the uncertainty bands.\nHesse derives the hessian matrix.\nFurthermore, saveWorkspace and saveToys will also take some time (but likely not as much)\nCheers,\n-Andrea\nOn Mon, May 2, 2022 at 10:11 AM Saswati Nandan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nSaswati Nandan snandanMay 2\n\nDear Combine experts,\nI am running FitDiagnostic with full Run2 data for my analysis and I see it takes more than three days to finish while for limit it takes 2-3 hrs with same data. For FitDiagnostic, I use following command\ncombineTool.py -M FitDiagnostics datacard --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-100,100 --saveShapes --saveWithUncertainties --saveNormalization --saveOverallShapes --saveWorkspace --saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,1:1.0 --robustHesse 1\nwhile for limit use the command\ncombineTool.py -M AsymptoticLimits datacard\nIt would be nice if someone tells why there is so time difference between limit calculation and postfit plots using same data.\nThanks and Regards,\nSaswati\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>The things that are slow are the followings:</p>\n<p>\u2013saveWithUncertainties runs several toys to derive the uncertainty bands.<br>\nHesse derives the hessian matrix.</p>\n<p>Furthermore, saveWorkspace and saveToys will also take some time (but likely not as much)</p>\n<p>Cheers,</p>\n<p>-Andrea</p>\n<p>On Mon, May 2, 2022 at 10:11 AM Saswati Nandan via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/s/35a633/45.png\" title=\"snandan\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/snandan\">Saswati Nandan</a> snandan<br>May 2</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Combine experts,</p>\n<p>I am running FitDiagnostic with full Run2 data for my analysis and I see it takes more than three days to finish while for limit it takes 2-3 hrs with same data. For FitDiagnostic, I use following command</p>\n<p>combineTool.py -M FitDiagnostics datacard --redefineSignalPOIs r --setParameters r=1.0 --setParameterRanges r=-100,100 --saveShapes --saveWithUncertainties --saveNormalization --saveOverallShapes --saveWorkspace --saveToys --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,1:1.0 --robustHesse 1</p>\n<p>while for limit use the command<br>\ncombineTool.py -M AsymptoticLimits datacard</p>\n<p>It would be nice if someone tells why there is so time difference between limit calculation and postfit plots using same data.</p>\n<p>Thanks and Regards,<br>\nSaswati</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/why-running-fitdiagnostics-take-too-much-time/9932/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/2e82147221546f83d2781d60484b23bbef124e7a19a69994ba0483e4937208b3\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 3,
+      "username": "snandan",
+      "name": "Saswati Nandan",
+      "created_at": "2022-05-02T09:07:09.077Z",
+      "updated_at": "2022-05-02T09:07:09.077Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thanks for the quick reply. Isn\u2019t it that uncertainty band is estimated from the second derivative which is the hessian matrix, in that case it could be faster.\nThanks,\nSaswati",
+      "cooked_html": "<p>Thanks for the quick reply. Isn\u2019t it that uncertainty band is estimated from the second derivative which is the hessian matrix, in that case it could be faster.</p>\n<p>Thanks,<br>\nSaswati</p>"
+    }
+  ]
+}

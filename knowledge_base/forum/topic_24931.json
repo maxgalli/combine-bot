@@ -1,0 +1,34 @@
+{
+  "topic_id": 24931,
+  "title": "Issue with maximum profile likelihood",
+  "url": "https://cms-talk.web.cern.ch/t/24931",
+  "category_id": 279,
+  "created_at": "2023-06-01T15:48:18.424Z",
+  "last_posted_at": "2023-06-07T17:01:38.437Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "amkaur",
+      "name": "Amandeep Kaur",
+      "created_at": "2023-06-01T15:48:18.723Z",
+      "updated_at": "2023-06-01T15:48:18.723Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am working on the ratio measurement of dimuon to dielectron using ABCD method with maximum profile likelihood function (unbinned shape analysis). I have tagged muon yields as signal and electrol yields as control (as mentioned in the attached datacard) according to the below formula where DY1 is events in Drell-Yan above certain mass threshold, DY2 events in Drell-Yan below certain mass threshold (bkg) and other respresents other SM bkgs.\nScreenshot 2023-06-01 at 11.40.17 AM1246\u00d7224 12.9 KB\nWhile executing the attached datacard with combine; I am running into following error which shows no other messages.\n<<< Combine >>>\n\nrandom number generator seed is 123456\nmethod used is MultiDimFit\nWarning: Bin control has no signal processes contributing to it\nCaught exception ERROR: channel signal factorized to zero.\n\nPlease let me know what could be the possible issue. The inputs are also attached with this message for easy debugging.\nThank you in advance,\nRegards,\nAmandeep Kaur\nROOT Version: 6.12 (on lxplus)\nelec_data_ws.root (9.2 KB)\nmuon_obs_ws.root (9.2 KB)\ntemp_datacard.txt (2.4 KB)\ntestRooFit.root (33.3 KB)",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am working on the ratio measurement of dimuon to dielectron using ABCD method with maximum profile likelihood function (unbinned shape analysis). I have tagged muon yields as signal and electrol yields as control (as mentioned in the attached datacard) according to the below formula where DY1 is events in Drell-Yan above certain mass threshold, DY2 events in Drell-Yan below certain mass threshold (bkg) and other respresents other SM bkgs.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/c/cc31a7b087962be3db357c5d2a0c534a67d39710.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/cc31a7b087962be3db357c5d2a0c534a67d39710\" title=\"Screenshot 2023-06-01 at 11.40.17 AM\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/c/cc31a7b087962be3db357c5d2a0c534a67d39710_2_690x124.png\" alt=\"Screenshot 2023-06-01 at 11.40.17 AM\" data-base62-sha1=\"t8nMWrM9muUpvFkFuQ05QXK28ZW\" width=\"690\" height=\"124\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/c/cc31a7b087962be3db357c5d2a0c534a67d39710_2_690x124.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/c/cc31a7b087962be3db357c5d2a0c534a67d39710_2_1035x186.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/c/cc31a7b087962be3db357c5d2a0c534a67d39710.png 2x\" data-dominant-color=\"F2F2F2\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot 2023-06-01 at 11.40.17 AM</span><span class=\"informations\">1246\u00d7224 12.9 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>While executing the attached datacard with combine; I am running into following error which shows no other messages.</p>\n<p>&lt;&lt;&lt; Combine &gt;&gt;&gt;</p>\n<blockquote>\n<blockquote>\n<blockquote>\n<p>random number generator seed is 123456<br>\nmethod used is MultiDimFit<br>\nWarning: Bin control has no signal processes contributing to it<br>\n<strong>Caught exception ERROR: channel signal factorized to zero.</strong></p>\n</blockquote>\n</blockquote>\n</blockquote>\n<p>Please let me know what could be the possible issue. The inputs are also attached with this message for easy debugging.</p>\n<p>Thank you in advance,<br>\nRegards,<br>\nAmandeep Kaur</p>\n<p>ROOT Version: 6.12 (on lxplus)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/wVUhqZuyMazjH3CaGvlKfguw8ig.root\">elec_data_ws.root</a> (9.2 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/kA7rfwZt7xLV9pDopHd226ODxzM.root\">muon_obs_ws.root</a> (9.2 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/7nvHiRBsBvN9qSX94kc7ZYBB1xq.txt\">temp_datacard.txt</a> (2.4 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/oQ92vJ2nFtgFQuml40fhMil4o1n.root\">testRooFit.root</a> (33.3 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-06-07T17:01:38.437Z",
+      "updated_at": "2023-06-07T17:01:38.437Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear @amkaur,\nSorry for a delayed response. Let me first try to understand what are you trying to do.\nYou mentioned unbinned fit but at the same time you consider bkg templates (binned) in your model, it can not be both, so help me to understand please.\nA technical point for the datacard, I think you should define data_obs in the same format as signal and background processes (RooDataHist). Then when you run the text2workspace.py you can scale di-muon and di-electron processes with common POI and extract the ratio, i.e.\ntext2workspace.py temp_datacard.txt  -m 125 -o test_1.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel  --PO verbose  --PO 'map=control/el_DY_S:r_el[1,0,10]'  --PO 'map=signal/mu_DY_S:r_mu=expr;;r_mu(\"@0*@1\",r_el,R[1,0,2])'\n\nwhere R = r_mu/r_el.\nBest,\nAliya",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/amkaur\">@amkaur</a>,</p>\n<p>Sorry for a delayed response. Let me first try to understand what are you trying to do.<br>\nYou mentioned unbinned fit but at the same time you consider bkg templates (binned) in your model, it can not be both, so help me to understand please.<br>\nA technical point for the datacard, I think you should define <code>data_obs</code> in the same format as signal and background processes (RooDataHist). Then when you run the <code>text2workspace.py</code> you can scale di-muon and di-electron processes with common POI and extract the ratio, i.e.</p>\n<pre><code class=\"lang-auto\">text2workspace.py temp_datacard.txt  -m 125 -o test_1.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel  --PO verbose  --PO 'map=control/el_DY_S:r_el[1,0,10]'  --PO 'map=signal/mu_DY_S:r_mu=expr;;r_mu(\"@0*@1\",r_el,R[1,0,2])' \n</code></pre>\n<p>where <code>R = r_mu/r_el</code>.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

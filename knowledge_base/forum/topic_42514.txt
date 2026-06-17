@@ -1,0 +1,13 @@
+TOPIC: How to select part of the discrete parameter for the envelope profiling fit?
+URL: https://cms-talk.web.cern.ch/t/42514
+DATE: 2024-06-19T03:41:36.452Z
+SOLVED: no
+============================================================
+
+QUESTION (by zewang @ 2024-06-19T03:41:38.060Z):
+Hi,
+I am using the combine for the envelope profiling fit and the discrete parameter in my datacard is pdfindex_untag_cat0, which ranges from 0 to 5. However, the bkg pdf with pdfindex_untag_cat0=1,3 failed the bias test, so I need to remove these two pdfs when I apply the envelope profiling fit. Since I already fix my workspace, and I don’t want to regenerate a new workspace that only contain pdfindex_untag_cat0=0,2,4,5. So, my question is is there any way to select pdfindex_untag_cat0=0,2,4,5 for the final envelope profiling fit? Something like --setParameters pdfindex_untag_cat0=0,2,4,5?
+Thanks for your help!
+Best,
+Zebing
+----------------------------------------

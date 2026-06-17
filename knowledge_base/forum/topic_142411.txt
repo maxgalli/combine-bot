@@ -1,0 +1,146 @@
+TOPIC: Comparison between MarkovChainMC method in Combine and external tool
+URL: https://cms-talk.web.cern.ch/t/142411
+DATE: 2026-02-26T11:26:23.356Z
+SOLVED: no
+============================================================
+
+QUESTION (by gdamolin @ 2026-02-26T11:26:23.831Z):
+Dear Stat experts,
+I am Giacomo Da Molin, TOP-STAT contact, and I was asked for help by an analysis trying to cross check their results between an external tool and theMarkovChainM option of Combine. As I am not familiar with that option,  I ask you experts for help. I copy here the message and documentation received by the analyzers.
+
+In the statistical analysis in the single top-quark FCNC search (analysis note AN-16-371), Our team has been performing cross-checks between the Theta package, which is used in our analysis, and CombineLimit, but we have encountered some challenges.
+We are conducting a binned analysis with approximately 70 systematic uncertainties - 10 related to normalization and the remainder to shape templates. We utilize the same configuration and ROOT files containing the shapes for both Theta and Combine runs, operating both in MCMC mode. However, Combine is consistently yielding less stable chains and generally poorer results than Theta, even with 10 times more iterations. This issue appears reproducible across different data-taking years and POIs (t-channel single top cross section as a cross-check, and FCNC coupling limits as the main analysis goal), and the results are inconsistent for different statistical methods available in Combine.
+Attached you will find the results for both Theta and Combine (v 10.4.2), as well as the datacards for both packages. For Combine we first convert the datacard into workspace using the following command:
+text2workspace.py SM_CL_.txt -o SM_CL_card.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO “map=.*/t_ch:sigma_t_ch[1,-2,2]”
+(in the t-channel SM cross-check case)
+and then use the command in the top commented line in the datacard. We have also run the datacard validation tool from Combine, and the resulting JSON is included. It should also be noted that we do not include burn-in in the config, since this procedure is done manually afterwards. The limits are calculated in unified manner using only saved chains from either Theta or Combine. For more detailed review of the pipeline of our statistical analysis you can refer to the Analysis Note (AN-16-371) (in particular, sections 5, 9 and appendixes A-C). We would greatly appreciate any insights or suggestions you might have regarding the cause of this behavior.
+I attach the documentation provided by the analyzers.
+ATT00006.htm (327 Bytes)
+ATT00006.htm (327 Bytes)
+ATT00006.htm (327 Bytes)
+UL18-sm-low_level-expected_theta.pdf (3.9 MB)
+UL18-fcnc-low_level-expected.pdf (4.0 MB)
+SM_cl_card.root (157.4 KB)
+ATT00007.htm (301 Bytes)
+ATT00006.htm (327 Bytes)
+SM_cl_card.root (157.4 KB)
+validation.json (11.9 KB)
+SM_theta.cfg (184.3 KB)
+SM_cl.txt (23.2 KB)
+----------------------------------------
+
+REPLY 2 (by sqian @ 2026-02-26T11:49:10.080Z):
+Hi, I happen to have some recollection on theta and hope this helps to provide more inputs:
+Theta was used and discussed in EXO-22-024 and I believe @jreicher and @cericeci were spending time checking theta to facilitate the review.
+Not an expert myself, the best help I can offer here is the attached PDF documentation on theta package
+theta.pdf (490.4 KB)
+we digged out from way back machine.
+----------------------------------------
+
+REPLY 3 (by nckw @ 2026-02-27T10:16:57.859Z):
+Hi,
+Can you please also share the input histograms mentioned in the datacard
+(/scratch/eabasov/Stat/MSU_top_stat/../UL18/hists_exp-low_level/hists_SMsmooth.root) somewhere easily accessible?
+Thanks,
+Nick
+----------------------------------------
+
+REPLY 4 (by gdamolin @ 2026-02-27T10:41:22.628Z):
+Hi,
+I was provided these histograms
+https://gitlab.cern.ch/tdr/notes/AN-16-371/-/tree/master/results/configs?ref_type=heads
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 5 (by nckw @ 2026-03-01T14:20:06.012Z):
+Thanks Giacomo,
+I am no expert in theta and haven’t used the MarkovChainMC tool in some time, however, I have tried playing with the simple model (just the one with a simple scaling parameter sigma_t_ch and I noticed that the acceptance of the chains is rather low with the default settings (only a few %). This can be improved usually be reducing the step size in the proposals, which in combine can be achieved with the option --propHelperWidthRangeDivisor = X, when using the default proposal algorithm.
+By setting X to some value > 1 (I found fairly good acceptance with 25), the size of the Gaussian proposal is reduced by that factor.
+Note that when plotting the results of the chains (using the --saveChains option), the burn-in options have no effect so one needs to apply this by ignoring the first chunk of the chains. There’s an example on the combine docs as to how to pull out the results and plot them. Its also useful to plot the chains vs iteration to make sure they stabilise at some point. The example attached is what I get for the parameter sigma_t_ch if using the following options : --tries 200 –saveChain -i 30000 –propHelperWidthRangeDivisor=25. The left histogram is the results after throwing out the first 50% of the chains (although thats probably a bit high).
+I would recommend playing with this option and making sure (with adding verbosity in the combine command) that the acceptance rate of the chains is more like 10-20% rather than only a few %.
+Let me know if it helps at all,
+Best,
+Nick
+Screenshot 2026-03-01 at 14.16.012666×1112 364 KB
+----------------------------------------
+
+REPLY 6 (by eabasov @ 2026-03-04T14:15:58.969Z):
+Hi,
+I am the person who is doing the analysis Giacomo is referencing; I want to follow up on the results. I have added the option Nicholas suggested, as well as included Barlow-Beeston uncertainties in the pipeline. These improvements definitely helped the stability, however, it can still be seen that for some of the parameters (such as sigma_ttbar_sl in the attached pdf) posterior distributions look quite strange and vary for different tries. UL18-sm-combine-new.pdf (3.7 MB)
+In light of this, I had a couple more questions:
+
+What is the typical reasonable ratio of iterations to tries? In Theta I usually go for more iterations in the chain rather than more chains, I follow the same approach here. For the attached file I run with 10000000 iterations and 10 tries
+Are there some additional improvements to the pipeline which could help here? As a reference, here are the results obtained in Theta UL18-sm-low_level-expected_theta.pdf (3.9 MB)
+
+Best regards,
+Emil
+----------------------------------------
+
+REPLY 7 (by nckw @ 2026-03-04T16:01:05.810Z):
+Hi Emil,
+Thanks for trying the options - indeed, it looks like things have improved somewhat. In answer to your questions
+
+We typically advise using more chains than increasing the length of the chains, but that really assumes that things settle fairly quickly. I am not sure why in your case the chains aren’t converging. I tried just a simple fit (-M FitDiagnostics) and this seems to complain about not being able to calculate errors. You have uncertainties called “cerr1/2” in your model, which I notice if I freeze them, the fit becomes stable. Do you have more details about these? I noticed than in some cases the shapes are “one-sided” in that both up/down variations are sometimes on the same side compared to the nominal.
+I would usually recommend trying some more simple algorithms to make sure everything looks ok (eg some simple likelihood scans/fits) which you can try. But in this case, I haven’t found anything super suspicious yet - aside from the cerr1/2 nuisances above. I took this opportunity to add a chains debugging tool for combine (you can find details here :  https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#computing-the-observed-bayesian-limit-for-arbitrary-models, scroll down to the “debugChains.py" script.) which you can use to produce traces of the chains and see if they are converging after some point or not. You might find that useful.
+
+I will keep investigating. One thing to note is that I am not sure your theta results make sense either since in many cases, the nuisance parameter posterior is centered around 1, instead of 0 (also in combine). At least in combine, the way that lnN and shape nuisances are implemented, I would expect them to be centered around 0, unless significantly pulled by the data.
+All the best,
+Nick
+----------------------------------------
+
+REPLY 8 (by eabasov @ 2026-03-19T08:47:19.181Z):
+Hi Nick,
+I have tried some additional improvements, but none of them seem to affect the result:
+
+I have removed cferr1/2 for the time being, while we investigate these one-sided shifts
+
+Regarding your point of some nuisances being centered around 1 - this is intentional, we rescale all lnN nuisances for the plots (Theta does the same internally), so they represent true multiplication parameters. Values inside Combine are still centered around 0, as can be seen from chain traces, so that is not a problem.
+
+I have noticed that Combine uses orthogonal proposal, changing only one nuisance at a time (and a POI), which would explain why the POI distribution is much smoother than the rest. In Theta that is not the case, it shifts all nuisances simultaneously. I have tried applying different proposals to better approximate Theta’s approach, but they all give zero chain acceptance (only 1 point is accepted). Maybe you have some insights why the orthogonal proposal is used as a default and others perform so poorly?
+
+Your code was extremely helpful in debugging the chains, I have produced several plots for some of the more troublesome parameters and also adapted it for Theta as well. For the ttbar_sl especially, there seems to be no convergence at all. Meanwhile, in Theta, one can see that this distribution is quite smooth and, albeit not perfect, suggests good convergence. Here are the plots:
+sigma_t_ch_theta.pdf (541.2 KB)
+sigma_t_ch_combine.pdf (3.2 MB)
+sigma_ttbar_sl_theta.pdf (535.8 KB)
+sigma_ttbar_sl_combine.pdf (455.7 KB)
+
+I have also added full Barlow-Beeston for bins with less than 1000 parameters
+
+Full FitDiagnostics shows that while all the pulls are close at 0, some nuisances (Barlow-Beeston especailly), significantly constrain the fit
+fitdiag.txt (11.2 KB)
+Best regards,
+Emil
+----------------------------------------
+
+REPLY 9 (by nckw @ 2026-03-19T10:55:04.614Z):
+Hi Emil,
+Thanks for the additional checks, some responses inline,
+
+eabasov:
+
+I have removed cferr1/2 for the time being, while we investigate these one-sided shifts
+
+Ok, let me know if you find the issue there,
+
+eabasov:
+
+Regarding your point of some nuisances being centered around 1 - this is intentional, we rescale all lnN nuisances for the plots (Theta does the same internally), so they represent true multiplication parameters. Values inside Combine are still centered around 0, as can be seen from chain traces, so that is not a problem.
+
+I see - that’s fine in that case then. I wasn’t sure what was being plotted then.
+
+eabasov:
+
+I have noticed that Combine uses orthogonal proposal, changing only one nuisance at a time (and a POI), which would explain why the POI distribution is much smoother than the rest. In Theta that is not the case, it shifts all nuisances simultaneously. I have tried applying different proposals to better approximate Theta’s approach, but they all give zero chain acceptance (only 1 point is accepted). Maybe you have some insights why the orthogonal proposal is used as a default and others perform so poorly?
+
+Yes that is the default option. The proposal is one that has a very high acceptance (relative to others) rate for the chains. I must admit, i’m not an expert really on this method, but it seems to be “common wisdom” that this method gives fairly stable results. However, clearly in this case its not working. For something closer to what Theta is doing, you can try the “fit” proposal, which performs a fit and then uses the resulting covariance matrix to create a multivariate gaussian as the proposal. If you use this option, i’d probably include --updateProposalParams=1 so that the mean moves around with the accepted point. The acceptance will be less than the default but I would not expect it to be zero. One additional thing that may help is to restrict the ranges of the nuisance parameters (by default the log-normals have a range of $\pm$7 in combine!). You can try changing the range of some parameters by hand or using the --cropNSigmas option.
+
+eabasov:
+
+Full FitDiagnostics shows that while all the pulls are close at 0, some nuisances (Barlow-Beeston especailly), significantly constrain the fit
+
+This could be a guide to which parameters you might want to change the range of - if they are strongly constrained.
+I’ll keep working on a few more ideas - let me know if you get any improvement.
+Best,
+Nick
+----------------------------------------

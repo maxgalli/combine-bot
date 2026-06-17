@@ -1,0 +1,56 @@
+{
+  "topic_id": 141947,
+  "title": "Multi-analysis impact and pulls",
+  "url": "https://cms-talk.web.cern.ch/t/141947",
+  "category_id": 279,
+  "created_at": "2026-02-12T10:35:08.849Z",
+  "last_posted_at": "2026-02-12T12:43:23.183Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "amassiro",
+      "name": "Andrea Massironi",
+      "created_at": "2026-02-12T10:35:09.425Z",
+      "updated_at": "2026-02-12T10:35:09.425Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear colleagues,\nI was wondering if the following tool already exists: a multi-analysis pull/impact.\nLet me contextualise: in view of combination efforts, but also analysis spanning over several years of data taking, given the json files of the different pulls and impacts, it would be of great usefulness to have a visual comparison of the common nuisances, to check pulls and constraints of the different groups of datacard.\nThe goal would be to have:\n\nrows: nuisances\ncolumns: pulls (and impacts)\n\nWith this tool it would be easily feasible to check possible issues when combining, tensions, or see if all is expected to be ok.\nBest regards,\nAndrea",
+      "cooked_html": "<p>Dear colleagues,</p>\n<p>I was wondering if the following tool already exists: a multi-analysis pull/impact.</p>\n<p>Let me contextualise: in view of combination efforts, but also analysis spanning over several years of data taking, given the json files of the different pulls and impacts, it would be of great usefulness to have a visual comparison of the common nuisances, to check pulls and constraints of the different groups of datacard.</p>\n<p>The goal would be to have:</p>\n<ul>\n<li>rows: nuisances</li>\n<li>columns: pulls (and impacts)</li>\n</ul>\n<p>With this tool it would be easily feasible to check possible issues when combining, tensions, or see if all is expected to be ok.</p>\n<p>Best regards,</p>\n<p>Andrea</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2026-02-12T10:49:33.245Z",
+      "updated_at": "2026-02-12T10:49:33.245Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nthe information from combine on pulls and impacts are collected in json files. I am not aware of the implementation of the tool that you mentioned (though people did it by hand/eye spotting in the past), but it shouldn\u2019t be too complicated to do.\nOn the other hand, you should always pay attention to interpret nuisance parameters as poi, eventually understanding if some part of the nuisance is due to different effect in different categories (/analyses/channels).\n-Andrea",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>the information from combine on pulls and impacts are collected in json files. I am not aware of the implementation of the tool that you mentioned (though people did it by hand/eye spotting in the past), but it shouldn\u2019t be too complicated to do.</p>\n<p>On the other hand, you should always pay attention to interpret nuisance parameters as poi, eventually understanding if some part of the nuisance is due to different effect in different categories (/analyses/channels).</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2026-02-12T10:52:14.890Z",
+      "updated_at": "2026-02-12T10:52:14.890Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nTo my knowledge we don\u2019t have anything like that in combine right now. The closest, and not really what you want, is a somewhat hidden feature in the impacts script to summarise which channels of a combination are affected by a given nuisance:\nimage1906\u00d71212 372 KB\nIt would be a nice thing to have, but probably easiest to start a new script from scratch than hack around with the existing one.\nCheers,\nAndrew",
+      "cooked_html": "<p>Hi Andrea,</p>\n<p>To my knowledge we don\u2019t have anything like that in combine right now. The closest, and not really what you want, is a somewhat hidden feature in the impacts script to summarise which channels of a combination are affected by a given nuisance:</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/0/0335444577dca0cc4e8a65a8cb62759c06df0a0a.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/0335444577dca0cc4e8a65a8cb62759c06df0a0a\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0335444577dca0cc4e8a65a8cb62759c06df0a0a_2_690x438.png\" alt=\"image\" data-base62-sha1=\"snyskBtxZVFBn55wlOcaBbpNLs\" width=\"690\" height=\"438\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0335444577dca0cc4e8a65a8cb62759c06df0a0a_2_690x438.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0335444577dca0cc4e8a65a8cb62759c06df0a0a_2_1035x657.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/0/0335444577dca0cc4e8a65a8cb62759c06df0a0a_2_1380x876.png 2x\" data-dominant-color=\"E1DDE0\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1906\u00d71212 372 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>It would be a nice thing to have, but probably easiest to start a new script from scratch than hack around with the existing one.</p>\n<p>Cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amassiro",
+      "name": "Andrea Massironi",
+      "created_at": "2026-02-12T12:43:23.183Z",
+      "updated_at": "2026-02-12T12:43:23.183Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Dear Andrea, Andrew,\nthanks for the feedback.\nI like the \u201cwhich channel is affected by a nuisance\u201d plot. Could you remind me the command to get it (being a hidden feature  )?\nI agree it\u2019s better to have a small script from scratch.\nOnce implemented (I cannot promise a time scale  ), I\u2019ll post it here, as I think it might be of use by the whole collaboration.\nBest regards,\nAndrea",
+      "cooked_html": "<p>Dear Andrea, Andrew,</p>\n<p>thanks for the feedback.</p>\n<p>I like the \u201cwhich channel is affected by a nuisance\u201d plot. Could you remind me the command to get it (being a hidden feature <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/wink.png?v=15\" title=\":wink:\" class=\"emoji\" alt=\":wink:\" loading=\"lazy\" width=\"20\" height=\"20\"> )?</p>\n<p>I agree it\u2019s better to have a small script from scratch.</p>\n<p>Once implemented (I cannot promise a time scale <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/smiley.png?v=15\" title=\":smiley:\" class=\"emoji\" alt=\":smiley:\" loading=\"lazy\" width=\"20\" height=\"20\"> ), I\u2019ll post it here, as I think it might be of use by the whole collaboration.</p>\n<p>Best regards,</p>\n<p>Andrea</p>"
+    }
+  ]
+}

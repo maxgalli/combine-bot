@@ -1,0 +1,24 @@
+TOPIC: LEE due to mass range [25-30] GeV in dimuon excess analysis SUS-23-011
+URL: https://cms-talk.web.cern.ch/t/43313
+DATE: 2024-07-08T17:56:02.157Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-07-08T17:56:02.647Z):
+Dear experts,
+with feldman-cousins method and 300M toys we confirmed a local significance of 4.7 (p-value = 1.3e-6) evaluated with analytical formulae by Vitelles with 3 independent signal strengths (for 6 search regions).
+However, when we run feldman-cousins for evaluation global significance due to only the mass range [25-30] GeV (we fixed width to the best fit value of 3.2 GeV) we got definitely wrong p-value =
+----------------------------------------
+
+REPLY 2 (by anikiten @ 2024-07-08T18:01:59.377Z):
+… continue,
+wrong p-value = 0.0145 +/- 0.0011954 , corresponding to  significance 2.2.
+I think it is wrong since in Higgs discovery paper with a local significance 5.0,
+the global significance in the mass range of 115-130 GeV (15 GeV range) of
+4.6.    The local significances are similar 5.0 vs 4.7 and our mass range is 5 GeV which is 3 times smaller.  We can’t get global significance of 2.2 I think.  In Higgs analysis they had 5 channels and each channel had several event categories.
+So, we think feldman-cousins give a wrong number for LEE in our case.
+Any comment are very welcome. In the meantime we will build our machinery to evaluate LEE.
+We run command:
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 10000 -s -1 --setParameters width=3.2 --freezeParameters width,sigma,r --setParameterRanges mean=25.0,30.0:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1
+Cheers, Sasha.
+----------------------------------------

@@ -1,0 +1,125 @@
+TOPIC: Fluctuations in combine fit using Morphing
+URL: https://cms-talk.web.cern.ch/t/17677
+DATE: 2022-11-17T14:59:40.512Z
+SOLVED: no
+============================================================
+
+QUESTION (by oponcet @ 2022-11-17T14:59:40.817Z):
+morphing.pdf (380.2 KB)
+Dear combine experts,
+I’d like to ask for your help with the following issue.
+I’m working on setting up a combined fit of the tau ID Scale Factor and of the Tau energy scale factor (TES) using the combine tool.
+We are using the Z as a standard candle in it’s decay to 2 taus, of which one decays into a muon and the other decays hadronically. The latter one will be calibrated. A fit to the visible mass then allows us to subtract the background and fit the ID scale factor (normalisation) and the TES (position).
+To compute the TES dependence of the signal template, we generate histograms for given TES values and use the morphing implemented in CMSHistFuncFactory with the following function to interpolate between these:
+BuildCMSHistFuncFactory(workspace, harvester, tes, “ZTT”)
+This is usually done for each tau decay mode. When performing a scan of TES, we observe some small instabilities, but the overall shape of the likelihood looks good (parabolic). In particular, we can define a scan granularity that corresponds to the input TES values and fit a parabola.  Thus, we do not make use too much of the morphing interpolation.
+In order to be more flexible in the fit region definition and to properly correlate systematic uncertainties, we are now making a simultaneous fit in all regions (so for all tau decay modes). In that case, when scanning the TES for one decay mode, the other TES parameters are profiled. For these profiled TES parameters, we now need to rely on the morphing to obtain a continuous parameterisation, for the minimisation by migrad. The results of the scan lead to some periodic fluctuations in the likelihood profiles (cf slide 2). We suspect that the fit is jumping between different minima while profiling the different, non-scanned, TES parameters.
+I tried to check the quality of the morphing by plotting the mean value of the signal template, computed from a gaussian fit, as a function of TES. I clearly see some fluctuations appearing (cf slide 3).
+I attached a few slides with plots to show what I am talking about.
+Did someone notice something similar are has any idea to fix this? In the combine code we found a note saying the morphing options are to be implemented; are there some updates on this (planned)?
+Thank you in advance; your help is much appreciated!
+Cheers,
+Océane
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-11-17T20:00:54.222Z):
+Hi Océane,
+I remember we observed the same effect several years ago, when trying to do something similar. I haven’t been able to locate the slides yet.
+If I remember correctly, part of the problem is due to the finite bin widths. One way to improve the situation was to use a finer binning internally for the morphing, then rebin to the actual observable (i.e. the data binning) at the end. In principle if you supply finer-binned signal templates than the binning declared for the RooRealVar x variable, then it should automatically detect that and activate the auto-rebinning (1). Caveats are that this isn’t so well tested, and not totally sure it can completely cure the problem.
+A better option could be to try and using the moment morphing algorithm instead of the integral morphing. You can change the settings with (2). The implementation should follow the one in (3).
+Could be interesting to compare.
+cheers,
+Andrew
+(1)
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/CMSHistFunc.cc#L68-L82
+
+std::cout << "[" << this->GetName()
+<< "]: histogram binning is finer than observable binning, auto "
+"rebinning will be enabled\n";
+rebin_ = true;
+TH1F tmp("tmp", "", x.getBins(), x.getBinning().array());
+tmp.SetDirectory(0);
+rebin_cache_ = FastHisto(tmp);
+for (unsigned i = 0; i < cache_.size(); ++i) {
+unsigned target_bin = rebin_cache_.FindBin((cache_.GetEdge(i) + cache_.GetEdge(i+1)) / 2.);
+// std::cout << "Rebin: " << i << " [" << cache_.GetEdge(i) << ","
+//           << cache_.GetEdge(i + 1) << "] --> " << target_bin << " ["
+//           << rebin_cache_.GetEdge(target_bin) << ","
+//           << rebin_cache_.GetEdge(target_bin + 1) << "]\n";
+rebin_scheme_.push_back(target_bin);
+}
+
+(2)
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/interface/CMSHistFunc.h#L120-L128
+
+inline void setHorizontalType(CMSHistFunc::HorizontalType htype) {
+htype_ = htype;
+resetCaches();
+};
+
+inline void setMomentType(CMSHistFunc::MomentSetting mtype) {
+mtype_ = mtype;
+resetCaches();
+};
+
+(3)
+https://root.cern.ch/doc/master/classRooMomentMorph.html
+
+arxiv.org
+
+1410.7388.pdf
+
+1090.64 KB
+----------------------------------------
+
+REPLY 3 (by oponcet @ 2022-11-28T09:15:07.326Z):
+Hello Andrew,
+Thanks for your answer. I tried to do the option 1 by using a finer binning for the morphing, but I still see the fluctuations for the combine fit in DM and pt regions.
+I did not try the option 2 with the moment morphing algorithm, but It the next step.
+Meanwhile, I noticed the following error when generating the workspace with harvest Datacard :
+Error in TDecompLU::InvertLU: matrix is singular, 22 diag elements < tolerance of 2.2204e-16
+I’m wondering if this is affecting the morphing. Have you encounter something similar ?
+Cheers,
+Océane
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-11-28T14:11:42.681Z):
+Hi Océane,
+I expect the error comes from here:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/CMSHistFunc.cc#L166
+
+for (unsigned i = 0; i < hpoints_[0].size(); ++i) {
+dm[i] = hpoints_[0][i] - hpoints_[0][0];
+M(i, 0) = 1.;
+if (i > 0) M(0, i) = 0.;
+}
+for (unsigned i = 1; i < hpoints_[0].size(); ++i) {
+for (unsigned j = 1; j < hpoints_[0].size(); ++j) {
+M(i, j) = std::pow(dm[i], (double)j);
+}
+}
+global_.m = M.Invert();
+
+global_.c_scale.resize(hpoints_[0].size(), 0.);
+global_.c_sum.resize(hpoints_[0].size(), 0.);
+// End
+global_.means.resize(hpoints_[0].size(), 0.);
+global_.sigmas.resize(hpoints_[0].size(), 0.);
+global_.slopes.resize(hpoints_[0].size(), 0.);
+global_.offsets.resize(hpoints_[0].size(), 0.);
+}
+}
+
+In fact this is the code that’s preparing some of the internal information for the moment morphing. So it doesn’t affect the integral morphing method you are using now. But maybe it will be a problem if you switch to the moment morphing. It’s not immediately clear to me why this error should be triggered, but it may not matter, depending the “MomentSetting” used (can try linear first).
+cheers,
+Andrew
+----------------------------------------

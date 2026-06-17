@@ -1,0 +1,53 @@
+TOPIC: ln(Lb)-Ln(Ls+b) from RooFit and "FINAL NLL - NLL0 VALUE" from MultiDimFit
+URL: https://cms-talk.web.cern.ch/t/36736
+DATE: 2024-03-12T14:18:55.663Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-12T14:18:55.836Z):
+Dear experts,
+I do unbinned fit for S+B and B only model and extract ln(Lb) - ln(Ls+b)
+from my .C macro at
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/13TeV_2017UL_RooFitTest_SR1.C
+it gives me ln(Lb) - ln(Ls+b) = 1.47978
+and corresponding significance 1.7. The same significance I get from
+combine -M Significance 2017UL_dimuon_SR1.txt  --significance
+But when I run
+combine -M MultiDimFit 2017UL_dimuon_SR1.txt --robustFit=1 -v 3 --rMin 0 --rMax 100
+it print me out
+FINAL NLL - NLL0 VALUE = -408.6334054
+What is this value ? And how can I get ln(Lb)-ln(Ls+b) from MultiDimFit
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-03-12T16:28:52.747Z):
+Hi Sasha,
+In general, its not a great idea to pick some line from the verbose output and try to guess what it means. RooFit (and combine) has several optimisations to subtract large values of the NLL and NLL0 doesn’t refer to the NLL at mu=0.
+Instead, as described in the documentation here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans , you can calculate the difference in the negative-log-likelihood (NLL) at a fixed point vs the best fit point by using the fixed algo. In your case, this would be the fixed point of zero so you set --algo fixed --fixedPointPOIs r=0.
+The output ROOT file contains a TTree (called limit) which you can find the value calculated in ROOT using limit->Scan("deltaNLL"). The  2nd row is the number you’re looking for,
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-03-13T06:55:11.000Z):
+Thank you, Nick ! It is great.
+Cheers, Sasha.
+
+···
+
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, March 12, 2024 17:29
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] ln(Lb)-Ln(Ls+b) from RooFit and “FINAL NLL - NLL0 VALUE” from MultiDimFit
+
+Nicholas Wardle nckw Higgs convenerMarch 12
+
+Hi Sasha,
+In general, its not a great idea to pick some line from the verbose output and try to guess what it means. RooFit (and combine) has several optimisations to subtract large values of the NLL and NLL0 doesn’t refer to the NLL at mu=0.
+Instead, as described in the documentation here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans , you can calculate the difference in the negative-log-likelihood (NLL) at a fixed point vs the best fit point by using the fixed algo. In your case, this would be the fixed point of zero so you set --algo fixed --fixedPointPOIs r=0.
+The output ROOT file contains a TTree (called limit) which you can find the value calculated in ROOT using limit->Scan("deltaNLL"). The 2nd row is the number you’re looking for,
+Best,
+Nick
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

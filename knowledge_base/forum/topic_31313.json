@@ -1,0 +1,23 @@
+{
+  "topic_id": 31313,
+  "title": "Error in combine installation when I run ```make CONDA=1 -j 8```",
+  "url": "https://cms-talk.web.cern.ch/t/31313",
+  "category_id": 279,
+  "created_at": "2023-11-06T09:02:06.847Z",
+  "last_posted_at": "2023-11-06T09:02:06.988Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fmokhtar",
+      "name": "Farouk Mokhtar",
+      "created_at": "2023-11-06T09:02:06.988Z",
+      "updated_at": "2023-11-06T09:02:06.988Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I was following the installation steps for MacOS listed in the Combine webpage:\ngit clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit\ncd HiggsAnalysis/CombinedLimit\n\nconda install --name base mamba # faster conda\nmamba env create -f conda_env.yml\n\nconda activate combine\nsource set_conda_env_vars.sh\n# Need to reactivate\nconda deactivate\nconda activate combine\n\nmake CONDA=1 -j 8\n\nIt all works fine until the very last command. It runs into many errors of this sort.\nzzz 171920\u00d71247 228 KB\nzzz 181920\u00d71165 201 KB\nAny help is appreciated! thanks!",
+      "cooked_html": "<p>I was following the installation steps for MacOS listed in the Combine webpage:</p>\n<pre><code class=\"lang-auto\">git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit\ncd HiggsAnalysis/CombinedLimit\n\nconda install --name base mamba # faster conda\nmamba env create -f conda_env.yml\n\nconda activate combine\nsource set_conda_env_vars.sh\n# Need to reactivate\nconda deactivate\nconda activate combine\n\nmake CONDA=1 -j 8\n</code></pre>\n<p>It all works fine until the very last command. It runs into many errors of this sort.<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/4/473a553297745003c842dfd4278f864c6ec6bb1a.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/473a553297745003c842dfd4278f864c6ec6bb1a\" title=\"zzz 17\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/473a553297745003c842dfd4278f864c6ec6bb1a_2_690x448.jpeg\" alt=\"zzz 17\" data-base62-sha1=\"aa6SqtKU4hPa58aqIRiomhz9CxY\" width=\"690\" height=\"448\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/473a553297745003c842dfd4278f864c6ec6bb1a_2_690x448.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/473a553297745003c842dfd4278f864c6ec6bb1a_2_1035x672.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/473a553297745003c842dfd4278f864c6ec6bb1a_2_1380x896.jpeg 2x\" data-dominant-color=\"444444\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">zzz 17</span><span class=\"informations\">1920\u00d71247 228 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div><br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/8/8b98b6cbb395cd976540a65e346d7bfd58267441.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/8b98b6cbb395cd976540a65e346d7bfd58267441\" title=\"zzz 18\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/8b98b6cbb395cd976540a65e346d7bfd58267441_2_690x418.jpeg\" alt=\"zzz 18\" data-base62-sha1=\"jUVyw3uSFLrdSj5RdQuXeavP6Fz\" width=\"690\" height=\"418\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/8b98b6cbb395cd976540a65e346d7bfd58267441_2_690x418.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/8b98b6cbb395cd976540a65e346d7bfd58267441_2_1035x627.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/8b98b6cbb395cd976540a65e346d7bfd58267441_2_1380x836.jpeg 2x\" data-dominant-color=\"2F2F2F\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">zzz 18</span><span class=\"informations\">1920\u00d71165 201 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>Any help is appreciated! thanks!</p>"
+    }
+  ]
+}

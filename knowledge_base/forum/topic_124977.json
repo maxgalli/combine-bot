@@ -1,0 +1,34 @@
+{
+  "topic_id": 124977,
+  "title": "MH_points and MH in datacard CI",
+  "url": "https://cms-talk.web.cern.ch/t/124977",
+  "category_id": 279,
+  "created_at": "2025-05-19T16:22:03.991Z",
+  "last_posted_at": "2025-06-05T10:30:58.365Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mknight",
+      "name": "Charlotte Knight",
+      "created_at": "2025-05-19T16:22:04.308Z",
+      "updated_at": "2025-05-19T16:22:04.308Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI\u2019m using the datacard CI, starting from the template provided by this repo.\nFrom the template, I changed the MH_points option in the .gitlab-ci.yml to \u201c125.38\u201d, set some other analysis-relevant options and set the pipeline going. The pipeline failed at first, and I managed to track down the issue which was that MH was not being set when running the combine commands, or at least it was being set to the default value of 200 which I think comes from here. After adding the MH option to my .gitlab-ci.yml (see here) and setting it to \u201c125.38\u201d, my pipeline starting working.\nNaively, I expected MH to be set by the values given by the MH_points option and do not understand why the MH option exists.\nCan I suggest that this is explained somewhere in the documentation, or that the MH option is included in the template repo so it\u2019s more obvious to a user that it may be important?\nCheers,\nCharlotte",
+      "cooked_html": "<p>Hi,</p>\n<p>I\u2019m using the <a href=\"https://gitlab.cern.ch/cms-analysis/general/datacard-ci\" rel=\"noopener nofollow ugc\">datacard CI</a>, starting from the template provided by this <a href=\"https://gitlab.cern.ch/cms-analysis/templates/datacards/-/tree/master\" rel=\"noopener nofollow ugc\">repo</a>.</p>\n<p>From the template, I changed the <code>MH_points</code> option in the <code>.gitlab-ci.yml</code> to \u201c125.38\u201d, set some other analysis-relevant options and set the pipeline going. The pipeline failed at first, and I managed to track down the issue which was that MH was not being set when running the combine commands, or at least it was being set to the default value of 200 which I think comes from <a href=\"https://gitlab.cern.ch/cms-analysis/general/datacard-ci/-/blob/master/.gitlab-ci.yml?ref_type=heads#L5\" rel=\"noopener nofollow ugc\">here</a>. After adding the <code>MH</code> option to my <code>.gitlab-ci.yml</code> (see <a href=\"https://gitlab.cern.ch/cms-analysis/hig/HIG-22-012/datacards_v2/-/blob/master/.gitlab-ci.yml?ref_type=heads#L24\" rel=\"noopener nofollow ugc\">here</a>) and setting it to \u201c125.38\u201d, my pipeline starting working.</p>\n<p>Naively, I expected <code>MH</code> to be set by the values given by the <code>MH_points</code> option and do not understand why the <code>MH</code> option exists.</p>\n<p>Can I suggest that this is explained somewhere in the documentation, or that the <code>MH</code> option is included in the <a href=\"https://gitlab.cern.ch/cms-analysis/templates/datacards/-/tree/master\" rel=\"noopener nofollow ugc\">template repo</a> so it\u2019s more obvious to a user that it may be important?</p>\n<p>Cheers,<br>\nCharlotte</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gallim",
+      "name": "Massimiliano Galli",
+      "created_at": "2025-06-05T10:30:58.365Z",
+      "updated_at": "2025-06-05T10:30:58.365Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Charlotte,\nthanks - I opened an issue to keep track, we\u2019ll fix this as soon as possible.\nCheers,\nMassimiliano",
+      "cooked_html": "<p>Hi Charlotte,<br>\nthanks - I opened <a href=\"https://gitlab.cern.ch/cms-analysis/templates/datacards/-/issues/2\" rel=\"noopener nofollow ugc\">an issue</a> to keep track, we\u2019ll fix this as soon as possible.</p>\n<p>Cheers,<br>\nMassimiliano</p>"
+    }
+  ]
+}

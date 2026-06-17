@@ -1,0 +1,36 @@
+TOPIC: Segmentation fault (core dumped) when combining multiple channels
+URL: https://cms-talk.web.cern.ch/t/124509
+DATE: 2025-05-05T14:23:35.718Z
+SOLVED: no
+============================================================
+
+QUESTION (by attikis @ 2025-05-05T14:23:36.144Z):
+Dear experts,
+I am trying to combine multiple regions (~80 over all Run 2 eras) and when I run combine on the resultant cards i get the following error:
+Segmentation fault (core dumped)
+I have attached the full log for 1 mass point as an example, along with the datacard used as input.
+The problem does not seem to happen with a subset of 20-30 categories (e.g. categories within same Run era2). Is there a limitation with CPU resources or can the problem lie elsewhere? (e.g. datacards).
+Greatly appreciate some help narrowing down the problem.
+Best regards,
+Alexandros
+Archive.zip (1.2 MB)
+i
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2025-05-05T14:38:49.757Z):
+Hi Alexandros,
+have you tried setting
+ulimit -s unlimited
+
+before running anything? It’s a known issue for large combinations that the default user limits are too low.
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 3 (by attikis @ 2025-05-06T11:50:43.069Z):
+Hi Philip,
+that did the trick indeed (albeit with the tcsh variation “limit stacksize unlimited”)!
+Thank you for your help.
+Cheers,
+Alexandros
+----------------------------------------

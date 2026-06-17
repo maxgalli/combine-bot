@@ -1,0 +1,45 @@
+{
+  "topic_id": 143351,
+  "title": "Signal injection test commands",
+  "url": "https://cms-talk.web.cern.ch/t/143351",
+  "category_id": 279,
+  "created_at": "2026-03-23T18:43:38.068Z",
+  "last_posted_at": "2026-03-23T19:39:45.658Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "alkaloge",
+      "name": "Alexis Kalogeropoulos",
+      "created_at": "2026-03-23T18:43:38.503Z",
+      "updated_at": "2026-03-23T18:43:38.503Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts\nApologies if this has been answered already, but I would like to ask if there are some links/examples on how to properly perform a signal injection test for different \\mu values, as I could not find anything searching the usual git combine documentation.\nThanks in advance,\nAlexis",
+      "cooked_html": "<p>Dear experts</p>\n<p>Apologies if this has been answered already, but I would like to ask if there are some links/examples on how to properly perform a signal injection test for different <span class=\"math\">\\mu</span> values, as I could not find anything searching the usual git combine <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/\" rel=\"noopener nofollow ugc\">documentation</a>.</p>\n<p>Thanks in advance,<br>\nAlexis</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2026-03-23T19:11:53.987Z",
+      "updated_at": "2026-03-23T19:11:53.987Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Alexis,\n--expectSignal 2 or --setParameters r=2,...  with either the toys or Asimov generation.\ncheers,\n-Andrea",
+      "cooked_html": "<p>Hi Alexis,</p>\n<p><code>--expectSignal 2</code> or <code>--setParameters r=2,...</code>  with either the toys or Asimov generation.</p>\n<p>cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "alkaloge",
+      "name": "Alexis Kalogeropoulos",
+      "created_at": "2026-03-23T19:39:45.658Z",
+      "updated_at": "2026-03-23T19:39:45.658Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "so, for a set of different signal strengths like SIGNAL_STRENGTHS=(0.0 0.5 1.0 1.5 2.0) would this be ok?\ncombineTool.py -M FitDiagnostics \\\n-d input_Run2_3000_SRCR1B2B.root \\\n-t $TOYS_PER_JOB \\\n--toysFrequentist \\\n--expectSignal=$EXPECT_SIG \\\n--setParameters r=$EXPECT_SIG \\\n--cminDefaultMinimizerStrategy 1 \\\n-s $JOB_SEED \\\n--rMin -5 --rMax 5 \\\n-n _sigInj_Suu3_r${NAME}_${BASE_SEED}_part${i} \\\n-v 1 \\\n--job-mode condor \\\n--sub-opts='+JobFlavour=\"workday\"' \\\n--task-name SignalInjection_${NAME}_part${i}",
+      "cooked_html": "<p>so, for a set of different signal strengths like <code>SIGNAL_STRENGTHS=(0.0 0.5 1.0 1.5 2.0)</code> would this be ok?</p>\n<pre><code class=\"lang-auto\">combineTool.py -M FitDiagnostics \\\n    -d input_Run2_3000_SRCR1B2B.root \\\n    -t $TOYS_PER_JOB \\\n    --toysFrequentist \\\n    --expectSignal=$EXPECT_SIG \\\n    --setParameters r=$EXPECT_SIG \\\n    --cminDefaultMinimizerStrategy 1 \\\n    -s $JOB_SEED \\\n    --rMin -5 --rMax 5 \\\n    -n _sigInj_Suu3_r${NAME}_${BASE_SEED}_part${i} \\\n    -v 1 \\\n    --job-mode condor \\\n    --sub-opts='+JobFlavour=\"workday\"' \\\n    --task-name SignalInjection_${NAME}_part${i}\n</code></pre>"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "topic_id": 36319,
+  "title": "Question about constraining background",
+  "url": "https://cms-talk.web.cern.ch/t/36319",
+  "category_id": 279,
+  "created_at": "2024-03-04T16:22:18.145Z",
+  "last_posted_at": "2024-03-05T07:48:27.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-04T16:22:18.273Z",
+      "updated_at": "2024-03-04T16:22:18.273Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nNick recommend to constraint background rate within some uncertainty\nusing lines\nbkgrate_sr3_17 rateParam  SR3_2017 bkg 1\nbkgrate_sr3_17 param 1 0.025\nmeaning that I want background to float within 2.5 % around the nominal value\nI defined in datacards (1850 events).\nThe question is the following:\ndoes it assume flat distribution for bkg rate or Gaussian with sigma 2.5 % or simply does not allow bkg rate be outside 2.5%  variation in the fit ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>Nick recommend to constraint background rate within some uncertainty<br>\nusing lines</p>\n<p>bkgrate_sr3_17 rateParam  SR3_2017 bkg 1<br>\nbkgrate_sr3_17 param 1 0.025</p>\n<p>meaning that I want background to float within 2.5 % around the nominal value<br>\nI defined in datacards (1850 events).</p>\n<p>The question is the following:</p>\n<p>does it assume flat distribution for bkg rate or Gaussian with sigma 2.5 % or simply does not allow bkg rate be outside 2.5%  variation in the fit ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-03-04T16:55:01.830Z",
+      "updated_at": "2024-03-04T16:55:01.830Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nBoth the lines:\nbkgrate_sr3_17 rateParam SR3_2017 bkg 1\nbkgrate_sr3_17 param 1 0.025\n\nwill add a Gaussian constarin to the background of +/- 2.5%\nOnly the first line:\nbkgrate_sr3_17 rateParam SR3_2017 bkg 1\n\nwill add a free uncontrained parameter  to the background.\n-A",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>Both the lines:</p>\n<pre><code class=\"lang-auto\">bkgrate_sr3_17 rateParam SR3_2017 bkg 1\nbkgrate_sr3_17 param 1 0.025\n</code></pre>\n<p>will add a Gaussian constarin to the background of +/- 2.5%</p>\n<p>Only the first line:</p>\n<pre><code class=\"lang-auto\">bkgrate_sr3_17 rateParam SR3_2017 bkg 1\n</code></pre>\n<p>will add a free uncontrained parameter  to the background.</p>\n<p>-A</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-03-04T17:02:57.632Z",
+      "updated_at": "2024-03-04T17:02:57.632Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "As Andrea said,\nThe line you have will create a Gaussian constraint.\nI just want to clarify that I didn\u2019t recommend adding any constraint, I just said how to add one of it\u2019s needed.\nNick",
+      "cooked_html": "<p>As Andrea said,</p>\n<p>The line you have will create a Gaussian constraint.</p>\n<p>I just want to clarify that I didn\u2019t recommend adding any constraint, I just said how to add one of it\u2019s needed.</p>\n<p>Nick</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-05T07:48:27.000Z",
+      "updated_at": "2024-03-05T07:53:37.747Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Thanks Andrea, Nick !\nNick, no worry, I did not say that you recommend to use a constraint.\nWe do want to have it from ourside.\nCheers, Sasha\n\n\u00b7\u00b7\u00b7\n\nFrom: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch\nSent: Monday, March 4, 2024 18:04\nTo: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch\nSubject: [Common Analysis Tools/Statistical Interpretation Tools] Question about constraining background\n\nNicholas Wardle nckw Higgs convenerMarch 4\n\nAs Andrea said,\nThe line you have will create a Gaussian constraint.\nI just want to clarify that I didn\u2019t recommend adding any constraint, I just said how to add one of it\u2019s needed.\nNick\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Thanks Andrea, Nick !</p>\n<p>Nick, no worry, I did not say that you recommend to use a constraint.<br>\nWe do want to have it from ourside.</p>\n<p>Cheers, Sasha</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<hr>\n<p><strong>From:</strong> Nicholas Wardle via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a><br>\n<strong>Sent:</strong> Monday, March 4, 2024 18:04<br>\n<strong>To:</strong> Alexandre Nikitenko <a href=\"mailto:Alexandre.Nikitenko@cern.ch\">Alexandre.Nikitenko@cern.ch</a><br>\n<strong>Subject:</strong> [Common Analysis Tools/Statistical Interpretation Tools] Question about constraining background</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img title=\"nckw\" width=\"45\" height=\"45\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/n/e36b37/45.png\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/nckw\">Nicholas Wardle</a> nckw Higgs convener<br>March 4</th>\n</tr>\n</thead>\n</table>\n</div><p>As Andrea said,</p>\n<p>The line you have will create a Gaussian constraint.</p>\n<p>I just want to clarify that I didn\u2019t recommend adding any constraint, I just said how to add one of it\u2019s needed.</p>\n<p>Nick</p>\n<p><a href=\"https://cms-talk.web.cern.ch/t/question-about-constraining-background/36319/3\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/af3e467a1194c79f9145121ae10b38124463b483c2ee9affb66c95fa941a96aa\">click here</a>.</p>\n<hr>\n</details>"
+    }
+  ]
+}

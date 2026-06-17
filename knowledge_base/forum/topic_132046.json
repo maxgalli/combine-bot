@@ -1,0 +1,45 @@
+{
+  "topic_id": 132046,
+  "title": "Adding yields and uncertainties output by FitDiagnostics",
+  "url": "https://cms-talk.web.cern.ch/t/132046",
+  "category_id": 279,
+  "created_at": "2025-09-17T18:49:12.044Z",
+  "last_posted_at": "2025-09-26T15:21:21.526Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "eipearso",
+      "name": "Emma Irene Pearson",
+      "created_at": "2025-09-17T18:49:12.294Z",
+      "updated_at": "2025-09-17T18:49:12.294Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nWe are using FitDiangostics to obtain the pre and post b-only fit yields for our analysis, which considers the full Run II dataset. We would like to have the full Run II yield and uncertainty for the signal, each background process separately, and the total background (pre and post-fit). However, the output of FitDiagnostics contains results for each year separately.\nGiven that some of our systematics are correlated across years, simply adding the uncertainties of each year in quadrature is incorrect, so what is the correct way to combine the uncertainties when we add the years together? We do notice that there is a 2D overall_total_covar matrix included in the output in each folder shapes_prefit and shapes_fit_b, but we are unsure how to use it correctly.\nWe are running FitDiagnostics with the options shown in the following command, and the datacard and output fitDiagnostics.root file are attached.\ncombine -M FitDiagnostics datacard.txt -m 300 --robustFit 1 -v1 --rMin -1 --skipSBFit --rMax 2 --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --setParameters signalScaleParam=0.001316 --trackParameters signalScaleParam --freezeParameters signalScaleParam\n\nOne final note: we are part-way through unblinding and have been instructed to not make the s+b fits yet.\nThank you,\nEm Pearson\ndatacard.txt (21.2 KB)\nfitDiagnostics.m300.root (104.3 KB)",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>We are using <code>FitDiangostics</code> to obtain the pre and post b-only fit yields for our analysis, which considers the full Run II dataset. We would like to have the full Run II yield and uncertainty for the signal, each background process separately, and the total background (pre and post-fit). However, the output of <code>FitDiagnostics</code> contains results for each year separately.</p>\n<p>Given that some of our systematics are correlated across years, simply adding the uncertainties of each year in quadrature is incorrect, so what is the correct way to combine the uncertainties when we add the years together? We do notice that there is a 2D <code>overall_total_covar</code> matrix included in the output in each folder <code>shapes_prefit</code> and <code>shapes_fit_b</code>, but we are unsure how to use it correctly.</p>\n<p>We are running <code>FitDiagnostics</code> with the options shown in the following command, and the datacard and output <code>fitDiagnostics.root</code> file are attached.</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">combine -M FitDiagnostics datacard.txt -m 300 --robustFit 1 -v1 --rMin -1 --skipSBFit --rMax 2 --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --setParameters signalScaleParam=0.001316 --trackParameters signalScaleParam --freezeParameters signalScaleParam \n</code></pre>\n<p>One final note: we are part-way through unblinding and have been instructed to not make the s+b fits yet.</p>\n<p>Thank you,</p>\n<p>Em Pearson</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/4WzWZT7vCKhqcXyVyB8pftKgTJ2.txt\">datacard.txt</a> (21.2 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/gHl9uNTtGIZSfuaxmXEKk7YaKbf.root\">fitDiagnostics.m300.root</a> (104.3 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gallim",
+      "name": "Massimiliano Galli",
+      "created_at": "2025-09-19T09:43:36.695Z",
+      "updated_at": "2025-09-19T09:43:36.695Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Emma,\nnaively I would suggest to compute the total uncertainty on e.g. the total background by also including the covariances you obtain from the matrix. However, I\u2019m not sure if this correlation is already taken into account internally when the toys are generated. Maybe one way to find out would be to run fitDiagnostics on the combined card and on the cards separated per year, and compare the uncertainties you get on the shapes to figure out what actually happens. Do you have these separate datacards used to make the datacard you attached? I tried to access one of the ones written on top but it doesn\u2019t seem to exist (maybe it was renamed?)?\nMassimiliano",
+      "cooked_html": "<p>Hi Emma,</p>\n<p>naively I would suggest to compute the total uncertainty on e.g. the total background by also including the covariances you obtain from the matrix. However, I\u2019m not sure if this correlation is already taken into account internally when the toys are generated. Maybe one way to find out would be to run <code>fitDiagnostics</code> on the combined card and on the cards separated per year, and compare the uncertainties you get on the shapes to figure out what actually happens. Do you have these separate datacards used to make the datacard you attached? I tried to access one of the ones written on top but it doesn\u2019t seem to exist (maybe it was renamed?)?</p>\n<p>Massimiliano</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "eipearso",
+      "name": "Emma Irene Pearson",
+      "created_at": "2025-09-26T15:21:21.526Z",
+      "updated_at": "2025-09-26T15:21:21.526Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Massimiliano,\nThe covariance matrix provided by FitDiagnostics is labeled as being signal and background. Right now we are doing a b-only fit, so it doesn\u2019t matter because the signal is 0. However, later we will do an s+b fit. For the s+b fit case, we are not sure how to calculate the total uncertainty on the background given that for some of our mass points the signal yield is large relative to the total background yield.\nThank you,\nEm Pearson",
+      "cooked_html": "<p>Hi Massimiliano,</p>\n<p>The covariance matrix provided by <code>FitDiagnostics</code> is labeled as being signal and background. Right now we are doing a b-only fit, so it doesn\u2019t matter because the signal is 0. However, later we will do an s+b fit. For the s+b fit case, we are not sure how to calculate the total uncertainty on the background given that for some of our mass points the signal yield is large relative to the total background yield.</p>\n<p>Thank you,</p>\n<p>Em Pearson</p>"
+    }
+  ]
+}

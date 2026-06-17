@@ -1,0 +1,50 @@
+TOPIC: Extended likelihood fit converging to negative n_sig — seeking input on treatment
+URL: https://cms-talk.web.cern.ch/t/143693
+DATE: 2026-04-02T12:46:07.905Z
+SOLVED: no
+============================================================
+
+QUESTION (by mohd @ 2026-04-02T12:46:08.398Z):
+Dear all,
+I’m reaching out regarding a fitting behavior we’ve encountered in our higgsino search in H(bb)H(γγ)+ptmiss channel. We’re using a 2D unbinned extended likelihood fit in M(γγ) and ptmiss as part of our background estimation strategy.
+The fit works well in signal injection toy studies — convergence is clean and we are able to extract the right signal yield with no bias. The issue arises when no signal is injected (or in control region fits): the minimizer converges to a large negative n_sig, which we’ve verified is a true NLL minimum rather than a bug. The 1D projections at this minimum look visually poor, yet the fit prefers this solution over one with n_sig ≥ 0, which gives a visually reasonable result.
+We traced this to the signal PDF being localized in a high-ptmiss region where data are sparse, resulting in minimal overlap between the signal PDF and the data distribution. I reproduced this behavior in a 1D toy example to isolate the effect (slides attached).
+This raises a few related questions:
+1. Is this a known pathology of extended likelihood fits in low-overlap regimes — i.e., a case where the NLL minimum is formally valid but physically uninterpretable, and the standard treatment is simply to impose a lower bound at n_sig = 0? We want to confirm this is the correct prescription rather than a sign of a deeper issue with the fit setup.
+2. For the downstream limit setting in Combine, is it standard practice to set --rMin 0 to enforce the same physical boundary? Or does Combine’s internal profiling require r to float negative for the likelihood ratio test s
+NegativeNsigStudy.pdf (1.0 MB)
+tatistic to be well-behaved — and if so, does constraining r ≥ 0 introduce any concern that would affect the reported exclusion limits?
+We’d welcome any guidance on how this is typically handled, or pointers to relevant precedent in CMS analyses. Please let me know if you need additional information regarding this.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-04-03T10:01:12.000Z):
+Dear Mohd,
+I’m not sure about question 1, and I would let people with more expertise answer on this point.
+About question 2, in principle there is no objection to constraint the range of the r parameter in order to exclude unphysical or problematic regions of the phase space. For example, excluding r<0 is routinely done in analyses with large S/B to avoid the overall PDF to become negative.
+One caveat about this approach is that Wilks’ theorem does not hold in the presence of a boundary. So if your final best fit is close to the forbidden region you can’t just take the DNLL=1/3.84 values as references and you might need to use toys to estimate the actual 68%/95% CLs.
+I hope it helps,
+Best,
+Giacomo
+
+On 2 Apr 2026, at 14:47, Mohd Meraj Hussain noreply-cms-talk@cern.ch wrote:
+
+Mohd Meraj Hussain mohdApril 2
+
+Dear all,
+I’m reaching out regarding a fitting behavior we’ve encountered in our higgsino search in H(bb)H(γγ)+ptmiss channel. We’re using a 2D unbinned extended likelihood fit in M(γγ) and ptmiss as part of our background estimation strategy.
+The fit works well in signal injection toy studies — convergence is clean and we are able to extract the right signal yield with no bias. The issue arises when no signal is injected (or in control region fits): the minimizer converges to a large negative n_sig, which we’ve verified is a true NLL minimum rather than a bug. The 1D projections at this minimum look visually poor, yet the fit prefers this solution over one with n_sig ≥ 0, which gives a visually reasonable result.
+We traced this to the signal PDF being localized in a high-ptmiss region where data are sparse, resulting in minimal overlap between the signal PDF and the data distribution. I reproduced this behavior in a 1D toy example to isolate the effect (slides attached).
+This raises a few related questions:
+
+Is this a known pathology of extended likelihood fits in low-overlap regimes — i.e., a case where the NLL minimum is formally valid but physically uninterpretable, and the standard treatment is simply to impose a lower bound at n_sig = 0? We want to confirm this is the correct prescription rather than a sign of a deeper issue with the fit setup.
+
+For the downstream limit setting in Combine, is it standard practice to set --rMin 0 to enforce the same physical boundary? Or does Combine’s internal profiling require r to float negative for the likelihood ratio test s
+
+NegativeNsigStudy.pdf (1.0 MB)
+tatistic to be well-behaved — and if so, does constraining r ≥ 0 introduce any concern that would affect the reported exclusion limits?
+We’d welcome any guidance on how this is typically handled, or pointers to relevant precedent in CMS analyses. Please let me know if you need additional information regarding this.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

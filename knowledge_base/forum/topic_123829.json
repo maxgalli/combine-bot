@@ -1,0 +1,34 @@
+{
+  "topic_id": 123829,
+  "title": "How to Profile Signal Samples Discretely",
+  "url": "https://cms-talk.web.cern.ch/t/123829",
+  "category_id": 279,
+  "created_at": "2025-04-15T15:37:45.216Z",
+  "last_posted_at": "2025-04-16T11:47:51.985Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "msrivast",
+      "name": "Mohit Vir Srivastav",
+      "created_at": "2025-04-15T15:37:45.922Z",
+      "updated_at": "2025-04-15T15:37:45.922Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Combine experts,\nMy dilemma is as such:\n\nI have a series of templates that describe my parameter of interest at a series of discrete values (100, 500, 1000, etc.) (so imagine a template named T_i for a given value of parameter i. They would be properly scaled to the expected yield and (would) have a series of corrections and whatnot applied from a nontrivial reweighting process.\n\nSince the method to get these discretized templates is nontrivial, the templates would not scale nicely in a given physics model. As such, my idea is to compare all of these templates with the template that describes the expectation value (let\u2019s call this T_{SM}) to make scan over possible values..\n\nI am reluctant to create a RooHistPDF as they involve random sampling, which would introduce an element of randomness I do not want. As such, I\u2019m not sure I can use discrete profiling.\n\nWhat should I do here? Would it suffice to get the raw value of 2*(deltaNLL+nll+nll0) for each point as it compares to T_{SM} - or is there a more elegant solution available with combine?\nI would appreciate some guidance on what to do in my situation!\nThank you,\nMohit Srivastav",
+      "cooked_html": "<p>Hello Combine experts,</p>\n<p>My dilemma is as such:</p>\n<ol>\n<li>\n<p>I have a series of templates that describe my parameter of interest at a series of discrete values (100, 500, 1000, etc.) (so imagine a template named <span class=\"math\">T_i</span> for a given value of parameter <span class=\"math\">i</span>. They would be properly scaled to the expected yield and (would) have a series of corrections and whatnot applied from a nontrivial reweighting process.</p>\n</li>\n<li>\n<p>Since the method to get these discretized templates is nontrivial, the templates would not scale nicely in a given physics model. As such, my idea is to compare all of these templates with the template that describes the expectation value (let\u2019s call this <span class=\"math\">T_{SM}</span>) to make scan over possible values..</p>\n</li>\n<li>\n<p>I am reluctant to create a RooHistPDF as they involve random sampling, which would introduce an element of randomness I do not want. As such, I\u2019m not sure I can use <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling\" rel=\"noopener nofollow ugc\">discrete profiling</a>.</p>\n</li>\n</ol>\n<p>What should I do here? Would it suffice to get the raw value of <code>2*(deltaNLL+nll+nll0)</code> for each point as it compares to <span class=\"math\">T_{SM}</span> - or is there a more elegant solution available with combine?</p>\n<p>I would appreciate some guidance on what to do in my situation!</p>\n<p>Thank you,</p>\n<p>Mohit Srivastav</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2025-04-16T11:47:51.985Z",
+      "updated_at": "2025-04-16T11:47:51.985Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Mohit,\nThere might be more efficient ways, but in principle I think that discrete profiling should be working in your case. Is there any particular reason you do not want to use it?\nSince you only want to test a set of discrete points, for each point you can freeze the value of the template index and you will be selecting a given template.\nAnother possibility is simply to create a different datacard for each template and fit them separately.\nI hope it helps.\nBest,\nGiacomo",
+      "cooked_html": "<p>Dear Mohit,</p>\n<p>There might be more efficient ways, but in principle I think that discrete profiling should be working in your case. Is there any particular reason you do not want to use it?<br>\nSince you only want to test a set of discrete points, for each point you can freeze the value of the template index and you will be selecting a given template.<br>\nAnother possibility is simply to create a different datacard for each template and fit them separately.</p>\n<p>I hope it helps.<br>\nBest,<br>\nGiacomo</p>"
+    }
+  ]
+}

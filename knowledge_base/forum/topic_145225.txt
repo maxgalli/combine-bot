@@ -1,0 +1,106 @@
+TOPIC: itDiagnostics Asimov closure check for Combine review when POI is not r
+URL: https://cms-talk.web.cern.ch/t/145225
+DATE: 2026-05-20T21:30:04.715Z
+SOLVED: no
+============================================================
+
+QUESTION (by beozek @ 2026-05-20T21:30:07.820Z):
+Hi all,
+I am preparing the Combine/statistical review material for a TOP analysis and I am trying to run the recommended pre-fit Asimov closure checks from the TWiki.
+The recommendation says to run:
+combine -M FitDiagnostics -t -1 --expectSignal 0
+
+and check that the fit gives r = 0, then run diffNuisances.py, and similarly run:
+combine -M FitDiagnostics -t -1 --expectSignal 1
+
+and check that the fit gives r = 1.
+In my analysis, however, the POI is not the standard signal strength r. The POI is a template parameter called NoAC, which controls the charge-asymmetry template. The parameter r is not used as the physics POI and is frozen to 1.
+For the nominal SM Asimov closure, I tried:
+combine -M FitDiagnostics workspace_inclusive.root \
+
+--redefineSignalPOIs NoAC \
+
+--setParameters r=1,NoAC=0 \
+
+--setParameterRanges NoAC=-20,20 \
+
+--freezeParameters r \
+
+-t -1 \
+
+--robustFit 1 \
+
+-n _closure_inclusive
+
+The fit returns:
+Best fit NoAC: 0.000299433
+
+Here is the output log:
+<<< Combine >>>
+<<< v10.2.1 >>>
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Set Range of Parameter NoAC To : (-10,10)
+Set Default Value of Parameter r To : 1
+Set Default Value of Parameter NoAC To : 0
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+[WARNING]: Unable to determine uncertainties on all fit parameters in b-only fit. Have a look at ``https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties`` for more information.
+[WARNING]: Unable to determine uncertainties on all fit parameters in s+b fit. Have a look at ``https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties`` for more information.
+--- FitDiagnostics ---
+Best fit NoAC: 0.000688524  -0.294343/+0.292181  (68% CL)
+Done in 4.93 min (cpu), 4.94 min (real)
+So the central value seems to close at the injected value NoAC=0. However, I am not sure how to interpret/adapt the TWiki prescription based on --expectSignal 0/1, since that appears to be written for the standard r-based signal-strength model.
+For this kind of model, where the relevant POI is NoAC and r is frozen, is the correct closure check to generate Asimov toys with injected values of NoAC and verify that the fit recovers the injected NoAC value? For example, checking NoAC=0, NoAC=1, and maybe NoAC=-1? If so, it is already done.
+But the main question Is regarding the diffNuisances.py, should diffNuisances.py be interpreted in the same way for this case, or is there a preferred command/configuration for the TOP Combine review when the POI is not r?
+Thanks!
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-05-20T22:21:02.677Z):
+Dear Beren,
+I think what you are doing is correct. You should have a first test with --setParameters r=1,NoAC=0 and a second one with --setParameters r=1,NoAC=1. This assuming that NoAC=0 is your background-only situation and NoAC=1 is the SM expectation. Testing -1 as you suggest seems also a good idea.
+Basically you want to make sure that you fit back whatever value of the poi you inject with setParameters by testing a few special cases.
+expectSignal=X is basically the same as setting setParameters r=X, it is just a shorthand for the standard POI r. If you are using another POI you will need to use setParameters but it will still be fine.
+About diffNuisances, you can specify a POI different from r with the -p option, such as -p NoAC
+Best,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by beozek @ 2026-05-20T23:00:36.295Z):
+Dear Giacomo,
+Thanks, this is helpful. I tried the FitDiagnostics closure test with the custom POI using:
+combine -M FitDiagnostics workspace.root \
+-t -1 \
+--setParameters r=1,NoAC=0 \
+--redefineSignalPOIs NoAC \
+--saveShapes --saveWithUncertainties \
+--saveNormalizations
+
+In my convention, NoAC=0 corresponds to the nominal SM charge asymmetry, and NoAC=1 corresponds to the no-asymmetry template.
+The fit returns the injected value well:
+Best fit NoAC: 0.000592779  -4.00059/+0.207099  (68% CL)
+
+but I still get these warnings:
+[WARNING]: Unable to determine uncertainties on all fit parameters in b-only fit.
+The option --saveWithUncertainties will be ignored as it would lead to incorrect results.
+
+[WARNING]: Unable to determine uncertainties on all fit parameters in s+b fit.
+The option --saveWithUncertainties will be ignored as it would lead to incorrect results.
+
+Because of this, diffNuisances.py -p NoAC does not have the needed post-fit uncertainties/correlations in the fitDiagnostics.rootfile, so I cannot use it yet for the closure check.
+Do you have suggestions ?
+----------------------------------------
+
+REPLY 4 (by gortona @ 2026-05-21T07:36:27.386Z):
+Hi Beren,
+Sorry now I understood your problem better. I read a bit too quick your previous message.
+I would suggest to try the following options (in order):
+
+Try to limit the range of NoAC between -5 and 5
+use --robustFit (I saw you were already using it in previous commands and it seemed to improve a bit the -ve uncertainty), coupling it with --stepsize=0.001. You can also try to tune the --setRobustFitTolerance and --setCrossingTolerance options.
+If these fail, try to use --robustHesse=1
+If nothing works, it could be a good idea to try to inspect the problematic uncertainties. I don’t remember if you need to increase the verbosity for this, but In the output of the combine command it should print the final value of the parameters. If any of them looks odd or on the boundary you can try freezing them and see if that was the problem, and afterwards we can think about how to put them back in the fit.
+
+Let me know how these tests go
+Best,
+Giacomo
+----------------------------------------

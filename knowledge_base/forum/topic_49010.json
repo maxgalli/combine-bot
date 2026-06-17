@@ -1,0 +1,89 @@
+{
+  "topic_id": 49010,
+  "title": "Discrepancy in Errors Between Impact Plot and Scanned Likelihood Plot",
+  "url": "https://cms-talk.web.cern.ch/t/49010",
+  "category_id": 279,
+  "created_at": "2024-09-14T08:39:23.414Z",
+  "last_posted_at": "2024-09-16T15:43:04.611Z",
+  "tags": [],
+  "accepted_answer_post_number": 6,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "sibashir",
+      "name": "Sima Bashiri Kahjoq",
+      "created_at": "2024-09-14T08:39:23.567Z",
+      "updated_at": "2024-09-16T13:27:24.109Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi there,\nI prepared some impact plots and scanned likelihood plots; however, the uncertainty on the fit parameter differs between the two. Do you know why they are different?\n\nThanks in Advance,\nSima",
+      "cooked_html": "<p>Hi there,</p>\n<p>I prepared some impact plots and scanned likelihood plots; however, the uncertainty on the fit parameter differs between the two. Do you know why they are different?</p>\n<p><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/1/1a92d545f1988d066c111de1916bc644c5e94095.png\" alt=\"Screenshot at 2024-09-14 12-02-01\" data-base62-sha1=\"3N50am8LdGP0QVAVLvalaMu5ElD\" width=\"392\" height=\"319\"></p>\n<p><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/a/a6cdf17d3aacacc012f7e432aaad85c1a127e70d.png\" alt=\"Screenshot at 2024-09-14 12-01-06\" data-base62-sha1=\"nNCutLYkELeocXfhn8YKkm9NwCh\" width=\"459\" height=\"376\"></p>\n<p>Thanks in Advance,<br>\nSima</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-09-16T07:09:37.520Z",
+      "updated_at": "2024-09-16T07:09:37.520Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sima,\nAre you sure that the same nuisance parameters are included in both fits (ie, you run on the same datacard/workspace, and you aren\u2019t freezing any parameters on the command line)? Given your parameter \u2018damp\u2019 has an impact that is larger than the total uncertainty you get in the first plot you shared, I wondered if it was simply omitted from the fits for the explicit likelihood scan.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Sima,</p>\n<p>Are you sure that the same nuisance parameters are included in both fits (ie, you run on the same datacard/workspace, and you aren\u2019t freezing any parameters on the command line)? Given your parameter \u2018damp\u2019 has an impact that is larger than the total uncertainty you get in the first plot you shared, I wondered if it was simply omitted from the fits for the explicit likelihood scan.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "sibashir",
+      "name": "Sima Bashiri Kahjoq",
+      "created_at": "2024-09-16T10:26:46.380Z",
+      "updated_at": "2024-09-16T10:26:46.380Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adina,\nI checked it again, and all systematics are included. However, since I have three parameters to fit simultaneously, I need to profile one of the parameters in the likelihood scan plot. On the other hand, when drawing the impact plots, I don\u2019t profile any parameters.\nCould the discrepancy arise from this? Should I also profile the parameters when drawing the impact plots?\nCheers\nSima",
+      "cooked_html": "<p>Hi Adina,</p>\n<p>I checked it again, and all systematics are included. However, since I have three parameters to fit simultaneously, I need to profile one of the parameters in the likelihood scan plot. On the other hand, when drawing the impact plots, I don\u2019t profile any parameters.</p>\n<p>Could the discrepancy arise from this? Should I also profile the parameters when drawing the impact plots?</p>\n<p>Cheers<br>\nSima</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-09-16T13:31:20.384Z",
+      "updated_at": "2024-09-16T13:31:20.384Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Dear Sima,\nFirst of all I wanted to let you know that I moved this thread to https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279 forum where it belongs. I think it would be easier to tell where is the disagreement coming from if you post the commands used to produce both of the plots.\nThanks,\nAliya",
+      "cooked_html": "<p>Dear Sima,</p>\n<p>First of all I wanted to let you know that I moved this thread to <a href=\"https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279\">https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279</a> forum where it belongs. I think it would be easier to tell where is the disagreement coming from if you post the commands used to produce both of the plots.</p>\n<p>Thanks,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "sibashir",
+      "name": "Sima Bashiri Kahjoq",
+      "created_at": "2024-09-16T14:55:11.176Z",
+      "updated_at": "2024-09-16T14:55:11.176Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nlet\u2019s first simplify the plots, only consider the total uncertainty, where are different in impact and likelihood plots.\nthe commands for drawing impacts are as below:\ncombineTool.py -M Impacts -d output.root -m 125 --doInitialFit --robustFit 1 -t -1  --setParameters f0=0.687,fl=0.311,n=1.0   --expectSignal=1\ncombineTool.py -M Impacts -d output.root -m 125 --robustFit 1 --doFits --parallel 8  -t -1  --setParameters f0=0.687,fl=0.311,n=1.0  --expectSignal=1\ncombineTool.py -M Impacts -d output.root -m 125 -o impacts.json -t -1  --setParameters f0=0.687,fl=0.311,n=1.0   --expectSignal=1\nplotImpacts.py -i impacts.json -o impacts --POI fl\n\nthe commands for drawing scanned likelihood plots:\ncombine -M MultiDimFit  output.root  -n .fltoyworkspaceee18 --algo grid  --setParameters f0=0.687,fl=0.311,n=1  --saveWorkspace  --setParameterRanges f0=0.65,0.73:fl=0.28,0.34:n=0.9,1.1 -t -1 -P fl\nplot1DScan.py ./higgsCombine.scan.MultiDimFit.mH120.root   --POI fl\n\nthe total uncertainty from the impact and likelihood plots is different. if you have any idea about this issue, please let me know.\nCheers\nSima",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>let\u2019s first simplify the plots, only consider the total uncertainty, where are different in impact and likelihood plots.</p>\n<p>the commands for drawing impacts are as below:</p>\n<pre><code class=\"lang-auto\">combineTool.py -M Impacts -d output.root -m 125 --doInitialFit --robustFit 1 -t -1  --setParameters f0=0.687,fl=0.311,n=1.0   --expectSignal=1 \ncombineTool.py -M Impacts -d output.root -m 125 --robustFit 1 --doFits --parallel 8  -t -1  --setParameters f0=0.687,fl=0.311,n=1.0  --expectSignal=1 \ncombineTool.py -M Impacts -d output.root -m 125 -o impacts.json -t -1  --setParameters f0=0.687,fl=0.311,n=1.0   --expectSignal=1\nplotImpacts.py -i impacts.json -o impacts --POI fl \n</code></pre>\n<p>the commands for drawing scanned likelihood plots:</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit  output.root  -n .fltoyworkspaceee18 --algo grid  --setParameters f0=0.687,fl=0.311,n=1  --saveWorkspace  --setParameterRanges f0=0.65,0.73:fl=0.28,0.34:n=0.9,1.1 -t -1 -P fl\nplot1DScan.py ./higgsCombine.scan.MultiDimFit.mH120.root   --POI fl \n</code></pre>\n<p>the total uncertainty from the impact and likelihood plots is different. if you have any idea about this issue, please let me know.</p>\n<p>Cheers<br>\nSima</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-09-16T15:08:51.550Z",
+      "updated_at": "2024-09-16T15:08:51.550Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi Sima,\nCan you add the option --floatOtherPOIs 1 to your MultiDimFit command, and check whether that fixes the issue? (I assume that f0, fl, n have all been defined as parameters of interest; when you run the impacts they are set floating, but this is not done by default when you call MultiDimFit yourself.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Sima,</p>\n<p>Can you add the option <code>--floatOtherPOIs 1</code> to your <code>MultiDimFit</code> command, and check whether that fixes the issue? (I assume that f0, fl, n have all been defined as parameters of interest; when you run the impacts they are set floating, but this is not done by default when you call <code>MultiDimFit</code> yourself.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "sibashir",
+      "name": "Sima Bashiri Kahjoq",
+      "created_at": "2024-09-16T15:43:04.611Z",
+      "updated_at": "2024-09-16T15:43:04.611Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nthanks, it resolved.\nBest regards,\nSima",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>thanks, it resolved.</p>\n<p>Best regards,<br>\nSima</p>"
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+TOPIC: Computing expected blind limits with HybridNew
+URL: https://cms-talk.web.cern.ch/t/19298
+DATE: 2023-01-17T15:37:27.467Z
+SOLVED: no
+============================================================
+
+QUESTION (by scooper @ 2023-01-17T15:37:27.950Z):
+Dear combine experts,
+I’m interested in computing expected blind limits using the HybridNew method of combine and I’m a bit confused by the documentation.
+In the HybridNew documentation at [1], there is a warning that says that one should create a pre-fit Asimov toy dataset in order to obtain completely blind limits.  The link to the “toy data generation” section there is broken; I assume it’s supposed to link to [2].  From [2] I see that in general I can do
+-M GenerateOnly --saveToys -t -1
+to generate the pre-fit Asimov toys, and then use the option
+--toysFile=myGenerateOnlyToys.root
+to use these toys in the limit calculation as a separate step.
+However, there is then a warning referring to HybridNew which says that one “should not specify the toy generation with -t or the options above and instead follow the specific instructions.”  But the “specific instructions” I assume are those in [1], which as mentioned, seem to refer back to this section.
+How does one correctly compute completely blind limits using HybridNew?
+Cheers,
+Seth
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-01-18T09:13:37.563Z):
+Dear Seth,
+Thanks for reporting the broken link, we’ll try to fix that soon. For running fully blind expected limits with HybridNew, your approach is right: you can generate the asimov dataset with the command that you linked.
+Then, for using that asimov dataset instead of the real data in the HybridNew method what you can do is specify the dataset with the -D option. For example you can add -D myGenerateOnlyToys.root:toys/toy_asimov to the HybridNew command. (Note that from a quick check, I think you actually get the same result when you add -t -1 --toysFile=myGenerateOnlyToys.root, but it’s probably better to specify the dataset to use directly, since it’s not guaranteed adding -t -1… to the command for this method will always work in the future).
+The warning about toy generation related to HybridNew is just to make clear that the toys generated internally by HybridNew do not listen to the option -t (as you have seen here, since you were able to set -t -1 when running HybridNew, and multiple toys were still run inside HybridNew)
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by ncsmith @ 2023-01-26T19:46:01.016Z):
+For what it’s worth, as far as I can tell,
+combine -M HybridNew card.root --LHCmode LHC-limits -t -1 --expectedFromGrid 0.5
+
+and
+combine -M GenerateOnly card.root -t -1 --saveToys -n .asimov
+combine -M HybridNew card.root --LHCmode LHC-limits --expectedFromGrid 0.5 \
+-D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov
+
+are functionally equivalent. The latter is much more explicit though, of course.
+----------------------------------------
+
+REPLY 4 (by scooper @ 2023-02-10T09:42:15.363Z):
+Hi,
+Thanks for the replies, and I see that the documentation has been updated as well!
+I tried this with my counting experiment datacard in combine v9.0.0:
+combine -M GenerateOnly datacard.txt -t -1 -s -1 --saveToys -n .asimov
+combine -M HybridNew datacard.txt --LHCmode LHC-limits --expectedFromGrid 0.5 -D higgsCombine.asimov.GenerateOnly.mH120.725554898.root:toys/toy_asimov --fork 4
+
+When doing the HybridNew step, I see the following message:
+[#0] ERROR:ObjectHandling -- RooWorkspace::import(w) ERROR dataset with name higgsCombine.asimov.GenerateOnly.mH120.725554898.root:toys/toy_asimov already exists in workspace, import aborted
+Am I doing something wrong here?
+Cheers,
+Seth
+----------------------------------------
+
+REPLY 5 (by adewit @ 2023-02-10T11:14:59.468Z):
+Hi Seth,
+Can you try creating the workspace first (text2workspace.py datacard.txt -o ws.root, then run both your commands on ws.root instead of datacard.txt)? I tested your commands on a workspace and I don’t see problems, while when I run directly on a datacard I actually get a different error message than you
+Nevertheless, I hope creating the workspace first helps.
+Best,
+Adinda
+PS Combine support is moving to the CAT-statistical tools subgroup, the new forum for queries is: https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279. If you run into any further problems, please post there!
+----------------------------------------
+
+REPLY 6 (by scooper @ 2023-02-10T14:37:23.282Z):
+Thanks!  I confirm that the message disappears when running on the workspace file.
+Cheers,
+Seth
+----------------------------------------

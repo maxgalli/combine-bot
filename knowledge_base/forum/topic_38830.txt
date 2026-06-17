@@ -1,0 +1,114 @@
+TOPIC: Plot Nuisance parameters
+URL: https://cms-talk.web.cern.ch/t/38830
+DATE: 2024-04-09T16:14:47.835Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-04-09T16:14:47.952Z):
+Dear experts,
+I would like to have a plot with nuisance parameters as they got after the fit.
+In my old notes which do not work with the present version I have commands:
+combine -M MaxLikelihoodFit combined.txt --plots --saveShapes --saveWithUncertainties --saveNormalizations
+it produced mlfit.root. Get nuisance parameters with command:
+python diffNuisances.py mlfit.root -g outputfile.root
+In outputfile.root there are plots of the fitted values of the nuisance parameters and their post-fit uncertainties as well as a plot showing directly a comparison of the post-fit to pre-fit nuisance uncertainties.
+I can’t find in the present description of combine how it all looks like now.
+Can you help, please.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2024-04-09T19:29:09.023Z):
+Hi Sasha,
+Maybe have a look at the documentation: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#pre-and-post-fit-nuisance-parameters ?
+Instead of doing the comparison from the FitDiagnostics result with diffNuisances, you could also consider producing the impacts, described here, which probably give you the information you want, but also more: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#nuisance-parameter-impacts
+Adinda
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-04-10T12:02:45.772Z):
+Hi Adinda,
+Thanks !
+I used first
+combine -M FitDiagnostics -d combined.txt --robustFit=1 --rMin 0 --rMax 120 --redefineSignalPOIs width --setParameters mean=27.2 --freezeParameters mean,r
+which gives me what I wanted
+— FitDiagnostics —
+Best fit width: 3.24332  -1.64329/+4.78415  (68% CL)
+and then I use
+python diffNuisances.py higgsCombineTest.FitDiagnostics.mH120.root --abs --all -g outputfile.root
+which gives me an error:
+Singularity> python diffNuisances.py higgsCombineTest.FitDiagnostics.mH120.root --abs --all -g outputfile.root
+Traceback (most recent call last):
+File “diffNuisances.py”, line 181, in
+raise RuntimeError(“File %s does not contain the output of the signal fit ‘fit_s’” % args[0])
+RuntimeError: File higgsCombineTest.FitDiagnostics.mH120.root does not contain the output of the signal fit ‘fit_s’
+Singularity>
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 4 (by gortona @ 2024-04-10T12:09:28.545Z):
+Dear Sasha,
+As written in the documentation sent by Adinda, the diffNuisances script runs on a different file. By default, it should be called fitDiagnostics.root, you can check which files were produced by combine to be sure about the filename.
+
+It is possible to compare pre-fit and post-fit nuisance parameter values with the script diffNuisances.py. Taking as input a fitDiagnostics.root
+
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2024-04-10T12:20:45.000Z):
+Hi Giacomo,
+ah, yes , my command
+combine -M FitDiagnostics -d combined.txt --robustFit=1 --rMin 0 --rMax 120 --redefineSignalPOIs width --setParameters mean=27.2 --freezeParameters mean,r
+produces me also this file
+fitDiagnosticsTest.root
+but when I run on it
+python diffNuisances.py fitDiagnosticsTest.root --abs --all -g outputfile.root
+it gives me now error:
+
+python diffNuisances.py fitDiagnosticsTest.root --abs --all -g outputfile.root
+Traceback (most recent call last):
+File “diffNuisances.py”, line 235, in
+error_poi = fpf_s.find(options.poi).getError()
+AttributeError: ‘RooAbsArg’ object has no attribute ‘getError’
+
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 6 (by gortona @ 2024-04-10T12:26:06.595Z):
+Hi Sasha,
+Can you try adding the option -p width to the diffNuisances command? Otherwise, the script will assume the POI is called r.
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2024-04-10T12:30:55.213Z):
+ah, it works !  Thank you very much Giacomo.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2024-04-11T08:30:09.119Z):
+Hi Giacomo,
+I got a strange plot (attached) of nuisance parameters  which I have in my datacards as:
+Rsr1_2018_2017  param  1.53 0.04
+Rsr2_2018_2017  param  1.52 0.11
+Rsr3_2018_2017  param  1.50 0.04
+The minus errors of pre-fit on the plot go to zero …
+I attached also printout of command:
+python diffNuisances.py -p width fitDiagnosticsTest.root --abs --all -g outputfile.root
+where minus errors and the same as plus ones,
+nuisance.pdf (14.5 KB)
+out.txt (6.0 KB)
+Is it a problem with plotting or my mistake ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 9 (by gortona @ 2024-04-11T09:36:52.857Z):
+Dear Sasha,
+This is just a plotting issue. I don’t remember the exact reason for it, but it happens on the parameters declared as “param” with a mean value different from 0 in the datacard. I don’t think you need to worry about it.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 10 (by anikiten @ 2024-04-11T10:06:15.000Z):
+thanks, Giacomo !
+Cheers, Sasha.
+----------------------------------------

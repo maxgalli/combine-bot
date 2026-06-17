@@ -1,0 +1,41 @@
+TOPIC: Unfolding for the charge asymmetry in top pair production
+URL: https://cms-talk.web.cern.ch/t/24543
+DATE: 2023-05-23T15:06:47.191Z
+SOLVED: no
+============================================================
+
+QUESTION (by yekang @ 2023-05-23T15:06:47.465Z):
+Dear experts,
+I’m working on the measurement of the charge asymmetry in top pair production.
+Several weeks ago, I made an unfolding with the Higgs Combine Tool.
+And I could get an unfolded result for the asymmetry.
+But there is something suspicious for me.
+The asymmetry is defined by the “difference between the number of + and - signed events by dividing the total number of events”.
+So I thought that the uncertainty from luminosity should be canceled out when we calculate the asymmetry.
+But in the result, the major uncertainty source is luminosity at the moment.
+I think I did something wrong with the tool.
+So I want to get consult if I made an unfold correctly.
+I put the data card and the workspace in my cernbox. [1]
+And you can check the command that I used from run.sh file.
+Best regards,
+Yechan
+[1] https://cernbox.cern.ch/s/16u7nncNAK8NvGw
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-05-24T09:01:47.924Z):
+Hi Yechan,
+I have taken only a brief look at your datacard so far; not enough to be able to say that there isn’t some issue. But I wanted to give a preliminary response that might help you to debug in any case.
+Although it is not very intuitive, I don’t think there is anything “a priori” incorrect about having the luminosity effect such a measurement. Whether this should actually be the is another issue, which will be specific to each analysis. So you should continue to investigate, but I’ll outline briefly how it can, at least in principle be the case. In general, you shouldn’t expect complete cancellation.
+Suppose you have backgrounds which have a different nominal distribution in the ‘+’ and ‘-’ bins than the ttbar process does. For convenience lets say the ‘total asymmetry’ is the same as the asymmetry you have defined above, but using all events, signal + background.
+Suppose the total asymmetry in the nominal prefit model is A_0. And suppose exactly this value is observed in data as well, but that the normalization of the data is different than the normalization of the nominal estimate.
+There are two ways that  the fit can improve from the prefit values:
+
+increase the total yield of all events (e.g. by scaling the luminosity)
+increase the yield of the total ttbar events, and simultaneously morph the ttbar asymmetry to keep the total asymmetry the same.
+
+Without considering the relative penalty for these two changes, the point is that if you assume a different luminosity, it will also effect the ttbar asymmetry! – the luminosity will be anti-correlated with the total ttbar signal strength, and to match the asymmetry observed in the data, the amount of ttbar asymmetry required depends on the relative size of the ttbar contribution compared to the backgrounds.
+All this being said, without having looked carefully, I find it somewhat surprising that luminosity is the major source of uncertainty. So it is worth following up, though it may be a question better suited with your PAG and Analysis Team. One thing I did notice on a brief look at the datacard is that you have a data-driven background which has the same systematic shift from the luminosity as all the other backgrounds? This is a little surprising to me, I would generally not expect it to be the case.
+I will try to take a look in the coming days if I see anything obviously wrong with your setup; but you should continue to debug to see if you spot a specific issue, or if this is just the correct (but unintuitive) behaviour given your (intended) model.
+Cheers,
+Kyle
+----------------------------------------

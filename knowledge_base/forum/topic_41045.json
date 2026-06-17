@@ -1,0 +1,23 @@
+{
+  "topic_id": 41045,
+  "title": "Suppress minuit warnings",
+  "url": "https://cms-talk.web.cern.ch/t/41045",
+  "category_id": 279,
+  "created_at": "2024-05-12T16:34:44.761Z",
+  "last_posted_at": "2024-05-12T16:34:45.030Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-05-12T16:34:45.030Z",
+      "updated_at": "2024-05-12T16:34:45.030Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nit is possible to suppress Minuit Warnings like\n[#0] WARNING:Minization \u2013 RooMinimizerFcn: Minimized function has error status.\nReturning maximum FCN so far (-0.0553594) to force MIGRAD to back out of this region. Error log follows\nParameter values: a1_17sr1=0.0596302, a1_17sr2=3.95703, a1_17sr3=-0.622024, a2_17sr1=-0.00234913, a2_17sr2=-0.140752, a2_17sr3=-0.262539, a3_17sr1=1.90113e-05, a3_17sr2=0.00120143, a3_17sr3=0.275363, bkgrate_sr1_17=0.983524, bkgrate_sr2_17=1.08643, bkgrate_sr3_17=1.03095, r_sig1=0.0195045, r_sig2=15.5708, r_sig3=148.628\nRooPolynomial::shapeBkg_bkg_SR2_2017[ x=dimuonmass2 coefList=(a1_17sr2,a2_17sr2,a3_17sr2) ]\np.d.f value is less than zero (-2.401708), forcing value to zero @ x=dimuonmass2=49.6012, coefList=(a1_17sr2 = 3.95703 +/- 0.785163,a2_17sr2 = -0.140752 +/- 0.0402335,a3_17sr2 = 0.00120143 +/- 0.000468253)\nthey take a lot of disc space when running few M events with toys in batch jobs\nThanks, Sasha",
+      "cooked_html": "<p>Dear experts,</p>\n<p>it is possible to suppress Minuit Warnings like<br>\n[<span class=\"hashtag-raw\">#0</span>] WARNING:Minization \u2013 RooMinimizerFcn: Minimized function has error status.<br>\nReturning maximum FCN so far (-0.0553594) to force MIGRAD to back out of this region. Error log follows<br>\nParameter values: a1_17sr1=0.0596302, a1_17sr2=3.95703, a1_17sr3=-0.622024, a2_17sr1=-0.00234913, a2_17sr2=-0.140752, a2_17sr3=-0.262539, a3_17sr1=1.90113e-05, a3_17sr2=0.00120143, a3_17sr3=0.275363, bkgrate_sr1_17=0.983524, bkgrate_sr2_17=1.08643, bkgrate_sr3_17=1.03095, r_sig1=0.0195045, r_sig2=15.5708, r_sig3=148.628<br>\nRooPolynomial::shapeBkg_bkg_SR2_2017[ x=dimuonmass2 coefList=(a1_17sr2,a2_17sr2,a3_17sr2) ]<br>\np.d.f value is less than zero (-2.401708), forcing value to zero @ x=dimuonmass2=49.6012, coefList=(a1_17sr2 = 3.95703 +/- 0.785163,a2_17sr2 = -0.140752 +/- 0.0402335,a3_17sr2 = 0.00120143 +/- 0.000468253)</p>\n<p>they take a lot of disc space when running few M events with toys in batch jobs</p>\n<p>Thanks, Sasha</p>"
+    }
+  ]
+}

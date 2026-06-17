@@ -1,0 +1,21 @@
+TOPIC: Is It Possible To Create Channel Masks without Text2Workspace Step?
+URL: https://cms-talk.web.cern.ch/t/23552
+DATE: 2023-05-02T18:54:11.450Z
+SOLVED: no
+============================================================
+
+QUESTION (by aabreuna @ 2023-05-02T18:54:11.858Z):
+Dear Experts,
+I am wondering whether it is somehow possible to create the RooRealVar channel masks without having to explicitly run text2workspace.py datacard.txt --channel-masks (referenced here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#channel-masking). We would like to avoid having an additional intermediate step to run our fit, and were wondering if it would be possible to somehow have something in the data card itself or some other workaround to create the channel masks.
+Thanks in advance,
+Andrés
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-05-02T19:13:23.440Z):
+Hi Andrés,
+If you mean a way to run combine directly on a text datacard instead of a workspace, then you can always add options for text2workspace via:
+combine -M [...] datacard.txt --text2workspace '--channel-masks'
+I didn’t test it explicitly, but I think it should work.
+cheers,
+Andrew
+----------------------------------------

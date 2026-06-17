@@ -1,0 +1,32 @@
+TOPIC: Adding yields and uncertainties output by FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/132046
+DATE: 2025-09-17T18:49:12.044Z
+SOLVED: no
+============================================================
+
+QUESTION (by eipearso @ 2025-09-17T18:49:12.294Z):
+Dear combine experts,
+We are using FitDiangostics to obtain the pre and post b-only fit yields for our analysis, which considers the full Run II dataset. We would like to have the full Run II yield and uncertainty for the signal, each background process separately, and the total background (pre and post-fit). However, the output of FitDiagnostics contains results for each year separately.
+Given that some of our systematics are correlated across years, simply adding the uncertainties of each year in quadrature is incorrect, so what is the correct way to combine the uncertainties when we add the years together? We do notice that there is a 2D overall_total_covar matrix included in the output in each folder shapes_prefit and shapes_fit_b, but we are unsure how to use it correctly.
+We are running FitDiagnostics with the options shown in the following command, and the datacard and output fitDiagnostics.root file are attached.
+combine -M FitDiagnostics datacard.txt -m 300 --robustFit 1 -v1 --rMin -1 --skipSBFit --rMax 2 --saveShapes --saveNormalizations --saveWithUncertainties --saveOverallShapes --setParameters signalScaleParam=0.001316 --trackParameters signalScaleParam --freezeParameters signalScaleParam
+
+One final note: we are part-way through unblinding and have been instructed to not make the s+b fits yet.
+Thank you,
+Em Pearson
+datacard.txt (21.2 KB)
+fitDiagnostics.m300.root (104.3 KB)
+----------------------------------------
+
+REPLY 2 (by gallim @ 2025-09-19T09:43:36.695Z):
+Hi Emma,
+naively I would suggest to compute the total uncertainty on e.g. the total background by also including the covariances you obtain from the matrix. However, I’m not sure if this correlation is already taken into account internally when the toys are generated. Maybe one way to find out would be to run fitDiagnostics on the combined card and on the cards separated per year, and compare the uncertainties you get on the shapes to figure out what actually happens. Do you have these separate datacards used to make the datacard you attached? I tried to access one of the ones written on top but it doesn’t seem to exist (maybe it was renamed?)?
+Massimiliano
+----------------------------------------
+
+REPLY 3 (by eipearso @ 2025-09-26T15:21:21.526Z):
+Hi Massimiliano,
+The covariance matrix provided by FitDiagnostics is labeled as being signal and background. Right now we are doing a b-only fit, so it doesn’t matter because the signal is 0. However, later we will do an s+b fit. For the s+b fit case, we are not sure how to calculate the total uncertainty on the background given that for some of our mass points the signal yield is large relative to the total background yield.
+Thank you,
+Em Pearson
+----------------------------------------

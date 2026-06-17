@@ -1,0 +1,25 @@
+TOPIC: Recalculate minimum of NLL scan?
+URL: https://cms-talk.web.cern.ch/t/13344
+DATE: 2022-07-27T12:00:29.895Z
+SOLVED: no
+============================================================
+
+QUESTION (by vwachira @ 2022-07-27T12:00:30.240Z):
+Dear combine experts,
+I have performed an NLL scan on signal strength using MultiDimFit method and obtained the plot via plot1DScan.py. However, the best fit value as reported in the plot is always 10, which is halfway the range of signal strength I use, which is 0-20. Here is an example plot:
+
+NLLscan_Run2SL_22Jul22_withrate696×572 6.34 KB
+
+Is there a way to recalculate the minimum of NLL scan within plot1DScan.py?
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-07-28T07:11:39.425Z):
+Hi Vichayanun,
+The fact that the best fit is coming out as 10 like this, also with no deltaNLL values between 10-20 suggests something went very wrong in the fit you ran. Personally I wouldn’t trust the results as being reliable. I think the version of plot1DScan.py that comes with CombineHarvester doesn’t have an option to recalculate the minimum, but you can try this experimental version:
+/afs/cern.ch/work/a/agilbert/public/plot1DScanExperimental.py
+adding the option --remin-main.
+cheers,
+Andrew
+----------------------------------------

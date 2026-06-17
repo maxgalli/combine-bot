@@ -1,0 +1,49 @@
+TOPIC: P.d.f negative error in AsymptoticLimits but not in FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/13788
+DATE: 2022-08-10T01:15:38.743Z
+SOLVED: no
+============================================================
+
+QUESTION (by jongho @ 2022-08-10T01:15:39.262Z):
+Dear Combine Experts,
+We are trying to calculate limits for our analysis. We are searching for a dark Higgs produced in association with dark matter. We have 51 different mass points. First, we used FitDiagnostics, running the following command:
+combine -M FitDiagnostics --rMax +1.6 --saveWorkspace -d <workspace> --cminDefaultMinimizerStrategy 0
+
+The fit succeeded for all 51 mass points and we didn’t see any issue when checking the combine log.
+But when we use PostFitShapesFromWorkspace or AsymptoticLimits the fit for half of the mass points fails. In the logs, they now appear a lot of p.d.f value is less than zero warnings. We used the following commands for each method:
+PostFitShapesFromWorkspace -w <workspace> -d <datacard> -f <fitDiagnostics output>:fit_s --postfit --sampling --samples 300 --skip-proc-errs -o <output root file>
+
+combine -M AsymptoticLimits ${1}.root --cminDefaultMinimizerStrategy 0
+
+We are having a hard time understanding why we get the p.d.f value is less than zero from PostFitShapesFromWorkspace and AsymptoticLimits while we have no issues with FitDiagnostics. Is there anything we are missing?
+Thanks in advance for your help,
+Jongho
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-08-10T09:19:49.713Z):
+Hi Jongho,
+PostFitShapesFromWorkspace and AsymptoticLimits are both doing different things than FitDiagnostics.
+PostFitShapesFromWorkspace takes the covariance matrix produced during FitDiagnostics, and generates a series of random sets of parameter values from it, and then evaluates the model pdfs given these randomised parameters. I’m guessing that at one or more of these parameter points one or more of your pds evaluates to a value <= 0.
+In AsymptoticLimits a series of fits are performed to both the real data and an Asimov dataset, with fixed and floating values of the signal strength. In this way, it is different from FitDiagnostics. I would guess again that at some point in this series of fits one of your pds evaluates to a value <= 0. If you turn on higher verbosity (-v 3) you should get error messages from RooFit that indicate the problematic pdf and associated parameter values.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by jongho @ 2022-08-10T17:47:09.119Z):
+Hi Andrew,
+Thanks for your message. We ran AsymptoticLimits by turning on higher verbosity (-v 3) and saved the log. Because the file size is huge (~400K lines), it is hard for me to recognize which parameters cause the p.d.f. negative issue.
+Can you please point me where I should look in the log?
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-08-11T12:57:12.581Z):
+Hi Jongho,
+It’s hard to say without being able to see the actual file. I imagine you want to search the file for the error messages you reported before: p.d.f value is less than zero, and look at the surrounding lines.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by jongho @ 2022-08-11T19:06:15.171Z):
+Hi Andrew,
+I bring a part of logs near the p.d.f value is less than zero error. I attach the text file.  Can you please take a look at the file and give some hints to understand the reason?
+log.txt (163.3 KB)
+----------------------------------------

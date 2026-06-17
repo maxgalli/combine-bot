@@ -1,0 +1,60 @@
+TOPIC: Issue with pdf from RooIntegralMorph function
+URL: https://cms-talk.web.cern.ch/t/10354
+DATE: 2022-05-11T18:48:55.164Z
+SOLVED: no
+============================================================
+
+QUESTION (by lata @ 2022-05-11T18:48:55.369Z):
+Dear combine experts,
+I am working on an interpolation method to get limits for mass points we do not have in simulation.
+To get the shapes of the observables for intermediate-mass points, we are using Roofit function “RooIntegralMorph” [0]. The function seems to work fine for the shapes but in the end, the limits we produce using the interpolated pdf are too small. We tried to investigate the reason and added every detail to the slides [1] (please look at the slides before backup only).
+The workspaces we are using for limits are available at [2] where one is from simulation and another one is using interpolated pdf.
+Could you please help us to understand and solve the discrepancy explained on slide 5?
+Best regards,
+Lata Panwar
+[0] https://root.cern.ch/doc/master/classRooIntegralMorph.html
+code is here /afs/cern.ch/work/l/lata/public/HIG_21_011_approval/interpolated_ws_2_Mjj.py
+[1] https://docs.google.com/presentation/d/1HgVrbSPAhxMKUaJtCBeXexirvODpdV3K8cBELe2omzE/edit?usp=sharing
+[2] /afs/cern.ch/work/l/lata/public/HIG_21_011_approval/
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-05-11T19:05:39.092Z):
+Hi Lata,
+I didn’t go through the detail of your analysis or your implementation.
+From a first glance from your slides, it seems you are using parametric shapes (eg Gaussian, or CB).
+Usually, in CMS we interpolate the parameters and normalization of these functions (w/ RooSpline1D [*]), rather than using an integral morphing technique, since this prove to be faster (you don’t need to invert the CDF every time) and more stable. For example, Hgg always persued this path.
+For instance:
+
+you fit your model (eg gaus) for your mass points. Eg 500,600,700. You save somewhere mean, sigma, norm (…)
+you construct the splines out of the ones above mean (MH) , sigma (MH), norm (MH), (…)
+you construct your final model (Gaussian) with the spline above and put the norm in the workspace. (as final model name +  _norm)
+
+-Andrea
+[*] in combine, you may need to load the library.
+----------------------------------------
+
+REPLY 3 (by lata @ 2022-05-16T19:05:29.603Z):
+Hello @amarini !
+Thank you very much for your prompt response.
+For my analysis, I am studying X->YH->bbgg process where X and Y are BSM scalars. The Mgg and Mjj are the final observables used for signal extraction.
+As you suggested, I tried to follow the method with RooSpline1D for Mjj which is modeled using a double-sided crystal ball (DCB) function.
+I have copied one workspace at [1] where splines are made wrt to MX for a fix MY=90 GeV. But when I try to get interpolated values of DCB parameters for intermediate MX, “evaluate()” or “Eval()” is not working for me. I get the following error.
+“AttributeError: ‘RooSpline1D’ object has no attribute ‘evaluate’”
+Could you please let me know how we exactly get the interpolation values from RooSpline1D?
+Best,
+Lata
+[1] /afs/cern.ch/work/l/lata/public/HIG_21_011_approval/ws_Mjj_NMSSMXALLToY90H125.root
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-05-17T10:01:27.326Z):
+Hi Lata,
+If you want to test the spline evaluation, you can do something like:
+wsig_13TeV->function("Mjj_alpha1_NMSSMXALLToY90H125_2016_DoubleHTag_0")->getVal()
+I think Andrea’s proposal is that you can then use these directly in the construction of the DCB in RooFit.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by lata @ 2022-05-21T18:12:14.995Z):
+Thanks, @agilbert. It worked fine.
+----------------------------------------

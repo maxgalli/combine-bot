@@ -1,0 +1,120 @@
+TOPIC: Questions on HybridNew results
+URL: https://cms-talk.web.cern.ch/t/29979
+DATE: 2023-09-27T08:37:24.293Z
+SOLVED: no
+============================================================
+
+QUESTION (by lowang @ 2023-09-27T08:37:24.569Z):
+Dear combine experts,
+I have some questions regarding the fit results with -M HybridNew --LHCmode LHC-limits hoping you could help me.
+I’m using these commands to compute the observed and [expected] full CLs limits:
+combine -M HybridNew --LHCmode LHC-limits --rAbsAcc 0.01 -T 500 --iterations 4 -H AsymptoticLimits --rMin 0 --fullBToys --cminDefaultMinimizerStrategy=0 PrivateSamples.EMJ_UL16APV_mMed-2500_mDark-20_ctau-1000_unflavored-down.gnn_uset_2.txt [--expectedFromGrid=X for X in [0.025, 0.16, 0.5, 0.84, 0.975]]
+
+and compare them with the Asymptotic ones.
+
+The 1st question is: for the +2σ expected limit particular of the attached datacard, the fit ended with “Cannot set higher limit: at r = 87940.5 still get CLs = 0.201026”. Our process rates are a bit small in this model parameter point, I wonder is there a good way to fix this fit?
+The 2nd question is: The ±1,±2σ bands are in general narrower in the full CLs fits compared to the Asymptotic fits across our model parameter spaces, as seen in the attached plots. Is this expected behavior? Or is it an issue to understand?
+Screen Shot 2023-09-27 at 10.31.24 AM1810×740 85.9 KB
+
+Many thanks in advance for your kind help!
+Best,
+Long
+This is a sample of our datacard PrivateSamples.EMJ_UL16APV_mMed-2500_mDark-20_ctau-1000_unflavored-down.gnn_uset_2.txt (1.8 KB)
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-10-04T10:11:00.717Z):
+Dear Long,
+Sorry for the delayed response. To your first question, I think a useful thing to do is to scale your process such that  a signal strength of O(1) is a meaningful value. This will tend to work better from the perspective of the minimizer and also for some arguments (such as the accuracy) which chose reasonable default values based on the assumption that signal strengths of O(1) are the relevant numerical range.
+In the datacard you’ve given, the statistics are quite limited, with the background expectation being only 0.09 events. So its not surprising that you might get different results from asymptotic methods, which require a few conditions to hold, and the HybridNew results which don’t rely on those assumptions. On the other hand, the interval you are showing for the HybridNew result looks suspicious to me, and when I ran a quick test for one point, the interval seemed larger.
+It might be worth making the change I suggested, and perhaps also checking some of the plots and debugging mentioned in the relevant section of the documentation [1].
+Please let us know if that helps or if there are still issues.
+Cheers,
+Kyle
+[1]https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#complex-models
+----------------------------------------
+
+REPLY 3 (by lowang @ 2023-10-05T08:23:23.163Z):
+Hi Kyle,
+Thank you so much for your kind help!
+About the second question with larger intervals from your quick test, was it done also with scaled signal yields? The puzzle for me is that in some of our model points with much larger signal and background yields with µ~O(1), the full cls still gives smaller band than asymptotic. I wonder is it because of my test toy size (2k) too small or it is a feature as I also saw in many other analyses that use toy limits? For example in the attached datacard.txt, the asymptotic gives -1/+1σ band width as 0.16/0.25, while full cls gives as -0.13/0.21. This difference might seem small, but it shows up throughout out model parameter space.
+datacard.txt (1.8 KB)
+Best,
+Long
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-10-05T12:19:10.048Z):
+Hi Long,
+Yes, I just checked quickly after scaling up the signal.
+When you say much larger “signal and background yields” and you referring to signal+background?  Whether or not the asymptotic approximation will hold well for the limit depends on the background yields, but not on the signal normalization, since in the limit it is a freely floating parameter in setting the limit and the expected limit will be determined by the background.
+I am not sure if what what you show from the additional datacard is in line with it being an issue with the asymptotic approximation. Since the relevant quantity is the background yield (since the signal is anyway a free parameter), and in the datacard here you expected about 3.5 events. For many purposes the asymptotic approximation starts working well with a few events like that, and it may be that what you’re seeing is some residual difference from the approximation.
+I will try to take a closer look later to see if I can see anything else which might be causing issues.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 5 (by lowang @ 2023-10-17T13:45:59.954Z):
+Hi @kcormier , experts,
+Taking Kyle’s earlier suggestions to scale the signals to signal strength ~O(1) and recompute the upper limits sigma bands, in many of our model cases the limit bands get wider(still smaller than asymptotic bands, but not drastic as seen previously).
+However, in a quarter of the cases the limit band is still small. These cases are completely random in model parameter space without obvious features wrt. sig/bkg yields. Below I take as an example to obtain the full cls expected limits using --singlePoint X method, iterating over a finer grid of r and compare the result to the asymptotic limits.
+– AsymptoticLimits ( CLs ) –
+Observed Limit: r < 1.3600
+Expected 2.5%: r < 0.4379
+Expected 16.0%: r < 0.6728
+Expected 50.0%: r < 1.1211
+Expected 84.0%: r < 1.9344
+Expected 97.5%: r < 3.1902
+– Hybrid New –
+Observed Limit: r < 1.41196 +/- 0.00449529 @ 95% CL
+Expected  2.5% Limit: r < 1.20746 +/- 0.013688 @ 95% CL
+Expected 16.0% Limit: r < 1.26875 +/- 0.00716023 @ 95% CL
+Expected 50.0% Limit: r < 1.28939 +/- 0.00539986 @ 95% CL
+Expected 84.0% Limit: r < 1.55442 +/- 0.00434827 @ 95% CL
+Expected 97.5% Limit: r < 2.15998 +/- 0.00405162 @ 95% CL
+The narrower band can still be seen derived from toy CLs limits. The limit scan plot for at the expected 97.5% upper limit does not indicate precision issues.
+limit_scan_+2sigma696×472 4.48 KB
+The double sided test statistic distribution at this same expected 97.5% upper limit point looks like below.
+qmu_120.0_2.151106×599 30.3 KB
+May I ask if you see any issue from this please? And whether this tells if we can trust the narrow toy limits band?
+Best,
+Long
+----------------------------------------
+
+REPLY 6 (by lowang @ 2023-10-17T15:02:25.957Z):
+To help facilitate the debugs, the HybridNew method is always used with options -T 5000 --iterations 4 --rMin 0 --fullBToys --cminDefaultMinimizerStrategy=0 --rAbsAcc 0.001 --rRelAcc 0.001. And --clsAcc 0 in the --singlePoint X approach to turn off adaptive sampling.
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2023-10-18T07:36:00.363Z):
+Hi Long,
+Do you have the datacard which was used for generating the values and plots above? That would be helpful in taking a look.
+Cheers,
+Kyle
+----------------------------------------
+
+REPLY 8 (by lowang @ 2023-10-18T07:46:48.594Z):
+Hi Kyle,
+This is the datacard I’m using.
+PrivateSamples.EMJ_Run2_mMed-1800_mDark-10_kappa-0p65_aligned-down.run2.txt (6.7 KB)
+Thanks,
+Long
+----------------------------------------
+
+REPLY 9 (by lowang @ 2023-10-19T12:10:24.560Z):
+Without spamming the post with plots, the limit scan and test statistics distribution for all quantile points are put here
+----------------------------------------
+
+REPLY 10 (by kcormier @ 2023-10-20T13:34:02.219Z):
+Hi Long,
+Thanks for running the tests, I think that’s helpful in seeing whats going on.
+Firstly, given that for this datacard, the expected background in each bin is < 1, its not surprising that the asymptotic results give different results from the ones where you estimate the test statistics from the toys. I don’t think the asymptotic approximation is a good choice in this case, and I think it would be better to make sure that the estimate from toys is working properly.
+Taking a look at the datacard and the plots you’ve made, I think that since your background-only hypothesis has >50% chance of observing no events, there is almost nothing to separate the 0.025, 0.16 and 0.5 quantiles and it makes sense that those limit expectations are very close to each other.
+A bit more pedagogical walk through looking at those plots is below, in case you find it helpful.
+Best,
+Kyle
+It is a little surprising that the 1-sigma and 2-sigma bands for the low side of the expected limit are so close to each other and to the median. But I think this might just be an effect of CLs in this very low statistics regime; Its good that you made the plots, which as far as I can tell all seem to be healthy.
+For example, what you’ve shown for the 0.975 point looks reasonable to me, and from your tests it seems like you have enough statistics in the scan. Back of the envelope, with that value of signal strength modifier (2.16) you are expecting a little more than 5 signal events, whereas in this region, you expect about 0.3 background events. So I suppose that the peaks in the test statistic around 6 are when you have one observed event somewhere. For the background distribution the relative size of the first peak around ten, and peak around 6 should then be roughly the probability mass function of poisson(0.3) for 0 and 1, which as about 70/30, so it seems reasonable.
+The peaks towards lower values of the test statistic seem to corresponding with the discrete observations of (1,2, … ) events in various bins.
+From the plots on your /eos/ space, its good to look at the distributions for the 0.025, 0.16 and 0.5 intervals, since these are the suspicious ones values. I think to some extent this also shows whats going on, though next time if you run plotTestStatCLs.py with the arguments --expected -q <quantile_expected> you can see it even more easily (this will replace the “observed” value in the plot with the expected value).
+I’ve made an example for the 0.16 point, attached below. What the method is doing is finding the 0.16 point in the expected background distribution, then trying to find the value of the signal strength such that for this value of the observed test statistic the CLs value would be 0.05.
+Now you can see the 0.16 point of the background hypothesis more clearly (though you can also use the yellow and green bands to tell you the intervals).  What you can see is that the 0.025 (rightmost yellow band edge), 0.16 (“expected” line) and 0.5 (dashed vertical line) all occupy a very small range of the test statistic. The background-only distribution is concentrated there because you expect so few background events, and under the background hypothesis you usually expect to observe exactly 0 events. Moreover, the shape of both the signal+background and background-only distributions are very similar there. Since they are very similar, the CLs value (being the ratio of the integrals) barely changes as you change the expected point, and as a result also the signal strength only has to change very little in going from 0.025, to 0.16 to 0.5 of the background expectation to have a CLs of 0.05 at each of those points. But this all basically comes back to the fact that that part of the distribution is with 0 observed events and thats what you expect > 50% of the time from your background.
+q_plot_example.pdf (23.2 KB)
+----------------------------------------

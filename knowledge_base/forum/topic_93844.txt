@@ -1,0 +1,66 @@
+TOPIC: Obtain the post-fit shape of one nuisance
+URL: https://cms-talk.web.cern.ch/t/93844
+DATE: 2025-01-09T11:20:43.003Z
+SOLVED: yes (reply 3)
+============================================================
+
+QUESTION (by milee @ 2025-01-09T11:20:43.276Z):
+Dear experts,
+We are currently investigating the one-sided impact of our analysis of the two POI fit using Asimov dataset.
+As suggested by the reviewer, it would be good to store the shape in the impact step by varying particular nuisance to check the pre-fit and post-fit shape.
+I know to save the post-fit shape we could use the FitDiagnostics option, but I have a hard time combining them.  Could you please give me some instructions about this?
+Thank you and best regards,
+Ming-Yan
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-01-27T17:01:21.271Z):
+Dear Ming-Yan,
+I think it is not strictly necessary to look at the post-fit to understand if one-sided impacts make sense. If you see that the pre-fit uncertainty templates are one-sided, i.e. up and down variations are on the same side with respect to the nominal, then having one-sided impacts on the POI that linearly scales the signal yields makes sense. Now, if you see that the shape uncertainty templates are one-sided, then one has to understand if it is a genuine effect or due to bag.
+
+Ming-Yan Lee:
+
+I know to save the post-fit shape we could use the FitDiagnostics option, but I have a hard time combining them. Could you please give me some instructions about this?
+
+I didn’t get what you mean by “combining” here, but in general, you can try using  PostFitShapesFromWorkspace tool, it might be a bit more flexible for some of the use cases.
+Let me know if something is not clear.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 [ACCEPTED ANSWER] (by amarini @ 2025-01-27T17:50:33.089Z):
+Hi Ming-Yan,
+it is not super clear what you are trying to achieve or what the reviewer asked you exactly.
+In FitDiagnostics you already have the prefit and postfit shapes, where the postfit is after the fit and all nuisances are set to their respective best-fit value.
+If you are trying to compare the effect of a single particular systematic on the template/parametric shape (probably prefit, +/-1sigma ?[*]), you can still use FitDiagnostics:
+Prefit
+combine -M FitDiagnostics [...] -n .nominal --saveShapes --skipBOnlyFit --skipSBFit  #skip fitting
+combine -M FitDiagnostics [...] -n .systup --saveShapes --skipBOnlyFit --skipSBFit --setParameters syst=1
+
+fetch the shapes and plot them with root.
+-Andrea
+[*] but could be also postfit, it is a little bit more involved: you need to save a snapshot and start from there in such a way to have all the other nuisances at the right place.
+In this case, you could also use the outcome values of the impact to check particular points. I would suggest in anycase to start from the prefit ones, that will give you more insight.
+----------------------------------------
+
+REPLY 4 (by milee @ 2025-02-26T14:39:05.870Z):
+Dear Andrea and Aliya,
+Apologies for the late follow up.
+
+Aliya Nigamova:
+
+I think it is not strictly necessary to look at the post-fit to understand if one-sided impacts make sense. If you see that the pre-fit uncertainty templates are one-sided, i.e. up and down variations are on the same side with respect to the nominal, then having one-sided impacts on the POI that linearly scales the signal yields makes sense. Now, if you see that the shape uncertainty templates are one-sided, then one has to understand if it is a genuine effect or due to bag.
+
+Indeed we now understand it is a genuine effect from other nuisance which leads one side impact
+Thank you for the response, indeed we were investigating the shape with varying particular nuisance, this indeed matches to the suggestion by setting up different value for the nuisance.
+
+Andrea Carlo Marini:
+
+If you are trying to compare the effect of a single particular systematic on the template/parametric shape (probably prefit, +/-1sigma ?[*]), you can still use FitDiagnostics:
+Prefit
+combine -M FitDiagnostics [...] -n .nominal --saveShapes --skipBOnlyFit --skipSBFit  #skip fitting
+combine -M FitDiagnostics [...] -n .systup --saveShapes --skipBOnlyFit --skipSBFit --setParameters syst=1
+
+Thank you very much!
+Best regards,
+Ming-Yan
+----------------------------------------

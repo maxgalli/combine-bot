@@ -1,0 +1,31 @@
+TOPIC: Unable to recover injected POI value when fitting to Asimov
+URL: https://cms-talk.web.cern.ch/t/32496
+DATE: 2023-12-07T08:01:35.563Z
+SOLVED: no
+============================================================
+
+QUESTION (by fiemmi @ 2023-12-07T08:01:35.815Z):
+Dear experts,
+with this post I’d like to ask for your help with an issue that happens to me from time to time when performing likelihood scans. Let’s suppose I have a POI r (it hasn’t to be necessarily the signal strength, it happened also with different POIs), and I want to perform a likelihood scan with respect to this POI to get the expected central value and the error. Thus, I’d do something like:
+combine -M MultiDimFit -t -1 -P r --setParameters r=1 [...options...]
+and collect the points to get the likelihood scan. It happens from time to time that my likelihood does not have a minimum at 1, namely, I don’t recover the value of r I injected into the Asimov dataset. I find this cases the hardest to debug, as the fit is not failing spectacularly, it just gives me the wrong value. I have a couple of questions:
+
+Are there any general check & tricks that one can try in order to fix this behavior?
+Usually, the discrepancy is not too big (e.g., I might get r=0.98 instead of r=1. How “bad” is this, namely, can this be considered just a small “glitch” in the fit, or should I really be worried?
+
+I kept this post quite general on purpose, as this seems to happen from time to time regardless of the POI being fitted. Anyway, I am available to discuss in more depth some real cases.
+Thanks a lot, all the best,
+Fabio.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-12-13T14:49:34.384Z):
+Dear Fabio,
+I think it can in principle happen, few points to check:
+
+Are there any other parameters that are pulled away from the initial values?
+How large is the shift in relation to the uncertainty on the signal strength?
+It might be helpful to change the default tolerance to improve the fit accuracy with the FitDiagnostics method, e.g. --setCrossingTolerance 0.00001
+
+Best,
+Aliya
+----------------------------------------

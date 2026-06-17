@@ -1,0 +1,45 @@
+{
+  "topic_id": 2136,
+  "title": "Differences between STXS Analysis and Likelihood Unfolding",
+  "url": "https://cms-talk.web.cern.ch/t/2136",
+  "category_id": 279,
+  "created_at": "2021-08-04T15:16:02.000Z",
+  "last_posted_at": "2021-08-04T17:06:09.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Philip_Daniel_Keiche",
+      "name": "Philip Daniel Keicher",
+      "created_at": "2021-08-04T15:16:02.000Z",
+      "updated_at": "2023-02-07T10:55:37.965Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear combine experts,\nRecently, I read up on the likelihood unfolding in the documentation\n[1]. While reading, I had the impression that the approach is very\nsimilar to a STXS measurement - you define bins on gen level, generate\nthe corresponding statistical model for a given observable and perform a\nfit of all gen bins simultaneously. The only differences I can think of\nare\n- in STXS, we measure cross sections, not the signal strength modifier\nand\n- in the LL unfolding, we add regularization to stabilize the unfolding\nprocess.\nSo if I understand correctly, I should be able to convert datacards used\nfor STXS measurements to datacards for LL unfolding by adding the\nregularization parameters. Is that correct? Is there a more\nsophisticated difference, or a conceptional reason not to do this at\nall? Sorry if this is a very obvious question, just want to make sure\nthat I understand this correctly.\nAny feedback would be much appreciated, thank you!\nCheers, Philip\n[1]\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/regularisation.html",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear combine experts,</p>\n<p>Recently, I read up on the likelihood unfolding in the documentation<br>\n[1]. While reading, I had the impression that the approach is very<br>\nsimilar to a STXS measurement - you define bins on gen level, generate<br>\nthe corresponding statistical model for a given observable and perform a<br>\nfit of all gen bins simultaneously. The only differences I can think of<br>\nare</p>\n<p>- in STXS, we measure cross sections, not the signal strength modifier<br>\nand</p>\n<p>- in the LL unfolding, we add regularization to stabilize the unfolding<br>\nprocess.</p>\n<p>So if I understand correctly, I should be able to convert datacards used<br>\nfor STXS measurements to datacards for LL unfolding by adding the<br>\nregularization parameters. Is that correct? Is there a more<br>\nsophisticated difference, or a conceptional reason not to do this at<br>\nall? Sorry if this is a very obvious question, just want to make sure<br>\nthat I understand this correctly.</p>\n<p>Any feedback would be much appreciated, thank you!</p>\n<p>Cheers, Philip</p>\n<p>[1]<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/regularisation.html\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/regularisation.html</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-08-04T15:33:57.000Z",
+      "updated_at": "2021-11-17T08:36:47.151Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Philip,\nThat's correct, when you're doing an STXS measurement you are already\nunfolding in the likelihood, it is just unregularized.\nThe difference of whether you're measuring a signal strength modifier or\na cross section is mainly down to whether you include theoretical\nuncertainties that scale the overall cross section in the model (signal\nstrength) or not (cross section).\nNote that there is no obligation to use regularization when you unfold\n(though you may decide that it's necessary depending on the case).\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Philip,</p>\n<p>That's correct, when you're doing an STXS measurement you are already<br>\nunfolding in the likelihood, it is just unregularized.</p>\n<p>The difference of whether you're measuring a signal strength modifier or<br>\na cross section is mainly down to whether you include theoretical<br>\nuncertainties that scale the overall cross section in the model (signal<br>\nstrength) or not (cross section).</p>\n<p>Note that there is no obligation to use regularization when you unfold<br>\n(though you may decide that it's necessary depending on the case).</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "Philip_Daniel_Keiche",
+      "name": "Philip Daniel Keicher",
+      "created_at": "2021-08-04T17:06:09.000Z",
+      "updated_at": "2021-11-17T08:36:47.673Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Adinda,\nthanks for the fast reply! OK, so I understood that correctly.\nCheers, Philip",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Adinda,</p>\n<p>thanks for the fast reply! OK, so I understood that correctly.</p>\n<p>Cheers, Philip</p>"
+    }
+  ]
+}

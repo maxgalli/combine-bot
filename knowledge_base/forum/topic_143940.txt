@@ -1,0 +1,95 @@
+TOPIC: Non-parabolic likelihood shapes
+URL: https://cms-talk.web.cern.ch/t/143940
+DATE: 2026-04-10T15:57:03.552Z
+SOLVED: no
+============================================================
+
+QUESTION (by npalmeri @ 2026-04-10T15:57:04.336Z):
+Dear all,
+we’re carrying out an analysis looking for exotic resonances in the low-mass (0-10 GeV) dielectron spectrum (EXO-25-020). We’re dividing the spectrum in three fit regions ([0.3, 2.4], [1.6, 5.3], [4.5, 10.5] GeV), using a different background model for each. The background model is given by the sum of resonant components – one for each resonance in that regin, with shape frozen in previous steps – and a non-resonant component – for which we’re using an envelope including a Chebyshev polynomial, a Bernstein polynomial and a polynomial times exponential, with order optimized separately for each region --. All parameters of the non-resonant functions included in the envelope are left floating; for the resonant components, instead, we’re just fitting normalizations. All background rate estimations are data-driven (so there’s a `rateParam` systematic associated to each background). All details are documented in the analysis note.
+While performing some likelihood scan tests to verify the envelope was working fine, we noticed our likelihoods have non-parabolic shapes, as you can see in the plots you can find here: https://npalmeri.web.cern.ch/DiElectron/review/260317_NonHadL3Comments/bkg_envelope_nll_scan/ (one for each region, using a signal model at 1.8, 3.3 and 5.8 GeV respectively as example points). The polynomial function shows a much higher likelihood, so we’re focusing on the Chebyshev and Bernstein functions for these studies.
+The command we’re running for the scan is:
+combine -M MultiDimFit Xee_ee_4_allYears.root --algo grid --setParameterRanges r=-10,10 --points 50 \
+–setParameters signal_model_index_2022=0,signal_model_index_2022EE=0,signal_model_index_2023=0,signal_model_index_2023BPix=0 \
+–freezeParameters signal_model_index_2022,signal_model_index_2022EE,signal_model_index_2023,signal_model_index_2023BPix \
+–cminDefaultMinimizerStrategy 0 --saveNLL \
+–X-rtd MINIMIZER_freezeDisassociatedParams \
+–X-rtd REMOVE_CONSTANT_ZERO_POINT=1 -v 0
+
+for i in {0..2}; do
+
+combine -M MultiDimFit Xee_ee_4_allYears.root --algo grid --setParameterRanges r=-10,10 --points 50 \
+–setParameters signal_model_index_2022=0,signal_model_index_2022EE=0,signal_model_index_2023=0,signal_model_index_2023BPix=0,pdf_index_2022_envelope=$i,pdf_index_2022EE_envelope=$i,pdf_index_2023_envelope=$i,pdf_index_2023BPix_envelope=$i \
+–freezeParameters signal_model_index_2022,signal_model_index_2022EE,signal_model_index_2023,signal_model_index_2023BPix,pdf_index_2022_envelope,pdf_index_2022EE_envelope,pdf_index_2023_envelope,pdf_index_2023BPix_envelope \
+–cminDefaultMinimizerStrategy 0 --saveNLL \
+-n .nll_scan_bkgEnvelope_idx$i \
+–X-rtd MINIMIZER_freezeDisassociatedParams \
+–X-rtd REMOVE_CONSTANT_ZERO_POINT=1 -v 0
+
+done
+
+with variable r range and number of points.
+(We had tried an envelope for the signal model as well, but for this test we’re freezing the indices to the default main signal model)
+You can find all datacards at https://npalmeri.web.cern.ch/DiElectron/sensitivity/260404/fitDiagnostics_grid_data_envelope_withScaleSyst_withMeanNuisance_IDSF_triggerSF_finerBinning_tighterCuts_PUreweight_signalEnvelope_bySubera_binned/cards/ (separated by region, there’s a subfolder for each mass point, and inside there’s datacards for each subera and for their combination).
+Given we’re not exploring negative r values when estimating limits, but also given the likelihood shapes we’re observing, could this impact our sensitivity estimations? And how can we debug the origin of these anomalous shapes?
+Cheers,
+Noemi for the low-mass Xee team
+----------------------------------------
+
+REPLY 2 (by amarini @ 2026-04-11T19:29:39.908Z):
+Hi,
+this does not seems an ok scan. It seems already unblinded, right?
+This are some ideas
+
+did you have the asimov scan?
+do you have the limit plot? (Asymptotic with bands)
+do you have the bias for each family against reasonable alternatives?
+how did you validate that that the envelope is covering?
+do you have some s+b or b-only postfit plots to the data, such that we can understand what shapes/yields are we talking about?
+did you also produce the pvalue(significance) vs mass plot?
+are you sure that the model is ok at every point? (i.e, no boundaries, …)
+
+Consider also to reblind and understand this in case the negative result is not compatible w/ the null hypothesis.  (1. and 2. should provide the answer)
+-Andrea
+----------------------------------------
+
+REPLY 3 (by npalmeri @ 2026-04-13T12:57:52.633Z):
+Dear Andrea,
+thank you for the feedback. Indeed, these scans are done on data, but we’re only processing 10% of all statistics as a blinding strategy. We have done bias studies for all functions in the envelope, and the two best ones (Chebyshev and Bernstein) did not show anomalous bias when testing them on toys generated from either function (for both no signal and signal injected at different signal strenghts). We have produced asymptotic limits and they also look healthy (here’s the limits on mu and model-independent limits):
+
+image1500×1000 111 KB
+image1500×1000 119 KB
+
+as do the B-only fits (shown here for the 2022 subera, but we checked all suberas and they look similar):
+
+image796×772 21.6 KB
+image796×772 22.2 KB
+image796×772 23.1 KB
+
+S+B fits also look okay, see https://npalmeri.web.cern.ch/DiElectron/review/260317_NonHadL3Comments/sb_fits/ for the FitDiagnostics result for all mass points.
+We haven’t done the significance scan vs mass, nor the same NLL scan on asimov, but we can produce them if necessary.
+In the meanwhile, we have carried out some more tests and we might have isolated the issue to be our trigger SF nuisance. When freezing it, we obtain much more reasonable shapes (plots are for region0/1/2 respectively):
+
+image1000×600 58.4 KB
+image1000×600 67.7 KB
+image1000×600 57.1 KB
+
+We tried repeating the scan fixing the magnitude of the nuisance to a flat 10% and then to 50%, and you can see the shapes converging to the previous scans.
+10%:
+
+image1000×600 57.2 KB
+image1000×600 65.7 KB
+image1000×600 57.4 KB
+
+50%:
+
+image1000×600 54.6 KB
+image1000×600 59.6 KB
+image1000×600 58.4 KB
+
+(you can still see some peculiarities e.g. a kink in the region 1 scan, but we traced it back to our systematic on electron energy scale, which introduces a 0.5-1% uncertainty on our signal shape mean – when frozen, the kink disappears)
+Trigger SFs are our largest systematic, and they’re implemented as a single lnN nuisance (i.e. suberas are fully correlated) on signal yield only (background rates are data-driven) with size depending on mass and year, ranging from ~1.5 to ~2.3. Right now we’re using preliminary conservative values, but we’re in the process of revisiting them, so we can expect them to get smaller – given our available statistics, though, we can reasonably expect an uncertainty at the O(10%) level at best.
+We’ll reevaluate these scans once we have updated estimates for trigger SFs, but in the meanwhile, is this kind of behavior expected when introducing large normalization systematics?
+Cheers,
+Noemi for the low-mass Xee team
+----------------------------------------

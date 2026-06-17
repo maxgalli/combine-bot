@@ -1,0 +1,63 @@
+TOPIC: Cannot reproduce limits of a published analysis which is included in an upcoming combination paper
+URL: https://cms-talk.web.cern.ch/t/124620
+DATE: 2025-05-08T16:09:44.483Z
+SOLVED: no
+============================================================
+
+QUESTION (by klin @ 2025-05-08T16:09:44.606Z):
+Dear Combine expert,
+I am one of the Combine contact for the B2G group. There is an analysis that combines various published analysis to set limits and it couldn’t reproduce the high signal masses’ limit for one analysis included in the analysis.
+I have the workspace from the analyser shared in my eos (it is too large to be uploaded here): /eos/user/k/klin/public/workspace_DY_Wp_WH_Wlv_Hbb_4500.root
+Here are the limits calculated for the 4500 GeV signal mass hypothesis that saw > 20% difference in the expected limits versus the public result of the published analysis (B2G-19-002)
+Observed Limit: r < 0.2617     (HEP data: 0.29683 fb)
+Expected  2.5%: r < 0.2551    (HEP data: 0.16809 fb)
+Expected 16.0%: r < 0.3630   (HEP data: 0.24727 fb)
+Expected 50.0%: r < 0.5488   (HEP data: 0.39844 fb)
+Expected 84.0%: r < 0.8485   (HEP data:  0.6462 fb)
+Expected 97.5%: r < 1.2555   (HEP data: 1.0084 fb)
+The command I used is the following:
+combine -M AsymptoticLimits -d workspace_DY_Wp_WH_Wlv_Hbb_4500.root --setParameters MX=4500 --freezeParameters MX,CMS_scale_sig_4500
+
+The rate parameter CMS_scale_sig_4500 is to scale down the signal by 1000 times smaller to improve the precision in r. And the signal shapes are parametric. I used Combine v10.1.0. The analyser had tried to use Combine v8 and still couldn’t improve the agreement. I also tried blinded expected limit and still much higher than the blinded value in B2G-19-002’s AN. The data-card also seemed consistent with the latest AN.
+I was wondering if Combine ever change its way to parametrise shape uncertainties? Based on change in the NP when r increases in the limit calculation and the correlation matrix, the most important NP, CMS_Vtag_PtDependence_Run2, is a shape uncertainty.
+I will add more information in this thread to explain why this difference caught my attention and would like to hear from you if we should assume the difference is acceptable.
+Great thanks,
+Kuan-Yu
+----------------------------------------
+
+REPLY 2 (by klin @ 2025-05-08T16:43:47.709Z):
+The anaysis @yilai can reproduce most of the limit when the signal mass MX is below 3.5 TeV:
+Screenshot 2025-05-08 at 18.16.54906×732 53.7 KB
+As this published analysis is second strongest channel in the combined limit for a Drell-Yann produced heavy resonance, I didn’t want to simply accept this difference. The interesting feature is that observed limit is mostly below the expected limit, which can be explained by the post-fit distribution in the signal-mass observable.[1] But the two close in for the highest mass in the original analysis. In contrast, the current result by the analyser of the combination saw them far apart. My own running of Combine saw the same results.
+This let me start to question the fit stability. I tried to use different random seed but the likelihood scans in r didn’t change at all. I also saw that the scan couldn’t find the global minimum in r: data is below nominal background so the fit drew the signal negative, but before the NLL flatten it ran into negative values of PDF so RooFit broke at around r=-0.35.[2]. But this shouldn’t cause any issue for the expected limit because their the Asimov data is created by a fit where r is fixed to 0 and the test-statistics, \tilde{q}, doesn’t allow \hat{r}<0.
+I also wonder if the old analysis used toys to produce limits because the data there certainly is Poissonian. But then due to the big gap between data and nominal-background, 2000 toys of signal hypothesis and 500 toys of Asimov hypothesis can hardly find any \tilde{q} above the observed \tilde{q}.
+qmu_MX4500_r0.2.pdf (21.4 KB)
+I haven’t tried median expected using toys but this led me to suspect such possibilities.
+The original analyser has switched topics and the paper was published 3 years ago. So I am not sure if we can retrieve more info to cross-check.
+
+This analysis has two observables, one for resonance mass and another for the jet mass. ↩︎
+
+The default r=1 corresponds to 1 pb signal cross-section so the analyser added and fixed a rate-parameter that scales it down to 1 pb ↩︎
+----------------------------------------
+
+REPLY 3 (by klin @ 2025-05-08T16:47:52.913Z):
+Sorry the previous plots hid the observed value. Here is a better version:
+qmu_MX4500_r0.21400×870 49.8 KB
+----------------------------------------
+
+REPLY 4 (by klin @ 2025-05-08T17:18:53.231Z):
+I also found another mistake. The NP with the strongest correlation with r is not a shape uncertainty. From the name in the workspace I think is just controls this systematics’ signal mass dependence:
+RooFormulaVar::WprToWH_mu_HP_bb_LDy_Run2_norm[ actualVars=(MX,bb_LDy_Run2_lumi,CMS_Vtag_PtDependence_Run2) formula="(0+(-0.00438767846044)+(1.31068734524e-05)*MX+(-5.62622466367e-09)*MX*MX+(9.77686934298e-13)*MX*MX*MX+(-6.07976381127e-17)*MX*MX*MX*MX)*bb_LDy_Run2_lumi*(1+CMS_Vtag_PtDependence_Run2*(4.95e-5*(MX-650)))" ] = 846.449
+And it has an associated Gaussian constraint with uncertainty 1: CMS_Vtag_PtDependence_Run2  param  0 1.0 in the data-card.
+datacard_DY_Wp_WH_Wlv_Hbb_4500.txt (85.5 KB)
+datacardInputs_mu_HP_bb_LDy_Run2.root (2.0 MB)
+Perhaps the data-card and the individual parametric input will help the diagnosis.
+----------------------------------------
+
+REPLY 5 (by adewit @ 2025-05-08T18:44:03.048Z):
+Hi Kuan-Yu,
+If you are getting different results even with the version of Combine that was used to produce the analysis then I really think you need to discuss with the original author team whether the datacards/model you have really is the latest version, and whether any particular settings were required. I don’t know if you’re sure of the version that was used at the time - in 2021 the recommended version was some version of v8, but it wasn’t routinely checked that people were using the latest recommended version. The original analysts may still be able to provide this information.
+I think there is only any debugging to do once you are certain that there is a Combine version in which you can reproduce the published limits - otherwise it sounds like you don’t have the version of the datacards that correspond to the publication.
+Best,
+Adinda
+----------------------------------------

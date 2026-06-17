@@ -1,0 +1,67 @@
+{
+  "topic_id": 2999,
+  "title": "Possibility of using a hybrid (template signal and parametric background) approach in combine",
+  "url": "https://cms-talk.web.cern.ch/t/2999",
+  "category_id": 279,
+  "created_at": "2021-12-03T12:56:07.268Z",
+  "last_posted_at": "2022-01-13T21:09:26.747Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2021-12-03T12:56:07.637Z",
+      "updated_at": "2023-02-07T10:55:47.221Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am writing to see if it is possible to run the combine tool using a hybrid approach, i.e., use template signal histograms and parametric background shape? If not, do you have some suggested possible workaround? We expect difficulties in the signal modeling so it would be nice if we can stick to the signal template.\nThanks a lot for your kind help in advance!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am writing to see if it is possible to run the combine tool using a hybrid approach, i.e., use template signal histograms and parametric background shape? If not, do you have some suggested possible workaround? We expect difficulties in the signal modeling so it would be nice if we can stick to the signal template.</p>\n<p>Thanks a lot for your kind help in advance!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2021-12-03T15:15:59.619Z",
+      "updated_at": "2021-12-03T15:15:59.619Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sebastian,\nYes this is possible - the easiest way is probably to put your binned templates as RooDataHist objects with the same observable RooRealVar as the analytic pdfs - text2workspace.py will then convert these to an appropriate pdf.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Sebastian,</p>\n<p>Yes this is possible - the easiest way is probably to put your binned templates as RooDataHist objects with the same observable RooRealVar as the analytic pdfs - text2workspace.py will then convert these to an appropriate pdf.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-01-13T17:45:41.590Z",
+      "updated_at": "2022-01-13T17:45:41.590Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Andrew,\nThanks a lot for your comments! Inspired by your ideas of converting histograms into pdfs, I looked into RooHistPdf a little bit in detail and decided to convert RooDataHist manually into it and then sent RooHistPdf into the combine, to gain some more control on this step. Not sure if this approach makes sense to you?\nIf so, I am wondering for this approach, do we have a way to incorporate the systematics on the shape? I know for the pure histogram template approach we can feed combine with the histograms varied by the uncertainty and for the parametric approach we can just assign the uncertainties on parameters, but I did not figure out a good way to do this for the RooHistPdf.\nThanks a lot for your kind help!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Dear Andrew,</p>\n<p>Thanks a lot for your comments! Inspired by your ideas of converting histograms into pdfs, I looked into RooHistPdf a little bit in detail and decided to convert RooDataHist manually into it and then sent RooHistPdf into the combine, to gain some more control on this step. Not sure if this approach makes sense to you?</p>\n<p>If so, I am wondering for this approach, do we have a way to incorporate the systematics on the shape? I know for the pure histogram template approach we can feed combine with the histograms varied by the uncertainty and for the parametric approach we can just assign the uncertainties on parameters, but I did not figure out a good way to do this for the RooHistPdf.</p>\n<p>Thanks a lot for your kind help!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-01-13T18:07:16.000Z",
+      "updated_at": "2022-01-13T18:07:37.255Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi,\nThere is a caveat to pay attention to the shape normalizations, if you use the \u2018shape\u2019 morphing in combine.\nWhen you use \u2018shape\u2019 uncertainties in combine, and you pass them through TH1 or RooDataHist normalization differences between nominal and +/- 1sigma values are accounted for as a logNormal uncertainty correlated with the shape modifications.\nWhen you convert RooDataHist into RooHistPdf, normalization information is lost, and therefore you will need to take care by hand for the normalization difference part, if present.\n-Andrea\n\n\u00b7\u00b7\u00b7\nIl giorno gio 13 gen 2022 alle ore 18:47 Xuli Yan via CMS talk <noreply@cms-talk.web.cern.ch> ha scritto:\n\n| Xuli Yan xuyanJanuary 13 |\n\n| - |\n\nDear Andrew,\nThanks a lot for your comments! Inspired by your ideas of converting histograms into pdfs, I looked into RooHistPdf a little bit in detail and decided to convert RooDataHist manually into it and then sent RooHistPdf into the combine, to gain some more control on this step. Not sure if this approach makes sense to you?\nIf so, I am wondering for this approach, do we have a way to incorporate the systematics on the shape? I know for the pure histogram template approach we can feed combine with the histograms varied by the uncertainty and for the parametric approach we can just assign the uncertainties on parameters, but I did not figure out a good way to do this for the RooHistPdf.\nThanks a lot for your kind help!\nBest regards,\nSebastian\n\nVisit Topic or reply to this email to respond.\n\nIn Reply To\n\n| Andrew Gilbert agilbertDecember 3, 2021 |\n\n| - |\n\nHi Sebastian, Yes this is possible - the easiest way is probably to put your binned templates as RooDataHist objects with the same observable RooRealVar as the analytic pdfs - text2workspace.py will then convert these to an appropriate pdf. cheers, Andrew\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Hi,</p>\n<p>There is a caveat to pay attention to the shape normalizations, if you use the \u2018shape\u2019 morphing in combine.</p>\n<p>When you use \u2018shape\u2019 uncertainties in combine, and you pass them through TH1 or RooDataHist normalization differences between nominal and +/- 1sigma values are accounted for as a logNormal uncertainty correlated with the shape modifications.<br>\nWhen you convert RooDataHist into RooHistPdf, normalization information is lost, and therefore you will need to take care by hand for the normalization difference part, if present.</p>\n<p>-Andrea</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>Il giorno gio 13 gen 2022 alle ore 18:47 Xuli Yan via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; ha scritto:</p>\n<blockquote>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/x/6de8d8/45.png\" title=\"xuyan\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/xuyan\">Xuli Yan</a> xuyan<br>January 13 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p>Dear Andrew,</p>\n<p>Thanks a lot for your comments! Inspired by your ideas of converting histograms into pdfs, I looked into RooHistPdf a little bit in detail and decided to convert RooDataHist manually into it and then sent RooHistPdf into the combine, to gain some more control on this step. Not sure if this approach makes sense to you?</p>\n<p>If so, I am wondering for this approach, do we have a way to incorporate the systematics on the shape? I know for the pure histogram template approach we can feed combine with the histograms varied by the uncertainty and for the parametric approach we can just assign the uncertainties on parameters, but I did not figure out a good way to do this for the RooHistPdf.</p>\n<p>Thanks a lot for your kind help!</p>\n<p>Best regards,<br>\nSebastian</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/possibility-of-using-a-hybrid-template-signal-and-parametric-background-approach-in-combine/2999/3\">Visit Topic</a> or reply to this email to respond.</p>\n<hr>\n<h4>In Reply To</h4>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/user_avatar/cms-talk.web.cern.ch/agilbert/45/278_2.png\" title=\"agilbert\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/agilbert\">Andrew Gilbert</a> agilbert<br>December 3, 2021 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p>Hi Sebastian, Yes this is possible - the easiest way is probably to put your binned templates as RooDataHist objects with the same observable RooRealVar as the analytic pdfs - text2workspace.py will then convert these to an appropriate pdf. cheers, Andrew</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/possibility-of-using-a-hybrid-template-signal-and-parametric-background-approach-in-combine/2999/3\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/c0d9fd73a1eb0f7888a203835462d30777f78744971ee54196ade39211454df3\">click here</a>.</p>\n</blockquote>\n</details>"
+    },
+    {
+      "post_number": 5,
+      "username": "xuyan",
+      "name": "Xuli Yan",
+      "created_at": "2022-01-13T21:09:26.747Z",
+      "updated_at": "2022-01-13T21:09:26.747Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Andrea,\nThanks a lot for your inputs!\nYes indeed, and I believe the normalization part should be easy to handle manually. However, my main concern is still in the shape part. Do you know how could I let combine know the shape varied by +/- 1 sigma using the RooHistPdf?\nFor the histogram template approach we have:\nshapes * * simple-shapes-TH1.root $PROCESS $PROCESS_$SYSTEMATIC\n\nCan I use something similar to this, but feeding the RooHistPdf obtained after varying the uncertainty by +/-1 sigma to \u201c$PROCESS_$SYSTEMATIC\u201d instead of a histogram?\nThanks a lot!\nBest regards,\nSebastian",
+      "cooked_html": "<p>Dear Andrea,</p>\n<p>Thanks a lot for your inputs!</p>\n<p>Yes indeed, and I believe the normalization part should be easy to handle manually. However, my main concern is still in the shape part. Do you know how could I let combine know the shape varied by +/- 1 sigma using the RooHistPdf?</p>\n<p>For the histogram template approach we have:</p>\n<pre><code class=\"lang-auto\">shapes * * simple-shapes-TH1.root $PROCESS $PROCESS_$SYSTEMATIC\n</code></pre>\n<p>Can I use something similar to this, but feeding the RooHistPdf obtained after varying the uncertainty by +/-1 sigma to \u201c$PROCESS_$SYSTEMATIC\u201d instead of a histogram?</p>\n<p>Thanks a lot!</p>\n<p>Best regards,<br>\nSebastian</p>"
+    }
+  ]
+}

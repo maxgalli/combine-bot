@@ -1,0 +1,45 @@
+{
+  "topic_id": 126551,
+  "title": "Fits fail for impacts",
+  "url": "https://cms-talk.web.cern.ch/t/126551",
+  "category_id": 279,
+  "created_at": "2025-06-30T12:44:35.671Z",
+  "last_posted_at": "2025-07-22T12:55:58.111Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "aaravind",
+      "name": "Anagha Aravind",
+      "created_at": "2025-06-30T12:44:35.911Z",
+      "updated_at": "2025-06-30T12:44:35.911Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m working on h->a1a2-> 2b2tau/4b2tau full Run-2 analysis. While running combineTools for impacts, I notice that fits are failing.\nHere are the commands I run for each a1, a2 mass point:\ncombineTool.py -M Impacts -d {cardname} -m {masspoint[1]} --doInitialFit -t -1 --expectSignal 0 --rMin -100 --rMax 100\n\ncombineTool.py -M Impacts -d {cardname} -m {masspoint[1]} --doFits --parallel 12 -t -1 --expectSignal 0 --rMin -100 --rMax 100\n\ncombineTool.py -M Impacts -d {cardname} -m {masspoint[1]} -o impacts.json\n\nThe runtime warnings received are:\n[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum!\n+0.000/+0.000\n\nI also receive the fits failed warning.\nHere is the impact plot for a specific pair of mass points, a1=40GeV, a2=60GeV:\nimpacts_2017_2b2t_allchannels_40_60_expectSignal0.pdf (186.5 KB)\nHere is the combine output for parameter of interest r:\n<<< Combine >>>\n<<< v10.2.0 >>>\n>>> Random number generator seed is 123456\n>>> Method used is AsymptoticLimits\n\n-- AsymptoticLimits ( CLs ) --\nObserved Limit: r < 0.0738\nExpected  2.5%: r < 0.0389\nExpected 16.0%: r < 0.0522\nExpected 50.0%: r < 0.0737\nExpected 84.0%: r < 0.1017\nExpected 97.5%: r < 0.1462\n\nDo you have any suggestions on how to fix this? Are there other fit options I can try?\nAny help is appreciated.\nThank you,\nAnagha",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m working on h-&gt;a1a2-&gt; 2b2tau/4b2tau full Run-2 analysis. While running combineTools for impacts, I notice that fits are failing.<br>\nHere are the commands I run for each a1, a2 mass point:</p>\n<pre><code class=\"lang-auto\">combineTool.py -M Impacts -d {cardname} -m {masspoint[1]} --doInitialFit -t -1 --expectSignal 0 --rMin -100 --rMax 100\n\ncombineTool.py -M Impacts -d {cardname} -m {masspoint[1]} --doFits --parallel 12 -t -1 --expectSignal 0 --rMin -100 --rMax 100\n\ncombineTool.py -M Impacts -d {cardname} -m {masspoint[1]} -o impacts.json\n</code></pre>\n<p>The runtime warnings received are:</p>\n<pre><code class=\"lang-auto\">[WARNING] Minimization finished with status 1 (covariance matrix forced positive definite), this could indicate a problem with the minimum!\n  +0.000/+0.000   \n</code></pre>\n<p>I also receive the fits failed warning.</p>\n<p>Here is the impact plot for a specific pair of mass points, a1=40GeV, a2=60GeV:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/kO2XCNAzZBVdc4Ag3EJp67mOmuH.pdf\">impacts_2017_2b2t_allchannels_40_60_expectSignal0.pdf</a> (186.5 KB)</p>\n<p>Here is the combine output for parameter of interest r:</p>\n<pre><code class=\"lang-auto\"> &lt;&lt;&lt; Combine &gt;&gt;&gt;\n &lt;&lt;&lt; v10.2.0 &gt;&gt;&gt;\n&gt;&gt;&gt; Random number generator seed is 123456\n&gt;&gt;&gt; Method used is AsymptoticLimits\n\n -- AsymptoticLimits ( CLs ) --\nObserved Limit: r &lt; 0.0738\nExpected  2.5%: r &lt; 0.0389\nExpected 16.0%: r &lt; 0.0522\nExpected 50.0%: r &lt; 0.0737\nExpected 84.0%: r &lt; 0.1017\nExpected 97.5%: r &lt; 0.1462\n\n</code></pre>\n<p>Do you have any suggestions on how to fix this? Are there other fit options I can try?<br>\nAny help is appreciated.<br>\nThank you,<br>\nAnagha</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gallim",
+      "name": "Massimiliano Galli",
+      "created_at": "2025-07-11T15:21:57.432Z",
+      "updated_at": "2025-07-11T15:21:57.432Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Anagha,\nbased on the Combine documentation for impact plots, I would try to run the fits using --robustFit=1. Please let me know if this fixes the problem.\nBest,\nMassimiliano",
+      "cooked_html": "<p>Dear Anagha,<br>\nbased on the Combine documentation for impact plots, I would try to run the fits using <code>--robustFit=1</code>. Please let me know if this fixes the problem.</p>\n<p>Best,<br>\nMassimiliano</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "aaravind",
+      "name": "Anagha Aravind",
+      "created_at": "2025-07-22T12:55:58.111Z",
+      "updated_at": "2025-07-22T12:56:11.196Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Massimiliano,\nApologies for the late reply and thank you for the suggestion. The robustFit by itself didn\u2019t fix it but the issues seem to be resolved now after using both robustFit=1 and reducing the autoMCstats threshhold from 50.0 to 10.0. I also played around a bit with rMax and Rmin.\nThanks,\nAnagha",
+      "cooked_html": "<p>Hi Massimiliano,<br>\nApologies for the late reply and thank you for the suggestion. The robustFit by itself didn\u2019t fix it but the issues seem to be resolved now after using both robustFit=1 and reducing the autoMCstats threshhold from 50.0 to 10.0. I also played around a bit with rMax and Rmin.<br>\nThanks,<br>\nAnagha</p>"
+    }
+  ]
+}

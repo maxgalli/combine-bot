@@ -1,0 +1,89 @@
+{
+  "topic_id": 52558,
+  "title": "Segmentation error when combining full Run2",
+  "url": "https://cms-talk.web.cern.ch/t/52558",
+  "category_id": 279,
+  "created_at": "2024-10-10T14:03:38.778Z",
+  "last_posted_at": "2024-10-14T14:55:30.813Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "slomte",
+      "name": "Shivani Sanjay Lomte",
+      "created_at": "2024-10-10T14:03:38.989Z",
+      "updated_at": "2024-10-10T14:03:38.989Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine Experts,\nWe have a question regarding combining datacards for 2016 published analysis with our ongoing 2017+2018 analysis. The fitting variable used is different for the two analyses, it was MET in 2016, and for 2017+2018 it is unrolled mass distribution. Would the usual COMBINE commands work for this scenario?\nWe are using Combine-v10.0.2 and CMSSW_14_1_0 release, in EL9.\nAt the moment, we are keeping all nuisance parameters uncorrelated. The combineCards.py command runs fine while combining 16 datacards with 17+18, however, we run into segmentation violation error when using the text2workspace command.\nThe individual analyses (16 and 17+18) run perfectly fine on their own, but a naive combination for full run2 seems to fail.\nCould you please suggest how we should approach this problem? Happy to provide further details. Thank you.\nThe datacards can be found below:\n2016: https://pages.hep.wisc.edu/~slomte/files_combination/workspace_2016.txt\n2017+2018: https://pages.hep.wisc.edu/~slomte/files_combination/workspace_20172018.txt\nBest,\nShivani",
+      "cooked_html": "<p>Dear Combine Experts,</p>\n<p>We have a question regarding combining datacards for 2016 published analysis with our ongoing 2017+2018 analysis. The fitting variable used is different for the two analyses, it was MET in 2016, and for 2017+2018 it is unrolled mass distribution. Would the usual COMBINE commands work for this scenario?</p>\n<p>We are using Combine-v10.0.2 and CMSSW_14_1_0 release, in EL9.</p>\n<p>At the moment, we are keeping all nuisance parameters uncorrelated. The <code>combineCards.py</code> command runs fine while combining 16 datacards with 17+18, however, we run into segmentation violation error when using the <code>text2workspace</code> command.</p>\n<p>The individual analyses (16 and 17+18) run perfectly fine on their own, but a naive combination for full run2 seems to fail.</p>\n<p>Could you please suggest how we should approach this problem? Happy to provide further details. Thank you.</p>\n<p>The datacards can be found below:<br>\n2016: <a href=\"https://pages.hep.wisc.edu/~slomte/files_combination/workspace_2016.txt\" rel=\"noopener nofollow ugc\">https://pages.hep.wisc.edu/~slomte/files_combination/workspace_2016.txt</a><br>\n2017+2018: <a href=\"https://pages.hep.wisc.edu/~slomte/files_combination/workspace_20172018.txt\" rel=\"noopener nofollow ugc\">https://pages.hep.wisc.edu/~slomte/files_combination/workspace_20172018.txt</a></p>\n<p>Best,<br>\nShivani</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-10-10T14:11:16.316Z",
+      "updated_at": "2024-10-10T14:11:16.316Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Shivani,\nThe usual combine commands will work with your setup.\nAbout the segmentation violation error, can you try issue the command ulimit -s unlimited in the shell, before running text2workspace? You need to issue it only once per session.\nCheers,\nGiacomo",
+      "cooked_html": "<p>Dear Shivani,</p>\n<p>The usual combine commands will work with your setup.</p>\n<p>About the segmentation violation error, can you try issue the command ulimit -s unlimited in the shell, before running text2workspace? You need to issue it only once per session.</p>\n<p>Cheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "slomte",
+      "name": "Shivani Sanjay Lomte",
+      "created_at": "2024-10-10T14:24:20.190Z",
+      "updated_at": "2024-10-10T14:24:20.190Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nThank you for your prompt response.\nI tried the suggested command ulimit -s unlimited before running the text2workspace.py command, but I\u2019m getting the same segmentation error. Adding it below if it helps understand.\n\nTraceback (most recent call last):   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/bin/el9_amd64_gcc12/text2workspace.py\", line 104, in <module>     MB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel)   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py\", line 172, in doModel     self.doObservables()   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py\", line 86, in doObservables     self.prepareAllShapes()   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py\", line 600, in prepareAllShapes     self.out.binVars.add(shapeObs[obs_key].find(k), True)   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py\", line 24, in RooArgSet_add_patched     return RooArgSet_add_original(self, obj, *args, **kwargs) TypeError: Template method resolution failed:   none of the 2 overloaded methods succeeded. Full details:   bool RooAbsCollection::add(const RooAbsArg& var, bool silent = false) =>     SegmentationViolation: segfault in C++; program state was reset   bool RooAbsCollection::add(const RooAbsCollection& list, bool silent = false) =>     TypeError: could not convert argument 1   Failed to instantiate \"add(RooArgSet&,RooAbsArg&,bool)\"   Failed to instantiate \"add(RooArgSet*,RooAbsArg*,bool)\"   Failed to instantiate \"add(RooArgSet,RooAbsArg,bool)\"",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>Thank you for your prompt response.</p>\n<p>I tried the suggested command <code>ulimit -s unlimited</code> before running the <code>text2workspace.py</code> command, but I\u2019m getting the same segmentation error. Adding it below if it helps understand.</p>\n<hr>\n<p><code>Traceback (most recent call last):   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/bin/el9_amd64_gcc12/text2workspace.py\", line 104, in &lt;module&gt;     MB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel)   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py\", line 172, in doModel     self.doObservables()   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py\", line 86, in doObservables     self.prepareAllShapes()   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py\", line 600, in prepareAllShapes     self.out.binVars.add(shapeObs[obs_key].find(k), True)   File \"/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py\", line 24, in RooArgSet_add_patched     return RooArgSet_add_original(self, obj, *args, **kwargs) TypeError: Template method resolution failed:   none of the 2 overloaded methods succeeded. Full details:   bool RooAbsCollection::add(const RooAbsArg&amp; var, bool silent = false) =&gt;     SegmentationViolation: segfault in C++; program state was reset   bool RooAbsCollection::add(const RooAbsCollection&amp; list, bool silent = false) =&gt;     TypeError: could not convert argument 1   Failed to instantiate \"add(RooArgSet&amp;,RooAbsArg&amp;,bool)\"   Failed to instantiate \"add(RooArgSet*,RooAbsArg*,bool)\"   Failed to instantiate \"add(RooArgSet,RooAbsArg,bool)\"</code></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-10-10T14:38:29.201Z",
+      "updated_at": "2024-10-10T14:38:29.201Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Shivani,\nCan you share the root files with the inputs as well?\nThanks,\nGiacomo",
+      "cooked_html": "<p>Dear Shivani,</p>\n<p>Can you share the root files with the inputs as well?</p>\n<p>Thanks,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "slomte",
+      "name": "Shivani Sanjay Lomte",
+      "created_at": "2024-10-10T14:55:36.292Z",
+      "updated_at": "2024-10-10T14:55:36.292Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nSure, please find them added here: https://pages.hep.wisc.edu/~slomte/files_combination/\nFor 2016: approval_combined_model.root\nFor2017+2018, these are broken into year (2017 and 2018), category (Boosted and Resolved), and regions (SR and 4 CRs):\nAllHists2017_boosted_SR_METbins_Test11a.root AllHists2017_boosted_TopElCR_METbins_Test11a.root AllHists2017_boosted_TopMuCR_METbins_Test11a.root AllHists2017_boosted_ZElElCR_METbins_Test11a.root AllHists2017_boosted_ZMuMuCR_METbins_Test11a.root AllHists2017_resolved_SR_METbins_Test11a.root AllHists2017_resolved_TopElCR_METbins_Test11a.root AllHists2017_resolved_TopMuCR_METbins_Test11a.root AllHists2017_resolved_ZElElCR_METbins_Test11a.root AllHists2017_resolved_ZMuMuCR_METbins_Test11a.root AllHists2018_boosted_SR_METbins_Test11a.root AllHists2018_boosted_TopElCR_METbins_Test11a.root AllHists2018_boosted_TopMuCR_METbins_Test11a.root AllHists2018_boosted_ZElElCR_METbins_Test11a.root AllHists2018_boosted_ZMuMuCR_METbins_Test11a.root AllHists2018_resolved_SR_METbins_Test11a.root AllHists2018_resolved_TopElCR_METbins_Test11a.root AllHists2018_resolved_TopMuCR_METbins_Test11a.root AllHists2018_resolved_ZElElCR_METbins_Test11a.root AllHists2018_resolved_ZMuMuCR_METbins_Test11a.root\nFor ease of reading, datacards for 2018 boosted category are also added, for eg https://pages.hep.wisc.edu/~slomte/files_combination/d18_boosted_TopElCR_bin1.txt\nThanks,\nShivani",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>Sure, please find them added here: <a href=\"https://pages.hep.wisc.edu/~slomte/files_combination/\" rel=\"noopener nofollow ugc\">https://pages.hep.wisc.edu/~slomte/files_combination/</a></p>\n<p>For 2016: <code>approval_combined_model.root</code><br>\nFor2017+2018, these are broken into year (2017 and 2018), category (Boosted and Resolved), and regions (SR and 4 CRs):</p>\n<p><code>AllHists2017_boosted_SR_METbins_Test11a.root AllHists2017_boosted_TopElCR_METbins_Test11a.root AllHists2017_boosted_TopMuCR_METbins_Test11a.root AllHists2017_boosted_ZElElCR_METbins_Test11a.root AllHists2017_boosted_ZMuMuCR_METbins_Test11a.root AllHists2017_resolved_SR_METbins_Test11a.root AllHists2017_resolved_TopElCR_METbins_Test11a.root AllHists2017_resolved_TopMuCR_METbins_Test11a.root AllHists2017_resolved_ZElElCR_METbins_Test11a.root AllHists2017_resolved_ZMuMuCR_METbins_Test11a.root AllHists2018_boosted_SR_METbins_Test11a.root AllHists2018_boosted_TopElCR_METbins_Test11a.root AllHists2018_boosted_TopMuCR_METbins_Test11a.root AllHists2018_boosted_ZElElCR_METbins_Test11a.root AllHists2018_boosted_ZMuMuCR_METbins_Test11a.root AllHists2018_resolved_SR_METbins_Test11a.root AllHists2018_resolved_TopElCR_METbins_Test11a.root AllHists2018_resolved_TopMuCR_METbins_Test11a.root AllHists2018_resolved_ZElElCR_METbins_Test11a.root AllHists2018_resolved_ZMuMuCR_METbins_Test11a.root</code></p>\n<p>For ease of reading, datacards for 2018 boosted category are also added, for eg <a href=\"https://pages.hep.wisc.edu/~slomte/files_combination/d18_boosted_TopElCR_bin1.txt\" rel=\"noopener nofollow ugc\">https://pages.hep.wisc.edu/~slomte/files_combination/d18_boosted_TopElCR_bin1.txt</a></p>\n<p>Thanks,<br>\nShivani</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-10-11T12:04:28.464Z",
+      "updated_at": "2024-10-11T12:04:28.464Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Shivani,\nI think the origin of the problem is that in your 2016 workspace the observable is called rather awkwardly min(999.9999,met)_monohiggs.\nWhen we have more than one observable, they are accessed by splitting the list of all observables by commas, so the comma in the middle of the variable name in this case breaks everything.\nI\u2019m not sure there is an easy fix to your case. If possible, the best solution would be to recreate the 2016 workspace with a different observable name, such as met_monohiggs. Otherwise, you can try to hack the code here:\n\ngithub.com\n\ncms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ShapeTools.py#L599\n\nself.out.mode = \"unbinned\"\nif self.options.verbose > 1:\nstderr.write(\"Will work with unbinned datasets\\n\")\nif self.options.verbose > 1:\nstderr.write(\"Observables: %s\\n\" % str(list(shapeObs.keys())))\nif len(list(shapeObs.keys())) != 1:\nself.out.binVars = ROOT.RooArgSet()\nfor obs_key in shapeObs.keys():\n# RooArgSet does not have method to add another RooArgSet (RooCollection does!) so we have to manually loop over the RooArgSet contents (in obs)\nif \",\" in obs_key:  # if multiple vars and looking at a RooArgSet value\nfor k in obs_key.split(\",\"):\nself.out.binVars.add(shapeObs[obs_key].find(k), True)\nelse:\nself.out.binVars.add(shapeObs[obs_key], True)\nelse:\nself.out.binVars = list(shapeObs.values())[0]\nself.out.safe_import(self.out.binVars)\nelse:\nself.out.mode = \"binned\"\nif self.options.verbose > 1:\nstderr.write(\"Will make a binned dataset\\n\")\n\nand see if you manage to make it work with an ad-hoc solution.\nI hope it helps,\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Shivani,</p>\n<p>I think the origin of the problem is that in your 2016 workspace the observable is called rather awkwardly <code>min(999.9999,met)_monohiggs</code>.<br>\nWhen we have more than one observable, they are accessed by splitting the list of all observables by commas, so the comma in the middle of the variable name in this case breaks everything.</p>\n<p>I\u2019m not sure there is an easy fix to your case. If possible, the best solution would be to recreate the 2016 workspace with a different observable name, such as met_monohiggs. Otherwise, you can try to hack the code here:</p><aside class=\"onebox githubblob\" data-onebox-src=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ShapeTools.py#L599\">\n  <header class=\"source\">\n\n      <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ShapeTools.py#L599\" target=\"_blank\" rel=\"noopener nofollow ugc\">github.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <h4><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ShapeTools.py#L599\" target=\"_blank\" rel=\"noopener nofollow ugc\">cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ShapeTools.py#L599</a></h4>\n\n\n\n    <pre class=\"onebox\"><code class=\"lang-py\">\n      <ol class=\"start lines\" start=\"589\" style=\"counter-reset: li-counter 588 ;\">\n          <li>    self.out.mode = \"unbinned\"</li>\n          <li>    if self.options.verbose &gt; 1:</li>\n          <li>        stderr.write(\"Will work with unbinned datasets\\n\")</li>\n          <li>    if self.options.verbose &gt; 1:</li>\n          <li>        stderr.write(\"Observables: %s\\n\" % str(list(shapeObs.keys())))</li>\n          <li>    if len(list(shapeObs.keys())) != 1:</li>\n          <li>        self.out.binVars = ROOT.RooArgSet()</li>\n          <li>        for obs_key in shapeObs.keys():</li>\n          <li>            # RooArgSet does not have method to add another RooArgSet (RooCollection does!) so we have to manually loop over the RooArgSet contents (in obs)</li>\n          <li>            if \",\" in obs_key:  # if multiple vars and looking at a RooArgSet value</li>\n          <li class=\"selected\">                for k in obs_key.split(\",\"):</li>\n          <li>                    self.out.binVars.add(shapeObs[obs_key].find(k), True)</li>\n          <li>            else:</li>\n          <li>                self.out.binVars.add(shapeObs[obs_key], True)</li>\n          <li>    else:</li>\n          <li>        self.out.binVars = list(shapeObs.values())[0]</li>\n          <li>    self.out.safe_import(self.out.binVars)</li>\n          <li>else:</li>\n          <li>    self.out.mode = \"binned\"</li>\n          <li>    if self.options.verbose &gt; 1:</li>\n          <li>        stderr.write(\"Will make a binned dataset\\n\")</li>\n      </ol>\n    </code></pre>\n\n\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n<p>\nand see if you manage to make it work with an ad-hoc solution.</p>\n<p>I hope it helps,<br>\nBest regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "slomte",
+      "name": "Shivani Sanjay Lomte",
+      "created_at": "2024-10-14T14:55:30.813Z",
+      "updated_at": "2024-10-14T14:55:30.813Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nThanks a lot for this suggestion. The ad-hoc solution worked fine, and I\u2019ll keep it for now.\nBest regards,\nShivani",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>Thanks a lot for this suggestion. The ad-hoc solution worked fine, and I\u2019ll keep it for now.</p>\n<p>Best regards,<br>\nShivani</p>"
+    }
+  ]
+}

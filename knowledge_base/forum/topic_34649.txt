@@ -1,0 +1,65 @@
+TOPIC: Compilation error in CombineHarvester
+URL: https://cms-talk.web.cern.ch/t/34649
+DATE: 2024-02-13T16:53:36.565Z
+SOLVED: no
+============================================================
+
+QUESTION (by kmandal @ 2024-02-13T16:53:36.723Z):
+Dear Experts,
+I am getting errors in compiling the combine tool.
+I am using  CMSSW_10_2_13 (its for RUN 2 analysis) and slc7.
+I executed the following standard commands:
+export SCRAM_ARCH=slc7_amd64_gcc700
+cmsrel CMSSW_10_2_13
+cd CMSSW_10_2_13/src
+cmsenv
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+cd $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit
+git fetch origin
+git checkout v8.1.0
+cd $CMSSW_BASE/src
+scramv1 b clean
+scramv1 b
+the compilation was successful.
+git clone https://github.com/cms-analysis/CombineHarvester.git CombineHarvester
+git checkout v2.0.0
+this showed me the following message:
+fatal: not a git repository (or any parent up to mount point /)
+Stopping at filesystem boundary (GIT_DISCOVERY_ACROSS_FILESYSTEM not set).
+scram b
+gave the following error:
+~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc: In member function ‘void ch::CombineHarvester::WriteDatacard(const string&, TFile&)’:
+~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc:1238:53: error: cannot bind non-const lvalue reference of type ‘const char*&’ to an rvalue of type ‘const Text_t* {aka const char*}’
+boost::split(tokens, y->getStringAttribute(“wspSource”), boost::is_any_of(“:”));
+~~~~~^
+In file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/boost/1.63.0-gnimlf/include/boost/algorithm/string.hpp:23:0,
+from ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/interface/Utilities.h:9,
+from ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/interface/CombineHarvester.h:21,
+from ~/CMSSW_10_2_13/src/CombineHarvester/CombineTools/src/CombineHarvester_Datacards.cc:1:
+/cvmfs/cms.cern.ch/slc7_amd64_gcc700/external/boost/1.63.0-gnimlf/include/boost/algorithm/string/split.hpp:140:35: note:   initializing argument 2 of ‘SequenceSequenceT& boost::algorithm::split(SequenceSequenceT&, RangeT&, PredicateT, boost::algorithm::token_compress_mode_type) [with SequenceSequenceT = std::vector<std::__cxx11::basic_string >; RangeT = const char*; PredicateT = boost::algorithm::detail::is_any_ofF]’
+inline SequenceSequenceT& split(
+^
+gmake: *** [config/SCRAM/GMake/Makefile.rules:1673: tmp/slc7_amd64_gcc700/src/CombineHarvester/CombineTools/src/CombineHarvesterCombineTools/CombineHarvester_Datacards.cc.o] Error 1
+gmake: *** [There are compilation/build errors. Please see the detail log above.] Error 2
+~: my working directory
+So I guess the error is coming from the CombineHarvester.
+Could you please help me to resolve the compilation issue?
+Thanks in advance.
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-02-19T10:14:24.410Z):
+Hi Koushik,
+Sorry for the slow reply. Just to check, you should be using the (no longer supported) 102x branch for CombineHarvester if you really need to use CMSSW 10_2_X series. It looks like from the above that you are using the v2.0.0 tag, which is not compatible.
+That said, we strongly recommend to use CMSSW 11_3_X and the up-to-date release.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by kmandal @ 2024-02-23T12:39:37.446Z):
+Hi Andrew,
+Thanks so much for your reply and suggestion.
+Yes, I moved to CMSSW 11_3_X and everything is working fine now.
+Thanks again,
+Koushik
+----------------------------------------

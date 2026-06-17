@@ -1,0 +1,18 @@
+TOPIC: Question on template morphing algorithm
+URL: https://cms-talk.web.cern.ch/t/2161
+DATE: 2021-09-14T20:12:22.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Lucas_Corcodilos @ 2021-09-14T20:12:22.000Z):
+*** Discussion title: Higgs Combination
+Dear experts,
+I'm attempting to understand the algorithm used to perform vertical template interpolation/morphing when passing up/down shapes to combine.
+In particular, I'm trying to understand the function that maps a given bin's yield to a given nuisance parameter. I believe the relevant lines of code are here [1] in VerticalInterpHistPdf.cc.
+The algebra in [1] isn't so obvious so I tried to plot an example using Mathematica and I have a good idea what to expect now. Namely, the function ("alpha") has points (0,0), (-1,lo), (1, hi) where lo and hi are changes in the bin yield.
+What I'm wondering is if this gets later represented as a relative yield. As a single bin example, say the nominal yield is 1000 and there are two nuisances (n1, n2) and the std dev of n1 is +/-100 and the std dev of n2 is +/-200. If the fit minimization moves n2 to -1 (so yield becomes 800), then the current algorithm (as I understand it) still has n2's +/- std dev effect as +/-100.
+Is this correct? I would think that one would actually want the percent change so that n2's +/- std dev effect becomes +/-80 (ie. 10% on the current model yield from 100/1000). I think this makes more sense given the nature of most systematic uncertainties that are being mapped to these nuisances (and the fact that the bin yield can't be less than zero). Is this done at some point in the code or is the absolute effect always used (ie. use +/- 100, not +/- 10%)? Or maybe I'm missing an important idea?
+Thanks!
+Lucas
+[1] - https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/17027495f278ac7fd211656781e2bfdbfe3fe7f5/src/VerticalInterpHistPdf.cc#L555-L570
+----------------------------------------

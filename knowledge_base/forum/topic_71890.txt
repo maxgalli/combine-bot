@@ -1,0 +1,35 @@
+TOPIC: Data yields have an impact in calculating expected significance?
+URL: https://cms-talk.web.cern.ch/t/71890
+DATE: 2024-12-02T06:11:41.901Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by hyeonseo @ 2024-12-02T06:11:42.384Z):
+Dear Combine experts,
+If I could give a bit of context, I was doing my MC template fitting and had accidentally only processed half of my data samples and thus had "data_obs "histograms with about half the normal yields. This made the expected postfit significance value to change from 0.89071 to 1.04959, which is a significant change.
+I apologize if this is a basic question, but it is my understanding that data (data_obs) should not contribute to calculating expected significances. The prefit expected signifcance doesn’t change, so it’s somewhere in the posfit phase of combine that’s touching data, but I am having a hard time isolating the cause.
+Here’s the combine command that I have used to generate the results:
+prefit exp signifcance:
+combine -d combined_2017.root -M Significance -m 125 --expectSignal=1 -n _2017_ -t -1 --rMin -2 --rMax 5
+posfit significance:
+combine -d combined_2017.root -M Significance -m 125 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 0 --cminRunAllDiscreteCombinations --cminApproxPreFitTolerance=0.01 --cminFallbackAlgo Minuit2,Migrad,0:0.01 --cminFallbackAlgo Minuit2,Migrad,0:0.1 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd MINIMIZER_analytic --X-rtd FAST_VERTICAL_MORPH --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_freezeDisassociatedParams  -n _2017_ --toysFrequentist --rMin -2 --rMax 5 -t -1 --expectSignal 1
+I have also attached the root file just in case:
+combined_2017.root (73.6 KB)
+I tried to see if the hint lies in the combine commands, but I wasn’t successful. If you see anything I have missed or require more information, please let me know!
+Thank you in advance,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by fiemmi @ 2024-12-02T08:01:19.499Z):
+Hi Hyeon-Seo,
+when you do --toysFrequentist --expectSignal 1 -t -1 you are:
+
+--toysFrequentist: fitting the data (that is, data_obs) to get the values of the nuisance parameters; then
+--expectSignal 1: setting the signal strength value to 1; and finally
+-t -1: throwing an Asimov dataset with the values obtained from steps 1. and 2.
+
+So, the part in which you touch the data is the frequentist fit used to determine the nuisance parameter used to throw the Asimov dataset. I do not know the details of your analysis, but in several cases this is the best thing to do (e.g. in diphoton analyses where the parameters describing the background function(s) need to be extracted from the data).
+I hope this helps.
+All the best,
+Fabio.
+----------------------------------------

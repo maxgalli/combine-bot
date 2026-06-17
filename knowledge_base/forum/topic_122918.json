@@ -1,0 +1,45 @@
+{
+  "topic_id": 122918,
+  "title": "Is combined NLL a sum of individual NLL?",
+  "url": "https://cms-talk.web.cern.ch/t/122918",
+  "category_id": 279,
+  "created_at": "2025-04-09T16:22:40.280Z",
+  "last_posted_at": "2025-04-10T08:55:55.399Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2025-04-09T16:22:40.555Z",
+      "updated_at": "2025-04-09T16:22:40.555Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI do combined fit of three independent regions using MutiDimFit.\nCan I say that combined NLL = NLL1+NLL2+NLL3 ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I do combined fit of three independent regions using MutiDimFit.<br>\nCan I say that combined NLL = NLL1+NLL2+NLL3 ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2025-04-10T08:25:58.000Z",
+      "updated_at": "2025-04-10T08:26:07.633Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nI think the statistical committee would be better placed to answer, but I believe that\u2019s correct, yes. That\u2019s basically like taking the weighted average of independent measurements.\nAlthough even if the regions are mutually exclusive, I would expect some parameters like luminosity or detector effects to be correlated, simply because all data are taken with the same experiment, so I don\u2019t think this actually applies to CMS measurements except for very fringe cases.\nCheers,\nGiacomo\n\nOn 9 Apr 2025, at 18:23, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:\n\nAlexandre Nikitenko anikitenApril 9\n\nDear experts,\nI do combined fit of three independent regions using MutiDimFit.\nCan I say that combined NLL = NLL1+NLL2+NLL3 ?\nThanks, Sasha.\n\nVisit Topic or reply to this email to respond.\nYou are receiving this because you enabled mailing list mode.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>I think the statistical committee would be better placed to answer, but I believe that\u2019s correct, yes. That\u2019s basically like taking the weighted average of independent measurements.<br>\nAlthough even if the regions are mutually exclusive, I would expect some parameters like luminosity or detector effects to be correlated, simply because all data are taken with the same experiment, so I don\u2019t think this actually applies to CMS measurements except for very fringe cases.</p>\n<p>Cheers,<br>\nGiacomo</p>\n<blockquote>\n<p>On 9 Apr 2025, at 18:23, Alexandre Nikitenko via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/e99b99/45.png\" title=\"anikiten\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anikiten\">Alexandre Nikitenko</a> anikiten<br>April 9</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear experts,</p>\n<p>I do combined fit of three independent regions using MutiDimFit.<br>\nCan I say that combined NLL = NLL1+NLL2+NLL3 ?</p>\n<p>Thanks, Sasha.</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/is-combined-nll-a-sum-of-individual-nll/122918/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>You are receiving this because you enabled mailing list mode.</p>\n<p>To unsubscribe from these emails, <a>click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2025-04-10T08:55:55.399Z",
+      "updated_at": "2025-04-10T08:55:55.399Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nthank you for answer !\nMy regions are mutually exclusive and fit is based purely on data using\nsignal and background modes. Bkg. models found from data sidebands.\nSo, I think technically in combine  total NLL is a sum of NLLs for each individual regions.\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>thank you for answer !</p>\n<p>My regions are mutually exclusive and fit is based purely on data using<br>\nsignal and background modes. Bkg. models found from data sidebands.<br>\nSo, I think technically in combine  total NLL is a sum of NLLs for each individual regions.</p>\n<p>Cheers, Sasha.</p>"
+    }
+  ]
+}

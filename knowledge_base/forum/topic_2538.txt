@@ -1,0 +1,54 @@
+TOPIC: Correlation of parametric uncertainty
+URL: https://cms-talk.web.cern.ch/t/2538
+DATE: 2021-11-18T20:34:55.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Ka_Wa_Ho @ 2021-11-18T20:34:55.000Z):
+*** Discussion title: Higgs Combination
+Hi combine experts,
+I am doing an unbinned parametric fit of an invariant e+mu mass peak for several categories. I have a parametric uncertainty on the mean/sigma of the fitted shape coming from the lepton energy scale/resolution.  These are specified at the end of the Datacard like the tutorial from here [1] with the âparamâ key word. But how do I combine them if they have different values for different categories? For rate uncertainties, combine can specify a different value for different categories for the same uncertainty source but I am not sure how this is done for shape uncertainties.
+Thank you, Ka Wa
+[1]:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/data/tutorials/shapes/simple-shapes-parametric.txt
+
+# Simple parametric shape based on a RooChebyChev background with freely floating normalisation and a RooVoigtian signal model.
+# To run, make sure to add the option `-m 30` since the MH parameter is contained in the input workspace
+
+imax 1
+jmax 1
+kmax *
+---------------
+shapes * * simple-shapes-parametric_input.root w:$PROCESS
+---------------
+bin bin1
+observation -1
+------------------------------
+bin          bin1       bin1
+process      sig 	bkg
+process      0          1
+rate         1          1
+--------------------------------
+lumi    lnN  1.1       1.0
+vogian_sigma   param 1.0      0.1
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-11-18T20:50:24.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+"Systematics which have different names will be assumed to be uncorrelated, and the ones with the same name will be assumed 100% correlated."
+In your case, you can use the same parameter name for the scale uncertainty in all the categories. For instance, if you have as signal model a gaussian distribution in the two (or +) categories, it is convenient to separate the constraint part to its value (and sign for anticorrelation); a multiplicative gaussian constrain on the scale can be written as follow:
+[ws content]
+mu1= mu1_value[125.1] * (1+scale_value1[0.03]*scale)
+mu2= mu2_value[124.9] * (1+scale_value2[0.06]*scale)
+[*] the only floating variable above is 'scale'.
+you can use
+[datacard content]
+scale param 0 1
+to correlate both the categories to the common constraint scale.
+Cheers,
+-Andrea
+----------------------------------------

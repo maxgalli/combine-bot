@@ -1,0 +1,103 @@
+TOPIC: Number of toys for the uncertainty bands in prefit/postfit plots
+URL: https://cms-talk.web.cern.ch/t/16228
+DATE: 2022-10-13T13:11:38.227Z
+SOLVED: no
+============================================================
+
+QUESTION (by mfackeld @ 2022-10-13T13:11:38.443Z):
+Dear combine experts,
+we noticed very long runtimes when running Fitdiagnostics to extract the uncertainty band for prefit and postfit plots (see attached slides). The runtimes almost scale linearly with the number of toys. Attached you can find the comparison of runtimes and uncertainty bands for 200 toys (default) and 10 toys in the scope of the dileptonic HH → bbWW analysis.
+We have the following questions for you:
+
+Is there a recommendation for the number of toys one should use to estimate the prefit/postfit uncertainty bands?
+Is it alright to reduce the number of toys from 200 to e.g. 50 for a publication?
+Do you know how the time for throwing toys scales with the number of nuisances?
+
+Thank you very much,
+Peter for the bbWW analysis team
+20221013-fackeldey-cmsTalk-Fitdiagnostics-Toys.pdf (1.2 MB)
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-10-13T13:27:06.699Z):
+Hi Manfred,
+as usual, when using toys you are introducing an artificial uncertainty on the result due to the statistical fluctuations in toys. 50 is a bit aggressive, IMHO.
+The uncertainties on the bands are related to the binomial distribution, and you should have fluctuations with relative size ~ 1./sqrt(N * p * (1.-p) ), which could be correlated among adjacent bins.
+For your last question, the time of throwing the toys is pretty negligible.
+For throwing post-fit toys, there is a non-negligible time in performing the overall fit, but this could be done only once in advance and the result being reused. The time of fitting the toys is pretty linear in the number of toys. The time of fitting is super linear in the number of systematic uncertainties.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by nckw @ 2022-10-13T13:25:20.000Z):
+Hi Manfred,
+The number of nuisance parameters shouldn’t be a huge issue, the time can scale poorly with number of bins as the uncertainties are calculated by adding to TH1 bin contents the running sum of the variance. There is also the covariance matrix stored (see https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/FitDiagnostics.cc#L884-L887) which you could try to comment out (since I assume you don’t need them) and see if that helps at all?
+Generally 100 toys would be ok to calculate a reasonable estimate of the variance for the uncertainty bands but I wouldn’t go too much below that.
+Best,
+Nick
+
+On 13 Oct 2022, at 14:13, Manfred Peter Fackeldey via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Manfred Peter Fackeldey mfackeldOctober 13
+
+Dear combine experts,
+we noticed very long runtimes when running Fitdiagnostics to extract the uncertainty band for prefit and postfit plots (see attached slides). The runtimes almost scale linearly with the number of toys. Attached you can find the comparison of runtimes and uncertainty bands for 200 toys (default) and 10 toys in the scope of the dileptonic HH → bbWW analysis.
+We have the following questions for you:
+
+Is there a recommendation for the number of toys one should use to estimate the prefit/postfit uncertainty bands?
+Is it alright to reduce the number of toys from 200 to e.g. 50 for a publication?
+Do you know how the time for throwing toys scales with the number of nuisances?
+
+Thank you very much,
+Peter for the bbWW analysis team
+20221013-fackeldey-cmsTalk-Fitdiagnostics-Toys.pdf (1.2 MB)
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by nckw @ 2022-10-13T13:26:31.000Z):
+Apologies … should have said “Hi Peter" (instead of Manfred)
+Nick
+
+On 13 Oct 2022, at 14:25, Nicholas Wardle <Nicholas.Wardle@cern.ch> wrote:
+Hi Manfred,
+The number of nuisance parameters shouldn’t be a huge issue, the time can scale poorly with number of bins as the uncertainties are calculated by adding to TH1 bin contents the running sum of the variance. There is also the covariance matrix stored (see https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/FitDiagnostics.cc#L884-L887) which you could try to comment out (since I assume you don’t need them) and see if that helps at all?
+Generally 100 toys would be ok to calculate a reasonable estimate of the variance for the uncertainty bands but I wouldn’t go too much below that.
+Best,
+Nick
+
+On 13 Oct 2022, at 14:13, Manfred Peter Fackeldey via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Manfred Peter Fackeldey mfackeldOctober 13
+
+Dear combine experts,
+we noticed very long runtimes when running Fitdiagnostics to extract the uncertainty band for prefit and postfit plots (see attached slides). The runtimes almost scale linearly with the number of toys. Attached you can find the comparison of runtimes and uncertainty bands for 200 toys (default) and 10 toys in the scope of the dileptonic HH → bbWW analysis.
+We have the following questions for you:
+
+Is there a recommendation for the number of toys one should use to estimate the prefit/postfit uncertainty bands?
+Is it alright to reduce the number of toys from 200 to e.g. 50 for a publication?
+Do you know how the time for throwing toys scales with the number of nuisances?
+
+Thank you very much,
+Peter for the bbWW analysis team
+20221013-fackeldey-cmsTalk-Fitdiagnostics-Toys.pdf (1.2 MB)
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by adewit @ 2022-10-13T13:39:00.268Z):
+Hi Peter,
+Just to add that a suggestion was already made to another member of your analysis team to parallelize the generation of these plots (using PostFitShapesFromWorkspace in CombineHarvester). See the thread here: Accelerating Postfits (FitDiagnostics)
+I would highly recommend trying that before thinking about scaling down the number of toys too much.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 6 (by mfackeld @ 2022-10-14T08:12:01.241Z):
+Dear Andrea, Nick, and Adinda,
+thank you very much for your extensive answers.
+In my understanding first a fit is performed, and then postfit toys are thrown (re-)using the correlation matrix one obtains after the fit is done. Can you elaborate a bit why there is in addition a fit performed per toy? I don’t think I quite understand the sequence of operations here yet. I suppose this would help me better understand the potential speedup due to PostFitShapesFromWorkspace as well.
+Many thanks in advance,
+Peter
+----------------------------------------

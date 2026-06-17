@@ -1,0 +1,38 @@
+TOPIC: Wiggle in expected 2D limits
+URL: https://cms-talk.web.cern.ch/t/28841
+DATE: 2023-08-25T21:46:42.622Z
+SOLVED: no
+============================================================
+
+QUESTION (by mwadud @ 2023-08-25T21:46:42.841Z):
+Dear all,
+We are performing a search for anomalous couplings in the MET+photon final state using Run II data and are seeing a wiggle in the expected limit contours. The search looks for an excess over the the SM prediction of Z(->nu nu)+gamma in the high-energy tail of photon pT distribution. There are two coupling parameters, h3Z and h4Z, that determine the predicted excess due to anomalous couplings. The signal and background sources are modeled with binned shapes, and there are control regions from which one of the backgrounds is contrained using per-bin rate parameters.
+The expected limit scan is shown below. Notice the wiggle marked with the rectangle.
+limits1396×1172 88.5 KB
+We think this is due to limited sample size of one of the background sources. When we turn of the shape statistical uncertaity (autoMCstats) in the datacards, the wiggle disappears (shown below). In addition, the limit contours and areas are quite similar to the previous case (where autoMCstats is ON).
+limits_EBcombined1393×1095 71.6 KB
+We also looked at NLL vs each nuisance (using combineTool.py -M FastScan). Some of the autoMCstats parameters show discontinuities in the first derivative.
+image616×885 15.1 KB
+image619×874 14.7 KB
+image621×879 15.1 KB
+Do you have any suggestions to remove the wiggles? In addition, since the change in the limits is small without the MC statistical uncertainties, is it reasonable to use the results with autoMCstats turned off?
+We would really appreciate any insights or suggestions.
+Thanks.
+Mohammad
+----------------------------------------
+
+REPLY 2 (by clange @ 2023-09-05T15:08:19.802Z):
+Hi Mohammad,
+I’ve moved this post to the correct subforum (Statistical interpretation tools) to make sure the Combine experts see it.
+Cheers,
+Clemens
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2023-09-05T16:38:06.446Z):
+Hi Mohammad,
+My first suggestion would be to scan that problematic region with more points and check if this behaviour is persistent, also look at the fit results for the problematic points.
+But in general I think that it is always good to make sure that the bins are well populated, especially if it we are talking about the CRs (but the same holds for SR) it should be possible to merge the low-stats bins in tails of the distributions and not hurt the analysis sensitivity.
+I would not recommend removing the bin-by-bin uncertainties since it does not look like they are negligible. It is hard to say more without looking at the observable plots, but I think the most robust approach would be to make sure that the bins are well populated with the appropriate binning.
+Best,
+Aliya
+----------------------------------------

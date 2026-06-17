@@ -1,0 +1,24 @@
+TOPIC: Pull plot for each POIs
+URL: https://cms-talk.web.cern.ch/t/27897
+DATE: 2023-08-02T12:30:43.021Z
+SOLVED: no
+============================================================
+
+QUESTION (by sibashir @ 2023-08-02T12:30:43.390Z):
+Hi there,
+I want to obtain three pull plots for three POI which are calculated by MultiDim Fit in Combine Tool, the way I’m trying to obtain the pull plots is given as below, my problem is the final impacts.pdf file only shows to one of my POIs, how can I get the pull plots for other two POIs?
+the file, ee_output_17.root, is attached.
+ee_output_17.root (42.4 KB)
+combineTool.py -M Impacts -d  ee_output_17.root -m 125 --doInitialFit --robustFit 1 -t -1 --expectSignal=1 combineTool.py -M Impacts -d  ee_output_17.root -m 125 --robustFit 1 --doFits -t -1 --expectSignal=1 combineTool.py -M Impacts -d  ee_output_17.root -m 125 -o impacts.json -t -1 --expectSignal=1 plotImpacts.py -i impacts.json -o impacts
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-08-02T12:40:02.440Z):
+Hi Sima,
+In order to run the impacts and plotting for multiple POI you need to pass the POIs as an argument to the fitting and plotting steps. This has been recently updated in the documentation, based on a similar question.
+You can see the instructions here:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#nuisance-parameter-impacts
+In the paragraph starting with “For models with multiple POIs”.
+I hope that answers your question.
+Best,
+Kyle
+----------------------------------------

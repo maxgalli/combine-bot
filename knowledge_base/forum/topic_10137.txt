@@ -1,0 +1,85 @@
+TOPIC: Impacts for search with --expectSignal 0 failing
+URL: https://cms-talk.web.cern.ch/t/10137
+DATE: 2022-05-06T12:09:29.532Z
+SOLVED: no
+============================================================
+
+QUESTION (by gcumming @ 2022-05-06T12:09:29.732Z):
+Dear Combine experts:
+I am having an issue with impact generation. I have included paths to my datacard [1], my workspace [2], and the input root file [3]. I am running blinded, so the “data observed” is just the addition of the expected background histograms (also in the root file). The statistical uncertainty assigned to each bin of the data_obs histogram  is just the combination of the uncertainties on the MC background histograms.
+When I attempt to run impacts either without specifying an expected signal, or when specifying an expected signal < 0.8, I receive the following error and warning:
+
+Error: closed range without finding crossing.
+— MultiDimFit —
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid low-error found, will report difference to minimum of range for : r
+r :    +0.002   -0.002/+0.596 (68%)
+Done in 0.00 min (cpu), 0.00 min (real)
+
+The command I ran is as follows:
+combineTool.py -M Impacts -d Run2_161718_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_mcfakedataobs.root -m 2000 --doInitialFit --robustFit 1 -t -1
+Reducing the complexity of my card and workspace to only have the data_obs, the ttbar background, the signal, and one rate uncertainty also gives the same error. (Same results actually with and without the data_obs histogram having information or not.)
+Attempts at Debug:
+
+The impacts run without error when I specify an expected signal > 0.8 AND when I include the -t -1 to throw toys. If I do not include the toys, I receive the same error message as above. This seems to produce sensible results.
+The problem scenario runs without error if I exclude the “–robustFit 1” , but the impacts produced seem to have no meaning.
+AsymptoticLimits and FitDiagnositic methods run without error, and seem to give expected results.
+The toys generated in both the failing scenario and the --expectSignal = 1 scenario both seem to give the expected shape, and are not very different.
+
+Any understanding of why I am operating in this scenario, and what I can do to get background only impacts would be appreciated.
+Cheers,
+Grace Cummings
+[1] /afs/cern.ch/user/g/gcumming/public/debug/Run2_161718_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_mcfakedataobs.txt
+[2] /afs/cern.ch/user/g/gcumming/public/debug/Run2_161718_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_mcfakedataobs.root
+[3] /afs/cern.ch/user/g/gcumming/public/debug/Run2_161718_ZllHbbMET_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_mcfakedataobs.root
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-05-06T13:38:20.942Z):
+Hi Grace,
+In general, this kind of error:
+— MultiDimFit —
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid low-error found, will report difference to minimum of range for : r
+r : +0.002 -0.002/+0.596 (68%)
+Done in 0.00 min (cpu), 0.00 min (real)
+
+happens because the -1σ uncertainty extends below the default lower boundary on the parameter, which will be zero in this case. In principle, you can just fix this by adding something like --setParameterRanges r=-5,5.
+In some analyses this leads to another issue (warnings about pdf “underflow”), which is caused by the signal strength becoming sufficiently negative that the total s+b yield in some bins becomes negative, which is a problem for the NLL evaluation (the number of expected events must be positive). But I’d recommend trying the adjusted range first, to see if this gives a more meaningful result.
+Note that with -t -1 there are no toys as such, but combine will replace the data in your input with its own Asimov dataset, generated from the default model parameters (with --expectSignal 0 as default). Without -t X, the --expectSignal value is not used.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by gcumming @ 2022-05-06T16:11:45.179Z):
+Hi Andrew,
+Thank you for your quick reply. I have tried the below command:
+combineTool.py -M Impacts -d Run2_161718_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_mcfakedataobs.root -m 2000 --doInitialFit --robustFit 1 --setParameterRanges r=-2,2
+And I get the following error, and new warnings:
+Error: minimization failed at r = -0.320224
+Error: minimization failed at r = -0.320224
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error found, will report difference to maximum of range for : r
+Warning - No valid low-error found, will report difference to minimum of range for : r
+r :    -0.320   -1.680/+2.320 (68%)
+Done in 0.00 min (cpu), 0.00 min (real)
+
+If I change the range to -1,1, the failure point is different (but similar. Asymmetric ranges just give me a generic MultiDimFit failed, as do ranges that go beyond -2,2. I checked a simpler datacard [1] with the sample input root file, and then I got the errors I think related to those you have described:
+Set Range of Parameter r To : (-2,1)
+Warning! -- You haven't picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the 'B-only' ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+SimNLL created with 1 channels, 0 generic constraints, 1 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(pdf_binZp4000ND800NS200_mumu_nuis) evaluation error,
+origin       : RooAddPdf::pdf_binZp4000ND800NS200_mumu_nuis[ n_exp_binZp4000ND800NS200_mumu_proc_TT * shapeBkg_TT_Zp4000ND800NS200_mumu_rebinPdf + n_exp_binZp4000ND800NS200_mumu_proc_Zp4000ND800NS200 * shapeSig_Zp4000ND800NS200_Zp4000ND800NS200_mumu_rebinPdf ]
+message      : p.d.f value is less than zero (-0.049176), forcing value to zero
+server values: !refCoefNorm=(), !refCoefNorm=(), !pdfs=(shapeBkg_TT_Zp4000ND800NS200_mumu_rebinPdf = 0.0175251,shapeSig_Zp4000ND800NS200_Zp4000ND800NS200_mumu_rebinPdf = 0.177206), !coefficients=(n_exp_binZp4000ND800NS200_mumu_proc_TT = 36.449,n_exp_binZp4000ND800NS200_mumu_proc_Zp4000ND800NS200 = -10.7393)
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(pdf_binZp4000ND800NS200_mumu_nuis) evaluation error,
+origin       : RooAddPdf::pdf_binZp4000ND800NS200_mumu_nuis[ n_exp_binZp4000ND800NS200_mumu_proc_TT * shapeBkg_TT_Zp4000ND800NS200_mumu_rebinPdf + n_exp_binZp4000ND800NS200_mumu_proc_Zp4000ND800NS200 * shapeSig_Zp4000ND800NS200_Zp4000ND800NS200_mumu_rebinPdf ]
+message      : p.d.f value is less than zero (-0.049176), forcing value to zero
+server values: !refCoefNorm=(), !refCoefNorm=(), !pdfs=(shapeBkg_TT_Zp4000ND800NS200_mumu_rebinPdf = 0.0175251,shapeSig_Zp4000ND800NS200_Zp4000ND800NS200_mumu_rebinPdf = 0.177206), !coefficients=(n_exp_binZp4000ND800NS200_mumu_proc_TT = 36.449,n_exp_binZp4000ND800NS200_mumu_proc_Zp4000ND800NS200 = -10.7393)
+
+Would it be reasonable to think that I have two issues? One that is due to a problematic systematic in my full datacard, and one that is related to the number of expected events going negative, in the simple case?
+Cheers,
+Grace
+[1] /afs/cern.ch/user/g/gcumming/public/debug/Run2_161718_ZllHbbMET_datacard_mumu_Zp4000ND800NS200_Zptcut100.0_Hptcut300.0_metcut75.0_btagwp0.8_lumirateonly_onlyttbarbkg.txt
+----------------------------------------

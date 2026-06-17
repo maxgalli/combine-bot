@@ -1,0 +1,67 @@
+{
+  "topic_id": 140468,
+  "title": "Bin-to-bin correlations in combine",
+  "url": "https://cms-talk.web.cern.ch/t/140468",
+  "category_id": 279,
+  "created_at": "2026-01-06T14:29:29.468Z",
+  "last_posted_at": "2026-01-07T17:46:17.253Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "deschwar",
+      "name": "Dennis Schwarz",
+      "created_at": "2026-01-06T14:29:29.642Z",
+      "updated_at": "2026-01-06T14:29:29.642Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am working on an analysis where each event contributes to multiple bins in a histogram and keeping track of correlations across bins becomes important. I already constructed covariance matrices (Nbins x Nbins) for data and each simulated process which contain the statistical uncertainties and the corresponding correlations. Now I am wondering if there is a way to run combine with this setup. For the simulated processes I can create nuisance parameters that encode the correlations but I am not sure how I would do this for data. As I understand, combine always assumes poisson uncertainties for data. I already tried to construct the RooWorkspace from scratch but run into various problems, such that I would like to ask a few questions first.\nWas something like this done in the past? Is there maybe even an example I can look at? Or is there even functionality in combine to plug in custom covariance matrices? Or are there tools to deal with this?\nThanks and cheers,\nDennis",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am working on an analysis where each event contributes to multiple bins in a histogram and keeping track of correlations across bins becomes important. I already constructed covariance matrices (Nbins x Nbins) for data and each simulated process which contain the statistical uncertainties and the corresponding correlations. Now I am wondering if there is a way to run combine with this setup. For the simulated processes I can create nuisance parameters that encode the correlations but I am not sure how I would do this for data. As I understand, combine always assumes poisson uncertainties for data. I already tried to construct the RooWorkspace from scratch but run into various problems, such that I would like to ask a few questions first.</p>\n<p>Was something like this done in the past? Is there maybe even an example I can look at? Or is there even functionality in combine to plug in custom covariance matrices? Or are there tools to deal with this?</p>\n<p>Thanks and cheers,<br>\nDennis</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2026-01-06T14:49:52.865Z",
+      "updated_at": "2026-01-06T14:49:52.865Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Dennis,\nThis is not something that Combine was ever designed to do and generally it\u2019s not obvious how to do this when regions (bins) are combined that have the same entries. A couple of ideas come to mind, which may help - but its likely that combine is not the right tool for this job,\n\nYou could try to use multivariate datasets and properly model the (conditional if needed) pdf that describes the data. This is useful for example if the event ends up in more than one bin because the bins represent different observables. We have analyses that do this (eg the Higgs 4l) in combine\nYou might be able to explicitly check whether accounting for the correlation or not has any large impact in a simple (Gaussian approximated) version of the analysis. If you can avoid needing to model the dependence of the counts in each bin, it would make things easier. Note that even in the case above (1.), if you are using multiple features from an event that are independent, it doesn\u2019t matter if the event appears in separate bins for those features as the pdf is still factorizable and so the assumptions of combine are satisfied.\n\nSorry I can\u2019t be more helpful,\nNick",
+      "cooked_html": "<p>Hi Dennis,</p>\n<p>This is not something that Combine was ever designed to do and generally it\u2019s not obvious how to do this when regions (bins) are combined that have the same entries. A couple of ideas come to mind, which may help - but its likely that combine is not the right tool for this job,</p>\n<ol>\n<li>You could try to use multivariate datasets and properly model the (conditional if needed) pdf that describes the data. This is useful for example if the event ends up in more than one bin because the bins represent different observables. We have analyses that do this (eg the Higgs 4l) in combine</li>\n<li>You might be able to explicitly check whether accounting for the correlation or not has any large impact in a simple (Gaussian approximated) version of the analysis. If you can avoid needing to model the dependence of the counts in each bin, it would make things easier. Note that even in the case above (1.), if you are using multiple features from an event that are independent, it doesn\u2019t matter if the event appears in separate bins for those features as the pdf is still factorizable and so the assumptions of combine are satisfied.</li>\n</ol>\n<p>Sorry I can\u2019t be more helpful,<br>\nNick</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "ncsmith",
+      "name": "Nick Smith",
+      "created_at": "2026-01-06T16:14:40.953Z",
+      "updated_at": "2026-01-06T16:14:40.953Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "A potential workaround, if the event does not enter into too many bins at once, would be to calculate the expected and observed yield in product-bins representing all the possible exclusive yields, i.e. if event x_i lands in bins B_1,B_3, then it contributes uniquely to the product-bin \\{x: x \\in B_1 \\wedge x \\notin B_2 \\wedge x \\in B_3 \\wedge \\ldots \\}. You\u2019ll end up with a combinatorial explosion of these product-bins, but if you know the event only lands in up to 2 bins it may be manageable.\nOne analysis where this is needed is in energy-energy correlators, SMP-25-009. Perhaps @srothman can share how they approach this. (if I understand their AN correctly it is by making the gaussian approximation, using the observed data to estimate the correlation)",
+      "cooked_html": "<p>A potential workaround, if the event does not enter into too many bins at once, would be to calculate the expected and observed yield in product-bins representing all the possible exclusive yields, i.e. if event <span class=\"math\">x_i</span> lands in bins <span class=\"math\">B_1,B_3</span>, then it contributes uniquely to the product-bin <span class=\"math\">\\{x: x \\in B_1 \\wedge x \\notin B_2 \\wedge x \\in B_3 \\wedge \\ldots \\}</span>. You\u2019ll end up with a combinatorial explosion of these product-bins, but if you know the event only lands in up to 2 bins it may be manageable.</p>\n<p>One analysis where this is needed is in energy-energy correlators, SMP-25-009. Perhaps <a class=\"mention\" href=\"/u/srothman\">@srothman</a> can share how they approach this. (if I understand their AN correctly it is by making the gaussian approximation, using the observed data to estimate the correlation)</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "deschwar",
+      "name": "Dennis Schwarz",
+      "created_at": "2026-01-07T09:55:06.934Z",
+      "updated_at": "2026-01-07T09:55:06.934Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi all,\nThank you very much for your input. This mostly confirms what I was expecting. I am aware of SMP-25-009 and will get in contact with @srothman about the technical details.\nThanks and cheers,\nDennis",
+      "cooked_html": "<p>Hi all,</p>\n<p>Thank you very much for your input. This mostly confirms what I was expecting. I am aware of SMP-25-009 and will get in contact with <a class=\"mention\" href=\"/u/srothman\">@srothman</a> about the technical details.</p>\n<p>Thanks and cheers,<br>\nDennis</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "srothman",
+      "name": "Simon Rothman",
+      "created_at": "2026-01-07T17:46:17.253Z",
+      "updated_at": "2026-01-07T17:46:17.253Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi all,\nIndeed we run into the same problem in SMP-25-009, and are currently running a likelihood fit with our own internal tool (ie not combine). I will follow up with @deschwar about the details.\nSimon",
+      "cooked_html": "<p>Hi all,</p>\n<p>Indeed we run into the same problem in SMP-25-009, and are currently running a likelihood fit with our own internal tool (ie not combine). I will follow up with <a class=\"mention\" href=\"/u/deschwar\">@deschwar</a> about the details.</p>\n<p>Simon</p>"
+    }
+  ]
+}

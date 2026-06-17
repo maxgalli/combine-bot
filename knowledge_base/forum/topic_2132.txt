@@ -1,0 +1,34 @@
+TOPIC: Constraint line with combineCards
+URL: https://cms-talk.web.cern.ch/t/2132
+DATE: 2021-07-27T21:11:48.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by gallim @ 2021-07-27T21:11:48.000Z):
+Dear experts,
+I'm trying to combine these two datacards [1, 2] using the following command:
+$ combineCards.py hww=fullmodel.txt htt=FinalCard_200721_aJXdiY.txt > pth_hww_htt.txt
+The following error is returned:
+Traceback (most recent call last):
+File "/work/gallim/CMSSW/CMSSW_11_2_0_pre10/bin/slc7_amd64_gcc900/combineCards.py", line 108, in <module>
+r = str(errline[b][p]);
+TypeError: list indices must be integers, not str
+After some debugging, it turns out that the offending lines are these ones [3]: the reason is that for this line, errline ends up being a list instead of a dictionary, hence it is impossible to address it elements with the string representing the bin (b in the snippet).
+Should those lines [3] be changed in order to make it work?
+Thank you,
+Massimiliano
+[1] https://gitlab.cern.ch/cms-hcg/cadi/hig-20-015/-/blob/master/HiggsPt/FinalCard_200721_aJXdiY.txt
+[2] https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt
+[3] https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt?expanded=true&viewer=simple#L697-700
+----------------------------------------
+
+REPLY 2 (by amarini @ 2021-07-28T07:48:53.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+these lines are actually for the regularization terms.
+We may indeed need to understand if we have to propagate them in combineCards.
+However, for any practical usage, regularization (and its optimization) will be tight to the final datacard configuration, content, and POIs. So very unlikely need to be used as is in combination of cards.
+In your case, it is likely that the Hgg and Hzz (high resolution) channels will take this step on their shoulder and likely you won't need it. So you can start to remove it. The low-resolution channel will still contribute to the sum of the bins accordingly to their resolution.
+Cheers,
+-Andrea
+----------------------------------------

@@ -1,0 +1,34 @@
+{
+  "topic_id": 20504,
+  "title": "flatParam for rateParam example",
+  "url": "https://cms-talk.web.cern.ch/t/20504",
+  "category_id": 279,
+  "created_at": "2023-02-19T16:03:00.455Z",
+  "last_posted_at": "2023-02-20T10:46:44.330Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2023-02-19T16:03:01.001Z",
+      "updated_at": "2023-02-19T16:03:01.001Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to make a datacard, where rateParam (n5) in one bin is dependent on value in another bin (n4), with some uncertainty (sigmar5)\nn4 rateParam bin1 bkg 10000\nn5 rateParam bin2 bkg (@0*0.25*@1) n4,sigmar5\n#sigmar5 param 1 0.02\nsigmar5 flatParam 1 0.02\n\nIf I set sigmar5 uncertainty as param (normally distributed value), the fit works fine, but if I try to make it flat declaring as flatParam, combine throws an error.\n[['n5', '(@0*0.25*@1)', 'n4,sigmar5']]  ->  [['n5', '(@0*0.25*@1)', 'n4,sigmar5']]\n...\nRuntimeError: Cannot produce following rateParams (dependent parameters not found!) n5\n\nUnfortunately the tutorial doesn\u2019t specify the input format for flatParam.\nCould you please suggest if there is any example of Datacard where such floating parameter is used?\nkind regards,\nAnton",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to make a datacard, where rateParam (n5) in one bin is dependent on value in another bin (n4), with some uncertainty (sigmar5)</p>\n<pre><code class=\"lang-auto\">n4 rateParam bin1 bkg 10000\nn5 rateParam bin2 bkg (@0*0.25*@1) n4,sigmar5\n#sigmar5 param 1 0.02\nsigmar5 flatParam 1 0.02\n</code></pre>\n<p>If I set sigmar5 uncertainty as param (normally distributed value), the fit works fine, but if I try to make it flat declaring as flatParam, combine throws an error.</p>\n<pre><code class=\"lang-auto\">[['n5', '(@0*0.25*@1)', 'n4,sigmar5']]  -&gt;  [['n5', '(@0*0.25*@1)', 'n4,sigmar5']]\n...\nRuntimeError: Cannot produce following rateParams (dependent parameters not found!) n5\n</code></pre>\n<p>Unfortunately the tutorial doesn\u2019t specify the input format for flatParam.<br>\nCould you please suggest if there is any example of Datacard where such floating parameter is used?</p>\n<p>kind regards,<br>\nAnton</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-02-20T10:46:44.330Z",
+      "updated_at": "2023-02-20T10:46:44.330Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Anton,\nIf you want to use a parameter inside rateParam function and this parameter is not itself a  rateParam or param, you should add an additional line:\nsigmar5 extArg  1. [min, max]\n\nbefore your line:\nn5 rateParam bin2 bkg (@0*0.25*@1) n4,sigmar5\n\nIt is briefly described here under the Extra arguments section.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Anton,</p>\n<p>If you want to use a parameter inside rateParam function and this parameter is not itself a  rateParam or param, you should add an additional line:</p>\n<pre><code class=\"lang-auto\">sigmar5 extArg  1. [min, max]\n</code></pre>\n<p>before your line:</p>\n<pre><code class=\"lang-auto\">n5 rateParam bin2 bkg (@0*0.25*@1) n4,sigmar5\n</code></pre>\n<p>It is briefly described <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters\" rel=\"noopener nofollow ugc\">here</a> under the <em>Extra arguments</em> section.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+TOPIC: Restrict range of nuisance parameter parametrizing an efficiency
+URL: https://cms-talk.web.cern.ch/t/21126
+DATE: 2023-03-07T07:41:31.968Z
+SOLVED: no
+============================================================
+
+QUESTION (by swieland @ 2023-03-07T07:41:32.517Z):
+Dear combine experts,
+In our hadronic mono-top analysis, we are deploying top tagging techniques on AK15 jets to enhance in the signal.
+Basically, we require the leading AK15 to be top-tagged.
+The corresponding tagging and mistagging efficiencies in data are derived in an auxiliary measurement.
+For the application in the analysis, we chose to directly reweight the efficiency in MC to the ones observed in data.
+Consequently, we incorporate a nuisance parameter, parametrizing the uncertainty on the efficiency due to the limited precision of the auxiliary measurement.
+When running the fit, we observe pulls on this top tag nuisance parameter such that the “post-fit efficiency” would be larger than 1.
+Our first naive approach was to restrict the range of this nuisance parameter via
+--setParameterRanges TopTag_2018=-1,1
+
+Combine also states that the range is set accordingly:
+Set Range of Parameter TopTag_2018 To : (-1,1)
+
+However, the post-fit value of this parameter remains larger than one.
+I assume the --setParameterRanges command only works for freely-floating parameters, not nuisances.
+Is there a way to tell combine to restrict the allowed range of nuisance parameters?
+Cheers and thanks in advance for the help;
+Sebastian
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-03-07T09:06:57.777Z):
+Hi Sebastian,
+If you’re using FitDiagnostics or MultiDimFit, there is an optimisation that removes the bounds on constrained nuisance parameters - this might be the issue. You can try adding --X-rtd OPTIMIZE_BOUNDS=0 to disable this.
+As an aside, there are some potential issues with enforcing boundaries on parameters in this way, e.g. the usual asymptotic approximation of the profile likelihood test stat. distribution may not hold. Minuit might also have more difficulty calculating an accurate covariance matrix. And if the pull on the parameter is substantially larger than one, it could indicate some other missing source of systematic uncertainty in the model.
+cheers,
+Andrew
+----------------------------------------

@@ -1,0 +1,89 @@
+{
+  "topic_id": 2113,
+  "title": "Help with writing PhysicsModel for tagging scale factor derivation",
+  "url": "https://cms-talk.web.cern.ch/t/2113",
+  "category_id": 279,
+  "created_at": "2021-07-12T11:22:47.000Z",
+  "last_posted_at": "2021-07-23T08:00:39.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "cmatthie",
+      "name": "Christopher Matthies",
+      "created_at": "2021-07-12T11:22:47.000Z",
+      "updated_at": "2023-01-30T15:31:07.396Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Combine Experts,\nI need help with writing a PhysicsModel (or finding an already existing one) for the following problem:\nI want to measure some tagging scale factors. For that, I divide my events into a pass (tagged) and a fail (not tagged) region (in Combine language: there a two channels). Thus, I simultaneously fit two histograms corresponding to the pass and fail region, respectively. There a three 'signal' categories, called fully merged, semi-merged, and not merged which are supposed to be freely floating in the fit (more details in the formulas below). All other processes ('backgrounds') have fixed yields.\nLet me write down the model I have in mind with some formulas:\nLet N_(pass/fail)_(pre/post)_(fully/semi/not) be the yield of the fully merged signal in the prefit pass category etc.\nLet r_xsec be the rate of the signal, shared between all three signal categories.\nLet s_(fully/semi/not) be the tagging scale factor for the specific signal category.\nLet a_(fully/semi/not) be the \"anti-tagging\" scale factor for the specific signal category. a is a function of s: a = a(s) = 1 + (1 - s) * N_pass_pre / N_fail_pre. For the fully merged signal, this reads: a_fully(s_fully) = 1 + (1 - s_fully) * N_pass_pre_fully / N_fail_pre_fully.\nNB: The reason that a(s) is not independent but a function of s is that I want the overall normalization of the signal (i.e. N_pass_post + N_fail_post) to be independent of the scale factor. This is ensured by this defintion of a(s).\nThe model itself now reads:\nr_xsec * (N_pass_pre_fully * s_fully + N_fail_pre_fully * a_fully(s_fully)) = N_pass_post_fully + N_fail_post_fully\nr_xsec * (N_pass_pre_semi * s_semi + N_fail_pre_semi * a_semi(s_semi)) = N_pass_post_semi + N_fail_post_semi\nr_xsec * (N_pass_pre_not * s_not + N_fail_pre_not * a_not(s_not)) = N_pass_post_not + N_fail_post_not\nIn the end, I want to have seven parameters of interest (POI):\na/s_(fully/semi/not) and r_xsec.\nIn case that I described the model that I want not sufficiently, let me know.\nIs there an already existing model that does exactly what I ask for?\nIf not, I am not so sure how to write it myself and some hints are highly appreciated. I am aware of the Combine manual page about PhysicsModels [1] and the corresponding Combine source code [2].\nCheers,\nChristopher\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels.html\n[2] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/python/PhysicsModel.py",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Combine Experts,<br>\nI need help with writing a PhysicsModel (or finding an already existing one) for the following problem:</p>\n<p>I want to measure some tagging scale factors. For that, I divide my events into a pass (tagged) and a fail (not tagged) region (in Combine language: there a two channels). Thus, I simultaneously fit two histograms corresponding to the pass and fail region, respectively. There a three 'signal' categories, called fully merged, semi-merged, and not merged which are supposed to be freely floating in the fit (more details in the formulas below). All other processes ('backgrounds') have fixed yields.</p>\n<p>Let me write down the model I have in mind with some formulas:</p>\n<p>Let N_(pass/fail)_(pre/post)_(fully/semi/not) be the yield of the fully merged signal in the prefit pass category etc.<br>\nLet r_xsec be the rate of the signal, shared between all three signal categories.<br>\nLet s_(fully/semi/not) be the tagging scale factor for the specific signal category.<br>\nLet a_(fully/semi/not) be the \"anti-tagging\" scale factor for the specific signal category. a is a function of s: a = a(s) = 1 + (1 - s) * N_pass_pre / N_fail_pre. For the fully merged signal, this reads: a_fully(s_fully) = 1 + (1 - s_fully) * N_pass_pre_fully / N_fail_pre_fully.<br>\nNB: The reason that a(s) is not independent but a function of s is that I want the overall normalization of the signal (i.e. N_pass_post + N_fail_post) to be independent of the scale factor. This is ensured by this defintion of a(s).</p>\n<p>The model itself now reads:</p>\n<p>r_xsec * (N_pass_pre_fully * s_fully + N_fail_pre_fully * a_fully(s_fully)) = N_pass_post_fully + N_fail_post_fully<br>\nr_xsec * (N_pass_pre_semi * s_semi + N_fail_pre_semi * a_semi(s_semi)) = N_pass_post_semi + N_fail_post_semi<br>\nr_xsec * (N_pass_pre_not * s_not + N_fail_pre_not * a_not(s_not)) = N_pass_post_not + N_fail_post_not</p>\n<p>In the end, I want to have seven parameters of interest (POI):<br>\na/s_(fully/semi/not) and r_xsec.</p>\n<p>In case that I described the model that I want not sufficiently, let me know.</p>\n<p>Is there an already existing model that does exactly what I ask for?<br>\nIf not, I am not so sure how to write it myself and some hints are highly appreciated. I am aware of the Combine manual page about PhysicsModels [1] and the corresponding Combine source code [2].</p>\n<p>Cheers,<br>\nChristopher</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels.html\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels.html</a><br>\n[2] <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/python/PhysicsModel.py\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/python/PhysicsModel.py</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-07-12T14:02:45.000Z",
+      "updated_at": "2021-11-17T08:36:18.902Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Christopher,\nI don't think there is a model in Combine that does exactly what you\nwant - the closest I can think of is this model [*] which has a single\npass and fail region, so it's not as involved as what you want to do.\nHowever, maybe it gives you an idea as to how to adapt it to your needs.\nIn addition, if you haven't done so yet I would suggest following the\ntutorial on writing custom physics models [**]. This is again a much\nsimpler case than what you want to do, but will be helpful to go through\nif you have never written a physics model before.\nFinally, in the model that you describe isn't 'a' fully defined by the\nvalue of 's'? Doesn't that mean you have 4 POIs instead of 7?\nHope this helps,\nAdinda\n[*]\nhttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/TagAndProbeModel.py\n[**]\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#part-4-physics-models",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Christopher,</p>\n<p>I don't think there is a model in Combine that does exactly what you<br>\nwant - the closest I can think of is this model [*] which has a single<br>\npass and fail region, so it's not as involved as what you want to do.<br>\nHowever, maybe it gives you an idea as to how to adapt it to your needs.</p>\n<p>In addition, if you haven't done so yet I would suggest following the<br>\ntutorial on writing custom physics models [**]. This is again a much<br>\nsimpler case than what you want to do, but will be helpful to go through<br>\nif you have never written a physics model before.</p>\n<p>Finally, in the model that you describe isn't 'a' fully defined by the<br>\nvalue of 's'? Doesn't that mean you have 4 POIs instead of 7?</p>\n<p>Hope this helps,<br>\nAdinda</p>\n<p>[*]<br>\n<a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/TagAndProbeModel.py\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/TagAndProbeModel.py</a><br>\n[**]<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#part-4-physics-models\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#part-4-physics-models</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gouskos",
+      "name": "Loukas Gouskos",
+      "created_at": "2021-07-12T14:35:57.000Z",
+      "updated_at": "2021-11-17T08:36:20.527Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi Christopher;\nI think you can use the physics model [0] we used for the calibration of the taggers in the context of JME-18-002.\nWe used a very similar categorisation.\nBest regards,\nLoukas\n[0] https://gitlab.cern.ch/gouskos/boostedjetcalibration/-/blob/master/TagAndProbeExtended.py",
+      "cooked_html": "<p>Hi Christopher;</p>\n<p>I think you can use the physics model [0] we used for the calibration of the taggers in the context of JME-18-002.<br>\nWe used a very similar categorisation.</p>\n<p>Best regards,<br>\nLoukas</p>\n<p>[0] <a href=\"https://gitlab.cern.ch/gouskos/boostedjetcalibration/-/blob/master/TagAndProbeExtended.py\" class=\"inline-onebox-loading\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/gouskos/boostedjetcalibration/-/blob/master/TagAndProbeExtended.py</a></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "cmatthie",
+      "name": "Christopher Matthies",
+      "created_at": "2021-07-14T13:48:07.000Z",
+      "updated_at": "2021-11-17T08:36:20.745Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nThank you very much for your answer and the code example, Loukas! With\nthat input I was able to write the desired PhysicsModel.\nCheers, Christopher",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Thank you very much for your answer and the code example, Loukas! With<br>\nthat input I was able to write the desired PhysicsModel.</p>\n<p>Cheers, Christopher</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "cmatthie",
+      "name": "Christopher Matthies",
+      "created_at": "2021-07-14T14:32:33.000Z",
+      "updated_at": "2021-11-17T08:36:20.951Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nThank you for your answer, Adinda! Your and Loukas' input helped me with\nwriting the model I wanted.\nRegarding the number of POIs: Your are correct that there are only 4\nindependent POIs in that specific model. I tried to also add the 'a(s)'\nparameters as POIs, but they seem to be not recognized as POIs when\ncreating the workspace; when inspecting the workspace (root[0]\nw->Print()), only the 's' parameters are listed as POIs. From what I\nhave seen so far, I would assume that it really is not possible to add\nmore POIs than 'degrees of freedom'. Is that correct? If so, why? I\ndon't see a reason why that should not be possible in principle. The\nonly workaround for also getting the post-fit values of 'a(s)' directly\nfrom Combine, that I can spontaneously think of, is to re-run Combine,\nusing a variation of the PhysicsModel where 'a' are set as POIs and 's'\nare not.\nCheers, Christopher",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Thank you for your answer, Adinda! Your and Loukas' input helped me with<br>\nwriting the model I wanted.</p>\n<p>Regarding the number of POIs: Your are correct that there are only 4<br>\nindependent POIs in that specific model. I tried to also add the 'a(s)'<br>\nparameters as POIs, but they seem to be not recognized as POIs when<br>\ncreating the workspace; when inspecting the workspace (root[0]<br>\nw-&gt;Print()), only the 's' parameters are listed as POIs. From what I<br>\nhave seen so far, I would assume that it really is not possible to add<br>\nmore POIs than 'degrees of freedom'. Is that correct? If so, why? I<br>\ndon't see a reason why that should not be possible in principle. The<br>\nonly workaround for also getting the post-fit values of 'a(s)' directly<br>\nfrom Combine, that I can spontaneously think of, is to re-run Combine,<br>\nusing a variation of the PhysicsModel where 'a' are set as POIs and 's'<br>\nare not.</p>\n<p>Cheers, Christopher</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-07-14T15:09:20.000Z",
+      "updated_at": "2021-11-17T08:36:21.270Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nyou just need to define the set of pois here (if they are free variables):\nhttps://gitlab.cern.ch/gouskos/boostedjetcalibration/-/blob/master/TagAndProbeExtended.py#L31 [*]\nWhat you want to check if you will be able to fit all the degrees of freedom you put. This depends on how many categories you are fitting simultaneously, and if there is sensitivity (difference) to the shape in what is controlled by the different degrees of freedom.\n-Andrea\n[*] notice that this set can be override by command line, --redefineSignalPOIs. But you probably want a clean model.",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>you just need to define the set of pois here (if they are free variables):<br>\n<a href=\"https://gitlab.cern.ch/gouskos/boostedjetcalibration/-/blob/master/TagAndProbeExtended.py#L31\" class=\"inline-onebox-loading\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/gouskos/boostedjetcalibration/-/blob/master/TagAndProbeExtended.py#L31</a> [*]</p>\n<p>What you want to check if you will be able to fit all the degrees of freedom you put. This depends on how many categories you are fitting simultaneously, and if there is sensitivity (difference) to the shape in what is controlled by the different degrees of freedom.</p>\n<p>-Andrea<br>\n[*] notice that this set can be override by command line, --redefineSignalPOIs. But you probably want a clean model.</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-07-23T08:00:39.000Z",
+      "updated_at": "2021-11-17T08:36:21.532Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Christopher,\nI don't think there is a model in Combine that does exactly what you\nwant - the closest I can think of is this model [*] which has a single\npass and fail region, so it's not as involved as what you want to do.\nHowever, maybe it gives you an idea as to how to adapt it to your needs.\nIn addition, if you haven't done so yet I would suggest following the\ntutorial on writing custom physics models [**]. This is again a much\nsimpler case than what you want to do, but will be helpful to go through\nif you have never written a physics model before.\nFinally, in the model that you describe isn't 'a' fully defined by the\nvalue of 's'? Doesn't that mean you have 4 POIs instead of 7?\nHope this helps,\nAdinda\n[*]\nhttps://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/TagAndProbeModel.py\n[**]\nhttps://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#part-4-physics-models",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Christopher,</p>\n<p>I don't think there is a model in Combine that does exactly what you<br>\nwant - the closest I can think of is this model [*] which has a single<br>\npass and fail region, so it's not as involved as what you want to do.<br>\nHowever, maybe it gives you an idea as to how to adapt it to your needs.</p>\n<p>In addition, if you haven't done so yet I would suggest following the<br>\ntutorial on writing custom physics models [**]. This is again a much<br>\nsimpler case than what you want to do, but will be helpful to go through<br>\nif you have never written a physics model before.</p>\n<p>Finally, in the model that you describe isn't 'a' fully defined by the<br>\nvalue of 's'? Doesn't that mean you have 4 POIs instead of 7?</p>\n<p>Hope this helps,<br>\nAdinda</p>\n<p>[*]<br>\n<a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/TagAndProbeModel.py\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/python/TagAndProbeModel.py</a><br>\n[**]<br>\n<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#part-4-physics-models\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#part-4-physics-models</a></p>"
+    }
+  ]
+}

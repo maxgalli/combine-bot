@@ -1,0 +1,67 @@
+{
+  "topic_id": 116807,
+  "title": "A report on a problem from Combine",
+  "url": "https://cms-talk.web.cern.ch/t/116807",
+  "category_id": 279,
+  "created_at": "2025-02-26T12:58:13.957Z",
+  "last_posted_at": "2025-04-16T13:22:25.540Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "zhguo",
+      "name": "Zhengliang Guo",
+      "created_at": "2025-02-26T12:58:14.317Z",
+      "updated_at": "2025-02-26T12:58:14.317Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts, I\u2019m writing to report a problem encountered when using combine:\n-I\u2019m using el9, CMSSW_14_1_0_pre4 as my setup environment, I guess the combine version is 10(but not very sure)\nThe el9 combine cannot understand an expression with more than one variable with the same name. For example, in the br_scaling function:\nself.make_expr(\u201cexpr::{}(\u2018@0 * @1 * @2 * @3\u2019, {}, {}, {}, {})\u201d.format( xsbr_scaling, xs_scaling, br_scalings[0], br_scalings[1], br_scalings[2],))\nWhere all the br_scalings are \u201cCVktkl_BRscal_hbb\u201d, the el9 combine will crash when running this function.\nAlso, the same problem occurs with constants, like in the function below:\nSelf.make_scaling(\u201cggH\u201d, Cb=\u201d1\u201d, Ctop=\u201dkt\u201d, Cc=\u201d1\u201d)\nWith both Cb and Cc defined as \u201c1\u201d, the function fails, this may also happen when I call functions in SMHiggsBuilder in combine.\nThis problem does not exist in the el7 combine, which is used by inference, but I still preserved the changes to the model aiming to running with el9 combine when testing. In the meantime, it seems keeping things as is and using CMSSW_14_0_0_pre1 and sticking to combine -v9.1.0 seems to work for el9 as well\nCommands used:\ntext2workspace.py kl_scan/ProbHHH6b_3bh0h_inclusive_kappa_mod_rename.txt -P HiggsAnalysis.CombinedLimit.hh_model_basisV3:model_hhh_ggf --mass=125 -o workspace_ggf_rename.root\ncombine -M MultiDimFit -t -1 --algo grid -d workspace_inference_d3h.root --mass=125 --setParameterRanges kl=-300,300 --redefineSignalPOIs kl --setParameters r=1,r_gghh=1,r_gghhh=1,kt=1,k4=1,kl=1,CV=1 --freezeParameters r,r_gghh,r_gghhh,k4,kt,CV -n combined_rename_asi.root --saveWorkspace --verbose 3 \u2013saveNLL\nThe command with crash because of the problem mentioned above.\nThe crash is because the workspace from text2workspace is a broken one, while no error is reported in the text2workspace step.\nThe model and cards used are attached below:\nProbHHH6b_3bh0h_inclusive_kappa_mod_cn.root (17.0 KB)\nProbHHH6b_3bh0h_inclusive_kappa_mod_rename.txt (2.9 KB)\nhh_model_basisV3.py (87.1 KB)",
+      "cooked_html": "<p>Dear experts, I\u2019m writing to report a problem encountered when using combine:</p>\n<p>-I\u2019m using el9, CMSSW_14_1_0_pre4 as my setup environment, I guess the combine version is 10(but not very sure)</p>\n<p>The el9 combine cannot understand an expression with more than one variable with the same name. For example, in the br_scaling function:</p>\n<p>self.make_expr(\u201cexpr::{}(\u2018<span class=\"mention\">@0</span> * <span class=\"mention\">@1</span> * <span class=\"mention\">@2</span> * <span class=\"mention\">@3</span>\u2019, {}, {}, {}, {})\u201d.format( xsbr_scaling, xs_scaling, br_scalings[0], br_scalings[1], br_scalings[2],))</p>\n<p>Where all the br_scalings are \u201cCVktkl_BRscal_hbb\u201d, the el9 combine will crash when running this function.</p>\n<p>Also, the same problem occurs with constants, like in the function below:</p>\n<p>Self.make_scaling(\u201cggH\u201d, Cb=\u201d1\u201d, Ctop=\u201dkt\u201d, Cc=\u201d1\u201d)</p>\n<p>With both Cb and Cc defined as \u201c1\u201d, the function fails, this may also happen when I call functions in SMHiggsBuilder in combine.</p>\n<p>This problem does not exist in the el7 combine, which is used by inference, but I still preserved the changes to the model aiming to running with el9 combine when testing. In the meantime, it seems keeping things as is and using CMSSW_14_0_0_pre1 and sticking to combine -v9.1.0 seems to work for el9 as well</p>\n<p>Commands used:<br>\ntext2workspace.py kl_scan/ProbHHH6b_3bh0h_inclusive_kappa_mod_rename.txt -P HiggsAnalysis.CombinedLimit.hh_model_basisV3:model_hhh_ggf --mass=125 -o workspace_ggf_rename.root</p>\n<p>combine -M MultiDimFit -t -1 --algo grid -d workspace_inference_d3h.root --mass=125 --setParameterRanges kl=-300,300 --redefineSignalPOIs kl --setParameters r=1,r_gghh=1,r_gghhh=1,kt=1,k4=1,kl=1,CV=1 --freezeParameters r,r_gghh,r_gghhh,k4,kt,CV -n combined_rename_asi.root --saveWorkspace --verbose 3 \u2013saveNLL</p>\n<p>The command with crash because of the problem mentioned above.</p>\n<p>The crash is because the workspace from text2workspace is a broken one, while no error is reported in the text2workspace step.</p>\n<p>The model and cards used are attached below:</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/prSoVefeYpzdCvLG1A3692oBZ9u.root\">ProbHHH6b_3bh0h_inclusive_kappa_mod_cn.root</a> (17.0 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/l8qMpjtEtyxwolFBtV5WU7923T.txt\">ProbHHH6b_3bh0h_inclusive_kappa_mod_rename.txt</a> (2.9 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/te5yFu58iDOwPCZtV9nED9h03GS.py\">hh_model_basisV3.py</a> (87.1 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-03-13T10:31:07.161Z",
+      "updated_at": "2025-03-13T10:31:07.161Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi @zhguo ,\nsorry for the late reply. Can you open an issue in the github repo for combine? I think it\u2019s easier to track potential fixes that way.\nCheers,\nPhilip",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/zhguo\">@zhguo</a> ,</p>\n<p>sorry for the late reply. Can you open an issue in the <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit\" rel=\"noopener nofollow ugc\">github repo</a> for combine? I think it\u2019s easier to track potential fixes that way.</p>\n<p>Cheers,<br>\nPhilip</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "zhguo",
+      "name": "Zhengliang Guo",
+      "created_at": "2025-04-09T09:10:23.987Z",
+      "updated_at": "2025-04-09T09:10:23.987Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear @pkeicher ,\nThank you very much for your response and sorry for this delayed follow up. I opened an issue here. Thank you very much for looking into it!\nBest regards,\nZhengliang",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/pkeicher\">@pkeicher</a> ,</p>\n<p>Thank you very much for your response and sorry for this delayed follow up. I opened an issue <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues/1069\" rel=\"noopener nofollow ugc\">here</a>. Thank you very much for looking into it!</p>\n<p>Best regards,<br>\nZhengliang</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-04-10T13:08:33.157Z",
+      "updated_at": "2025-04-10T13:08:33.157Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Zhengliang,\nThanks for posting the issue, I am answering here because I do not think that it is Combine issue. I I think you are not using the physics model syntax in the intended way. The reason it stopped working with the recent CMSSW version is due to the significant refactoring of RooFormulaVar class since ROOT 6.30. In this case, where you want to set \\kappa_b to 1 and freeze it I would recommend creating a const \\kappa_b variable self.modelBuilder.factory_(\"kb[1.0]\")and then parsing it to the model, but I think you should avoid this syntax :\n\nZhengliang Guo:\n\nself.make_scaling(\u201cggH\u201d, Cb=\u201d1\u201d, Ctop=\u201dkt\u201d, Cc=\u201d1\u201d)\n\nBest,\nAliya",
+      "cooked_html": "<p>Dear Zhengliang,</p>\n<p>Thanks for posting the issue, I am answering here because I do not think that it is Combine issue. I I think you are not using the physics model syntax in the intended way. The reason it stopped working with the recent CMSSW version is due to the significant refactoring of <code>RooFormulaVar</code> class since ROOT 6.30. In this case, where you want to set <span class=\"math\">\\kappa_b</span> to 1 and freeze it I would recommend creating a const <span class=\"math\">\\kappa_b</span> variable <code>self.modelBuilder.factory_(\"kb[1.0]\")</code>and then parsing it to the model, but I think you should avoid this syntax :</p>\n<aside class=\"quote no-group quote-modified\" data-username=\"zhguo\" data-post=\"1\" data-topic=\"116807\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/z/71e660/48.png\" class=\"avatar\"> Zhengliang Guo:</div>\n<blockquote>\n<p>self.make_scaling(\u201cggH\u201d, Cb=\u201d1\u201d, Ctop=\u201dkt\u201d, Cc=\u201d1\u201d)</p>\n</blockquote>\n</aside>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "zhguo",
+      "name": "Zhengliang Guo",
+      "created_at": "2025-04-16T13:22:25.540Z",
+      "updated_at": "2025-04-16T13:22:25.540Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nThank you very much for your suggestion, this is indeed a way to make the scripts run. Thanks a lot for your help!\nBest regards,\nZhengliang",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Thank you very much for your suggestion, this is indeed a way to make the scripts run. Thanks a lot for your help!</p>\n<p>Best regards,<br>\nZhengliang</p>"
+    }
+  ]
+}

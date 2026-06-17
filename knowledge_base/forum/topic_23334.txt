@@ -1,0 +1,25 @@
+TOPIC: Fitting the ratio of two signal strenghts
+URL: https://cms-talk.web.cern.ch/t/23334
+DATE: 2023-04-27T12:04:51.719Z
+SOLVED: no
+============================================================
+
+QUESTION (by soffi @ 2023-04-27T12:04:52.056Z):
+Dear Combine experts,
+i am writing to get some support from you  for the following task.
+In our group we are performing an analysis in the context of BPH in which we want to measure the Ratio (R) of two signal yields R=Nsig(A)/Nsig(B). Basically process B is a normalization process and measuring R allows us to to simply several syst unc associated to the two processes.
+We would like to use combine to fit the two signal yields simultaneously. Each of them is a shape analysis with a signal pdf and a bkg pdf fitting a bump in a mass distribution. We would like to understand how we could “connect” signal A to signal B, let combine fit the two signal strenght and effectively have as POI directly the Ratio.
+Please let me know if I was not clear and if you think this is feasible.
+Thanks for your precious support!!
+Livia
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-04-28T13:32:54.196Z):
+Dear Livia,
+If you want to measure the ratio of signal strengths you can use multiSignalModel physics model implemented in combine. To setup the datacards you can follow the instructions on parametric models from the last combine tutorial. The ratio parameter can be added through the expression feature:
+text2workspace.py datacard.txt -m 125 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel  --PO map='.*/sig1:r_sig1[1,0,10]' --PO map='.*/sig2:r_sig2=expr;;r_sig2("@0*@1",r_sig1,ratio[1.,0,2.])'
+
+In principle you can also parametrise the signal normalisations directly as described here. Hope it helps, let me know if you have more questions.
+Best,
+Aliya
+----------------------------------------

@@ -1,0 +1,34 @@
+{
+  "topic_id": 2132,
+  "title": "Constraint line with combineCards",
+  "url": "https://cms-talk.web.cern.ch/t/2132",
+  "category_id": 279,
+  "created_at": "2021-07-27T21:11:48.000Z",
+  "last_posted_at": "2021-07-28T07:48:53.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "gallim",
+      "name": "Massimiliano Galli",
+      "created_at": "2021-07-27T21:11:48.000Z",
+      "updated_at": "2023-02-07T10:55:37.386Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI'm trying to combine these two datacards [1, 2] using the following command:\n$ combineCards.py hww=fullmodel.txt htt=FinalCard_200721_aJXdiY.txt > pth_hww_htt.txt\nThe following error is returned:\nTraceback (most recent call last):\nFile \"/work/gallim/CMSSW/CMSSW_11_2_0_pre10/bin/slc7_amd64_gcc900/combineCards.py\", line 108, in <module>\nr = str(errline[b][p]);\nTypeError: list indices must be integers, not str\nAfter some debugging, it turns out that the offending lines are these ones [3]: the reason is that for this line, errline ends up being a list instead of a dictionary, hence it is impossible to address it elements with the string representing the bin (b in the snippet).\nShould those lines [3] be changed in order to make it work?\nThank you,\nMassimiliano\n[1] https://gitlab.cern.ch/cms-hcg/cadi/hig-20-015/-/blob/master/HiggsPt/FinalCard_200721_aJXdiY.txt\n[2] https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt\n[3] https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt?expanded=true&viewer=simple#L697-700",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I'm trying to combine these two datacards [1, 2] using the following command:</p>\n<p>$ combineCards.py hww=fullmodel.txt htt=FinalCard_200721_aJXdiY.txt &gt; pth_hww_htt.txt</p>\n<p>The following error is returned:</p>\n<p>Traceback (most recent call last):<br>\nFile \"/work/gallim/CMSSW/CMSSW_11_2_0_pre10/bin/slc7_amd64_gcc900/combineCards.py\", line 108, in &lt;module&gt;<br>\nr = str(errline[b][p]);<br>\nTypeError: list indices must be integers, not str</p>\n<p>After some debugging, it turns out that the offending lines are these ones [3]: the reason is that for this line, errline ends up being a list instead of a dictionary, hence it is impossible to address it elements with the string representing the bin (b in the snippet).</p>\n<p>Should those lines [3] be changed in order to make it work?</p>\n<p>Thank you,</p>\n<p>Massimiliano</p>\n<p>[1] <a href=\"https://gitlab.cern.ch/cms-hcg/cadi/hig-20-015/-/blob/master/HiggsPt/FinalCard_200721_aJXdiY.txt\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-hcg/cadi/hig-20-015/-/blob/master/HiggsPt/FinalCard_200721_aJXdiY.txt</a></p>\n<p>[2] <a href=\"https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt</a></p>\n<p>[3] <a href=\"https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt?expanded=true&amp;viewer=simple#L697-700\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-hcg/cadi/hig-19-002/-/blob/master/ptH/fullmodel.txt?expanded=true&amp;viewer=simple#L697-700</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-07-28T07:48:53.000Z",
+      "updated_at": "2021-11-17T08:36:46.107Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nthese lines are actually for the regularization terms.\nWe may indeed need to understand if we have to propagate them in combineCards.\nHowever, for any practical usage, regularization (and its optimization) will be tight to the final datacard configuration, content, and POIs. So very unlikely need to be used as is in combination of cards.\nIn your case, it is likely that the Hgg and Hzz (high resolution) channels will take this step on their shoulder and likely you won't need it. So you can start to remove it. The low-resolution channel will still contribute to the sum of the bins accordingly to their resolution.\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>these lines are actually for the regularization terms.</p>\n<p>We may indeed need to understand if we have to propagate them in combineCards.</p>\n<p>However, for any practical usage, regularization (and its optimization) will be tight to the final datacard configuration, content, and POIs. So very unlikely need to be used as is in combination of cards.</p>\n<p>In your case, it is likely that the Hgg and Hzz (high resolution) channels will take this step on their shoulder and likely you won't need it. So you can start to remove it. The low-resolution channel will still contribute to the sum of the bins accordingly to their resolution.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    }
+  ]
+}

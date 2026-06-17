@@ -1,0 +1,79 @@
+TOPIC: Discrete profiling with RooParametricHists
+URL: https://cms-talk.web.cern.ch/t/9683
+DATE: 2022-04-25T15:54:04.477Z
+SOLVED: no
+============================================================
+
+QUESTION (by friti @ 2022-04-25T15:54:04.663Z):
+Dear Experts,
+We are performing a fit with combine that includes a bkg that is a RooParametricHist [0] [1]. This bkg is defined in a control region and used in the signal region.
+We would like to give the fit two different options from two different control regions for this bkg. After exploring the manual, we thought of using the discrete profiling option [2], but it seems to work only with PDFs. Is it possible to use this option with histograms instead of PDFs? And, more specifically, do you think it is possible to use it with RooParametricHists?
+Thanks a lot in advance,
+Federica Riti
+[0] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes
+[1] https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1476/2.html
+[2] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-04-26T07:34:33.774Z):
+Hi Federica,
+So RooParametricHist is a RooFit pdf, and I think in principle it could be fed in to a RooMultiPdf alongside an alternative RooParametricHist. I’m not aware that anyone ever used RooMultiPdf or discrete profiling with binned distributions however, and maybe there are some technical issues that would pop up along the way.
+If I understand correctly you would have:
+CR1 - RooParametricHist A, with free parameters, one per bin (?) a_i
+CR2 - RooParametricHist B, with free parameters b_i
+SR - RooMultiPdf { RooParametricHist SR_A (functions of a_i), RooParametricHist SR_B (functions of b_i) }
+And the idea is in the discrete profiling you will let the fit find which of the two extrapolations (CR1 → SR) or (CR2 → SR) works best?
+It’s an interesting approach - If you go ahead with it it might be useful to start with a simplified test case, to see if it works as expected. I’d be interested to know the outcome.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by friti @ 2022-04-26T13:43:33.676Z):
+Dear Andrew,
+Thanks a lot for your reply, it was very useful!
+You understood the problem correctly, I am trying to implement exactly that.
+I started with a simplified problem as you suggested, and I found a technical issue that I don’t know how to solve.
+Here [0] you can find the workspace and datacards for this test if you want to have a look. In this first test I am requiring the two Control Regions to be exactly the same, CR1=CR2, so I expect the result of the fit with the discrete profiling to be the same of the fit without it.
+In this simple test I can choose as normalisation of the RooMultiPdf the sum of the bins of the RooParametricHist from one of the two CRs [1] (to keep the problem super simple, the Transfer Factor is set to 1), and the results are as expected.
+The problem is that in the real case I will have two different normalisations for SR_A [2] and SR_B [3], given by the corresponding A and B in the CRs. Do you know if it is possible to give RooMultiPdf two different choices of normalisation, depending on which PDF the fit is considering?
+We already tried to give RooExtendPdf as input of the RooMultiPdf variable [4], but it doesn’t seem to work properly.
+Thanks a lot,
+Federica
+[0] https://github.com/friti/discrete_profiling_test
+[1] https://github.com/friti/discrete_profiling_test/blob/cdaee3026aedcff48aec803bd14d3095e3123fd8/examplews.C#L126
+[2] https://github.com/friti/discrete_profiling_test/blob/cdaee3026aedcff48aec803bd14d3095e3123fd8/examplews.C#L90
+[3] https://github.com/friti/discrete_profiling_test/blob/cdaee3026aedcff48aec803bd14d3095e3123fd8/examplews.C#L105
+[4] https://github.com/friti/discrete_profiling_test/blob/cdaee3026aedcff48aec803bd14d3095e3123fd8/examplews.C#L91
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-04-27T13:11:30.205Z):
+Hi Federica,
+Ok yes, so indeed this is an issue. I don’t think the RooExtendPdf approach will work very easily, would require modifying quite a few parts of combine. Other option is to leave the overall normalisation floating with a free parameter, but I guess this is also not what you want to do. I can see one way to write a normalisation RooFormulaVar that uses the discrete category index value to propagate the correction normalisation term:
+import ROOT
+w = ROOT.RooWorkspace()
+w.factory('testCat[chnA=0,chnB=1]')
+w.factory('normA[100]')
+w.factory('normB[120]')
+# Exploit that RooFormulaVar will evaluate a RooCategory as an integer
+w.factory('expr::normterm("(1-@0)*@1 + @0*@2",testCat, normA, normB)')
+w.cat('testCat').setIndex(0)
+w.function('normterm').Print()
+w.cat('testCat').setIndex(1)
+w.function('normterm').Print()
+
+gives:
+RooFormulaVar::normterm[ actualVars=(testCat,normA,normB) formula="(1-@0)*@1+@0*@2" ] = 100
+RooFormulaVar::normterm[ actualVars=(testCat,normA,normB) formula="(1-@0)*@1+@0*@2" ] = 120
+
+It’s a bit ugly, but it might work. One caveat: if the number of degrees of freedom are different in the two norm terms, this won’t be taken into account in the NLL penalty term that is added when using the envelope method (the counting is only of parameters in the pdf, not the norm term). So this may or may not be a problem.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by friti @ 2022-05-02T09:33:59.206Z):
+Dear Andrew,
+Your solution works perfectly indeed. I think that this example test works now, and I am proceeding into implementing this in our framework.
+Thanks a lot for your useful help!
+Best,
+Federica
+----------------------------------------

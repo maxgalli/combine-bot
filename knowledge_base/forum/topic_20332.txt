@@ -1,0 +1,109 @@
+TOPIC: Combine's math for optimizing systematics
+URL: https://cms-talk.web.cern.ch/t/20332
+DATE: 2023-02-15T00:15:36.022Z
+SOLVED: no
+============================================================
+
+QUESTION (by mcmaster @ 2023-02-15T00:15:36.466Z):
+Dear combine experts:
+As part of my in development thesis, I am attempting to write up some of the math used by physicists (and in particular combine, since we use it too) to actually get from out input histograms and datacards to the limits we plan to set once we unblind our analysis. I’ve been through various backgrounds looking into this, from pdg statistics refreshers to the theses of my former peers to classic references such as https://cds.cern.ch/record/1379837.
+I come to you because across all of those sources, and the fellows I can ask in my research group, none can seem to actually specify the math behind combine’s systematic component to the likelihood function. There’s a lot of explanation on the poisson distribution of the input histograms (mu * s + b), and the acknowledgement that they too are obvious functions of the collective optimized systematic variables theta, but the other half of the function is always just specified as rho(theta) or pi(theta) and left completely unexpanded.
+Can anyone shed further light, or link any references, that document how combine arrives at the full likelihood function it maximizes? It seems likely the missing function is some product over all the bins for all the systematics involving that systematic’s pull value theta_s and the individual pull length the input shape specifies is appropriate for a one sigma pull in that bin (delta_s_b), but if I’m to write and defend this I need specific math, and ideally references I can cite.
+Thanks in advance for your time,
+Brooks C. McMaster
+----------------------------------------
+
+REPLY 2 (by vischia @ 2023-02-15T00:24:30.000Z):
+Hi Brooks,
+If I understand what you are asking, maybe this https://arxiv.org/abs/1503.07622 can help you on how to write down the profile likelihood ratio, and this https://arxiv.org/abs/1103.0354 on how to incorporate nuisance parameters in the fit.
+Cheers,
+Pietro
+–
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+El mié., 15 feb. 2023 1:17, Brooks C Mc Master via CMS talk <noreply@cms-talk.web.cern.ch> escribió:
+
+Brooks C Mc Master mcmasterFebruary 15
+
+Dear combine experts:
+As part of my in development thesis, I am attempting to write up some of the math used by physicists (and in particular combine, since we use it too) to actually get from out input histograms and datacards to the limits we plan to set once we unblind our analysis. I’ve been through various backgrounds looking into this, from pdg statistics refreshers to the theses of my former peers to classic references such as https://cds.cern.ch/record/1379837.
+I come to you because across all of those sources, and the fellows I can ask in my research group, none can seem to actually specify the math behind combine’s systematic component to the likelihood function. There’s a lot of explanation on the poisson distribution of the input histograms (mu * s + b), and the acknowledgement that they too are obvious functions of the collective optimized systematic variables theta, but the other half of the function is always just specified as rho(theta) or pi(theta) and left completely unexpanded.
+Can anyone shed further light, or link any references, that document how combine arrives at the full likelihood function it maximizes? It seems likely the missing function is some product over all the bins for all the systematics involving that systematic’s pull value theta_s and the individual pull length the input shape specifies is appropriate for a one sigma pull in that bin (delta_s_b), but if I’m to write and defend this I need specific math, and ideally references I can cite.
+Thanks in advance for your time,
+Brooks C. McMaster
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by jspah @ 2023-02-15T08:36:11.772Z):
+Hi,
+if you are just interested in the general form of the likelihood function for binned analyses, you can check out slide 3 of https://indico.cern.ch/event/1232388/contributions/5184999/attachments/2578402/4446519/PhysicsDays-Stats.pdf (credit to A. Gilbert), which I found very helpful. Obviously not citable but just another source of information.
+Best,
+Jan Lukas
+----------------------------------------
+
+REPLY 4 (by mcmaster @ 2023-02-15T16:09:36.303Z):
+Thank you Pietro and Jan Lukas for your help with this topic. There’s a lot of useful information in these links that has been informative.
+In Petro’s second link, there is a claim that the attached term can be a gaussian distribution, so of the form e^((theta-theta~)/(2 delta_s_b^2), and that this is how it is done for MINUIT. This is a significant step forward in terms of citable references for my work, and my only remaining question is to ask if there is some source of clarification that this is also how Combine handles shape uncertainties.
+If I have a datacard with a ‘shape’ or ‘shapeN’ systematic, is that shape used to compute a bin by bin gaussian distribution that is collectively optimized across all bins for a single pull value?
+----------------------------------------
+
+REPLY 5 (by kcormier @ 2023-02-15T17:16:38.524Z):
+Hi Brooks,
+I am not sure if I am interpreting your understanding correctly or not. However, I think there may be a little misunderstanding. In particular, its not clear to me what exactly you mean by “is that shape used to compute a bin by bin gaussian distribution that is collectively optimized across all bins for a single pull value?”; but I suspect there may be some misunderstanding here.
+The external constraint term itself does not directly “know anything about” the bins of the distributions. i.e. for a given point in model space, the value of the constraint term of the likelihood depends only on the values of the nuisance parameters themselves, and is independent of any binned values. This is the gaussian term referred to in Pietro’s second reference, and is also the  green “pe” term called “NP constraints” on the s.3 of the physics days talk Jan Lukas linked. This term can be a Gaussian, but need not be. In Combine, for example it is gaussian for some uncertainty types (such as LnN and shape), but this is not always the case (for e.g. Gamma uncertainties).
+Of course there is a connection between the constraint term and the bin values. This is defined by the model, where the expectation depends on the values of the nuisance parameters. Mathematically this is shown by the theta vector appearing in the Poisson term “Exp events per bin” in light blue on s.3 of the talk.
+The important distinction I would like to make is that the form of the constraint term does not itself define how the model expectation is derived from the values of parameters (both signal and nuisance parameters). The way that shape systematics effect the expected value of the model for a given value of a nuisance parameter is shown on s.3 above and explained  under the “template shape uncertainties” section of the “binned shape analysis” section of the combine documentation [1]. It involves a few steps, including separating our the shape and normalization effects and some interpolation to deal with asymmetric up- and down- shift values.
+What is optimized in the end is the full likelihood, which includes the poisson term quantifying the agreement of the data with the expectation (which can be evaluated per bin), and the nuisance parameter constraint terms (which do not include any information about bins) which quantify the agreement with externally provided constraints.
+I hope that helps to clarify.
+Best,
+Kyle
+[1]  https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#binned-shape-analysis
+----------------------------------------
+
+REPLY 6 (by mcmaster @ 2023-02-15T17:24:01.260Z):
+Right, thanks Kyle. That sounds like it tracks with what I’ve understood so far - I’m probably just not doing the best job of putting it into words. It’s especially confusing because when you have shape based uncertainties, the uncertainties themselves are defined by a series of specified bins and one-sigma deviations up and down, and so I believe do need to contain at least that much information. When discussing those bins, it’s easy to get them mixed up with the signal, background, and data bins from their associated histograms, even though they are treated quite different mathematically.
+I think the remaining thing I am trying to understand is whether the nuisance parameter constraint terms (which you mention can be Gaussian or not) are in fact gaussian when using the ‘shape’ descriptor.
+If it seems I am still misunderstanding something, please do let me know.
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2023-02-15T19:08:38.343Z):
+Hi Brooks,
+I’m not sure if I’ve properly understood  what you mean in your first paragraph, particularly the last sentence. When you provide the up and down variation histograms for a given process and a given systematic, this is defining how that process changes under a change of the nuisance parameter. i.e. they define how the expected value  in each bin depends on the nuisance parameter**.  But I don’t understand the distinction you are alluding to in the last sentence of this paragraph between different types of bins.
+But to your second question, for shape systematics in combine, the constraint term itself is indeed Gaussian.
+Best,
+Kyle
+** In fact you only provide three points (nominal, up shift, and down shift), but the change of the process is a continuous function of the nuisance parameter, and so there has to be some way in which those three points are translated into a full continuous function of the nuisance parameter. How the full continuous function is defined based on the three points which are provided is what is explained in the portion of the combine documentation I was referencing earlier, and what is being shown if you follow the “Process templates” (in mauve? I would say) portion of the slide from physics days which was referenced.
+----------------------------------------
+
+REPLY 8 (by mcmaster @ 2023-02-15T19:21:03.898Z):
+Thanks Kyle, it seems like what you are saying matches the understanding I am trying (maybe poorly) to convey. The fact that the constraint is gaussian is the primary point of concern I am trying to find more info on, and your confirmation is very helpful.
+----------------------------------------
+
+REPLY 9 (by kcormier @ 2023-02-15T19:32:13.720Z):
+Hi Brooks,
+Okay, I hope its helped. Sometimes communicating math in plain language is difficult, but I hope its clear.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 10 (by kcormier @ 2023-02-15T20:05:31.151Z):
+One last thing, you may find the statistics refresher Nick Smith gave at the most recent combine tutorial helpful: https://indico.cern.ch/event/1227742/timetable/?view=standard#2-statistics-refresher .
+Although he does not discuss the case of shape uncertainties, he discusses adding uncertainties in a simple model starting from s.35, and  he explicitly considers a few different models, which have different forms for the constraint term and/or morph the expected number of events differently.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 11 (by jsw @ 2023-02-15T21:21:23.237Z):
+Hi Jan,
+This slide is extraordinarily helpful.  It would be very nice to have something like this, with every term explicitly expanded, in the HiggsCombine documentation.  Ideally, there would also be a clear mapping from datacard entries (lnN, shape, shapeN, etc.) to which terms are produced thereby.
+Regards,
+Jon Wilson
+----------------------------------------

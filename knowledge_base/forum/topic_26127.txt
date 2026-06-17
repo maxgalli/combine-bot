@@ -1,0 +1,42 @@
+TOPIC: Set a fit parameter at datacard level
+URL: https://cms-talk.web.cern.ch/t/26127
+DATE: 2023-06-28T22:20:06.401Z
+SOLVED: no
+============================================================
+
+QUESTION (by acarvalh @ 2023-06-28T22:20:06.969Z):
+Dear experts
+For B2G-23-005 we are combining several datacards for several analyses trying to use a fitting procedure as agnostic as possible.
+We have hundreds of datacards per analysis and a couple of different parameters per analysis to consider, they are always frozen for a given datacard.txt.
+Is it possible to instead of setting a given parameter in the command line for limit computation as eg --freezeParameters MH,MX,MY --setParameters MX={mx},MY={my}` to add a couple of lines in the datacard.txt that would set its value and freeze it?
+Searching in the documentation I could arrive to the following attempt
+==================================
+MY                          param    ${my}    ${my}
+nuisance edit freeze MY
+===================================
+
+This does not work…
+thank you
+Xanda
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-06-29T15:23:26.472Z):
+Dear Xanda,
+Could you give some more details on what isn’t working? What you’re trying to run, what kind of failure you’re seeing. Maybe a minimal working example of the bug?
+If I try to use this directive on a simple datacard from one of the tutorials with a recent combine version, it seems to work fine for me.
+Cheers,
+Kyle
+----------------------------------------
+
+REPLY 3 (by acarvalh @ 2023-06-29T15:42:40.867Z):
+Hi Kyle
+“Not working” means “not making any effect”
+With a Datacard example, in this analysis if you see the README one needs to set at the command line the value of the parameter MY [1].
+This is the only one among 8 (and counting) input analyses in which this is necessary, so I wanted to hardcode in the txt
+To make it easier to test on an example the input and modified datacards for B2G-23-005  are visible by the CMS-physics list as guests [2]
+That is not a critical feature to ask you to spend time on testing, we can always bookkeep parameters in an increasing command line. I just wanted to know if this is possible using combine, and if it is we can search harder in documentation.
+thank you
+Xanda
+[1] https://gitlab.cern.ch/cms-analysis/hig/HIG-22-012/datacards/-/tree/master/Resonant#resonant == the setting of MY only makes a difference in the “Y->…” cases
+[2] /eos/home-e/ejourdhu/HH_fullRun2_resonant_fits/datacards_run2_resonant_hh_hy/ggtt/hig-22-012/Resonant/NMSSM_Y_gg_High_Mass
+----------------------------------------

@@ -1,0 +1,26 @@
+TOPIC: No PYROOT with CMSSW_14_1_0_pre4
+URL: https://cms-talk.web.cern.ch/t/52259
+DATE: 2024-10-08T14:22:35.713Z
+SOLVED: yes (reply 3)
+============================================================
+
+QUESTION (by zhenxuan @ 2024-10-08T14:22:36.078Z):
+Dear experts,
+I am following the tutorial in Combine [1] [1] and set up the CMSSW and Combine v10. But then when I try to go through the exercise, I realize I don’t have the pyroot in Python even after cmsenv. In previous versions like CMSSW_11*, it’s there right? Any idea how to fix this?
+I really appreciate any help you can provide.
+Zhenxuan
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#installation-instructions
+----------------------------------------
+
+REPLY 2 (by zhenxuan @ 2024-10-08T14:24:35.308Z):
+the command are:
+cmsrel CMSSW_14_1_0_pre4
+cd CMSSW_14_1_0_pre4/src
+cmsenv
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+----------------------------------------
+
+REPLY 3 [ACCEPTED ANSWER] (by zhenxuan @ 2024-10-08T14:27:03.812Z):
+I’m sorry for taking up your time; it was my mistake not to change the Python path. Now it’s fixed
+----------------------------------------

@@ -1,0 +1,34 @@
+TOPIC: How to add asymmetric values to AddSyst in CombineHarvester
+URL: https://cms-talk.web.cern.ch/t/52306
+DATE: 2024-10-08T21:05:39.264Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by algomez @ 2024-10-08T21:05:39.907Z):
+Hi all
+I am trying to use CombineHarvester to create my datacards. Everything works fine so far but I am not able to add asymmetric ln values to AddSyst. Like for XS, which I need to be 0.942/1.037.
+Currently for other systematics I am doing something like:
+cb.cp().signals().AddSyst(cb, 'lumi_13TeV_correlated', 'lnN', ch.SystMap()(1.006))
+
+but if I do something similar for the asymmetric:
+cb.cp().signals().AddSyst(cb, 'xs_hbbhbb', 'lnN', ch.SystMap()(0.942/1.037))
+
+I am getting this error:
+raise RuntimeError('Systematic value not recognised')
+RuntimeError: Systematic value not recognised
+
+Any idea how to do this? In case it matters, I am using CombineHarvest version 2.1.0 from combine-container":CMSSW_11_3_4-combine_v9.1.0-harvester_v2.1.0
+cheers,
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by kcormier @ 2024-10-09T07:45:12.352Z):
+Dear Alejandro,
+For Asymmetric errors in python you need to pass the values as a tuple. You can see some examples of how to do this on this page: http://cms-analysis.github.io/CombineHarvester/python-interface.html#py-creation. If you scroll down a little there are examples for both symmetric and asymmetric uncertainties.
+Hope that helps,
+Kyle
+----------------------------------------
+
+REPLY 3 (by algomez @ 2024-10-09T14:09:17.622Z):
+Thanks @kcormier, this works.
+cheers,
+----------------------------------------

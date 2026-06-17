@@ -1,0 +1,45 @@
+{
+  "topic_id": 21285,
+  "title": "Unbinned Shape Analysis using Combine tool",
+  "url": "https://cms-talk.web.cern.ch/t/21285",
+  "category_id": 279,
+  "created_at": "2023-03-10T14:33:35.652Z",
+  "last_posted_at": "2023-03-14T08:21:44.280Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "sbaradia",
+      "name": "Sweta Baradia",
+      "created_at": "2023-03-10T14:33:35.801Z",
+      "updated_at": "2023-03-10T14:33:35.801Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine Experts,\nI am trying to do an Unbinned shape analysis using Combine. I have a very basic confusion. The modelling is done for the invariant mass distribution of final particles from  Higgs decay. The modeling for signal is done in the range 100-150 GeV (range shown as \u2018B\u2019 in the attached figure). The QCD background is modeled from the data in B:100-150 GeV  keeping the Signal region, 120-130 GeV  (range shown as \u2018A\u2019 in the attached figure) blinded. These prefits are done using RooFit. Now my query is, to estimate the expected upper limits, should the shapes and yields for the signal and data driven background be provided through datacard to the Combine tool for the entire (B:100-150 GeV) region or only the Signal Region (A:120-130 GeV)?\nAny comment/suggestion would be extremely helpful. Thanks.\n\nScreenshot from 2023-03-10 19-49-22855\u00d7719 56.3 KB",
+      "cooked_html": "<p>Dear Combine Experts,</p>\n<p>I am trying to do an Unbinned shape analysis using Combine. I have a very basic confusion. The modelling is done for the invariant mass distribution of final particles from  Higgs decay. The modeling for signal is done in the range 100-150 GeV (range shown as \u2018B\u2019 in the attached figure). The QCD background is modeled from the data in B:100-150 GeV  keeping the Signal region, 120-130 GeV  (range shown as \u2018A\u2019 in the attached figure) blinded. These prefits are done using RooFit. Now my query is, to estimate the <strong>expected upper limits</strong>, should the shapes and yields for the signal and data driven background be provided through datacard to the Combine tool for the entire (B:100-150 GeV) region or only the Signal Region (A:120-130 GeV)?</p>\n<p>Any comment/suggestion would be extremely helpful. Thanks.<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/5/5f2fd852e323cb5825224cca673f72883c967b17.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/5f2fd852e323cb5825224cca673f72883c967b17\" title=\"Screenshot from 2023-03-10 19-49-22\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/5/5f2fd852e323cb5825224cca673f72883c967b17_2_594x500.png\" alt=\"Screenshot from 2023-03-10 19-49-22\" data-base62-sha1=\"dA3RLnsXFo9dQc6AWvQByO6frcr\" width=\"594\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/5/5f2fd852e323cb5825224cca673f72883c967b17_2_594x500.png, https://cms-talk.web.cern.ch/uploads/default/original/2X/5/5f2fd852e323cb5825224cca673f72883c967b17.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/5/5f2fd852e323cb5825224cca673f72883c967b17.png 2x\" data-dominant-color=\"F3F2F4\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot from 2023-03-10 19-49-22</span><span class=\"informations\">855\u00d7719 56.3 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-03-10T15:25:30.727Z",
+      "updated_at": "2023-03-10T15:25:30.727Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sweta,\nI think you should extract your limits using the full range to be able to float your background and properly constraint it. We have extended instruction on the parametric models available at [1], which also touches the unbinned fits. I hope that addresses you question, let mw know if something is unclear.\nBest,\nAliya\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#part-1-parametric-model-building",
+      "cooked_html": "<p>Dear Sweta,</p>\n<p>I think you should extract your limits using the full range to be able to float your background and properly constraint it. We have extended instruction on the parametric models available at [1], which also touches the unbinned fits. I hope that addresses you question, let mw know if something is unclear.</p>\n<p>Best,<br>\nAliya</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#part-1-parametric-model-building\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#part-1-parametric-model-building</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "sbaradia",
+      "name": "Sweta Baradia",
+      "created_at": "2023-03-14T08:21:44.280Z",
+      "updated_at": "2023-03-14T08:21:44.280Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nYes that answers my question. Thanks a lot.\nRegards,\nSweta",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>Yes that answers my question. Thanks a lot.</p>\n<p>Regards,<br>\nSweta</p>"
+    }
+  ]
+}

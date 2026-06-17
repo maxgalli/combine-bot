@@ -1,0 +1,17 @@
+TOPIC: Use of RooMorphingPdf
+URL: https://cms-talk.web.cern.ch/t/12272
+DATE: 2022-06-29T15:13:34.203Z
+SOLVED: no
+============================================================
+
+QUESTION (by friti @ 2022-06-29T15:13:34.916Z):
+Dear Experts,
+I am trying to implement a fit which includes a signal (S) and two backgrounds: X (from MC simulation) and Y (data-driven).
+The normalisation of bkg X is left floating in the fit as RateParam x.
+The other background Y is data driven and its shape changes depending on the value of x, in a non trivial way.
+For Y I was thinking of using the morphing function RooMorphingPdf to interpolate between some shapes obtained at different x. Do you think it is the right approach? I saw the definition here [0], but I don’t think I can use the BuildRooMorphing function here described, because of how my workspace is already defined. Can I directly define a RooMorphingPdf in my workspace?
+Also I am not sure how to communicate to Combine in the workspace (or in the datacard?) that the variable associated to the morphing is the RateParam x already defined for the bkg X normalisation.
+Thanks a lot in advance,
+Federica Riti
+[0] https://cms-analysis.github.io/CombineHarvester/intro_morph.html
+----------------------------------------

@@ -1,0 +1,34 @@
+{
+  "topic_id": 30056,
+  "title": "Some use cases of datacards validation ci/cd",
+  "url": "https://cms-talk.web.cern.ch/t/30056",
+  "category_id": 279,
+  "created_at": "2023-09-29T10:41:02.580Z",
+  "last_posted_at": "2023-10-02T12:02:14.309Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hkwon",
+      "name": "Hyejin Kwon",
+      "created_at": "2023-09-29T10:41:02.742Z",
+      "updated_at": "2023-09-29T15:27:10.364Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nMaybe it\u2019s worth to report some cases regarding the datacards validation pipeline for potential room for improvements:\n\nFor analyses using custom pdf in fit, the default containter is lack of this library so that it needs a way around to get the pipeline rolling\n\n(Rather issue in ValidateDatacards.py/Combine harvester?) Compile error in RooFormula where parameters used were not pre-loaded probably since 1. datacard parsing seems order dependent 2. \u2018param\u2019 directive other than \u2018rateParam\u2019 are not recognized\n\nPlease have a look into relevant pipelines [1] in case you are interested. (but probably the access right is limited for relevant maintainers.)\n[1]https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards/-/pipelines/6246325\nhttps://gitlab.cern.ch/cms-analysis/sus/sus-23-001/datacards/-/pipelines/6247277\nFYI: @kcormier @anigamov @guttley\nThanks,\nHyejin",
+      "cooked_html": "<p>Dear experts,</p>\n<p>Maybe it\u2019s worth to report some cases regarding the datacards validation pipeline for potential room for improvements:</p>\n<ul>\n<li>\n<p>For analyses using custom pdf in fit, the default containter is lack of this library so that it needs a way around to get the pipeline rolling</p>\n</li>\n<li>\n<p>(Rather issue in ValidateDatacards.py/Combine harvester?) Compile error in RooFormula where parameters used were not pre-loaded probably since 1. datacard parsing seems order dependent 2. \u2018param\u2019 directive other than \u2018rateParam\u2019 are not recognized</p>\n</li>\n</ul>\n<p>Please have a look into relevant pipelines [1] in case you are interested. (but probably the access right is limited for relevant maintainers.)</p>\n<p>[1]<a href=\"https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards/-/pipelines/6246325\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-analysis/sus/sus-23-005/datacards/-/pipelines/6246325</a><br>\n<a href=\"https://gitlab.cern.ch/cms-analysis/sus/sus-23-001/datacards/-/pipelines/6247277\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-analysis/sus/sus-23-001/datacards/-/pipelines/6247277</a></p>\n<p>FYI: <a class=\"mention\" href=\"/u/kcormier\">@kcormier</a> <a class=\"mention\" href=\"/u/anigamov\">@anigamov</a> <a class=\"mention\" href=\"/u/guttley\">@guttley</a></p>\n<p>Thanks,<br>\nHyejin</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-10-02T12:02:14.309Z",
+      "updated_at": "2023-10-02T12:02:14.309Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Hyejin,\nFirst, thanks a lot for bringing up these important points.\n\nHyejin Kwon:\n\nFor analyses using custom pdf in fit, the default containter is lack of this library so that it needs a way around to get the pipeline rolling\n\nThe best way to address this issue is to include the missing libraries into Combine, once the PR created (by authors or Combine contacts) we\u2019ll review it, release a new version of Combine as well as Combine container and update the ci. You can find a good example of such a PR here, let us know if something is not clear. In general I think it is important to avoid workarounds as much as possible.\n\nHyejin Kwon:\n\n(Rather issue in ValidateDatacards.py/Combine harvester?) Compile error in RooFormula where parameters used were not pre-loaded probably since 1. datacard parsing seems order dependent 2. \u2018param\u2019 directive other than \u2018rateParam\u2019 are not recognized\n\nHere some work is needed to unify the datacard parsing procedures in Combine and CombineHarvester, we hope to address this issue rather soon.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Hyejin,</p>\n<p>First, thanks a lot for bringing up these important points.</p>\n<aside class=\"quote no-group\" data-username=\"hkwon\" data-post=\"1\" data-topic=\"30056\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img loading=\"lazy\" alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/h/e68b1a/48.png\" class=\"avatar\"> Hyejin Kwon:</div>\n<blockquote>\n<p>For analyses using custom pdf in fit, the default containter is lack of this library so that it needs a way around to get the pipeline rolling</p>\n</blockquote>\n</aside>\n<p>The best way to address this issue is to include the missing libraries into Combine, once the PR created (by authors or Combine contacts) we\u2019ll review it, release a new version of Combine as well as Combine container and update the ci. You can find a good example of such a PR <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/861\" rel=\"noopener nofollow ugc\">here</a>, let us know if something is not clear. In general I think it is important to avoid workarounds as much as possible.</p>\n<aside class=\"quote no-group\" data-username=\"hkwon\" data-post=\"1\" data-topic=\"30056\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img loading=\"lazy\" alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/h/e68b1a/48.png\" class=\"avatar\"> Hyejin Kwon:</div>\n<blockquote>\n<p>(Rather issue in ValidateDatacards.py/Combine harvester?) Compile error in RooFormula where parameters used were not pre-loaded probably since 1. datacard parsing seems order dependent 2. \u2018param\u2019 directive other than \u2018rateParam\u2019 are not recognized</p>\n</blockquote>\n</aside>\n<p>Here some work is needed to unify the datacard parsing procedures in Combine and CombineHarvester, we hope to address this issue rather soon.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

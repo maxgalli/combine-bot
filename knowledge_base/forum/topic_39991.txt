@@ -1,0 +1,143 @@
+TOPIC: Higgs Combine Workspace Segmentation Fault Issue
+URL: https://cms-talk.web.cern.ch/t/39991
+DATE: 2024-04-26T22:48:40.647Z
+SOLVED: no
+============================================================
+
+QUESTION (by abdas @ 2024-04-26T22:48:40.854Z):
+Dear Statistics and Combine Experts,
+We are doing Combine Analysis for the search of VLQ pair production with Full Run 2 data of CMS. The event topology of our analysis comprises of 4 boosted Fat Jets and we use a Deep Learning based Multi-tagger to classify the 4 Highest Pt jets into 6 possible categories - QCD/top/Higgs/W/Z/B. The Signal Region of our analysis can be subdivided into 126 regions based on the multiplicity of the tagged jets in an event, for example - 4QCD, 3QCD1Top, 2Top2Higgs etc.
+The event tag(which of the 126 regions an event belong to) is represented like the following -
+4QCD → 0t0W0Z0H0b
+2Higgs2Top → 2t0W0Z2H0b
+Etc.
+Data Driven QCD is the overwhelmingly major background in our analysis. And TPrime and BPrime across [1000, 1800] GeV range are our Signal Processes.
+We have 6 Data Driven Shape Systematics (we will call them ShapeSyms going forward) and 18 other shape systematics in our analysis.
+The MC background processes are -
+
+WJets
+ZJets
+ttWJets
+ttZJets
+ttWW
+ttWZ
+ttZZ
+ttbar
+ttH
+WWW
+WWZ
+WZZ
+ZZZ
+
+The DataDriven ShapeSyms are named as -
+
+DataDriven_MistagRate_QCD
+DataDriven_MistagRate_Higgs
+DataDriven_MistagRate_Top
+DataDriven_MistagRate_W
+DataDriven_MistagRate_Z
+DataDriven_MistagRate_B
+
+The Other ShapeSyms are -
+
+QCDRenormalization
+QCDFactorization
+PDF
+JEC
+JER
+PileupReweight
+L1PrefireWeight
+
+The Normalization Systematics are -
+
+Lumi
+TopQuarkCrossSection
+DiBosonCrossSection
+WJetsCrossSection
+ZJetsCrossSection
+
+The problem I am facing is this - While trying to create a RooWorkspace from a combination of datacards(1 datacard corresponds to 1 of the 126 regions), I am always getting segmentation fault whenever the number of combined datacards increases beyond 67.
+In my Publicly visible directory on LXPlus(/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/), you will find an example -
+The datacards for individual regions are named as -
+TTm1300_2018_0t0W0Z4H0b.txt → 4Higgs Region
+And such…
+From these constituent datacards, for example, I had created 3 separate combinations -
+
+Prefit_AllSignalRegions_Combined_0To66_TTm1300_2018.txt - Success
+Prefit_AllSignalRegions_Combined_1To67_TTm1300_2018.txt - Success
+Prefit_AllSignalRegions_Combined_0To67_TTm1300_2018.txt - SegFault
+
+When I run the command text2workspace.py on them, I don’t get any error message or warning message. But, whenever I try to access the output workspace, I get a segmentation fault from Prefit_AllSignalRegions_Combined_0To67_TTm1300_2018.root.
+But, I don’t get any segmentation fault from Prefit_AllSignalRegions_Combined_0To66_TTm1300_2018.root or Prefit_AllSignalRegions_Combined_1To67_TTm1300_2018.root
+Individual datacards don’t seem to create any problem, only when their combination crosses a certain threshold, they seem to create problems. Can you please help?
+We use a custom EDAnalyzer that requires CMSSW_10_6_29 because this is a Full Run 2 Ultra Legacy analysis. We then run Higgs Combine version v9.1.0 which requires CMSSW_11_3_4.
+To explain things better, let me also present a few more examples -
+
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300//Prefit_AllSignalRegions_Combined_0To68_TTm1300_2018.txt - Success *****
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300//Prefit_AllSignalRegions_Combined_1To68_TTm1300_2018.txt - SegFault *****
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_1To67_TTm1300_2018.txt - SegFault
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_2To69_TTm1300_2018.txt - SegFault
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_2To68_TTm1300_2018.txt - Success
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_3To70_TTm1300_2018.txt - SegFault
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_3To69_TTm1300_2018.txt - SegFault
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_3To68_TTm1300_2018.txt - Success
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_4To70_TTm1300_2018.txt - SegFault
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_4To69_TTm1300_2018.txt - SegFault
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_4To68_TTm1300_2018.txt - Success
+/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_5To69_TTm1300_2018.txt - Success
+
+The Combined datacards(/afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_ToTTm1300_2018.txt) are created from individual 126 datacards /afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/TTm1300_2018.txt (For example /afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/TTm1300_2018_0t0W0Z2H0b.txt)
+By running the script https://gitlab.cern.ch/boostedeventshapetagger/vlq_combine_analysis/-/blob/master/Merge_AllSignalRegions_Datacards.py?ref_type=heads in the following way -
+python [Merge_AllSignalRegions_Datacards.py](https://gitlab.cern.ch/boostedeventshapetagger/vlq_combine_analysis/-/blob/master/Merge_AllSignalRegions_Datacards.py?ref_type=heads) –startPoint 2 –endPoint 68 to create /afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_2To68_TTm1300_2018.txt
+And, after creating /afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_2To68_TTm1300_2018.txt we run text2workspace.py to create workspace from it - /afs/cern.ch/work/a/abdas/public/CombinedFiles/Run2018_Compartment/TTm1300/Prefit_AllSignalRegions_Combined_2To68_TTm1300_2018.root . Now, the step of creating the workspace doesn’t throw any error or warning message. But, after we have created it, when we try to access it, we get segmentation fault.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-04-26T23:22:03.807Z):
+Hi Abhishek,
+It depends on which cluster you are running Combine, but I think you might be facing memory issues.
+Could you try running ulimit -s unlimited  before accessing the combined workspaces with Combine commands?
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by abdas @ 2024-04-27T13:12:18.480Z):
+It works !!! But if I am running a python script that accesses and operates on the workspace, how to enable this option inside that script? Or if I have run the command once, it is set for all time?
+And I can’t thank you enough !!!
+----------------------------------------
+
+REPLY 4 (by amarini @ 2024-04-27T19:25:17.943Z):
+it is a limitation inherited from the shell. You need to set it on the bash (? or your shell)
+before invoking python.
+You can also set it in the profile/bashrc/(?) but it depends on the system.
+-A
+----------------------------------------
+
+REPLY 5 (by dsr @ 2024-04-27T21:40:31.000Z):
+It can be set in a python script, see
+
+Python documentation
+
+resource — Resource usage information
+
+This module provides basic mechanisms for measuring and controlling system resources utilized by a program. Availability: Unix, not Emscripten, not WASI. Symbolic constants are used to specify part...
+
+Setting the stack limit to unlimited in your .bashrc is not recommended as it will lead to failures with multi-threaded programs.  If you’re setting this in your .bashrc, double the current limit until things work, but do not set it globally to unlimited.
+-dan
+----------------------------------------
+
+REPLY 6 (by abdas @ 2024-04-29T22:37:20.006Z):
+There’s one more issue I am facing. Even after setting ulimit -s unlimited, when I am trying to create a comprehensive RooWorkspace from the merger of all the datacards for more than a year, I get a console message like -  “Flushing file cache of size 250” and the resultant root file that contains the RooWorkspace turns out to be corrupt. Googling didn’t help much. And I could not find a way around. Can you please help with this also?
+----------------------------------------
+
+REPLY 7 (by abdas @ 2024-05-07T16:45:11.537Z):
+Dear Experts, may I seek to drraw your attention with this issue I mentioned here a while ago? I am still getting this error in trying to combine Multiple Years’ datacards for Full Run 2 analysis. I have tried to run this text2workspace.py command on the combination of all datacards for my analysis on Lxplus and my University’s computing cluster and it failed on both with repeated error message - “Flushing file cache of size 250”. I am not sure what to do to resolve this.
+rootflush2072×206 15.9 KB
+----------------------------------------
+
+REPLY 8 (by adewit @ 2024-05-07T18:52:53.816Z):
+Dear Abhishek,
+The ‘Flushing file cache of size 250’ is not an error (see https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/563/commits/f11caa1c6b87f1b0fbb2ce8f947c5c6bda482a6e - it was introduced to avoid problems due to having too many files open at once).
+What I mean is: this by itself shouldn’t lead to a corrupted workspace. Maybe you can increase the verbosity when running the text2workspace command, so you can get some more information about the point at which it is crashing?
+Best,
+Adinda
+----------------------------------------

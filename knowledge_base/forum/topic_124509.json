@@ -1,0 +1,51 @@
+{
+  "topic_id": 124509,
+  "title": "Segmentation fault (core dumped) when combining multiple channels",
+  "url": "https://cms-talk.web.cern.ch/t/124509",
+  "category_id": 279,
+  "created_at": "2025-05-05T14:23:35.718Z",
+  "last_posted_at": "2025-05-06T11:50:43.069Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "attikis",
+      "name": "Alexandros Attikis",
+      "created_at": "2025-05-05T14:23:36.144Z",
+      "updated_at": "2025-05-05T14:24:28.063Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am trying to combine multiple regions (~80 over all Run 2 eras) and when I run combine on the resultant cards i get the following error:\nSegmentation fault (core dumped)\nI have attached the full log for 1 mass point as an example, along with the datacard used as input.\nThe problem does not seem to happen with a subset of 20-30 categories (e.g. categories within same Run era2). Is there a limitation with CPU resources or can the problem lie elsewhere? (e.g. datacards).\nGreatly appreciate some help narrowing down the problem.\nBest regards,\nAlexandros\nArchive.zip (1.2 MB)\ni",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am trying to combine multiple regions (~80 over all Run 2 eras) and when I run combine on the resultant cards i get the following error:<br>\nSegmentation fault (core dumped)<br>\nI have attached the full log for 1 mass point as an example, along with the datacard used as input.</p>\n<p>The problem does not seem to happen with a subset of 20-30 categories (e.g. categories within same Run era2). Is there a limitation with CPU resources or can the problem lie elsewhere? (e.g. datacards).</p>\n<p>Greatly appreciate some help narrowing down the problem.</p>\n<p>Best regards,<br>\nAlexandros</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/ueF5zZ9xrt7lbQTbaxV3zkZpLp4.zip\">Archive.zip</a> (1.2 MB)<br>\ni</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-05-05T14:38:49.757Z",
+      "updated_at": "2025-05-05T14:38:49.757Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Alexandros,\nhave you tried setting\nulimit -s unlimited\n\nbefore running anything? It\u2019s a known issue for large combinations that the default user limits are too low.\nCheers,\nPhilip",
+      "cooked_html": "<p>Hi Alexandros,</p>\n<p>have you tried setting</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">ulimit -s unlimited\n</code></pre>\n<p>before running anything? It\u2019s a known issue for large combinations that the default user limits are too low.</p>\n<p>Cheers,<br>\nPhilip</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "attikis",
+      "name": "Alexandros Attikis",
+      "created_at": "2025-05-06T11:50:43.069Z",
+      "updated_at": "2025-05-06T11:50:43.069Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Philip,\nthat did the trick indeed (albeit with the tcsh variation \u201climit stacksize unlimited\u201d)!\nThank you for your help.\nCheers,\nAlexandros",
+      "cooked_html": "<p>Hi Philip,</p>\n<p>that did the trick indeed (albeit with the tcsh variation \u201climit stacksize unlimited\u201d)!</p>\n<p>Thank you for your help.</p>\n<p>Cheers,<br>\nAlexandros</p>"
+    }
+  ]
+}

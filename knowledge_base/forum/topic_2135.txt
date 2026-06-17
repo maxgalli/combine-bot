@@ -1,0 +1,11 @@
+TOPIC: Re: Process renaming?
+URL: https://cms-talk.web.cern.ch/t/2135
+DATE: 2021-08-03T09:36:48.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by andrea_marini @ 2021-08-03T09:36:48.000Z):
+Do you really need it in some physics model?
+It is possible but it is a bit complicated.
+Andrea
+----------------------------------------

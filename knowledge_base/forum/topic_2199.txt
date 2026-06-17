@@ -1,0 +1,162 @@
+TOPIC: Re: A question on how to implement Hessian PDF uncertainty
+URL: https://cms-talk.web.cern.ch/t/2199
+DATE: 2021-11-04T09:06:36.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by vischia @ 2021-11-04T09:06:36.000Z):
+Hi Byeonghak,
+combine supports out of the box one-sided shape variations: given your nominal template, you can simply put your one-sided uncertainty shape as e.g. systUp, and the nominal again as the other (e.g. systDn, in this example). Combine will then build a pdf that allows only one-sided variations.
+This is also true for lnN uncertainties, you just put e.g. 1/1.03 to have a one-sided variation.
+So, if the prescription for that uncertainty is to have it one-sided, this is the way of telling combine to do that.
+I hope this helps!
+Cheers,
+Pietro
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-11-04T09:18:02.000Z):
+*** Discussion title: Higgs Combination
+Hi all,
+Well, just because you can technically do this it doesnât mean itâs
+necessarily a good idea. Doing it like this will often lead to fit
+problems later on. For the interpolation of the shapes I think this will
+also give you something you potentially donât expect.
+Best, Adinda
+----------------------------------------
+
+REPLY 3 (by vischia @ 2021-11-04T09:28:53.000Z):
+Hi Adinda,
+I think fit problems are most often due to the unreasonable amount of nuisance parameters and bins we are plugging into numerical-minimization-based fits nowadays, rather than just having one-sided pdfs.
+Besides, if conceptually a variation is one-sided, then any solution different from having it one-sided is just a hack that does something different from the intended behaviour of that uncertainty. The other proper way would be to mandate that the people who define the prescription for each uncertainty avoid one-sided prescriptions, but that is not always possible (if a systematic is intrinsically one-sided, there’s not much one can do).
+Cheers,
+Pietro
+----------------------------------------
+
+REPLY 4 (by kelong @ 2021-11-04T09:35:42.000Z):
+*** Discussion title: Higgs Combination
+Hi all,
+Sorry, no, the one sided variation is not correct. NNPDF3.1 is
+explicitly a set with symmetric uncertainties. The correct procedure is
+indeed what you mention at first: build the variation for central +
+abs(shift) and central - abs(shift). Or, slightly more accurately, take
+the percent variation. If you have a histogram "cen" for the central
+variation and histograms "var" made with each of the 100 weights, the
+100 nuisances can be formed as
+up = var if var > cen else cen*cen/var down = var if var < cen else
+cen*cen/var
+As for studies that take half the variations as up and half as down,
+this is specific to the PDF. Many other PDF sets besides NNPDF (CTEQ,
+MMHT, etc.) do indeed distribute the variations this way, and then the
+uncertainty is computed by taking the variation histograms directly from
+the corresponding weights and it is not required to be symmetric.
+Best,
+Kenneth
+----------------------------------------
+
+REPLY 5 (by amarini @ 2021-11-04T09:44:58.000Z):
+*** Discussion title: Higgs Combination
+Hi,
+although, I see the point of both what Pietro and Adinda are saying on the technicalities regarding one sided uncertainties,
+are you sure that these uncertainties are one sided?
+They should come as eigenvector of an hessian matrix, which makes me believe that they should be two sided.
+-Andrea
+----------------------------------------
+
+REPLY 6 (by Byeonghak_Ko @ 2021-11-04T11:08:25.000Z):
+*** Discussion title: Higgs Combination
+Hi Kenneth,
+Thanks for your answer!
+It's just for sure, but as my understand, then the up-shift histogram is constructed with values central_i + abs(shift_i) and the down-shift histogram with values central_i - abs(shift_i) in the first method, while in the percent variation
+up_ij   = var_ij if var_ij > cen_i else cen_i*cen_i/var_ij
+down_ij = var_ij if var_ij < cen_i else cen_i*cen_i/var_ij
+(j runs over the 100 PDF set weights)
+up_i   = sqrt(sum_j (up_ij   - cen_i)^2)
+down_i = sqrt(sum_j (down_ij - cen_i)^2)
+(although you only mentioned the treatment of the each set individually)
+Is it correct?
+And also I'm concerned about a use of them without any reference... If it is not a problem, could you provide a reference of the methods?
+Thanks again!
+Best regards,
+Byeonghak Ko
+----------------------------------------
+
+REPLY 7 (by Byeonghak_Ko @ 2021-11-04T11:08:34.000Z):
+*** Discussion title: Higgs Combination
+Hi all,
+Sorry for a conflict from my question... But I think Kenneth gave an answer about that. I wonder how you guys think about it.
+And thanks for all your opinions!
+Best regards,
+Byeonghak Ko
+----------------------------------------
+
+REPLY 8 (by kelong @ 2021-11-04T11:35:47.000Z):
+*** Discussion title: Higgs Combination
+Hi Byeonghak,
+I'm not sure if I understand what you wrote. Each of the 100 variations
+of the NNPDF3.1 set give an alternative distribution for your
+observable. They are orthogonal Hessian uncertainties, so deriving a
+total uncertainty from them involves taking the sum in quadrature as you
+know. If you instead want to treat them as individual uncertainties and
+profile them in the fit, you need to just take the histograms themselves
+as the uncertainties band, the same way you would do for an uncertainty
+like the lepton efficiency uncertainty, there is no sum involved. The
+only catch is that this is just one side of the uncertainty, and you
+need to symmeterize it.
+Technically, the samples have 100 gen weights. You then make 100
+histograms weighted by each of these weights w_i, hist_var =
+Fill(variable, w_i). This histogram amounts to an up variation if it is
+greater than nominal, and a down variation if it is less. Of course it
+could also have a shape in a distribution that isn't always greater or
+smaller, in which case the difference between up and down is arbitrary,
+the important thing is that you make an uncertainty band out of the
+histogram wrt the nominal.
+The closest thing to a reference to this I know of is the MC2Hessian
+paper which tells how the Hessian sets are obtained in the special case
+of NNPDF (which general has MC replica sets):
+https://arxiv.org/pdf/1505.06736.pdf
+It doesn't really concern profiling the individual sets, but it's no
+different than the way you treat any Hessian uncertainty if you want to
+profile it.
+Best,
+Kenneth
+----------------------------------------
+
+REPLY 9 (by kelong @ 2021-11-04T11:35:56.000Z):
+*** Discussion title: Higgs Combination
+Hi Byeonghak,
+I'm not sure if I understand what you wrote. Each of the 100 variations
+of the NNPDF3.1 set give an alternative distribution for your
+observable. They are orthogonal Hessian uncertainties, so deriving a
+total uncertainty from them involves taking the sum in quadrature as you
+know. If you instead want to treat them as individual uncertainties and
+profile them in the fit, you need to just take the histograms themselves
+as the uncertainties band, the same way you would do for an uncertainty
+like the lepton efficiency uncertainty, there is no sum involved. The
+only catch is that this is just one side of the uncertainty, and you
+need to symmeterize it.
+Technically, the samples have 100 gen weights. You then make 100
+histograms weighted by each of these weights w_i, hist_var =
+Fill(variable, w_i). This histogram amounts to an up variation if it is
+greater than nominal, and a down variation if it is less. Of course it
+could also have a shape in a distribution that isn't always greater or
+smaller, in which case the difference between up and down is arbitrary,
+the important thing is that you make an uncertainty band out of the
+histogram wrt the nominal.
+The closest thing to a reference to this I know of is the MC2Hessian
+paper which tells how the Hessian sets are obtained in the special case
+of NNPDF (which general has MC replica sets):
+https://arxiv.org/pdf/1505.06736.pdf
+It doesn't really concern profiling the individual sets, but it's no
+different than the way you treat any Hessian uncertainty if you want to
+profile it.
+Best,
+Kenneth
+----------------------------------------
+
+REPLY 10 (by Byeonghak_Ko @ 2021-11-04T18:00:50.000Z):
+*** Discussion title: Higgs Combination
+Hi Kenneth,
+I think that matches what I wrote (I mean, my understanding from your instructions). Now many things are much clearer. Thanks a lot!
+Best regards,
+Byeonghak Ko
+----------------------------------------

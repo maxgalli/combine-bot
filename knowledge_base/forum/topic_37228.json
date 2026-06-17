@@ -1,0 +1,67 @@
+{
+  "topic_id": 37228,
+  "title": "Question on making plot of the GoF test statistic distribution",
+  "url": "https://cms-talk.web.cern.ch/t/37228",
+  "category_id": 279,
+  "created_at": "2024-03-20T20:23:55.489Z",
+  "last_posted_at": "2024-04-01T18:17:51.757Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "agapitos",
+      "name": "Antonios Agapitos",
+      "created_at": "2024-03-20T20:23:55.685Z",
+      "updated_at": "2024-03-20T20:23:55.685Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts;\nI\u2019m following combine instructions on GoF where I can successfully run [1] and get file [2], however, the next steps are unclear to me, so I would appreciate your help very much.\nI read here: \u201c\u2026run batch jobs\u2026and produce a plot of the results\u2026once the jobs have completed, you can hadd them together and run [3]\u201d.\nIs it necessary to use condor to submit jobs or this can be bypassed? If so, what is the indicative command to be used for GoF? And finally, in command [3], how does one obtain the two input root files?\nAny relevant workflow example would be very welcome.\nThanks, best regards,\nAntonis\n[1] combine -M GoodnessOfFit datacard.txt --algo=saturated --toysFreq --fixedSignalStrength 0  -t 1000 -n SR --bypassFrequentistFit\n[2] higgsCombineSR.GoodnessOfFit.mH120.123456.root\n[3] combineTool.py -M CollectGoodnessOfFit --input data_run.root toys_run.root -m 125.0 -o gof.json",
+      "cooked_html": "<p>Dear experts;</p>\n<p>I\u2019m following combine instructions on <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests\" rel=\"noopener nofollow ugc\">GoF</a> where I can successfully run [1] and get file [2], however, the next steps are unclear to me, so I would appreciate your help very much.</p>\n<p>I read <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#making-a-plot-of-the-gof-test-statistic-distribution\" rel=\"noopener nofollow ugc\">here</a>: \u201c\u2026run batch jobs\u2026and produce a plot of the results\u2026once the jobs have completed, you can hadd them together and run [3]\u201d.</p>\n<p>Is it necessary to use condor to submit jobs or this can be bypassed? If so, what is the indicative command to be used for GoF? And finally, in command [3], how does one obtain the two input root files?</p>\n<p>Any relevant workflow example would be very welcome.</p>\n<p>Thanks, best regards,<br>\nAntonis</p>\n<p>[1] combine -M GoodnessOfFit datacard.txt --algo=saturated --toysFreq --fixedSignalStrength 0  -t 1000 -n SR --bypassFrequentistFit<br>\n[2] higgsCombineSR.GoodnessOfFit.mH120.123456.root<br>\n[3] combineTool.py -M CollectGoodnessOfFit --input data_run.root toys_run.root -m 125.0 -o gof.json</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-03-25T15:50:41.304Z",
+      "updated_at": "2024-03-25T15:50:41.304Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Antonios,\nThe idea of GOF in a nutshell is that we want to calculate the goodness of fit p-value by comparing the expected GOF test-statistics distribution which is generated with [1] (from your post) with the best-fit value which you can get by running the following command without option for toys:\ncombine -M GoodnessOfFit datacard.txt --algo=saturated -n SR_bestfit --fixedSignalStrength=<value>\nTo combine the GOF results into json file [3] you should add them using the option\n--input higgsCombineSR_bestfit.GoodnessOfFit.mH120.123456.root higgsCombineSR.GoodnessOfFit.mH120.123456.root ,\nwhere the first file obtained by evaluation the GOF best-fit value and the second file contains toys from [1].\nIn general, it is not necessary to use the condor or any other batch system to generate the toys, but in case your model is complicated you might want to parallelize the process. Instructions can be found here.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Antonios,</p>\n<p>The idea of GOF in a nutshell is that we want to calculate the goodness of fit p-value by comparing the expected GOF test-statistics distribution which is generated with [1] (from your post) with the best-fit value which you can get by running the following command without option for toys:</p>\n<p><code>combine -M GoodnessOfFit datacard.txt --algo=saturated -n SR_bestfit --fixedSignalStrength=&lt;value&gt;</code></p>\n<p>To combine the GOF results into json file [3] you should add them using the option<br>\n<code>--input higgsCombineSR_bestfit.GoodnessOfFit.mH120.123456.root higgsCombineSR.GoodnessOfFit.mH120.123456.root </code>,<br>\nwhere the first file obtained by evaluation the GOF best-fit value and the second file contains toys from [1].<br>\nIn general, it is not necessary to use the condor or any other batch system to generate the toys, but in case your model is complicated you might want to parallelize the process. Instructions can be found <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#combinetool-for-job-submission\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "agapitos",
+      "name": "Antonios Agapitos",
+      "created_at": "2024-03-26T18:00:27.041Z",
+      "updated_at": "2024-03-26T18:00:27.041Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya;\nThank you very much for your response - now it is clear to me.\nI have one more question on running \u201ccombine -M GoodnessOfFit datacard.txt --algo=saturated \u2026\u201d\nIs there a way to mask some of the bins of (let\u2019s say) a 20-bin distribution observable and get GoF with only a particular subset of the bins?\nThis would be useful as a test to mask a region that could spoil the GoF.\nThanks again,\nbest regards, Antonis",
+      "cooked_html": "<p>Dear Aliya;</p>\n<p>Thank you very much for your response - now it is clear to me.</p>\n<p>I have one more question on running \u201ccombine -M GoodnessOfFit datacard.txt --algo=saturated \u2026\u201d<br>\nIs there a way to mask some of the bins of (let\u2019s say) a 20-bin distribution observable and get GoF with only a particular subset of the bins?<br>\nThis would be useful as a test to mask a region that could spoil the GoF.</p>\n<p>Thanks again,<br>\nbest regards, Antonis</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-03-27T16:54:24.821Z",
+      "updated_at": "2024-03-27T16:54:24.821Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Antonis,\nUnfortunately, it is not possible to mask bins for the GOF or anything else in Combine.\nIf you suspect that some regions of your distributions are not well described, I would suggest to move  them into a different category and use channel masking features with --channelMasks option as described here.  Perhaps, others have better suggestions.\nI think it would be actually great to have this feature implemented in Combine. Let us know if you are particularly interested to have it implemented and willing to devote some time to this project, we would be very happy to support it and provide pointers where to start.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Antonis,</p>\n<p>Unfortunately, it is not possible to mask bins for the GOF or anything else in Combine.<br>\nIf you suspect that some regions of your distributions are not well described, I would suggest to move  them into a different category and use channel masking features with <code>--channelMasks</code> option as described <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#channel-masking\" rel=\"noopener nofollow ugc\">here</a>.  Perhaps, others have better suggestions.</p>\n<p>I think it would be actually great to have this feature implemented in Combine. Let us know if you are particularly interested to have it implemented and willing to devote some time to this project, we would be very happy to support it and provide pointers where to start.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "agapitos",
+      "name": "Antonios Agapitos",
+      "created_at": "2024-04-01T18:17:51.757Z",
+      "updated_at": "2024-04-01T18:17:51.757Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya;\nThanks for your reply.\nI have implemented this bin-masking and share it with you (all in public dir).\nThe code is here [0]. This script runs as:\npython MaskBins.py Shapes.root Shapes_maskbin_8_10.root \u201c9,11\u201d\nwith the first(second) file being the original(modified) file with the histos.\nWe remove histo bins 9 & 11 which appear as bins 8 & 10 in the impact plots.\nThe code clones each initial histo, removing these two bins and storing the new histos (which have 2 fewer bins) in a new file.\nIt also prints old vs new total yields (integrals) of each histos, needed for updating the datacard (copy-pasting from the shell).\nThen, one has to update yields in the cards and run over the output file to get GoF.\nThe code reads hist-names, kyes, and subdirectories in the input file and makes the same directory structure in the new one.\nYou can try for example the command here [1] after copping in your directory cards and the input rootfile (all under the same dir).\nYou can check the change in GoF w/o a particular bin.\nLet me know if you are interested in adopting this code centrally.\nBest regards, Antonis\n[0] /afs/cern.ch/work/a/agapitos/public/WWW/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/MaskBins/MaskBins.py\n[1] python MaskBins.py Shapes_SR5b_2000_1600.root Shapes_SR5b_2000_1600_maskbin8.root \u201c9\u201d",
+      "cooked_html": "<p>Dear Aliya;</p>\n<p>Thanks for your reply.<br>\nI have implemented this bin-masking and share it with you (all in public dir).</p>\n<p>The code is here [0]. This script runs as:<br>\npython MaskBins.py Shapes.root Shapes_maskbin_8_10.root \u201c9,11\u201d<br>\nwith the first(second) file being the original(modified) file with the histos.<br>\nWe remove histo bins 9 &amp; 11 which appear as bins 8 &amp; 10 in the impact plots.<br>\nThe code clones each initial histo, removing these two bins and storing the new histos (which have 2 fewer bins) in a new file.<br>\nIt also prints old vs new total yields (integrals) of each histos, needed for updating the datacard (copy-pasting from the shell).<br>\nThen, one has to update yields in the cards and run over the output file to get GoF.<br>\nThe code reads hist-names, kyes, and subdirectories in the input file and makes the same directory structure in the new one.<br>\nYou can try for example the command here [1] after copping in your directory cards and the input rootfile (all under the same dir).<br>\nYou can check the change in GoF w/o a particular bin.</p>\n<p>Let me know if you are interested in adopting this code centrally.</p>\n<p>Best regards, Antonis</p>\n<p>[0] /afs/cern.ch/work/a/agapitos/public/WWW/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/MaskBins/MaskBins.py</p>\n<p>[1] python MaskBins.py Shapes_SR5b_2000_1600.root Shapes_SR5b_2000_1600_maskbin8.root \u201c9\u201d</p>"
+    }
+  ]
+}

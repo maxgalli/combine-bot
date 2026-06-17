@@ -1,0 +1,34 @@
+{
+  "topic_id": 33655,
+  "title": "NLL shapes using FastScan",
+  "url": "https://cms-talk.web.cern.ch/t/33655",
+  "category_id": 279,
+  "created_at": "2024-01-25T03:25:53.105Z",
+  "last_posted_at": "2024-01-25T09:05:17.656Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "matariq",
+      "name": "Maida Tariq",
+      "created_at": "2024-01-25T03:25:53.497Z",
+      "updated_at": "2024-01-25T03:25:53.497Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have my prefit workspace as card.root and I run the following command:\ncombineTool.py -M FastScan -w card.root:w\n\nFrom what I understand, this gives me NLL evaluated varying a single parameter at a time, the other parameters stay at the nominal values in the workspace which means they are set to their prefit values.\nHowever, what I want is that when the NLL is evaluated, other parameters are set to their postfit values. So I run the fit first and save the workspace as a snapshot by doing the following:\ncombine -M MultiDimFit --saveWorkspace -n _initialFit_Test --algo singles --redefineSignalPOIs yt --freezeParameters r --robustFit 1 -t 0 --do95=1 --cminPreScan --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --cminFallbackAlgo Minuit2,Simplex,0:0.1 -m 125 -d card.root --setParameters r=1\n\nThen I run the FastScan while loading the snapshot as follows:\ncombineTool.py -M FastScan -w higgsCombine_initialFit_Test.MultiDimFit.mH125.root:w --snapshotName MultiDimFit\n\nHowever, the last command gives me the exact same NLL shapes as I get by using card.root as my workspace (in the very first command above).\nAny ideas to why this is the case?\n-Maida",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I have my prefit workspace as card.root and I run the following command:</p>\n<pre><code class=\"lang-auto\">combineTool.py -M FastScan -w card.root:w\n</code></pre>\n<p>From what I understand, this gives me NLL evaluated varying a single parameter at a time, the other parameters stay at the nominal values in the workspace which means they are set to their prefit values.</p>\n<p>However, what I want is that when the NLL is evaluated, other parameters are set to their postfit values. So I run the fit first and save the workspace as a snapshot by doing the following:</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit --saveWorkspace -n _initialFit_Test --algo singles --redefineSignalPOIs yt --freezeParameters r --robustFit 1 -t 0 --do95=1 --cminPreScan --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --cminFallbackAlgo Minuit2,Simplex,0:0.1 -m 125 -d card.root --setParameters r=1\n</code></pre>\n<p>Then I run the FastScan while loading the snapshot as follows:</p>\n<pre><code class=\"lang-auto\">combineTool.py -M FastScan -w higgsCombine_initialFit_Test.MultiDimFit.mH125.root:w --snapshotName MultiDimFit\n</code></pre>\n<p>However, the last command gives me the exact same NLL shapes as I get by using card.root as my workspace (in the very first command above).</p>\n<p>Any ideas to why this is the case?</p>\n<p>-Maida</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-01-25T09:05:17.656Z",
+      "updated_at": "2024-01-25T09:05:17.656Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Maida,\nSorry, it\u2019s not well documented, but it can be done. You need a RooFitResult from somewhere that has the postfit values. It could be from FitDiagnostics, or from MultiDimFit with option --saveFitResult. Then when running FastScan, you can add something like -f fitdiagnostics.root:fit_s.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Maida,</p>\n<p>Sorry, it\u2019s not well documented, but it can be done. You need a RooFitResult from somewhere that has the postfit values. It could be from FitDiagnostics, or from MultiDimFit with option <code>--saveFitResult</code>. Then when running FastScan, you can add something like <code>-f fitdiagnostics.root:fit_s</code>.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

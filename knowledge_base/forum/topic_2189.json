@@ -1,0 +1,122 @@
+{
+  "topic_id": 2189,
+  "title": "Difference in excess between AsymptoticLimits and Significance",
+  "url": "https://cms-talk.web.cern.ch/t/2189",
+  "category_id": 279,
+  "created_at": "2021-10-21T19:03:04.000Z",
+  "last_posted_at": "2021-11-05T14:55:44.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Michael_Krohn",
+      "name": "Michael Krohn",
+      "created_at": "2021-10-21T19:03:04.000Z",
+      "updated_at": "2023-02-07T10:55:44.668Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Combine experts,\nI must have a misunderstanding of how these commands work, but when I\ncalculate the significance for one of our mass points using:\ncombine -M Significance datacard.txt\nI get a significance of 2.95sigma, but when I run:\ncombine -M AsymptoticLimits datacard.txt\nI get:\nObserved Limit: r < 28.6607 Expected 2.5%: r < 3.2632 Expected 16.0%: r\n< 5.2647 Expected 50.0%: r < 10.1875 Expected 84.0%: r < 20.5019\nExpected 97.5%: r < 30.8968\nso here the observed limits is below the 2sigma expected result. Should\nI not expect the significance to be the same from both of these\ncommands? The datacard and workspaces can be found in [1] in case anyone\nwants to reproduce this.\nThanks, Michael\n[1]\n\ndrive.google.com\n\nIngredientsZip.tar.gz\n\nGoogle Drive file.",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Combine experts,</p>\n<p>I must have a misunderstanding of how these commands work, but when I<br>\ncalculate the significance for one of our mass points using:</p>\n<p>combine -M Significance datacard.txt</p>\n<p>I get a significance of 2.95sigma, but when I run:</p>\n<p>combine -M AsymptoticLimits datacard.txt</p>\n<p>I get:</p>\n<p>Observed Limit: r &lt; 28.6607 Expected 2.5%: r &lt; 3.2632 Expected 16.0%: r<br>\n&lt; 5.2647 Expected 50.0%: r &lt; 10.1875 Expected 84.0%: r &lt; 20.5019<br>\nExpected 97.5%: r &lt; 30.8968</p>\n<p>so here the observed limits is below the 2sigma expected result. Should<br>\nI not expect the significance to be the same from both of these<br>\ncommands? The datacard and workspaces can be found in [1] in case anyone<br>\nwants to reproduce this.</p>\n<p>Thanks, Michael</p>\n<p>[1]</p><aside class=\"onebox googledrive\" data-onebox-src=\"https://drive.google.com/file/d/1CtWMfp4cms0_ERV8ZszJghYLO4AKGXE7/view?usp=sharing\">\n  <header class=\"source\">\n\n      <a href=\"https://drive.google.com/file/d/1CtWMfp4cms0_ERV8ZszJghYLO4AKGXE7/view?usp=sharing\" target=\"_blank\" rel=\"noopener nofollow ugc\">drive.google.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n      <a href=\"https://drive.google.com/file/d/1CtWMfp4cms0_ERV8ZszJghYLO4AKGXE7/view?usp=sharing\" target=\"_blank\" rel=\"noopener nofollow ugc\"><span class=\"googledocs-onebox-logo g-drive-logo\"></span></a>\n\n\n\n<h3><a href=\"https://drive.google.com/file/d/1CtWMfp4cms0_ERV8ZszJghYLO4AKGXE7/view?usp=sharing\" target=\"_blank\" rel=\"noopener nofollow ugc\">IngredientsZip.tar.gz</a></h3>\n\n<p>Google Drive file.</p>\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2021-10-22T11:00:42.000Z",
+      "updated_at": "2021-11-17T08:39:44.716Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi Michael,\nI expect the main difference is that the limit is computed using the CLs criterion. You can force combine to use just s+b p-value (CLs+b) by adding the option --rule CLsplusb. Then the comparison between the two is fairer, and you should see observed above the 2sigma expected.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Michael,</p>\n<p>I expect the main difference is that the limit is computed using the CLs criterion. You can force combine to use just s+b p-value (CLs+b) by adding the option --rule CLsplusb. Then the comparison between the two is fairer, and you should see observed above the 2sigma expected.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "Matej_Roguljic",
+      "name": "Matej Roguljic",
+      "created_at": "2021-10-27T07:25:20.000Z",
+      "updated_at": "2021-11-17T08:39:44.934Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi all,\nwe observed something similar and are interested in the follow-up on\nthis.\n1) Question to Michael: Did the switch to CLsplusb criterion bring the\nobserved limit above the 2sigma expected?\n2) Question to experts: If both criteria give the same result (i.e.\nobserved is 2sigma above expected, while significance is 3 sigma), are\nthere other reasons for the discrepancy?\nBest regards,\nMatej",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi all,</p>\n<p>we observed something similar and are interested in the follow-up on<br>\nthis.</p>\n<p>1) Question to Michael: Did the switch to CLsplusb criterion bring the<br>\nobserved limit above the 2sigma expected?</p>\n<p>2) Question to experts: If both criteria give the same result (i.e.<br>\nobserved is 2sigma above expected, while significance is 3 sigma), are<br>\nthere other reasons for the discrepancy?</p>\n<p>Best regards,</p>\n<p>Matej</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-10-27T10:02:42.000Z",
+      "updated_at": "2021-11-17T08:39:45.062Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\n1. can you confirm that your two Asimov fits are healthy? (r=0, r~expected limit)\nThe Asimov fit is used to estimated the variance for the Asymptotic behaviour.\n2. can you confirm that you are in a reasonably Asymptotic behaviour?\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>1. can you confirm that your two Asimov fits are healthy? (r=0, r~expected limit)<br>\nThe Asimov fit is used to estimated the variance for the Asymptotic behaviour.</p>\n<p>2. can you confirm that you are in a reasonably Asymptotic behaviour?</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "Matej_Roguljic",
+      "name": "Matej Roguljic",
+      "created_at": "2021-10-27T11:45:58.000Z",
+      "updated_at": "2021-11-17T08:39:45.211Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHello Andrea,\n> 1. can you confirm that your two Asimov fits are healthy? (r=0, r~expected limit)\nThe Asimov fit is used to estimated the variance for the Asymptotic behaviour.\nWe get \"Minimization success! status=0\" in all the fits. I copied the\noutput of the asymptotic limit with verbosity=3 in public area in case\nyou want to have a look.\n/afs/cern.ch/user/m/mrogulji/work/public/Combine_output/asymptotic_limits_v3.txt\n> 2. can you confirm that you are in a reasonably Asymptotic behaviour?\nWe ran full CLs (HybridNew method, LHC criterion) and the\nexpected(observed) limit differences w.r.t asymptotic are 3%(7%). Is\nthis in line with reasonably Asymptotic behaviour?\nCheers,\nMatej",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hello Andrea,</p>\n<p>&gt; 1. can you confirm that your two Asimov fits are healthy? (r=0, r~expected limit)<br>\nThe Asimov fit is used to estimated the variance for the Asymptotic behaviour.</p>\n<p>We get \"Minimization success! status=0\" in all the fits. I copied the<br>\noutput of the asymptotic limit with verbosity=3 in public area in case<br>\nyou want to have a look.</p>\n<p>/afs/cern.ch/user/m/mrogulji/work/public/Combine_output/asymptotic_limits_v3.txt</p>\n<p>&gt; 2. can you confirm that you are in a reasonably Asymptotic behaviour?</p>\n<p>We ran full CLs (HybridNew method, LHC criterion) and the<br>\nexpected(observed) limit differences w.r.t asymptotic are 3%(7%). Is<br>\nthis in line with reasonably Asymptotic behaviour?</p>\n<p>Cheers,</p>\n<p>Matej</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-10-27T12:03:05.000Z",
+      "updated_at": "2021-11-17T08:39:45.408Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\nI mean the closure checks on the Asimov, since this is assume to work in asymptotic to get the correct estimation. [See CCGV paper]\nhttps://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsPAGPreapprovalChecks\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>I mean the closure checks on the Asimov, since this is assume to work in asymptotic to get the correct estimation. [See CCGV paper]</p>\n<p><a href=\"https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsPAGPreapprovalChecks\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">https://twiki.cern.ch/twiki/bin/view/CMS/HiggsWG/HiggsPAGPreapprovalChecks</a></p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "Matej_Roguljic",
+      "name": "Matej Roguljic",
+      "created_at": "2021-10-27T12:21:51.000Z",
+      "updated_at": "2021-11-17T08:39:45.549Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nThanks for the link and apologies for the misunderstanding. I thought\nyou were interested in the fits which run during the Asymptotic Limit\ncalculation. The Asimov fit for r=0 and r=0.42 (expected exclusion\nlimit) return the same values of r. Also, the nuisances do not move, as\nis expected.\nMatej",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Thanks for the link and apologies for the misunderstanding. I thought<br>\nyou were interested in the fits which run during the Asymptotic Limit<br>\ncalculation. The Asimov fit for r=0 and r=0.42 (expected exclusion<br>\nlimit) return the same values of r. Also, the nuisances do not move, as<br>\nis expected.</p>\n<p>Matej</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "Michael_Krohn",
+      "name": "Michael Krohn",
+      "created_at": "2021-10-27T14:21:20.000Z",
+      "updated_at": "2021-11-17T08:39:45.703Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Matej,\nYes, when I run with the CLsplusb criterion I see that the observed\nlimit is now 2sigma above the expected. For comparison to the limits I\nsent in the first message using the CLs criterion, I'm seeing the\nfollowing with the CLsplusb:\nObserved Limit: r < 27.2464\nExpected 2.5%: r < 0.6621\nExpected 16.0%: r < 1.6122\nExpected 50.0%: r < 7.0625\nExpected 84.0%: r < 15.5828\nExpected 97.5%: r < 24.1697\nRegards, Michael",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Matej,</p>\n<p>Yes, when I run with the CLsplusb criterion I see that the observed<br>\nlimit is now 2sigma above the expected. For comparison to the limits I<br>\nsent in the first message using the CLs criterion, I'm seeing the<br>\nfollowing with the CLsplusb:</p>\n<p>Observed Limit: r &lt; 27.2464</p>\n<p>Expected 2.5%: r &lt; 0.6621</p>\n<p>Expected 16.0%: r &lt; 1.6122</p>\n<p>Expected 50.0%: r &lt; 7.0625</p>\n<p>Expected 84.0%: r &lt; 15.5828</p>\n<p>Expected 97.5%: r &lt; 24.1697</p>\n<p>Regards, Michael</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "Matej_Roguljic",
+      "name": "Matej Roguljic",
+      "created_at": "2021-11-02T15:48:32.000Z",
+      "updated_at": "2021-11-17T08:39:45.842Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Andrew,\ncould you help me understand the relationships between the CLs, CLsplusb\ncriteria and the Significance test? Please let me know if this is\noutside of the scope of this discussion and we can move this elsewhere.\nAs I understand, the purpose of using CLs, which is CLs+b/CLb, over\nCLs+b is to prevent overly-optimistic limits in case the background\nfluctuates down. As the observation fluctuates more below the expected\nbackground, CLb value decreases so the correction on the CLs+b is\nlarger. However, if there is an excess, the CLb should be closer to\nunity so the correction to CLs+b should be smaller. Is this correct?\nFollowing this, one would expect the difference in exclusion limits when\ncomparing CLs and CLs+b criteria to be mostly at the lowest limits,\ni.e., exclusion at 2.5% and 16% confidence level, while the limits at\n84% and 97.5% should not change much. And really, looking at the numbers\nprovided by Michael, the relative difference between the CLs+b and CLs\nlimits at 2.5% is almost five times (CLs+b gives 5 times lower limits\nthan CLs+b!), while at 97.5%, the relative difference is 28%. The\nobserved limit also goes up by just 5%.\nAll this then leads to the observed limit going from +2sigma (up from\nthe expected limit) up to +2.35 sigma with the switch to CLs+b. However,\nthe Significance test returns 2.95 sigma significance. Therefore, event\nwith CLs+b, there is a mismatch between the limits and the significance.\nLower than when using CLs, but it's still there.\nCould there be \"statistical\" reasons why the two tests, CLs(+b) and\nSignificance, may give different significances?\nIf so, which result should be quoted as the observed significance? The\none from the limits or the one from the Significance test?\nThanks.\nCheers, Matej",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrew,</p>\n<p>could you help me understand the relationships between the CLs, CLsplusb<br>\ncriteria and the Significance test? Please let me know if this is<br>\noutside of the scope of this discussion and we can move this elsewhere.</p>\n<p>As I understand, the purpose of using CLs, which is CLs+b/CLb, over<br>\nCLs+b is to prevent overly-optimistic limits in case the background<br>\nfluctuates down. As the observation fluctuates more below the expected<br>\nbackground, CLb value decreases so the correction on the CLs+b is<br>\nlarger. However, if there is an excess, the CLb should be closer to<br>\nunity so the correction to CLs+b should be smaller. Is this correct?</p>\n<p>Following this, one would expect the difference in exclusion limits when<br>\ncomparing CLs and CLs+b criteria to be mostly at the lowest limits,<br>\ni.e., exclusion at 2.5% and 16% confidence level, while the limits at<br>\n84% and 97.5% should not change much. And really, looking at the numbers<br>\nprovided by Michael, the relative difference between the CLs+b and CLs<br>\nlimits at 2.5% is almost five times (CLs+b gives 5 times lower limits<br>\nthan CLs+b!), while at 97.5%, the relative difference is 28%. The<br>\nobserved limit also goes up by just 5%.</p>\n<p>All this then leads to the observed limit going from +2sigma (up from<br>\nthe expected limit) up to +2.35 sigma with the switch to CLs+b. However,<br>\nthe Significance test returns 2.95 sigma significance. Therefore, event<br>\nwith CLs+b, there is a mismatch between the limits and the significance.<br>\nLower than when using CLs, but it's still there.</p>\n<p>Could there be \"statistical\" reasons why the two tests, CLs(+b) and<br>\nSignificance, may give different significances?</p>\n<p>If so, which result should be quoted as the observed significance? The<br>\none from the limits or the one from the Significance test?</p>\n<p>Thanks.</p>\n<p>Cheers, Matej</p>"
+    },
+    {
+      "post_number": 10,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2021-11-05T14:55:44.000Z",
+      "updated_at": "2021-11-17T08:39:46.085Z",
+      "reply_to_post_number": 9,
+      "is_accepted_answer": false,
+      "text": "Hi Matej,\nFew replies inline below..\ncheers,\nAndrew\n\n*** Discussion title: Higgs Combination\nHi Andrew,\ncould you help me understand the relationships between the CLs, CLsplusb\ncriteria and the Significance test? Please let me know if this is\noutside of the scope of this discussion and we can move this elsewhere.\nAs I understand, the purpose of using CLs, which is CLs+b/CLb, over\nCLs+b is to prevent overly-optimistic limits in case the background\nfluctuates down. As the observation fluctuates more below the expected\nbackground, CLb value decreases so the correction on the CLs+b is\nlarger. However, if there is an excess, the CLb should be closer to\nunity so the correction to CLs+b should be smaller. Is this correct?\n\nRight, exactly.\n\nFollowing this, one would expect the difference in exclusion limits when\ncomparing CLs and CLs+b criteria to be mostly at the lowest limits,\ni.e., exclusion at 2.5% and 16% confidence level, while the limits at\n84% and 97.5% should not change much. And really, looking at the numbers\nprovided by Michael, the relative difference between the CLs+b and CLs\nlimits at 2.5% is almost five times (CLs+b gives 5 times lower limits\nthan CLs+b!), while at 97.5%, the relative difference is 28%. The\nobserved limit also goes up by just 5%.\n\nYes. I think this pattern in the quantiles of the expected limits between CLs+b and CLs is normal.\n\nAll this then leads to the observed limit going from +2sigma (up from\nthe expected limit) up to +2.35 sigma with the switch to CLs+b.\n\nHow did you determine this is 2.35 sigma? The expected limits give you the [0,025, 0.16, 0.5, 0.84, 0.95] quantiles, but you seem to be making some extra step to go from the observed limit into a p-value, and then a z score, that is not entirely clear to me.\n\nHowever,\nthe Significance test returns 2.95 sigma significance. Therefore, event\nwith CLs+b, there is a mismatch between the limits and the significance.\nLower than when using CLs, but it's still there.\nCould there be \"statistical\" reasons why the two tests, CLs(+b) and\nSignificance, may give different significances?\n\nThe limit and significance are not the same test (different null hypotheses), and while under some specific conditions there might be a correspondence, it will not be true in general (e.g. to the extent the asymptotic approximation holds).\n\nIf so, which result should be quoted as the observed significance? The\none from the limits or the one from the Significance test?\n\nIf the null hypothesis is background-only, then we would quote the number from the significance test.",
+      "cooked_html": "<p>Hi Matej,</p>\n<p>Few replies inline below..</p>\n<p>cheers,<br>\nAndrew</p>\n<blockquote>\n<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Andrew,</p>\n<p>could you help me understand the relationships between the CLs, CLsplusb<br>\ncriteria and the Significance test? Please let me know if this is<br>\noutside of the scope of this discussion and we can move this elsewhere.</p>\n<p>As I understand, the purpose of using CLs, which is CLs+b/CLb, over<br>\nCLs+b is to prevent overly-optimistic limits in case the background<br>\nfluctuates down. As the observation fluctuates more below the expected<br>\nbackground, CLb value decreases so the correction on the CLs+b is<br>\nlarger. However, if there is an excess, the CLb should be closer to<br>\nunity so the correction to CLs+b should be smaller. Is this correct?</p>\n</blockquote>\n<p>Right, exactly.</p>\n<blockquote>\n<p>Following this, one would expect the difference in exclusion limits when<br>\ncomparing CLs and CLs+b criteria to be mostly at the lowest limits,<br>\ni.e., exclusion at 2.5% and 16% confidence level, while the limits at<br>\n84% and 97.5% should not change much. And really, looking at the numbers<br>\nprovided by Michael, the relative difference between the CLs+b and CLs<br>\nlimits at 2.5% is almost five times (CLs+b gives 5 times lower limits<br>\nthan CLs+b!), while at 97.5%, the relative difference is 28%. The<br>\nobserved limit also goes up by just 5%.</p>\n</blockquote>\n<p>Yes. I think this pattern in the quantiles of the expected limits between CLs+b and CLs is normal.</p>\n<blockquote>\n<p>All this then leads to the observed limit going from +2sigma (up from<br>\nthe expected limit) up to +2.35 sigma with the switch to CLs+b.</p>\n</blockquote>\n<p>How did you determine this is 2.35 sigma? The expected limits give you the [0,025, 0.16, 0.5, 0.84, 0.95] quantiles, but you seem to be making some extra step to go from the observed limit into a p-value, and then a z score, that is not entirely clear to me.</p>\n<blockquote>\n<p>However,<br>\nthe Significance test returns 2.95 sigma significance. Therefore, event<br>\nwith CLs+b, there is a mismatch between the limits and the significance.<br>\nLower than when using CLs, but it's still there.</p>\n<p>Could there be \"statistical\" reasons why the two tests, CLs(+b) and<br>\nSignificance, may give different significances?</p>\n</blockquote>\n<p>The limit and significance are not the same test (different null hypotheses), and while under some specific conditions there might be a correspondence, it will not be true in general (e.g. to the extent the asymptotic approximation holds).</p>\n<blockquote>\n<p>If so, which result should be quoted as the observed significance? The<br>\none from the limits or the one from the Significance test?</p>\n</blockquote>\n<p>If the null hypothesis is background-only, then we would quote the number from the significance test.</p>"
+    }
+  ]
+}

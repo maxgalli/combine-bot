@@ -1,0 +1,85 @@
+TOPIC: Combine failing to recognize `flatParam` that exists in RooWorkspace
+URL: https://cms-talk.web.cern.ch/t/124032
+DATE: 2025-04-22T22:05:42.355Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by ammitra @ 2025-04-22T22:05:43.434Z):
+ROOT Version: 6.30/07
+Combine Version: v10.0.1
+CMSSW release: CMSSW_14_1_0_pre4
+
+Hello experts,
+I’ve been using Combine for several years but have never seen this issue before. I have a RooWorkspace describing a likelihood model that contains several flatParam objects. I’ve written a card that points to these objects, but any time I attempt to run a method, Combine warns me that these flatParam objects do not exist. I’ve attached the card and ROOT file containing the RooWorkspace to this post.
+The relevant component of card.txt are the lines:
+QCD_Rc_1x1_par0                          flatParam
+QCD_Rc_1x1_par1                          flatParam
+QCD_Rc_1x1_par2                          flatParam
+QCD_Rc_1x1_par3                          flatParam
+
+which describe the four flatParams I want to use from the RooWorkspace base.root:w. As well, I’ve verified that these objects exist in the workspace using a script AnalyzeWorkspace.py, which prints out all variables in the workspace. If I run the script, we can see that these parameters do indeed exist as RooRealVar objects in the workspace:
+[ammitra@cmslpc343 reproducible_example]$ python AnalyzeWorkspace.py
+...
+QCD_Rc_1x1_par0 : 0.1
+QCD_Rc_1x1_par1 : 0.1
+QCD_Rc_1x1_par2 : 0.1
+QCD_Rc_1x1_par3 : 0.1
+...
+RooRealVar::QCD_Rc_1x1_par0 = 0.1 +/- 0.1  L(-500 - 500)
+RooRealVar::QCD_Rc_1x1_par1 = 0.1 +/- 0.1  L(-500 - 500)
+RooRealVar::QCD_Rc_1x1_par2 = 0.1 +/- 0.1  L(-500 - 500)
+RooRealVar::QCD_Rc_1x1_par3 = 0.1 +/- 0.1  L(-500 - 500)
+
+Yet, if I run text2workspace.py, or FitDiagnostics with the --text2workspace option, I get the following warning:
+[ammitra@cmslpc343 reproducible_example]$ combine -M FitDiagnostics card.txt --text2workspace "--channel-masks"--saveWorkspace --cminDefaultMinimizerStrategy 0 --rMin -1 --rMax 10 -v 2
+
+>>> Random number generator seed is 123456
+>>> Method used is FitDiagnostics
+Creating pdfs for individual modes (6): ...... done.
+Importing combined pdf model_s
+Missing variable QCD_Rc_1x1_par0 declared as flatParam, will create one!
+Missing variable QCD_Rc_1x1_par1 declared as flatParam, will create one!
+Missing variable QCD_Rc_1x1_par2 declared as flatParam, will create one!
+Missing variable QCD_Rc_1x1_par3 declared as flatParam, will create one!
+
+I’ve traced this warning to ModelTools.py, but I don’t quite see how it’s possible that these RooRealVar variables are missing. What’s also strange is that Combine seems to pick up a different RooRealVar that exists in the workspace, QCD_Rc_0x0_par0,
+Floating Parameter  InitialValue    FinalValue +/-  Error     GblCorr.
+--------------------  ------------  --------------------------  --------
+QCD_Rc_0x0_par0    1.0000e-01   -2.0431e+00 +/-  4.99e-01  <none>
+...
+
+but this parameter is explicitly not requested in the card.txt.
+I’ve attached the card and ROOT file containing the RooWorkspace to this post, as well as the script to analyze all variables in the workspace and the FitDiagnostics command I ran as a minimal reproducible example.
+Any help to understand this behavior would be greatly appreciated. Thanks in advance!
+AnalyzeWorkspace.py (306 Bytes)
+FitDiagnostics.sh (193 Bytes)
+base.root (51.9 KB)
+card.txt (13.7 KB)
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by nckw @ 2025-04-23T10:11:17.931Z):
+Hi Amitav,
+I think this is related to whether or not the parameter is attached to one of the pdfs (shapes) you are using.
+In the case of QCD_Rc_0x0_par0, I can see that there are many RooFormulaVars that are clients, picking one, QCD_Rc_0x0_LOW_bin_1-1, and following the tree up, I can see there are RooParametricHist2D objects that use it - so combine will be able to see that the parameter is indeed a parameter of the model
+Now, instead if I try with QCD_Rc_1x1_par0, I can see again a set of RooFormulaVars that are clients, but trying to follow up one of them:
+w->function("QCD_Rc_1x1_LOW_bin_1-1")->Print("V")
+
+I can see the client list is empty. This means, that the model doesn’t contain that parameter.
+A fix is to declare them in the datacard usign the extraArg syntax (see https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#extra-arguments) as follows;
+QCD_Rc_1x1_par0 extArg base.root:w
+QCD_Rc_1x1_par1 extArg base.root:w
+QCD_Rc_1x1_par2 extArg base.root:w
+QCD_Rc_1x1_par3 extArg base.root:w
+
+This will get rid of the warning, but don’t know if it will have a real effect since unless the parameters are doing something to the model, I don’t see how they are effecting the analysis. Perhaps there is a reason but you might want to double check that the mapping of these parameters to the pdfs is correct,
+Best,
+Nick
+P.S, in text2workspace, if you include a verbosity flag (-v 3) you will find a .dot file produced. This can be interpreted with several different graph viewing tools, and that might help you debug the model better.
+----------------------------------------
+
+REPLY 3 (by ammitra @ 2025-04-23T15:11:07.122Z):
+Nick,
+Thank you so much for the quick response, it’s totally clear now why Combine fails to include these parameters when running the fit. This is then definitely not a problem with Combine, but rather with how I create the workspace and statistical model itself. I also had no idea about the text2workspace verbosity flag. Inspecting the output with graphviz, it’s clear where the problem lies. Thanks so much!
+Best,
+Amitav
+----------------------------------------

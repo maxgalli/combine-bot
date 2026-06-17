@@ -1,0 +1,40 @@
+{
+  "topic_id": 32496,
+  "title": "Unable to recover injected POI value when fitting to Asimov",
+  "url": "https://cms-talk.web.cern.ch/t/32496",
+  "category_id": 279,
+  "created_at": "2023-12-07T08:01:35.563Z",
+  "last_posted_at": "2023-12-13T14:49:34.384Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2023-12-07T08:01:35.815Z",
+      "updated_at": "2023-12-07T08:01:35.815Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nwith this post I\u2019d like to ask for your help with an issue that happens to me from time to time when performing likelihood scans. Let\u2019s suppose I have a POI r (it hasn\u2019t to be necessarily the signal strength, it happened also with different POIs), and I want to perform a likelihood scan with respect to this POI to get the expected central value and the error. Thus, I\u2019d do something like:\ncombine -M MultiDimFit -t -1 -P r --setParameters r=1 [...options...]\nand collect the points to get the likelihood scan. It happens from time to time that my likelihood does not have a minimum at 1, namely, I don\u2019t recover the value of r I injected into the Asimov dataset. I find this cases the hardest to debug, as the fit is not failing spectacularly, it just gives me the wrong value. I have a couple of questions:\n\nAre there any general check & tricks that one can try in order to fix this behavior?\nUsually, the discrepancy is not too big (e.g., I might get r=0.98 instead of r=1. How \u201cbad\u201d is this, namely, can this be considered just a small \u201cglitch\u201d in the fit, or should I really be worried?\n\nI kept this post quite general on purpose, as this seems to happen from time to time regardless of the POI being fitted. Anyway, I am available to discuss in more depth some real cases.\nThanks a lot, all the best,\nFabio.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>with this post I\u2019d like to ask for your help with an issue that happens to me from time to time when performing likelihood scans. Let\u2019s suppose I have a POI <code>r</code> (it hasn\u2019t to be necessarily the signal strength, it happened also with different POIs), and I want to perform a likelihood scan with respect to this POI to get the expected central value and the error. Thus, I\u2019d do something like:</p>\n<p><code>combine -M MultiDimFit -t -1 -P r --setParameters r=1 [...options...]</code></p>\n<p>and collect the points to get the likelihood scan. It happens from time to time that my likelihood does not have a minimum at 1, namely, I don\u2019t recover the value of <code>r</code> I injected into the Asimov dataset. I find this cases the hardest to debug, as the fit is not failing spectacularly, it just gives me the wrong value. I have a couple of questions:</p>\n<ol>\n<li>Are there any general check &amp; tricks that one can try in order to fix this behavior?</li>\n<li>Usually, the discrepancy is not too big (e.g., I might get <code>r=0.98</code> instead of <code>r=1</code>. How \u201cbad\u201d is this, namely, can this be considered just a small \u201cglitch\u201d in the fit, or should I really be worried?</li>\n</ol>\n<p>I kept this post quite general on purpose, as this seems to happen from time to time regardless of the POI being fitted. Anyway, I am available to discuss in more depth some real cases.</p>\n<p>Thanks a lot, all the best,</p>\n<p>Fabio.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-12-13T14:49:34.384Z",
+      "updated_at": "2023-12-13T14:49:45.872Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Fabio,\nI think it can in principle happen, few points to check:\n\nAre there any other parameters that are pulled away from the initial values?\nHow large is the shift in relation to the uncertainty on the signal strength?\nIt might be helpful to change the default tolerance to improve the fit accuracy with the FitDiagnostics method, e.g. --setCrossingTolerance 0.00001\n\nBest,\nAliya",
+      "cooked_html": "<p>Dear Fabio,</p>\n<p>I think it can in principle happen, few points to check:</p>\n<ol>\n<li>Are there any other parameters that are pulled away from the initial values?</li>\n<li>How large is the shift in relation to the uncertainty on the signal strength?</li>\n<li>It might be helpful to change the default tolerance to improve the fit accuracy with the FitDiagnostics method, e.g. <code>--setCrossingTolerance 0.00001</code></li>\n</ol>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

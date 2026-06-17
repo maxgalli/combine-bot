@@ -1,0 +1,111 @@
+{
+  "topic_id": 13777,
+  "title": "Expected upper limit with toys",
+  "url": "https://cms-talk.web.cern.ch/t/13777",
+  "category_id": 279,
+  "created_at": "2022-08-09T13:44:58.868Z",
+  "last_posted_at": "2022-08-11T12:11:11.616Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "lguzzi",
+      "name": "Luca Guzzi",
+      "created_at": "2022-08-09T13:44:59.043Z",
+      "updated_at": "2023-02-07T10:53:06.068Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine and stat experts,\nI am working on the \\tau\\to3\\mu analysis, which looks for the BS \\tau\\to3\\mu process as an accumulation of events in the 3-muon invariant mass distribution. The result of the analysis will be an upper limit on the \\tau\\to3\\mu branching fraction.\nAt the moment, I want to compute expected limits based on the expected number of background and signal events.\nThe number of expected signal events is computed on a MC signal sample, the number of expected background events is computed fitting the 3-muon mass sidebands and taking the integral of the fitted pdf (an exponential) in the full range, as shown in [1].\nThe datacard is then built as shown in [2]. Different contribution to the signal normalization and shape are treated as lnN-constrained nuisances. A free parameter regulates the background shape (a0_C18 in the datacard) and another regulates the background normalization (bkgNorm_C18 in the datacard). The observed number of events is set to -1.\nSignal normalization nuisances are 0 by construction (that is, the signal normalization is 1 -  in facts, the MC is normalized with external weights), the signal shape is initialized by the MC signal sample, and the background shape is initialized by a fit to the signal sidebands, as already shown in [1].\nNow, I want to compute the expected upper limit using the LHC test statistics w/ toys (CLs). To my understanding, expected means that the nuisance parameters are not re-fit on the observed data before generating the toys (that is, the background normalization is 1, so that each toy behaves as an un-blinded dataset where the observed number of background events is equal to the expected one modulo fluctuations). Is this correct?\nThe workspace connected to the datacard contains the \u201cdata_obs\u201d RooDataSet, which is the set of data events passing the analysis selection, blinded in the signal region (meaning no events from the signal region are put in the dataset). If my understanding of exp. UL above is correct, this should not matter in the expected limit computation as this sample is not used.\nI compute the UL with the following command\ntext2workspace.py datacard.txt -m 1.777 -o workspace.root -D data_obs\ncombine -M HybridNew --testStat=LHC --fitNuisances=0 --frequentist workspace.root -T 1000 --expectedFromGrid 0.5 -C 0.9 --rMin 0 --rMax 10 --setParameterRanges $PAR\n\nwhere $PAR just limits the signal width between 5 MeV and 100 MeV, the background slope between -100 and 100 and the background normalization between 0 and 10^5, only to help the fit convergence. In this command, as far as I understand, --fitNuisances=0 would be what makes the limit \u201cexpected\u201d.\nHowever, from the combine log (using the -v2 verbose argument) I see that for each scanned value of the signal strength the dataset \u201cdata_obs\u201d is re-fit. See for example [3]  at line 269 (ctrl+F  0x7cc7610 RooRealVar::            r = 3.68898).\nIndeed, if I save in the datacard workspace the full set of observed events (i.e. data_obs is not blinded), the limit changes. This suggests that something is not correct in my strategy.\nCould you please help me understand where the mistake is?\nthank you,\nbest,\nLuca\n[1] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/prefit_C18.pdf\n[2] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/CMS_T3MSignal_13TeV_W_C18.txt\n[3] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/LOGFILE.txt",
+      "cooked_html": "<p>Dear combine and stat experts,<br>\nI am working on the <span class=\"math\">\\tau\\to3\\mu</span> analysis, which looks for the BS <span class=\"math\">\\tau\\to3\\mu</span> process as an accumulation of events in the 3-muon invariant mass distribution. The result of the analysis will be an upper limit on the <span class=\"math\">\\tau\\to3\\mu</span> branching fraction.</p>\n<p>At the moment, I want to compute expected limits based on the expected number of background and signal events.<br>\nThe number of expected signal events is computed on a MC signal sample, the number of expected background events is computed fitting the 3-muon mass sidebands and taking the integral of the fitted pdf (an exponential) in the full range, as shown in [1].</p>\n<p>The datacard is then built as shown in [2]. Different contribution to the signal normalization and shape are treated as lnN-constrained nuisances. A free parameter regulates the background shape (a0_C18 in the datacard) and another regulates the background normalization (bkgNorm_C18 in the datacard). The observed number of events is set to -1.<br>\nSignal normalization nuisances are 0 by construction (that is, the signal normalization is 1 -  in facts, the MC is normalized with external weights), the signal shape is initialized by the MC signal sample, and the background shape is initialized by a fit to the signal sidebands, as already shown in [1].</p>\n<p>Now, I want to compute the expected upper limit using the LHC test statistics w/ toys (CLs). To my understanding, expected means that the nuisance parameters are not re-fit on the observed data before generating the toys (that is, the background normalization is 1, so that each toy behaves as an un-blinded dataset where the observed number of background events is equal to the expected one modulo fluctuations). Is this correct?<br>\nThe workspace connected to the datacard contains the \u201cdata_obs\u201d RooDataSet, which is the set of data events passing the analysis selection, <strong>blinded in the signal region</strong> (meaning no events from the signal region are put in the dataset). If my understanding of exp. UL above is correct, this should not matter in the expected limit computation as this sample is not used.</p>\n<p>I compute the UL with the following command</p>\n<pre><code class=\"lang-bash\">text2workspace.py datacard.txt -m 1.777 -o workspace.root -D data_obs\ncombine -M HybridNew --testStat=LHC --fitNuisances=0 --frequentist workspace.root -T 1000 --expectedFromGrid 0.5 -C 0.9 --rMin 0 --rMax 10 --setParameterRanges $PAR\n</code></pre>\n<p>where $PAR just limits the signal width between 5 MeV and 100 MeV, the background slope between -100 and 100 and the background normalization between 0 and <span class=\"math\">10^5</span>, only to help the fit convergence. In this command, as far as I understand, <code>--fitNuisances=0</code> would be what makes the limit \u201cexpected\u201d.</p>\n<p>However, from the combine log (using the <code>-v2</code> verbose argument) I see that for each scanned value of the signal strength the dataset \u201cdata_obs\u201d is re-fit. See for example [3]  at line 269 (<em>ctrl+F</em>  <code>0x7cc7610 RooRealVar::            r = 3.68898</code>).<br>\nIndeed, if I save in the datacard workspace the full set of observed events (i.e. data_obs is not blinded), the limit changes. This suggests that something is not correct in my strategy.</p>\n<p>Could you please help me understand where the mistake is?</p>\n<p>thank you,<br>\nbest,<br>\nLuca</p>\n<p>[1] <a href=\"https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/prefit_C18.pdf\" rel=\"noopener nofollow ugc\">https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/prefit_C18.pdf</a><br>\n[2] <a href=\"https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/CMS_T3MSignal_13TeV_W_C18.txt\" rel=\"noopener nofollow ugc\">https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/CMS_T3MSignal_13TeV_W_C18.txt</a><br>\n[3] <a href=\"https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/LOGFILE.txt\" rel=\"noopener nofollow ugc\">https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/exp_limit_question/LOGFILE.txt</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-08-09T14:02:43.307Z",
+      "updated_at": "2022-08-09T14:02:43.307Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Luca,\nI think the option --frequentist sets --fitNuisances=1, and it looks like this option gets resolved after the command line --fitNuisances=0.\nIn any case, I would recommend to follow the suggestion discussed here [*] under \u201cWarning\u201d - that is, to generate a pre-fit asimov dataset and use it in place of the data, then run HybridNew as recommended (with --LHCmode LHC-limits). This seems to be what you would like to do, and avoids any unexpected interplay between the different options.\nBest,\nAdinda\n[*] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys",
+      "cooked_html": "<p>Hi Luca,</p>\n<p>I think the option <code>--frequentist</code> sets <code>--fitNuisances=1</code>, and it looks like this option gets resolved after the command line <code>--fitNuisances=0</code>.</p>\n<p>In any case, I would recommend to follow the suggestion discussed here <code>[*]</code> under \u201cWarning\u201d - that is, to generate a pre-fit asimov dataset and use it in place of the data, then run HybridNew as recommended (with <code>--LHCmode LHC-limits</code>). This seems to be what you would like to do, and avoids any unexpected interplay between the different options.</p>\n<p>Best,<br>\nAdinda</p>\n<p><code>[*]</code> <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-limits-with-toys</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "lguzzi",
+      "name": "Luca Guzzi",
+      "created_at": "2022-08-09T14:31:24.584Z",
+      "updated_at": "2022-08-09T14:31:24.584Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nthank you for your prompt reply! Let me undertand: what you say would require an Asimov for each signal strength hypothesis under investigation. Then I would run the CLs for each one and extract the upper limit with a fit on the CLs curve vs. POI. Is this the correct procedure or is there a shortcut within combine?\nbest,\nLuca",
+      "cooked_html": "<p>Dear Adinda,<br>\nthank you for your prompt reply! Let me undertand: what you say would require an Asimov for each signal strength hypothesis under investigation. Then I would run the CLs for each one and extract the upper limit with a fit on the CLs curve vs. POI. Is this the correct procedure or is there a shortcut within combine?</p>\n<p>best,<br>\nLuca</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-08-10T08:55:16.133Z",
+      "updated_at": "2022-08-10T08:55:16.133Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Luca,\nIt\u2019s much simpler than that: you can generate a single asimov dataset (usually this would be a background-only asimov dataset, but it does not have to be), and use this instead of the data in the usual limit setting procedure.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Luca,</p>\n<p>It\u2019s much simpler than that: you can generate a single asimov dataset (usually this would be a background-only asimov dataset, but it does not have to be), and use this instead of the data in the usual limit setting procedure.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "lguzzi",
+      "name": "Luca Guzzi",
+      "created_at": "2022-08-10T09:00:33.092Z",
+      "updated_at": "2022-08-10T09:00:33.092Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nbut say I generate an Asimov with r=3 (r=signal strength aka POI), then the HybridNew method will scan from r=1 to r=10 to find the upper limit. At each point in the scan the Asimov will be fit. If the Asimov is r!=3 the background shape will be pulled to compensate and the limit will not be correct. Is this right?\ncheers,\nLuca",
+      "cooked_html": "<p>Dear Adinda,<br>\nbut say I generate an Asimov with r=3 (r=signal strength aka POI), then the HybridNew method will scan from r=1 to r=10 to find the upper limit. At each point in the scan the Asimov will be fit. If the Asimov is r!=3 the background shape will be pulled to compensate and the limit will not be correct. Is this right?</p>\n<p>cheers,<br>\nLuca</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "lguzzi",
+      "name": "Luca Guzzi",
+      "created_at": "2022-08-10T09:02:57.089Z",
+      "updated_at": "2022-08-10T09:02:57.089Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "or should I just use asymmptotic formulae for the exp. limit?",
+      "cooked_html": "<p>or should I just use asymmptotic formulae for the exp. limit?</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-08-10T09:15:07.000Z",
+      "updated_at": "2022-08-10T09:19:26.052Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi,\nI think it is always a good idea to proceed as follow:\n\nDetermine that the fit is unbiased in s=0 and s<>0\nUse the asymptotic formulae to understand the limit feature\neventually use toys to understand particular regions or validity of the asymptotic formulae.\n\nAs long as you are blind the asymptotic limits are good enough for your scope. You can test it on particular datasets, where in the blind region you have no events (for instance).\nCheers,\n-Andrea\nOn Wed, Aug 10, 2022 at 11:06 AM Luca Guzzi via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nLuca Guzzi lguzziAugust 10\n\nor should I just use asymmptotic formulae for the exp. limit?\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Hi,</p>\n<p>I think it is always a good idea to proceed as follow:</p>\n<ol>\n<li>Determine that the fit is unbiased in s=0 and s&lt;&gt;0</li>\n<li>Use the asymptotic formulae to understand the limit feature</li>\n<li>eventually use toys to understand particular regions or validity of the asymptotic formulae.</li>\n</ol>\n<p>As long as you are blind the asymptotic limits are good enough for your scope. You can test it on particular datasets, where in the blind region you have no events (for instance).</p>\n<p>Cheers,</p>\n<p>-Andrea</p>\n<p>On Wed, Aug 10, 2022 at 11:06 AM Luca Guzzi via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/l/b2d939/45.png\" title=\"lguzzi\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/lguzzi\">Luca Guzzi</a> lguzzi<br>August 10</th>\n</tr>\n</thead>\n</table>\n</div><p>or should I just use asymmptotic formulae for the exp. limit?</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/expected-upper-limit-with-toys/13777/6\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/1b29f03d808dcd2d9191e244915a07076004562b521e13b1095358d987b93200\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 8,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-08-10T09:45:29.841Z",
+      "updated_at": "2022-08-10T09:45:29.841Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Luca,\nTo answer your original question: there is always only one \u201cdata_obs\u201d, whether it\u2019s real data or a toy dataset. When generating post-fit expected limits with the real data we do not change the data set when we scan through different signal hypothesis points (internally in the toy generation that HybridNew is doing there are of course toys for different values of r, but this is the case regardless of whether you have used the real data as data_obs or an asimov dataset). The way to generate blind expected limits with HybridNew is as I suggested, replacing data_obs with a backround-only asimov dataset simulates the case where the data follow the background model exactly. This is the same assumption as when running blind asymptotic limits.\nAs Andrea said, you can of course use AsymptoticLimits for the moment (while the analysis is blinded), you may find this procedure simpler (not having to generate a dataset to replace the data) and faster.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Luca,</p>\n<p>To answer your original question: there is always only one \u201cdata_obs\u201d, whether it\u2019s real data or a toy dataset. When generating post-fit expected limits with the real data we do not change the data set when we scan through different signal hypothesis points (internally in the toy generation that HybridNew is doing there are of course toys for different values of r, but this is the case regardless of whether you have used the real data as data_obs or an asimov dataset). The way to generate blind expected limits with HybridNew is as I suggested, replacing data_obs with a backround-only asimov dataset simulates the case where the data follow the background model exactly. This is the same assumption as when running blind asymptotic limits.</p>\n<p>As Andrea said, you can of course use AsymptoticLimits for the moment (while the analysis is blinded), you may find this procedure simpler (not having to generate a dataset to replace the data) and faster.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "lguzzi",
+      "name": "Luca Guzzi",
+      "created_at": "2022-08-11T12:11:11.616Z",
+      "updated_at": "2022-08-11T12:11:11.616Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Andrea, Adinda,\nusing a bkg-only Asimov seems to fix some inconsistencies I was seing in my results (indeed, my comment above was not making much sense). Thank you again,\nbest,\nLuca",
+      "cooked_html": "<p>Dear Andrea, Adinda,<br>\nusing a bkg-only Asimov seems to fix some inconsistencies I was seing in my results (indeed, my comment above was not making much sense). Thank you again,</p>\n<p>best,<br>\nLuca</p>"
+    }
+  ]
+}

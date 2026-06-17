@@ -1,0 +1,42 @@
+TOPIC: "Segmentation fault" in Combine
+URL: https://cms-talk.web.cern.ch/t/20735
+DATE: 2023-02-24T13:46:36.668Z
+SOLVED: no
+============================================================
+
+QUESTION (by matariq @ 2023-02-24T13:46:36.868Z):
+Dear experts,
+I am trying to create my workspace in Combine using text2workspace.py but I am getting a “Segmentation fault”. I have about 180 shape nuisance parameters. If I randomly discard 80 of them, I don’t get the “Segmentation fault” any more. Is this error due to memory allocation issues and how to get around it?
+Thanks,
+Maida
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-02-24T14:25:53.717Z):
+Hi Maida,
+You could try running ulimit -s unlimited in the shell beforehand, it’s helped in other models with large numbers of inputs.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by gortona @ 2023-02-24T14:23:14.000Z):
+Dear Maida,
+You can try calling
+ulimit -s unlimited
+before running text2workspace.
+Although I would also encourage you to check if all the shape nuisances you are applying are actually meaningful and couldn’t be replaced by lnN. For example by running the card validation tools or by checking that the up/down shapes are indeed different.
+Cheers,
+Giacomo
+
+On 24 Feb 2023, at 14:47, Maida Tariq via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Maida Tariq matariqFebruary 24
+
+Dear experts,
+I am trying to create my workspace in Combine using text2workspace.py but I am getting a “Segmentation fault”. I have about 180 shape nuisance parameters. If I randomly discard 80 of them, I don’t get the “Segmentation fault” any more. Is this error due to memory allocation issues and how to get around it?
+Thanks,
+Maida
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

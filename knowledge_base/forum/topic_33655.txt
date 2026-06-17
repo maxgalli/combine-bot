@@ -1,0 +1,29 @@
+TOPIC: NLL shapes using FastScan
+URL: https://cms-talk.web.cern.ch/t/33655
+DATE: 2024-01-25T03:25:53.105Z
+SOLVED: no
+============================================================
+
+QUESTION (by matariq @ 2024-01-25T03:25:53.497Z):
+Dear experts,
+I have my prefit workspace as card.root and I run the following command:
+combineTool.py -M FastScan -w card.root:w
+
+From what I understand, this gives me NLL evaluated varying a single parameter at a time, the other parameters stay at the nominal values in the workspace which means they are set to their prefit values.
+However, what I want is that when the NLL is evaluated, other parameters are set to their postfit values. So I run the fit first and save the workspace as a snapshot by doing the following:
+combine -M MultiDimFit --saveWorkspace -n _initialFit_Test --algo singles --redefineSignalPOIs yt --freezeParameters r --robustFit 1 -t 0 --do95=1 --cminPreScan --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --cminFallbackAlgo Minuit2,Simplex,0:0.1 -m 125 -d card.root --setParameters r=1
+
+Then I run the FastScan while loading the snapshot as follows:
+combineTool.py -M FastScan -w higgsCombine_initialFit_Test.MultiDimFit.mH125.root:w --snapshotName MultiDimFit
+
+However, the last command gives me the exact same NLL shapes as I get by using card.root as my workspace (in the very first command above).
+Any ideas to why this is the case?
+-Maida
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-01-25T09:05:17.656Z):
+Hi Maida,
+Sorry, it’s not well documented, but it can be done. You need a RooFitResult from somewhere that has the postfit values. It could be from FitDiagnostics, or from MultiDimFit with option --saveFitResult. Then when running FastScan, you can add something like -f fitdiagnostics.root:fit_s.
+cheers,
+Andrew
+----------------------------------------

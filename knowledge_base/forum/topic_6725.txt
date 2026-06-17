@@ -1,0 +1,42 @@
+TOPIC: Unblinded GoFs yielding wildly different test statistics for v8.1 versus v8.2
+URL: https://cms-talk.web.cern.ch/t/6725
+DATE: 2022-02-17T10:41:22.920Z
+SOLVED: no
+============================================================
+
+QUESTION (by rowhite @ 2022-02-17T10:41:23.137Z):
+I’m running unblinded goodnesses-of-fit on Combine v8.2.0, and using either of the commands
+combine -M GoodnessOfFit …/all.root --algo=saturated -m 125 --X-rtd MINIMIZER_no_analytic
+combine -M GoodnessOfFit …/all.root --algo=saturated -m 125
+yields a test statistic ~10,000, which is far from what we’d expect (this is around ~100 when running blinded, i.e. masking the signal region, on the same Combine branch).
+However when run on Combine v8.1.0, we retrieve test statistics ~100, similar to the blind test statistics. Is there a reason why the test stat balloons so rapidly, especially where the toys remain in the same region with toy stats of around ~100.
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-02-17T11:56:09.056Z):
+Hi Robert,
+Off the top of my head I’m not sure what would have changed in the GoF code to cause something like that. Can you share the workspace so we can investigate a little more?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by rowhite @ 2022-02-17T12:43:14.361Z):
+Hi Andrew,
+Sure, here’s the root datacard we use to run this, along with the text datacard for reference:
+hig21007workspace.tar.gz (4.9 MB)
+Thanks,
+Rob
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-02-17T16:14:49.535Z):
+Hi Rob,
+I actually find the same large observed value in both combine versions (though I did add --cminDefaultMinimizerStrategy 0 for speed). It seems there is a problem with the signal region categories - they all have an observed yield of zero, but clearly some large non-zero model expectation, which causes the fit to push nuisance parameters to extreme values to try and account for the difference. I guess the zero data yields might be a bug?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by rowhite @ 2022-02-18T09:06:23.888Z):
+Hi Andrew,
+Ah, thanks for spotting this! Sorry this is a mistake on our end. We didn’t check that the datacards had observed data yields in since we verified at an earlier step, and have ended up masking the SR in error while preparing the workspace. Having rerun with the correct datacards, we are producing a much more reasonable unblinded test statistic, so all issues have been cleared up!
+Thanks again for your time!
+Rob
+----------------------------------------

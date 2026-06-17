@@ -1,0 +1,51 @@
+{
+  "topic_id": 16781,
+  "title": "Freezing subset of POIs in likelihood scan",
+  "url": "https://cms-talk.web.cern.ch/t/16781",
+  "category_id": 279,
+  "created_at": "2022-10-27T12:48:09.361Z",
+  "last_posted_at": "2022-10-28T15:03:33.424Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2022-10-27T12:48:09.628Z",
+      "updated_at": "2023-02-07T10:53:00.187Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI need your insights to perform a likelihood scan freezing a subset of my POIs. Let me briefly explain what the situation is, and what I would like to achieve.\nI have a model with 4 POIs, let\u2019s call them par1, par2, par3, par4. Until now, I have successfully run likelihood scans as a function of, let\u2019s say, par1, having all the remaining POIs floating, running MultiDimFit with the following options:\n-t -1 -P par1 --floatOtherPOIs 1 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51\n\nThis gives the expected result of a likelihood scan consisting of 51 par1 points, evenly spaced from 0 to 5 like 0.0, 0.1, 0.2, 0.3, \u2026\nNow, for debugging purposes I would like to modify the above command to perform a likelihood scan, as a function of par1, freezing one of the other POIs and letting the remaining two POIs float.\nFirst thing I tried was to combine --freezeParameters par2 with --floatOtherPOIs 1, something like\n-t -1 -P par1 --freezeParameters par2 --floatOtherPOIs 1 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51\n\nbut it seesm that --floatOtherPOIs 1 is overriding --freezeParameters par2, so that all the POIs are still floating.\nI also tried to set par1, par3 and par4 as parameters with  the -P option, and then set --floatOtherPOIs 0, something like\n-t -1 -P par1 -P par3 -P par4 --floatOtherPOIs 0 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51\n\nbut in this case it seems Combine is performing a 3D scan made of 51 points, meaning that I don\u2019t get the even spacing 0.0, 0.1, 0.2, 0.3, \u2026 for par1.\nAre there any command-line options to achieve what I need? If not, can you think of a workaround?\nThank you very much,\nbest,\nFabio.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I need your insights to perform a likelihood scan freezing a subset of my POIs. Let me briefly explain what the situation is, and what I would like to achieve.<br>\nI have a model with 4 POIs, let\u2019s call them <code>par1</code>, <code>par2</code>, <code>par3</code>, <code>par4</code>. Until now, I have successfully run likelihood scans as a function of, let\u2019s say, <code>par1</code>, having all the remaining POIs floating, running <code>MultiDimFit</code> with the following options:</p>\n<pre><code class=\"lang-auto\">-t -1 -P par1 --floatOtherPOIs 1 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51\n</code></pre>\n<p>This gives the expected result of a likelihood scan consisting of 51 <code>par1</code> points, evenly spaced from 0 to 5 like 0.0, 0.1, 0.2, 0.3, \u2026</p>\n<p>Now, for debugging purposes I would like to modify the above command to perform a likelihood scan, as a function of <code>par1</code>, freezing one of the other POIs and letting the remaining two POIs float.<br>\nFirst thing I tried was to combine <code>--freezeParameters par2</code> with <code>--floatOtherPOIs 1</code>, something like</p>\n<pre><code class=\"lang-auto\">-t -1 -P par1 --freezeParameters par2 --floatOtherPOIs 1 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51\n</code></pre>\n<p>but it seesm that <code>--floatOtherPOIs 1</code> is overriding <code>--freezeParameters par2</code>, so that all the POIs are still floating.</p>\n<p>I also tried to set <code>par1</code>, <code>par3</code> and <code>par4</code> as parameters with  the <code>-P</code> option, and then set <code>--floatOtherPOIs 0</code>, something like</p>\n<pre><code class=\"lang-auto\">-t -1 -P par1 -P par3 -P par4 --floatOtherPOIs 0 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51\n</code></pre>\n<p>but in this case it seems Combine is performing a 3D scan made of 51 points, meaning that I don\u2019t get the even spacing 0.0, 0.1, 0.2, 0.3, \u2026 for <code>par1</code>.</p>\n<p>Are there any command-line options to achieve what I need? If not, can you think of a workaround?<br>\nThank you very much,</p>\n<p>best,<br>\nFabio.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-10-27T13:00:35.970Z",
+      "updated_at": "2022-10-27T13:00:35.970Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi Fabio,\nI think you probably want to add --redefineSignalPOIs par1,par3,par4, to stop --floatOtherPOIs overriding --freezeParameters.\nHope that helps,\nAdinda",
+      "cooked_html": "<p>Hi Fabio,</p>\n<p>I think you probably want to add <code>--redefineSignalPOIs par1,par3,par4</code>, to stop<code> --floatOtherPOIs</code> overriding <code>--freezeParameters</code>.</p>\n<p>Hope that helps,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2022-10-28T15:03:33.424Z",
+      "updated_at": "2022-10-28T15:03:33.424Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nthank you for your quick reply. Indeed--redefineSignalPOIs shuold do the trick. I didn\u2019t think about that. What I plan to do is:\n\n\u201cDowngrade\u201d the POI I want to freeze (let\u2019s say par2) to an unconstrained nuisance parameter by excluding it from the list of POIs, --redefineSignalPOIs par1,par3,par4\n\nFreeze it, --freezeParameters par2\n\nLet the other POIs float, --floatOtherPOIs 1.\n\nI believe this should work fine.\nThanks again,\nF.",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>thank you for your quick reply. Indeed<code>--redefineSignalPOIs</code> shuold do the trick. I didn\u2019t think about that. What I plan to do is:</p>\n<ol>\n<li>\u201cDowngrade\u201d the POI I want to freeze (let\u2019s say <code>par2</code>) to an unconstrained nuisance parameter by excluding it from the list of POIs, <code>--redefineSignalPOIs par1,par3,par4</code>\n</li>\n<li>Freeze it, <code>--freezeParameters par2</code>\n</li>\n<li>Let the other POIs float, <code>--floatOtherPOIs 1</code>.</li>\n</ol>\n<p>I believe this should work fine.<br>\nThanks again,<br>\nF.</p>"
+    }
+  ]
+}

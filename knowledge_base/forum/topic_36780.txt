@@ -1,0 +1,76 @@
+TOPIC: Saving the data_obs from the Asimov dataset
+URL: https://cms-talk.web.cern.ch/t/36780
+DATE: 2024-03-13T14:13:12.174Z
+SOLVED: no
+============================================================
+
+QUESTION (by eshokr @ 2024-03-13T14:13:12.532Z):
+Dear Combine Experts,
+I am currently working on implementing the Asimov dataset method in Combine. But I wanted to extract the Asimov data distribution so that I can use it later for a different fit.
+Could you please advise if there is a recommended procedure for achieving this?
+Thanks a lot in advance.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-03-13T14:27:38.176Z):
+Dear Eslam,
+You can use the GenerateOnly method of combine to create a file with the Asimov data distribution
+(https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#generate-only).
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by eshokr @ 2024-03-14T15:25:10.087Z):
+Dear Giacomo,
+Thanks a lot for your fast reply,
+Yes, I am using it now, typically by using the command:
+combine -M GenerateOnly workspace0.root -m 0 -t 6 --rMin 0 --rMax 2 --expectSignal 0.466087
+but I am not sure if there results here make sense as it is reaching e-310
+Generate toy 1/6
+Done in 0.00 min (cpu), 0.00 min (real)
+Generate toy 2/6
+Done in 0.00 min (cpu), 0.00 min (real)
+Generate toy 3/6
+Done in 0.00 min (cpu), 0.00 min (real)
+Generate toy 4/6
+Done in 0.00 min (cpu), 0.00 min (real)
+Generate toy 5/6
+Done in 0.00 min (cpu), 0.00 min (real)
+Generate toy 6/6
+Done in 0.00 min (cpu), 0.00 min (real)
+mean   expected limit: r < 0 +/- 0 @ 95%CL (6 toyMC)
+median expected limit: r < 0 @ 95%CL (6 toyMC)
+68% expected band : 6.91011e-310 < r < 6.91011e-310
+95% expected band : 6.91011e-310 < r < 6.91011e-310
+Also I wonder if this is the right command if I want to use the data that is generated from the GenerateOnly method:
+combine -M MultiDimFit --toysFile=higgsCombineTest.GenerateOnly.mH0.123456.root -m -0.1 --rMin 0 --rMax 2
+Please let me know if I missed something,
+Best regards,
+Eslam
+----------------------------------------
+
+REPLY 4 (by gortona @ 2024-03-14T15:40:08.317Z):
+Dear Eslam,
+With your command you are generating 6 toys, each with a default value of r=0.47 and mH=0. I can’t judge whether these parameters are reasonable or not, although mH=0 seems to me possibly problematic if mH is used in your model.
+In any case, 6 toys are likely too few to gather any significant statistics, so I’m not surprised the results make little sense. If you want to use the Asimov dataset as you mentioned before, you should use -t -1 instead of -t 6.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 5 (by eshokr @ 2024-03-14T15:58:29.946Z):
+Dear Giacomo,
+Thanks a lot for your fast reply and valuable assistance.
+Yes I did it with the Asimov dataset method already, but I wanted to have more different data sets, so I can check what is the average behaviour,
+One thing also I noticed is, when I use the generated data via this method
+combine -M MultiDimFit workspace-0.1.root --toysFile=higgsCombineTest.GenerateOnly.mH0.123456.root -m -0.1 --rMin 0 --rMax 2
+if I used the --toysFile=higgsCombineTest.GenerateOnly.mH0.123456.root  or not I got the same r value,
+I wonder if this is the right method to use the generated data into the fit.
+Best regards,
+Eslam
+----------------------------------------
+
+REPLY 6 (by amarini @ 2024-03-14T17:18:40.534Z):
+Hi,
+for the toy/Asimov dataset generation, it is YOU that decide for which parameters the dataset should be created or the toys generated from.
+The default configuration is to generate background-only toys, but you can set the parameter to the value you prefer/you want to study using --setParameters (or --expectSignal, --expectSignalMass).
+-Andrea
+----------------------------------------

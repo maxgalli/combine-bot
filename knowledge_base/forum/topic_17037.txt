@@ -1,0 +1,317 @@
+TOPIC: No valid high-error found for MultiDimFit!
+URL: https://cms-talk.web.cern.ch/t/17037
+DATE: 2022-11-02T21:57:59.415Z
+SOLVED: no
+============================================================
+
+QUESTION (by kjaffel @ 2022-11-02T21:57:59.694Z):
+Dear combine experts,
+I am looking at the nuisance parameter impacts using the Asimov dataset.
+In some categories of signal regions, I get the following error from a few mass points.
+Have POIs: ['r']
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 87 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+Error: closed range without finding crossing.
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error found, will report difference to maximum of range for : r
+r :    +0.000   -0.030/+20.000 (68%)
+Done in 0.03 min (cpu), 0.05 min (real)
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 20 -t -1 --expectSignal 0 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+
+The fit always reports the --rMax I set in the command even if I go up to 99999.
+These are the commands I am using;
+combineTool.py -M Impacts --rMin -20 --rMax 20 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root -m 125 -n HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 -t -1 --expectSignal 0 --doInitialFit --robustFit 1
+combineTool.py -M Impacts --rMin -20 --rMax 20 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root -m 125 -n HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 -t -1 --expectSignal 0 --robustFit 1 --doFits --parallel 60
+combineTool.py -M Impacts --rMin -20 --rMax 20 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root -m 125 -n HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 -t -1 --expectSignal 0 -o impacts__HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_expectSignal0_asimovdataset.json
+
+Please also take a look at the pulls/impacts:
+impacts__HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_expectSignal0_asimovdataset.pdf (29.5 KB)
+Now I tried different things in Combine to make this work like;
+--cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerPrecision 1E-12 --robustHesse=1 but I still get the same error.
+Surprisingly I managed by just simply adding --expectSignal 1 instead of --expectSignal 0 to the 3 commands above, and here is the result of the test.
+Have POIs: ['r']
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 87 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +1.000   -0.182/+0.287 (68%)
+Done in 0.02 min (cpu), 0.05 min (real)
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 20 -t -1 --expectSignal 1 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+
+Please also take a look at the pulls/impacts of this test:
+impacts__HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_expectSignal1_asimovdataset.pdf (29.2 KB)
+I wonder if anyone can help me understand why the fit works with --expectSignal 1 and not --expectSignal 0?
+I am also attaching the datacard:
+HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0.dat (14.8 KB)
+Many thanks in advance for any feedback or comments.
+Cheers,
+Khawla
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-11-04T19:45:09.905Z):
+Dear Khawla,
+What if you try to set rMax to something smaller, for example 1 or 2?
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by kjaffel @ 2022-11-07T10:06:48.534Z):
+Dear Adinda,
+Thank you for looking into this. Indeed, I tried --rMax 1 and --rMax 2  and both worked.
+Have POIs: ['r']
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 1 -t -1 --expectSignal 0 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 85 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +0.000   -0.029/+0.028 (68%)
+Done in 0.04 min (cpu), 0.04 min (real)
+
+Have POIs: ['r']
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 2 -t -1 --expectSignal 0 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 85 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +0.000   -0.029/+0.028 (68%)
+Done in 0.04 min (cpu), 0.04 min (real)
+
+Cheers,
+Khawla
+----------------------------------------
+
+REPLY 4 (by mikumar @ 2024-09-29T10:33:06.284Z):
+Hi Adinda,
+I am also getting simmilar problem. In my case I am trying to run the parametric fits and r is a POI for me. For my case the mean and sigma of the distribution are POI for me. I am trying to run. the following command
+combineTool.py -M Impacts -d workspace_top_Mass_1725_shape_comb_para.root -m 172.5 --doInitialFit --robustFit 1 -n _M1725_InitialFit --redefineSignalPOIs sigmaG,mean  --setParameters mean=5.1,r=1,sigmaG=0.15 --freezeParameters r --X-rtd ADDNLL_CBNLL=0
+I have pested the output of the command in the end of the post. I can see there are two issues, the first one is the max and min range of the POI are not given. I like to know how to do that. Second is [ERROR] Closed range without finding crossing! and I don’t how can fix this as well. I have attached my datacard here:
+datacard_top_shape_comb_para.txt (6.9 KB)
+Can you please suggest something which can fix this issue.
+Thanks in advance.
+Mintu Kumar
+[mikumar@lxplus9110 Combine_Run2]$ combineTool.py -M Impacts -d workspace_top_Mass_1725_shape_comb_para.root -m 172.5 --doInitialFit --robustFit 1 -n _M1725_InitialFit --redefineSignalPOIs sigmaG,mean  --setParameters mean=5.1,r=1,sigmaG=0.15 --freezeParameters r --X-rtd ADDNLL_CBNLL=0
+Have POIs: [‘sigmaG’, ‘mean’]
+
+combine -M MultiDimFit -n _initialFit__M1725_InitialFit --algo singles --redefineSignalPOIs sigmaG,mean --robustFit 1 --freezeParameters r --X-rtd ADDNLL_CBNLL=0 -m 172.5 -d workspace_top_Mass_1725_shape_comb_para.root --setParameters mean=5.1,r=1,sigmaG=0.15
+<<< Combine >>>
+<<< v10.0.2 >>>
+
+Random number generator seed is 123456
+Method used is MultiDimFit
+Set Default Value of Parameter mean To : 5.1
+Set Default Value of Parameter r To : 1
+Set Default Value of Parameter sigmaG To : 0.15
+Doing initial fit:
+[ERROR] Closed range without finding crossing!
+[ERROR] Closed range without finding crossing!
+[ERROR] Closed range without finding crossing!
+
+— MultiDimFit —
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error found, will report difference to maximum of range for : sigmaG
+Warning - No valid low-error found, will report difference to minimum of range for : sigmaG
+sigmaG :    +0.116   -0.106/+4.884 (68%)
+Warning - No valid high-error found, will report difference to maximum of range for : mean
+mean :    +5.102   -0.002/+0.398 (68%)
+Done in 0.00 min (cpu), 0.01 min (real)
+----------------------------------------
+
+REPLY 5 (by gortona @ 2024-09-29T12:39:27.000Z):
+Dear Mintu,
+Do you have any insight about where do you expect the crossing to be? It could be that the range you allow for your POIs is too large or too small.
+If you have no clue, you can use —algo grid to see the actual shape of the likelihood function and extrapolate where the crossings should be.
+Once you have an idea about what range is reasonable as suggested by Adinda, you can use the command —setPatamerRanges to adjust the ranges of mean and sigma and see if it helps.
+Cheers,
+Giacomo
+
+On 29 Sep 2024, at 12:34, Mintu Kumar via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Mintu Kumar mikumarSeptember 29
+
+Hi Adinda,
+I am also getting simmilar problem. In my case I am trying to run the parametric fits and r is a POI for me. For my case the mean and sigma of the distribution are POI for me. I am trying to run. the following command
+combineTool.py -M Impacts -d workspace_top_Mass_1725_shape_comb_para.root -m 172.5 --doInitialFit --robustFit 1 -n _M1725_InitialFit --redefineSignalPOIs sigmaG,mean --setParameters mean=5.1,r=1,sigmaG=0.15 --freezeParameters r --X-rtd ADDNLL_CBNLL=0
+I have pested the output of the command in the end of the post. I can see there are two issues, the first one is the max and min range of the POI are not given. I like to know how to do that. Second is [ERROR] Closed range without finding crossing! and I don’t how can fix this as well. I have attached my datacard here:
+datacard_top_shape_comb_para.txt (6.9 KB)
+Can you please suggest something which can fix this issue.
+Thanks in advance.
+Mintu Kumar
+[mikumar@lxplus9110 Combine_Run2]$ combineTool.py -M Impacts -d workspace_top_Mass_1725_shape_comb_para.root -m 172.5 --doInitialFit --robustFit 1 -n _M1725_InitialFit --redefineSignalPOIs sigmaG,mean --setParameters mean=5.1,r=1,sigmaG=0.15 --freezeParameters r --X-rtd ADDNLL_CBNLL=0
+Have POIs: [‘sigmaG’, ‘mean’]
+
+combine -M MultiDimFit -n _initialFit__M1725_InitialFit --algo singles --redefineSignalPOIs sigmaG,mean --robustFit 1 --freezeParameters r --X-rtd ADDNLL_CBNLL=0 -m 172.5 -d workspace_top_Mass_1725_shape_comb_para.root --setParameters mean=5.1,r=1,sigmaG=0.15
+<<< Combine >>>
+<<< v10.0.2 >>>
+
+Random number generator seed is 123456
+Method used is MultiDimFit
+Set Default Value of Parameter mean To : 5.1
+Set Default Value of Parameter r To : 1
+Set Default Value of Parameter sigmaG To : 0.15
+Doing initial fit:
+[ERROR] Closed range without finding crossing!
+[ERROR] Closed range without finding crossing!
+[ERROR] Closed range without finding crossing!
+
+— MultiDimFit —
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error found, will report difference to maximum of range for : sigmaG
+Warning - No valid low-error found, will report difference to minimum of range for : sigmaG
+sigmaG : +0.116 -0.106/+4.884 (68%)
+Warning - No valid high-error found, will report difference to maximum of range for : mean
+mean : +5.102 -0.002/+0.398 (68%)
+Done in 0.00 min (cpu), 0.01 min (real)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Khawla Jaffel kjaffelNovember 7, 2022
+
+Dear Adinda,
+Thank you for looking into this. Indeed, I tried --rMax 1 and --rMax 2 and both worked.
+Have POIs: ['r']
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 1 -t -1 --expectSignal 0 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 85 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +0.000   -0.029/+0.028 (68%)
+Done in 0.04 min (cpu), 0.04 min (real)
+
+Have POIs: ['r']
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 2 -t -1 --expectSignal 0 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 85 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +0.000   -0.029/+0.028 (68%)
+Done in 0.04 min (cpu), 0.04 min (real)
+
+Cheers,
+Khawla
+
+Adinda de Wit adewitNovember 4, 2022
+
+Dear Khawla,
+What if you try to set rMax to something smaller, for example 1 or 2?
+Best,
+Adinda
+
+Khawla Jaffel kjaffelNovember 2, 2022
+
+Dear combine experts,
+I am looking at the nuisance parameter impacts using the Asimov dataset.
+In some categories of signal regions, I get the following error from a few mass points.
+Have POIs: ['r']
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 87 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+Error: closed range without finding crossing.
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+Warning - No valid high-error found, will report difference to maximum of range for : r
+r :    +0.000   -0.030/+20.000 (68%)
+Done in 0.03 min (cpu), 0.05 min (real)
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 20 -t -1 --expectSignal 0 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+
+The fit always reports the --rMax I set in the command even if I go up to 99999.
+These are the commands I am using;
+combineTool.py -M Impacts --rMin -20 --rMax 20 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root -m 125 -n HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 -t -1 --expectSignal 0 --doInitialFit --robustFit 1
+combineTool.py -M Impacts --rMin -20 --rMax 20 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root -m 125 -n HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 -t -1 --expectSignal 0 --robustFit 1 --doFits --parallel 60
+combineTool.py -M Impacts --rMin -20 --rMax 20 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root -m 125 -n HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 -t -1 --expectSignal 0 -o impacts__HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_expectSignal0_asimovdataset.json
+
+Please also take a look at the pulls/impacts:
+impacts__HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_expectSignal0_asimovdataset.pdf (29.5 KB)
+Now I tried different things in Combine to make this work like;
+--cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_MaxCalls=999999999 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerPrecision 1E-12 --robustHesse=1 but I still get the same error.
+Surprisingly I managed by just simply adding --expectSignal 1 instead of --expectSignal 0 to the 3 commands above, and here is the result of the test.
+Have POIs: ['r']
+<<< Combine >>>
+>>> random number generator seed is 123456
+Options for Robust Minimizer ::
+Tolerance  0.1
+Strategy   0
+Type,Algo  Minuit2,Migrad
+>>> method used is MultiDimFit
+SimNLL created with 1 channels, 0 generic constraints, 87 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+--- MultiDimFit ---
+best fit parameter values and profile-likelihood uncertainties:
+r :    +1.000   -0.182/+0.287 (68%)
+Done in 0.02 min (cpu), 0.05 min (real)
+>> combine -M MultiDimFit -n _initialFit_HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0 --algo singles --redefineSignalPOIs r --rMin -20 --rMax 20 -t -1 --expectSignal 1 --robustFit 1 -m 125 -d HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_combine_workspace.root
+
+Please also take a look at the pulls/impacts of this test:
+impacts__HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0_expectSignal1_asimovdataset.pdf (29.2 KB)
+I wonder if anyone can help me understand why the fit works with --expectSignal 1 and not --expectSignal 0?
+I am also attaching the datacard:
+HToZATo2L2B_gg_fusion_nb2_resolved_ElEl_dnn_MH_500.0_MA_300.0.dat (14.8 KB)
+Many thanks in advance for any feedback or comments.
+Cheers,
+Khawla
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by mikumar @ 2024-09-30T11:52:35.022Z):
+Hi Adinda,
+Thanks for suggestion. I have set the ranges of the parameter since I had some idea of the crossing from the alternate hypothesis. now I am not getting this error anymore.
+Thanks,
+Mintu Kumar
+----------------------------------------
+
+REPLY 7 (by mikumar @ 2024-09-30T12:26:19.788Z):
+Thanks to Giacomo. And I am Sorry I missed replayed to me.
+----------------------------------------

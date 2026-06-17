@@ -1,0 +1,145 @@
+TOPIC: Issue with data_obs Growth
+URL: https://cms-talk.web.cern.ch/t/116844
+DATE: 2025-02-27T15:08:31.678Z
+SOLVED: no
+============================================================
+
+QUESTION (by yilai @ 2025-02-27T15:08:31.838Z):
+Dear Combine Experts,
+I am encountering a buffer-related issue while performing a combination for a spin-1 search:
+Error in TBufferFile::CheckByteCount: object of class RooWorkspace read too many bytes: 1141945592 instead of 68203768
+
+Upon investigation, I found that the problem originates from data_obs growing rapidly when combining analyses with different observables.
+Reproducing the Issue
+The datacard and setup details are documented here:
+CMS Analysis Datacards
+To demonstrate the issue, consider the following combination of three datacards:
+combineCards.py input/shapes_DY_Vp_VV_VH_jjjj/datacard_DY_combined_3000.txt input/shapes_DY_Zp_tt_0l/datacard_DY_combined_3000.txt input/shapes_DY_Zp_ll/datacard_DY_Zp_ll_3000.txt > combined.txt
+text2workspace.py input/shapes_DY_Vp_VV_VH_jjjj/datacard_DY_combined_3000.txt --out workspace_VV.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38
+text2workspace.py input/shapes_DY_Zp_tt_0l/datacard_DY_combined_3000.txt --out workspace_tt.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38
+text2workspace.py input/shapes_DY_Zp_ll/datacard_DY_Zp_ll_3000.txt --out workspace_ll.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38
+text2workspace.py combined.txt --out workspace_combined.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38
+
+The observables are different in these analyses:
+Singularity> root -l workspace_combined.root
+root [2] w->data("data_obs")->Print()
+RooDataSet::data_obs[MJ1,MJ2,MJJ,jetmass_LOW_default,resmass_default,jetmass_SIG_default,jetmass_HIGH_default,mass_dielectron_2016_EBEB,blindState,mass_dielectron_2016_EBEE,mass_dielectron_Legacy2017_EBEB,mass_dielectron_Legacy2017_EBEE,mass_dielectron_Legacy2018_EBEB,mass_dielectron_Legacy2018_EBEE,mass_dimuon_Moriond2017_BB,mass_dimuon_Moriond2017_BE,mass_dimuon_Legacy2017_BB,mass_dimuon_Legacy2017_BE,mass_dimuon_Legacy2018_BB,mass_dimuon_Legacy2018_BE,CMS_channel,weight:_weight_] = 691192 entries (222225 weighted)
+
+Checking data_obs Size Growth
+To inspect the growth of data_obs, I used the following script:
+import ROOT
+import sys
+
+ws_list = ["workspace_VV.root", "workspace_tt.root", "workspace_ll.root", "workspace_combined.root"]
+
+for ws in ws_list:
+f=ROOT.TFile(ws,"READ")
+w=f.Get("w")
+print("checking {}".format(ws))
+for obj in w.allData():
+print("---> {} is {}, numEntries: {}, getSize of each entry {}, assume 8 bytes, total size is {}*{}={} MB".format(obj.GetName(), obj.ClassName(), obj.numEntries(), obj.get().getSize(), obj.numEntries(), obj.get().getSize(),obj.numEntries()* obj.get().getSize()*8/1024.0/1024.0 ))
+
+Observed Output
+Singularity> python print.py
+checking workspace_VV.root
+---> data_obs is RooDataSet, numEntries: 688000, getSize of each entry 4, assume 8 bytes, total size is 688000*4*8/1024.0/1024.0=20.99609375 MB
+checking workspace_tt.root
+---> data_obs is RooDataSet, numEntries: 1980, getSize of each entry 5, assume 8 bytes, total size is 1980*5*8/1024.0/1024.0=0.0755310058594 MB
+checking workspace_ll.root
+---> data_obs is RooDataSet, numEntries: 1212, getSize of each entry 14, assume 8 bytes, total size is 1212*14*8/1024.0/1024.0=0.129455566406 MB
+checking workspace_combined.root
+---> data_obs is RooDataSet, numEntries: 691192, getSize of each entry 21, assume 8 bytes, total size is 691192*21*8/1024.0/1024.0=110.740905762 MB
+
+Issue Summary
+Instead of growing linearly, data_obs expands significantly during the combination, likely due to the introduction of additional observable dimensions. This rapid increase ultimately exceeds the ROOT 1 GB limit per object, causing the error.
+Besides aligning the name of fitting observable in the workspace, I wonder would you have any recommendations on how to handle this?
+Best regards,
+Yihui
+----------------------------------------
+
+REPLY 2 (by nckw @ 2025-02-27T16:22:46.361Z):
+Hi Yihui,
+Are your datacards using TH1 histograms as inputs?
+One thing you could try is to avoid the padding when using TH1s by adding the command --X-no-optimize-bins in the text2workspace step.
+Best,
+Nick
+----------------------------------------
+
+REPLY 3 (by yilai @ 2025-02-27T16:29:31.190Z):
+Hi Nick,
+We have about 15 analyses in the combination. More than half of the datacards are not using TH1 histograms, they directly use RooDataSet.
+Best,
+Yihui
+----------------------------------------
+
+REPLY 4 (by jlangfor @ 2025-02-27T17:04:16.248Z):
+Hi Yihui,
+We had the same problem when trying to add the offshell analysis regions into the Run 2 Higgs combination, as they have a large number of bins. By default, all channels will share the CMS_th1x variable unless explicitly stated, which grows in dimension with every channel added.
+We applied this fix [1]. Analysis regions with bins over some threshold (default 1000 bins) will automatically get a new 1D variable. It’s more memory intensive to have a separate variable for every analysis region, so there’s some compromise. You can tune this threshold according to your setup.
+We should probably think of a better fix moving forward which means variables for each region are treated optimally, but this worked for us.
+Cheers,
+Jon
+[1] - https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/commit/1b6dd8bfb69be7fc8e54305aa8c2384bd853af8c
+----------------------------------------
+
+REPLY 5 (by nckw @ 2025-02-27T17:01:42.000Z):
+Hi,
+Yes but the point is that the default behaviour will be to pad the datasets for the ones that do use TH1s. Did you try what I suggested?
+Nick
+
+···
+From: Yihui Lai via CMS talk noreply-cms-talk@cern.ch
+Date: Thursday, 27 February 2025 at 16:30
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Issue with data_obs Growth
+
+Yihui Lai yilaiFebruary 27
+
+Hi Nick,
+We have about 15 analyses in the combination. More than half of the datacards are not using TH1 histograms, they directly use RooDataSet.
+Best,
+Yihui
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by yilai @ 2025-02-27T18:07:56.615Z):
+Hi Jon,
+Thanks for sharing the fix! But I am not sure if this is the same issue. From my understanding, channel will share CMS_th1x when using TH1. In the case I shared, most analyses use workspace and the variable is explicitly defined, for example: MJ1,MJ2,MJJ,jetmass_LOW_default.
+So the padding that Nick mentioned is the issue I am trying to fix. I want to avoid that when having different variables that explicitly defined in workspace.
+Best,
+Yihui
+----------------------------------------
+
+REPLY 7 (by yilai @ 2025-02-27T18:12:48.855Z):
+Hi Nick,
+Not sure If I am using the command correctly. Somehow the size gets larger when I add --X-no-optimize-bins.
+Without the command:
+---> data_obs is RooDataSet, numEntries: 688000, getSize of each entry 4, assume 8 bytes, total size is 688000*4*8/1024.0/1024.0=20.99609375 MB
+checking workspace_tt.root
+---> data_obs is RooDataSet, numEntries: 408, getSize of each entry 2, assume 8 bytes, total size is 408*2*8/1024.0/1024.0=0.0062255859375 MB
+checking workspace_ll.root
+---> data_obs is RooDataSet, numEntries: 1212, getSize of each entry 14, assume 8 bytes, total size is 1212*14*8/1024.0/1024.0=0.129455566406 MB
+checking workspace_combined.root
+---> data_obs is RooDataSet, numEntries: 689620, getSize of each entry 18, assume 8 bytes, total size is 689620*18*8/1024.0/1024.0=94.7048950195 MB
+
+With the command:
+combineCards.py input/shapes_DY_Vp_VV_VH_jjjj/datacard_DY_combined_3000.txt input/shapes_DY_Zp_tt_1l/datacards_DY_Zp_tt_3000.txt input/shapes_DY_Zp_ll/datacard_DY_Zp_ll_3000.txt > combined.txt
+text2workspace.py input/shapes_DY_Vp_VV_VH_jjjj/datacard_DY_combined_3000.txt --out workspace_VV.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38 --X-no-optimize-bins
+text2workspace.py input/shapes_DY_Zp_tt_1l/datacards_DY_Zp_tt_3000.txt --out workspace_tt.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38 --X-no-optimize-bins
+text2workspace.py input/shapes_DY_Zp_ll/datacard_DY_Zp_ll_3000.txt --out workspace_ll.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38 --X-no-optimize-bins
+text2workspace.py combined.txt --out workspace_combined.root --for-fits --no-wrappers --optimize-simpdf-constraints cms --X-pack-asympows --X-optimizeMHDependency=fixed --optimize-simpdf-constraints=cms --use-histsum  --use-histsum --mass 125.38 --X-no-optimize-bins
+
+checking workspace_VV.root
+---> data_obs is RooDataSet, numEntries: 688000, getSize of each entry 4, assume 8 bytes, total size is 688000*4*8/1024.0/1024.0=20.99609375 MB
+checking workspace_tt.root
+---> data_obs is RooDataSet, numEntries: 363, getSize of each entry 13, assume 8 bytes, total size is 363*13*8/1024.0/1024.0=0.036003112793 MB
+checking workspace_ll.root
+---> data_obs is RooDataSet, numEntries: 1212, getSize of each entry 14, assume 8 bytes, total size is 1212*14*8/1024.0/1024.0=0.129455566406 MB
+checking workspace_combined.root
+---> data_obs is RooDataSet, numEntries: 689575, getSize of each entry 29, assume 8 bytes, total size is 689575*29*8/1024.0/1024.0=152.570152283 MB
+
+Best,
+Yihui
+----------------------------------------

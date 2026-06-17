@@ -1,0 +1,32 @@
+TOPIC: Running scans while freezing autoMCstats nuisances
+URL: https://cms-talk.web.cern.ch/t/20047
+DATE: 2023-02-06T17:09:19.489Z
+SOLVED: no
+============================================================
+
+QUESTION (by rowhite @ 2023-02-06T17:09:20.065Z):
+Hi,
+I’m currently running scans while freezing certain groups of nuisance parameters e.g. trigger systematics, tagging uncertainties, etc. in order to measure their contribution to the signal strength. In our analysis we use autoMCstats for each category and MET bin, as contained in our datacard, which afaict is what generates our constrained MC stat uncs “prop_bin…bin0”. However with this freezing nuisance groups method, I can perform this for a list of systematics in a group at the end of the datacard, but not for “prop_bin…bin0” as the scan cannot find these.
+Is there a workaround for this, or else how can I freeze our MC stats nuisances if they’re auto-generated?
+Kind regards,
+Rob
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-02-06T19:27:15.062Z):
+Hi Rob,
+For this you have two options:
+
+If you want to freeze all prop_... parameters, you can freeze the group autoMCStats, which is automatically generated for datacards which use the autoMCStats features (a few more details can be found here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#groups-of-nuisances)
+
+You can also use the regular expression, e.g. --freezeParameters rgx{prop_.*}. You could also adapt the regular expression to freeze only a subset of the prop... parameters, if you wanted to.
+
+Hope this helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by adewit @ 2023-02-06T19:33:32.717Z):
+Hi again,
+And one thing I forgot to mention: combine support is moving to the CAT-statistical tools subgroup, the new forum for queries is: https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279, so if you run into any further problems please post there!
+Best wishes,
+Adinda
+----------------------------------------

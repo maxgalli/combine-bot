@@ -1,0 +1,38 @@
+TOPIC: BiasTest question
+URL: https://cms-talk.web.cern.ch/t/121463
+DATE: 2025-04-01T09:10:40.764Z
+SOLVED: no
+============================================================
+
+QUESTION (by melu1 @ 2025-04-01T09:10:40.872Z):
+Dear Combine experts,
+I encountered some issues when performing bias test for our analysis (B2G-24-022), the analysis considers several SRs where the total backgrounds yields vary from O(10) to O(10K). I always got bias (expectedSignal=1) from the bias test. I tried to remove the systematic uncertainties but keep the “autoMC” to include the MC statistics, the bias is still there (but smaller). Only if I remove further autoMC there is no bias.
+I also checked the cards using “ValidateDatacards.py” and the output looks fine to me. I put the data card, impact plot, and validation.json under /afs/cern.ch/user/m/melu/public/B2G24022_CombCard. According to the impact plot, I tried to remove the first leading nuisances but the bias is still there. Maybe you can have a look on the inputs and find some clues.
+Another question is on the choice of the cross section of the signal, for the nominal result, I’m using 100pb. I tried to use a smaller value 5pb (reproduce the histogram) and found that the bias is severe, I didn’t expected this as I generated 500 toys and the fluctuation should be small? Is it equivalent with using --ExpectedSignal==0.05 together with XS=100pb.
+Cheers,
+Meng
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2025-04-01T09:26:18.535Z):
+Dear Meng,
+Some bias to the mean fitted mu in toys is expected when the number of events is small in some bins and not all systematics have a symmetric effect. For autoMCStats I guess some number of these get a per-process Poisson uncertainty? This can make the distribution over toys asymmetric and shift the mean. You could test forcing Gaussian uncertainties in all cases in autoMCStats and see if that changes things. Could also track the median of the mu distribution over toys, hopefully that is closer to the target.
+Seeing a larger relative bias with smaller injected signal would be expected if it’s coming from an asymmetry in the background uncertainty.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by melu1 @ 2025-04-02T11:44:59.828Z):
+Dear Andrew,
+Thanks for your comments. Some bins indeed have the per-process poisson uncertainty, I switch the threshold to 0 to force gaussian uncertainty (hopefully this is what you suggested), the median of the fitted mu over the uncertainty, ie the pull, are similar between these two methods, both around 0.17.
+M1000_bias_nosys_poisson696×472 6 KB
+M1000_bias_nosys_gau696×472 6.16 KB
+I also added the distribution with all systematic uncertainties of resonant Mass = 3,2,1 TeV (from left to right) shown below
+
+M3000_bias_allsys696×472 5.52 KB
+M2000_bias_allsys696×472 5.98 KB
+M1000_bias_allsys696×472 5.71 KB
+
+where the bkgs are the same for all of them, the only difference is the signal, while the yields of 2TeV signal are between 1TeV and 3TeV signals. You can see that the distribution of 2TeV signal is acceptable but not the other two. The result of 2TeV strengths my confidence on the correctness of the inputs, also from the smoothness of the limits we got, I don’t see a “obvious bias”.
+N.B., I remove the toys with failed fit.
+Cheers, Meng
+----------------------------------------

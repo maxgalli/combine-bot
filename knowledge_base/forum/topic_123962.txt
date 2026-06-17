@@ -1,0 +1,278 @@
+TOPIC: How to get NLL from MultiDimFit
+URL: https://cms-talk.web.cern.ch/t/123962
+DATE: 2025-04-21T13:27:55.505Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-04-21T13:27:55.796Z):
+Dear experts,
+I do a simple fit of S+B using
+combine -M MultiDimFit 2017UL_dimuon_SR1.txt --robustFit=1 -v 3 --rMin 0 --rMax 100
+I would like to get NLL from this fit.  How can I do it ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2025-04-21T17:23:51.847Z):
+Hi Sasha,
+how is this question different from
+this one or this one?
+-Andrea
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2025-04-22T09:24:58.000Z):
+Hi Andrea,
+Yes, it is similar questions. I do need NLL at list printed out.
+User cases are:
+
+comparison in terms of NLL different background functions using sidebands.
+
+checking local minima
+
+I think it is not a big problem to a least print NLL or store it in root.
+This posibility is terribly important for my analysis.
+Thanks, Sasha.
+
+···
+
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, April 21, 2025 19:24
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] How to get NLL from MultiDimFit
+
+Andrea Carlo Marini amariniApril 21
+
+Hi Sasha,
+how is this question different from
+this one or this one?
+-Andrea
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-04-22T16:09:49.000Z):
+Dear Sasha,
+About the first issue, maybe the discrete profiling might help you?
+
+cms-analysis.github.io
+
+Advanced use cases - Combine
+
+About the second one I think using a grid of points could be better.
+As explained in the threads linked by Andrea, the absolute value of the NLL is not a properly defined quantity and one of the reasons is not stored is exactly because it should not be used to compare different fits.
+Cheers,
+Giacomo
+
+···
+Il 22 Apr 2025 11:29, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch ha scritto:
+
+Alexandre Nikitenko anikitenApril 22
+
+Hi Andrea,
+Yes, it is similar questions. I do need NLL at list printed out.
+User cases are:
+
+comparison in terms of NLL different background functions using sidebands.
+
+checking local minima
+
+I think it is not a big problem to a least print NLL or store it in root.
+This posibility is terribly important for my analysis.
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Andrea Carlo Marini amariniApril 21
+
+Hi Sasha,
+how is this question different from
+this one or this one?
+-Andrea
+
+Alexandre Nikitenko anikitenApril 21
+
+Dear experts,
+I do a simple fit of S+B using
+combine -M MultiDimFit 2017UL_dimuon_SR1.txt --robustFit=1 -v 3 --rMin 0 --rMax 100
+I would like to get NLL from this fit. How can I do it ?
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by anikiten @ 2025-04-23T09:08:16.000Z):
+Dear Giacomo,
+Thank you for replay.
+We used RooFit to perform bias studies. Also to make a choice of the
+best order of the background function (Polynomial or Chebyshev for example)
+according to F-test (of NLL( n+1) -NLL(n) < 0.5) take order “n”).
+For that we used possibility provided by RooFit:
+RooFitResult* r = model.fitTo(data,Range(“R1,R2”),Save());
+cout << "-log(L) at minimum = " << r->minNll() << endl;
+So, I am wondering why do you say that
+“NLL is not a properly defined quantity and one of the reasons is not stored is exactly because it should not be used to compare different fits.”
+Do you define NLL in combine in a different way from RooFit ?
+I did use --algo grid to scan all 19 parameters of my background functions
+and make a proper choice of initial values and intervals. However, as I explained early with option --algo fixed MultiDimFit take my values in the first fit of S+B, but in the second fit of B only it takes not my values, but the best values from the first fit which I do not want, since it went to the local minimum.
+I do not understand how snapshot can help me in this situation. But if you provide me NLL I will run two separate fits, S+B and B with my initial values of parameters and then use DNLL. I guess it is not a big problem to print or store NLL.
+Thanks, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, April 22, 2025 18:12
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] How to get NLL from MultiDimFit
+
+Giacomo Ortona gortonaApril 22
+
+Dear Sasha,
+About the first issue, maybe the discrete profiling might help you?
+cms-analysis.github.io
+Advanced use cases - Combine
+About the second one I think using a grid of points could be better.
+As explained in the threads linked by Andrea, the absolute value of the NLL is not a properly defined quantity and one of the reasons is not stored is exactly because it should not be used to compare different fits.
+Cheers,
+Giacomo
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by gortona @ 2025-04-23T19:34:37.000Z):
+Dear Sasha,
+The problem is that, as explained in another thread, what actually makes (statistical) sense is a likelihood ratio, not the likelihood value per se.
+Since we assume we always use likelihood ratios, there are constant terms that are neglected in the minimisation procedures both in combine and roofit, so we don’t actually know the “real” nll value, nor does roofit.
+Regarding your original question, I believe this sequence of steps should be working:
+
+create a best fit snapshot
+run with the grid algorithm tuning it to get a 1-point grid with r=0 + load the snapshot + use the skipinitialfit option + set the model parameters to values of your liking
+
+If I’m not mistaken sincr the snapshot js loaded before anything else and you skip the first fit, this should let you have the r=0 fit with your initial parameters.
+Cheers,
+Giacomo
+
+···
+Il 23 Apr 2025 11:10, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch ha scritto:
+
+Alexandre Nikitenko anikitenApril 23
+
+Dear Giacomo,
+Thank you for replay.
+We used RooFit to perform bias studies. Also to make a choice of the
+best order of the background function (Polynomial or Chebyshev for example)
+according to F-test (of NLL( n+1) -NLL(n) < 0.5) take order “n”).
+For that we used possibility provided by RooFit:
+RooFitResult* r = model.fitTo(data,Range(“R1,R2”),Save());
+cout << "-log(L) at minimum = " << r->minNll() << endl;
+So, I am wondering why do you say that
+“NLL is not a properly defined quantity and one of the reasons is not stored is exactly because it should not be used to compare different fits.”
+Do you define NLL in combine in a different way from RooFit ?
+I did use --algo grid to scan all 19 parameters of my background functions
+and make a proper choice of initial values and intervals. However, as I explained early with option --algo fixed MultiDimFit take my values in the first fit of S+B, but in the second fit of B only it takes not my values, but the best values from the first fit which I do not want, since it went to the local minimum.
+I do not understand how snapshot can help me in this situation. But if you provide me NLL I will run two separate fits, S+B and B with my initial values of parameters and then use DNLL. I guess it is not a big problem to print or store NLL.
+Thanks, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 22
+
+Dear Sasha,
+About the first issue, maybe the discrete profiling might help you?
+cms-analysis.github.io
+Advanced use cases - Combine
+About the second one I think using a grid of points could be better.
+As explained in the threads linked by Andrea, the absolute value of the NLL is not a properly defined quantity and one of the reasons is not stored is exactly because it should not be used to compare different fits.
+Cheers,
+Giacomo
+··· (click for more details)
+
+Alexandre Nikitenko anikitenApril 22
+
+Hi Andrea,
+Yes, it is similar questions. I do need NLL at list printed out.
+User cases are:
+
+comparison in terms of NLL different background functions using sidebands.
+
+checking local minima
+
+I think it is not a big problem to a least print NLL or store it in root.
+This posibility is terribly important for my analysis.
+Thanks, Sasha.
+··· (click for more details)
+
+Andrea Carlo Marini amariniApril 21
+
+Hi Sasha,
+how is this question different from
+this one or this one?
+-Andrea
+
+Alexandre Nikitenko anikitenApril 21
+
+Dear experts,
+I do a simple fit of S+B using
+combine -M MultiDimFit 2017UL_dimuon_SR1.txt --robustFit=1 -v 3 --rMin 0 --rMax 100
+I would like to get NLL from this fit. How can I do it ?
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2025-04-24T10:20:57.271Z):
+Dear Giacomo,
+finally I will used DeltaNLL of course.
+As I wrote  I do two fits (S+B and B) in one go using command:
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --set Parameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3
+and I would like that second (B) fit takes my values of input parameters (as first fit does).
+Frankly, I hardly understand what your wrote in 1. and 2.  since I never did it… Why I should you grid algorithm is I use --algo fixed ?  What snapshot should contain:  S+B fit result of B fit result ?  Why should I first fit ?
+I would really appreciate if you modify my command in the way that it performs what I described above.  Otherwise I am afraid it will take too long for me with no garantee that I do not do mistakes.
+Many thanks, Sasha.
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2025-04-24T11:07:41.858Z):
+… sorry for typos.
+should read: “Why should I skip first fit ?”
+“Why I should use grid algorithm is I use --algo fixed ?”
+from my command I need DeltaNLL.   So, I have to do two fits in one go.
+But if you provide me NLL  I can do it in two “go” and get DeltaNLL anyway.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 9 (by gortona @ 2025-04-28T09:48:32.793Z):
+Hi Sasha,
+As I said in an early reply, modify the fit order is not at all easy, and this is a very peculiar user case. I don’t think we have the personpower to make such a change to the code.
+At the same time, we don’t want to print the NLL value since we can’t ensure it is going to be used consistently.
+About your questions the logic is the following:
+What you want is a way to perform only the r=0 fit from a pre-defined starting point and compare the result to the best fit value.
+The snapshot will contain the global best fit value of your POIs and the values of all NP at the best fit. So once you can load your best fit snapshot you will have the best-fit reference point. Since the snapshot is loaded before any other combine command, by using setParameters you can restore your desired starting parameters values. Finally, you don’t want to re-run again the S+B fit, otherwise you would be again resetting your NP starting values for the r=0 fit (since S+B is ran first). Hence the need for the skipInitialFit command. This way you will only run r=0 with the chosen parameters.
+Finally, about the usage of grid, I’m sorry this was a mistake on my side, skipInitialFit should work with the fixed option as well.
+I hope it is clear,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 10 (by anikiten @ 2025-04-28T10:04:47.127Z):
+Hi Giacomo,
+can you clarify your sentence
+“Since the snapshot is loaded before any other combine command, by using setParameters you can restore your desired starting parameters values”
+I need to start bkg. only fit (r=0) with my initial parameters, not from ones stored in snapshot as best S+B fit.  Does it mean that I have to set all 19 parameters of my bkg. functions in my 2nd command ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 11 (by gortona @ 2025-04-28T10:46:07.298Z):
+Hi Sasha,
+Yes exactly. When you load the snapshot, all parameters of the model will be set at their best-fit value. Then you can change this by using setParameters.
+Cheers,
+Giacomo
+----------------------------------------

@@ -1,0 +1,108 @@
+TOPIC: Clarification on Constraining Signal and Background Normalisations in Combine
+URL: https://cms-talk.web.cern.ch/t/125908
+DATE: 2025-06-13T08:38:27.198Z
+SOLVED: no
+============================================================
+
+QUESTION (by lbhatt @ 2025-06-13T08:38:27.479Z):
+Dear Experts,
+I have been following the Higgs Combine GitHub pages to understand the parametric fitting process using Combine. I have two questions regarding the normalisation of signal and background components.
+According to the documentation, there are two types of normalisation parameters defined in workspace: one for the signal and one for the background, typically referred to as {model}_norm. The background normalisation is allowed to float freely, which is why it appears as a number in the impacts plots. On the other hand, the signal normalisation is typically fixed, as the signal strength parameter r is treated as a free-floating parameter in the model and is multiplied with the signal normalisation.
+My questions are as follows:
+1. How can I constrain the background normalisation using a prior cross-section measurement?
+For example, if I have a prior measurement indicating a 10% uncertainty on the background cross-section, which of the following approaches should I use in the datacard:
+
+ShapeBkg_{model}__norm lnN 1.1 (log-normal constraint)
+
+Or
+
+ShapeBkg_{model}__norm param 0.0 1.1 (Gaussian constraint with mean at zero and sigma 1.1)?
+
+Or
+I need to do something else?
+2. Since I am performing a precision study, I am not interested in the signal strength.
+I would like to fix r = 1 and treat the signal normalisation similarly to the background normalisation, i.e., allow it to float with a constraint. Could you please confirm whether the following steps are correct?
+
+I fix the value of r by using the --setParameters r=1 --freezeParameters r options when running Combine.
+I skip the setConstant(True) call for the signal normalisation parameter and instead allow it to float by defining a range.
+I apply a constraint on the signal normalisation parameter in the datacard in the same way as I do for the background.
+
+Thank you in advance for your support.
+Best regards,
+Lokesh Bhatt
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-06-19T03:10:34.436Z):
+Dear Lokesh,
+To assign the lnN uncertainty for any process, signal or background, please follow the documentation here for example.
+If you don’t want to modify your signal prediction with freely floating parameter, you can indeed freeze the signal strength  with --setParameters r=1 --freezeParameters r if you are using the default physics model. If there is another parameter that you are interested in it would be a good idea to make sure that Combine knows it with --redefineSignalPOIs <POI_name>, more details here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by mikumar @ 2025-06-20T13:53:39.943Z):
+Hi Aliya,
+We have implemented the constraints on the signal and background as described in the document you referred to. You can find our example datacard at the following link: Datacard. The fits are working fine.
+However, I have a couple of questions after reviewing the impact plot here: Impact Plot.
+
+Since we’ve already added constraints on the background and signal normalizations, I would expect them to appear as fixed (i.e., shown as bars like other nuisance parameters). But in the plot, they are still displayed with numerical values. Why is that the case?
+
+Additionally, even though I have fixed r = 1 and frozen it, it still appears in the impact plot with some associated uncertainty. Shouldn’t it be completely excluded if it’s frozen?
+
+we use following commands to get the impact plot:
+combineTool.py -M Impacts -d workspace_top_Mass_{Mass}_shape_comb_para{tag}.root -m {Mass}   -n _M{Mass}{tag}_Impacts --redefineSignalPOIs mean,sigmaG  --setParameters mean=5.1,r=1,sigmaG=0.11 --setParameterRanges mean=5.0,5.3:sigmaG=0.05,0.7 --freezeParameters r  --X-rtd ADDNLL_CBNLL=0 --robustFit 1 --doInitialFit
+
+combineTool.py -M Impacts -d workspace_top_Mass_{Mass}_shape_comb_para{tag}.root -m {Mass} -n _M{Mass}{tag}_Impacts  --redefineSignalPOIs mean,sigmaG --setParameters mean=5.1,r=1,sigmaG=0.11  --setParameterRanges mean=5.0,5.3:sigmaG=0.05,0.7 --freezeParameters r --X-rtd ADDNLL_CBNLL=0 --robustFit 1 --doFits -o impacts_mtop_{year}.json
+
+combineTool.py -M Impacts -d workspace_top_Mass_{Mass}_shape_comb_para{tag}.root -m {Mass}  -n _M{Mass}{tag}_Impacts --redefineSignalPOIs mean,sigmaG --setParameters mean=5.1,r=1,sigmaG=0.11 --setParameterRanges mean=5.0,5.3:sigmaG=0.05,0.7  --freezeParameters r --X-rtd ADDNLL_CBNLL=0  -o impacts_mtop_{year}.json
+
+plotImpacts.py -i impacts_mtop_{year}.json -o impacts_mtop_{year}_mean --POI mean
+
+Looking forward to your responce.
+Best regards,
+Mintu Kumar
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2025-06-20T15:09:09.670Z):
+It depends on what you are trying to achieve exactly. But I don’t see any reason to implement a constrain term on the normalization parameter itself if you just want to assign theory motivated systematics.
+Let me try to explain a bit. When you assign the lnN systematics two things happen: the k^{\nu} term added to the primary likelihood component, to modify the normalization of a given process; then the auxiliary part of the likelihood gets an additional component (Gaussian in case of lnN) which depends on \nu. The freely floating normalization parameter does not change the behavior, but the effect is there. So I would say you are covered with the lnN’s, you can read more about this in the docs.
+About the impacts on frozen parameters, to avoid having it plotted just add --exclude r to the impacts command. The impacts are estimated in parallel, and if you have it frozen during the initial fit and when the impacts from the other parameters are estimated, it does not affect anything at all.
+Let me know if something is not clear,
+Aliya
+----------------------------------------
+
+REPLY 5 (by anigamov @ 2025-06-20T15:16:11.970Z):
+Btw you can merge these lines
+x-sec_sig_cons          lnN            -            -            1.053        -            -            1.053
+x_sec_sig_cons          lnN            1.058        -            -            1.058        -            -
+
+into one
+x-sec_sig_cons          lnN            1.058            -            1.053        1.058           -            1.053
+
+Cheers,
+Aliya
+----------------------------------------
+
+REPLY 6 (by mikumar @ 2025-06-20T18:59:44.605Z):
+Hi Aliya,
+Thanks you very much for the clarification.
+The motivation behind the constraining background is to used the previous cross-section measurement. For example if ttbar is a background for me. I want to use the use the 6% cross-section uncertainty from ttbar measurements which we know prior. Does that make sense to use these uncertainty this way?
+About merging
+x-sec_sig_cons.
+Actually I added it twice by mistake, one parameter is for other background. I added updated datacard at the same link here. I think it should be fine now.
+Thanks and regards,
+Mintu Kumar
+----------------------------------------
+
+REPLY 7 (by anigamov @ 2025-06-25T08:21:08.954Z):
+Hi Mintu,
+Yes, the uncertainty on the predicted cross section can and should be described with lnN
+Best,
+Aliya
+----------------------------------------
+
+REPLY 8 (by mikumar @ 2025-06-25T14:08:09.755Z):
+Hi Aliya,
+Thank you very much for the inputs.
+Mintu Kumar
+----------------------------------------

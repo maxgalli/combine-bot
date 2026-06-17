@@ -1,0 +1,27 @@
+TOPIC: Error in combine installation when I run ```make CONDA=1 -j 8```
+URL: https://cms-talk.web.cern.ch/t/31313
+DATE: 2023-11-06T09:02:06.847Z
+SOLVED: no
+============================================================
+
+QUESTION (by fmokhtar @ 2023-11-06T09:02:06.988Z):
+I was following the installation steps for MacOS listed in the Combine webpage:
+git clone https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit
+
+conda install --name base mamba # faster conda
+mamba env create -f conda_env.yml
+
+conda activate combine
+source set_conda_env_vars.sh
+# Need to reactivate
+conda deactivate
+conda activate combine
+
+make CONDA=1 -j 8
+
+It all works fine until the very last command. It runs into many errors of this sort.
+zzz 171920×1247 228 KB
+zzz 181920×1165 201 KB
+Any help is appreciated! thanks!
+----------------------------------------

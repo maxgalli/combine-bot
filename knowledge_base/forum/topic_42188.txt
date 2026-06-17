@@ -1,0 +1,59 @@
+TOPIC: Unexpected Minimum in MultidimFit Workspace - Uncertainty Breakdown in Combine v9.1.0
+URL: https://cms-talk.web.cern.ch/t/42188
+DATE: 2024-06-10T11:50:53.324Z
+SOLVED: no
+============================================================
+
+QUESTION (by oponcet @ 2024-06-10T11:50:53.498Z):
+Dear Combine Experts,
+I am using Combine v9.1.0 to run a MultidimFit with the grid algorithm using the following command line:
+algo         = kwargs.get('algo',         "--algo=grid --alignEdges=1  ")
+npts_fit     = kwargs.get('npts_fit',     "--points=96") ## 66 and 96
+fit_opts     = kwargs.get('fit_opts',     "--robustFit=1 --setRobustFitAlgo=Minuit2 --setRobustFitStrategy=2 --setRobustFitTolerance=0.00001 %s" %(npts_fit))
+xrtd_opts    = kwargs.get('xrtd_opts',    "--X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_NE")
+cmin_opts    = kwargs.get('cmin_opts',    "--cminFallbackAlgo Minuit2,Migrad,0:0.0001 --cminPreScan"                                            ) #--cminPreScan
+save_opts    = kwargs.get('save_opts',    "--saveNLL --saveSpecifiedNuis all --saveFitResult"
+POI = "tes_%s" % (r)
+NP = "rgx{.*tid.*}"
+print(">>>>>>> "+POI+" fit")
+POI_OPTS = "--saveWorkspace -P %s --setParameterRanges %s=%s:tid_SF_%s=%s:sf_W_%s=0.0,10.0 --setParameters r=1,rgx{.*tid.*}=1,%s=1 --freezeParameters r  --redefineSignalPOIs %s --floatOtherPOIs=1 " % (POI, POI, tes_range, r,tid_SF_range,r,POI,POI)  # tes_DM --redefineSignalPOIs tid_SF_%s,%s
+MultiDimFit_opts = " -m 90  %s %s %s -n .%s %s %s %s %s --trackParameters %s,rgx{.**.},rgx{.*sf_W_*.} --saveInactivePOI=1" %(workspace, algo, POI_OPTS, BINLABELoutput, fit_opts, xrtd_opts, cmin_opts, save_opts,NP)
+os.system("combine -M MultiDimFit -v 2  %s " %(MultiDimFit_opts))
+
+I wanted to analyze the breakdown of uncertainty, so I saved the workspace after the MultidimFit and ran another fit with nuisance parameters frozen to the values obtained from the MultidimFit as follows:
+POI_OPTS = ("-P %s --setParameters r=1 --freezeParameters r,allConstrainedNuisances,var{.**.} "
+"--redefineSignalPOIs tid_SF_%s,%s --floatOtherPOIs=1 --snapshotName MultiDimFit "
+"--setParameterRanges %s=%s:tid_SF_%s=%s"
+% (POI, r, POI, POI, tes_range, r, tid_SF_range))  # tes_DM
+MultiFitout = "higgsCombine.%s.MultiDimFit.mH90.root" % (BINLABELoutput)
+print("MultiFitout: ", MultiFitout)
+MultiDimFit_opts = (" -m 90  %s %s %s -n .statonly-%s %s %s %s %s --trackParameters %s,rgx{.**.},rgx{.*sf_W_*.} "
+"--saveInactivePOI=1"
+% (MultiFitout, algo, POI_OPTS, BINLABELoutput, fit_opts, xrtd_opts, cmin_opts, save_opts, NP))
+print("\033[92m>>>>>>>> MultiDimFit stat only %s : \033[0m" % (r))
+os.system("combine -M MultiDimFit -v 2 %s" % (MultiDimFit_opts))
+MultiFitout_statonly = "higgsCombine.statonly-%s.MultiDimFit.mH90.root" % (BINLABELoutput)
+
+I observed the breakdown of the uncertainty as expected in the NLL profile plot (see plot).
+parabola_tes_mt_m_vis-DM1_mutau_mt40cut_DM_Dt2p5_JetM_muVT_puppimet_DeepTau_breakdown696×572 13.8 KB
+However, for certain fits, the minimum saved in the workspace is significantly different from the expected value. This discrepancy might be due to the fit not converging for certain points (see plot).
+Capture d’écran 2024-06-10 à 13.38.331662×1358 252 KB
+Do you know how to handle this problem?
+Thanks a lot.
+Cheers,
+Océane
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2024-06-11T08:41:49.017Z):
+Hi Océane,
+I’m not immediately sure what’s gone wrong here. Can you share the two ROOT output files containing the scan points?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by oponcet @ 2024-06-11T15:32:43.013Z):
+Hi Andrew,
+Sure, here you can find the files, for DM0 pt1 which is not working, and DM11 pt2 which is working fine.
+Cheers,
+Océane
+----------------------------------------

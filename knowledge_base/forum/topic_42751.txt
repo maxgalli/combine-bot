@@ -1,0 +1,276 @@
+TOPIC: LEE with feldma-cousins
+URL: https://cms-talk.web.cern.ch/t/42751
+DATE: 2024-06-25T11:03:57.580Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-06-25T11:03:57.996Z):
+Dear All,
+as you know we have 3 signal mu’s  and run feldman-cousins to evaluate a local significance with toys as
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 100000 -s -1 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,sigma --setParameterRanges mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1
+and we got a p-value 1.3e-6 (corresponds to a local significance of 4.7) which coincide with one from the analytical formulae.
+Now we want to evaluate LEE effect due to the dimuon mass range 25-30 GeV and width range of 0-5.6 GeV.  So, I run it like
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1000 -s -1 --setParameterRanges mass=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1
+I was surprised to get p-value after running 1K events (just for test)
+Pmu = 0.032 +/- 0.00556561
+I think it is totally wrong number which correspond to significance about of 2.0.
+Do we something wrong with command above or we should use some other command, since feldman-cousins does not work for LEE.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-06-25T11:53:54.024Z):
+Dear Sasha,
+As far as I can see there are two differences between the commands you provided.
+The first one uses more toys and also freezes the signal parameters, while in the second one the signal parameters are left freely floating.
+So the way I would interpret these results is that the first output corresponds to the local significance and the second one to global, and there is nothing wrong about it. I think one could try to run more toys for the global significance (where the signal parameters are not frozen), but considering the uncertainty on p-value it would not change the results significantly.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-06-25T12:25:48.803Z):
+Hi Alyia,
+thanks. Let me do more checks. I hardly can believe that we go from local 4.7 to the global about of 2.0 having so small mass and width interval…  I think something works wrong.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2024-06-25T13:28:33.221Z):
+Hi Alyia,
+can not it be that mass and width are varied independently in each SR and year (2017, 2018) ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 5 (by vischia @ 2024-06-25T13:36:54.000Z):
+Hi Sasha,
+the smaller the mass and width intervals, the more independent search regions you have and therefore the larger the trial factor, and therefore the stronger is the reduction in significance, as per section 4 of the Gross-Vitells paper, no?
+Cheers,
+Pietro
+
+···
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Prof. Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+Adj. Professor, IITM
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 6 (by nckw @ 2024-06-25T13:42:52.000Z):
+Hi Sasha,
+In your model there is only one mass and width so combine cannot vary them independently across the SRs and years.
+One (maybe minor thing) I noticed is that in your second command, should you not also have --freezeParameters sigma still? I don’t think that parameter should be free to float in either case.
+I’m not sure I would trust the result straight away until we are sure that the free floating fits (ie for the global significance) are converging. In this case, you are generating events with no signal so I suspect the likelihood for many of these toys doesn’t have a nice easy minimum to find. For example, when we calculated the LEE for the Higgs discovery, we didn’t let the mass float, instead we performed a scan over the mass for each toy to find the deepest minimum in each case (same as saying the mass with the largest excess in each case),
+I think it might be useful to try to run a 2D likelihood scan for a few of the toys you’re generating (just like you did with the real data) for the mass vs width in the ranges you are setting and see what it looks like. If its smooth then I think the command you have is ok, if its very “jumpy” we probably need a different approach. You should be able to run the same command for theis as you did for the data but just add the option -t 1 -s 1 to get a toy data instead of the observed data.
+Best,
+Nick
+
+···
+From: Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch
+Date: Tuesday, 25 June 2024 at 14:31
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] LEE with feldma-cousins
+
+Alexandre Nikitenko anikitenJune 25
+
+Hi Alyia,
+can not it be that mass and width are varied independently in each SR and year (2017, 2018) ?
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by nckw @ 2024-06-25T13:48:54.000Z):
+Hi Pietro,
+Surely it’s the other way around? By mass and width intervals, I think Sasha means the ranges allowed for those parameters – i.e what constitutes “elsewhere”, it makes sense that more elsewhere = more look elsewhere effect.
+Cheers,
+Nick
+
+···
+From: Pietro Vischia via CMS talk noreply-cms-talk@cern.ch
+Date: Tuesday, 25 June 2024 at 14:47
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] LEE with feldma-cousins
+
+Pietro Vischia vischiaJune 25
+
+Hi Sasha,
+the smaller the mass and width intervals, the more independent search regions you have and therefore the larger the trial factor, and therefore the stronger is the reduction in significance, as per section 4 of the Gross-Vitells paper, no?
+Cheers,
+Pietro
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 8 (by vischia @ 2024-06-25T13:54:32.000Z):
+Hi Nick,
+ah I thought Sasha by “intervals” meant the resolution (“number of windows”) within the range, not the range itself.
+Cheers,
+Pietro
+
+···
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Prof. Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+Adj. Professor, IITM
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 9 (by anikiten @ 2024-06-26T16:27:40.526Z):
+Hi Nick, Pietro
+I did mean mass and width ranges where we are searching for a bump.
+I will add
+–freezeParameters sigma
+so, shell I use again the same command for LEE
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --freezeParameters sigma --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1000 -s -1 --setParameterRanges mass=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1
+and add
+-t 1 -s 1
+as you said ?
+But why do I need to get a toy data instead of the observed data ?
+I thought command above for each toy experiment generates background
+“data” according to the background model obtained from the data fitted by the background functions I set.  Then it does S+B fit and B only fit of these “data” and calculate test statistics as a ratio of NLLs. Then it compared it
+with NLL ratio from a real data and count how many toys have ratio NLL larger that the ratio from data. Is my understanding correct ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 10 (by nckw @ 2024-06-26T16:52:48.000Z):
+Hi Sasha,
+The point of looking at 1 toy is just to see what the likelihood surface looks likenfor a background toy. If there are lots of local minima, then when you try to calculate the p-value, many of the fits might be getting stuck in shallow minima and so the calculation is not reliable. If instead there are not lots of local minima, the calculation you performed already is probably correct,
+Best
+Nick
+
+| Alexandre Nikitenko anikitenJune 26 |
+
+| - |
+
+Hi Nick, Pietro
+I did mean mass and width ranges where we are searching for a bump.
+I will add
+–freezeParameters sigma
+so, shell I use again the same command for LEE
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --freezeParameters sigma --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1000 -s -1 --setParameterRanges mass=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1
+and add
+-t 1 -s 1
+as you said ?
+But why do I need to get a toy data instead of the observed data ?
+I thought command above for each toy experiment generates background
+“data” according to the background model obtained from the data fitted by the background functions I set. Then it does S+B fit and B only fit of these “data” and calculate test statistics as a ratio of NLLs. Then it compared it
+with NLL ratio from a real data and count how many toys have ratio NLL larger that the ratio from data. Is my understanding correct ?
+Thanks, Sasha.
+
+···
+On 26 Jun 2024 17:31, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------
+
+REPLY 11 (by anikiten @ 2024-06-26T17:00:54.000Z):
+Hi Nick,
+I got it.
+Is there a tool in combine to do 2D scan for one toy or shell we
+try to do it ourself as we did data scans ?
+Thanks, Sasha.
+
+···
+
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Wednesday, June 26, 2024 18:56
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] LEE with feldma-cousins
+
+Nicholas Wardle nckw Higgs convenerJune 26
+
+Hi Sasha,
+The point of looking at 1 toy is just to see what the likelihood surface looks likenfor a background toy. If there are lots of local minima, then when you try to calculate the p-value, many of the fits might be getting stuck in shallow minima and so the calculation is not reliable. If instead there are not lots of local minima, the calculation you performed already is probably correct,
+Best
+Nick
+
+| Alexandre Nikitenko anikiten
+June 26 |
+
+| - |
+
+Hi Nick, Pietro
+I did mean mass and width ranges where we are searching for a bump.
+I will add
+–freezeParameters sigma
+so, shell I use again the same command for LEE
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --freezeParameters sigma --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1000 -s -1 --setParameterRanges mass=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1
+and add
+-t 1 -s 1
+as you said ?
+But why do I need to get a toy data instead of the observed data ?
+I thought command above for each toy experiment generates background
+“data” according to the background model obtained from the data fitted by the background functions I set. Then it does S+B fit and B only fit of these “data” and calculate test statistics as a ratio of NLLs. Then it compared it
+with NLL ratio from a real data and count how many toys have ratio NLL larger that the ratio from data. Is my understanding correct ?
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 12 (by anikiten @ 2024-06-26T20:15:06.000Z):
+Hi again, Nick,
+I think we now understand things enough to make our own
+toy generations and scans. Also to calculate local and global
+significance and cross-check with combine.
+I have one question concerning background only generation.
+I guess combine uses background model from the fit of
+a whole dimuon mass range of 12-70 GeV. We can do fit
+excluding a signal range of 25-30 GeV (sideband fit). I think
+it is more correct way to get background model to be used
+for toy generation. What do you think ?
+Cheers, Sasha.
+
+···
+
+From: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Sent: Wednesday, June 26, 2024 19:00
+To: CMS talk cmstalk+13306a422f0be60a2d687b953a3da413@cern.ch
+Subject: Re: [Common Analysis Tools/Statistical Interpretation Tools] LEE with feldma-cousins
+Hi Nick,
+I got it.
+Is there a tool in combine to do 2D scan for one toy or shell we
+try to do it ourself as we did data scans ?
+Thanks, Sasha.
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Wednesday, June 26, 2024 18:56
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] LEE with feldma-cousins
+
+Nicholas Wardle nckw Higgs convenerJune 26
+
+Hi Sasha,
+The point of looking at 1 toy is just to see what the likelihood surface looks likenfor a background toy. If there are lots of local minima, then when you try to calculate the p-value, many of the fits might be getting stuck in shallow minima and so the calculation is not reliable. If instead there are not lots of local minima, the calculation you performed already is probably correct,
+Best
+Nick
+
+| Alexandre Nikitenko anikiten
+June 26 |
+
+| - |
+
+Hi Nick, Pietro
+I did mean mass and width ranges where we are searching for a bump.
+I will add
+–freezeParameters sigma
+so, shell I use again the same command for LEE
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --freezeParameters sigma --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1000 -s -1 --setParameterRanges mass=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1
+and add
+-t 1 -s 1
+as you said ?
+But why do I need to get a toy data instead of the observed data ?
+I thought command above for each toy experiment generates background
+“data” according to the background model obtained from the data fitted by the background functions I set. Then it does S+B fit and B only fit of these “data” and calculate test statistics as a ratio of NLLs. Then it compared it
+with NLL ratio from a real data and count how many toys have ratio NLL larger that the ratio from data. Is my understanding correct ?
+Thanks, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

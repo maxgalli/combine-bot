@@ -1,0 +1,67 @@
+{
+  "topic_id": 2182,
+  "title": "Studying fit model in categories with shared rate parameters",
+  "url": "https://cms-talk.web.cern.ch/t/2182",
+  "category_id": 279,
+  "created_at": "2021-10-14T07:45:41.000Z",
+  "last_posted_at": "2021-10-21T12:59:45.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "maglowac",
+      "name": "Maciej Mikolaj Glowacki",
+      "created_at": "2021-10-14T07:45:41.000Z",
+      "updated_at": "2023-02-07T10:55:43.319Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Combine experts,\nthis is more of a general query, we're open to ideas / suggestions.\nI work on a Higgs to invisible analysis in the ttH and VH channels. Our\nanalysis is binned in terms of MET and jet multiplicities, to overcome\nstatistical limitations in certain bins we integrate over the number of\njets to leave ourselves with only a MET dependent rate parameter.\nWe would like to study the fit per individual category (MET & Jet mult)\nbut this is proving difficult due to the shared rate parameter between\ncategories.\nFor example; our rate parameter is computed from the combination of\ncategories: ttH5j1b, ttH5j2b, ttH6j1b, ttH6j2b (aka one rate param per\n\"super-category\") is it possible to now study the individual category\n(e.g. ttH5j1b) and somehow reference the shared rate parameter computed\nfrom the \"super-category\"?\nMany thanks, Maciek",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Combine experts,</p>\n<p>this is more of a general query, we're open to ideas / suggestions.</p>\n<p>I work on a Higgs to invisible analysis in the ttH and VH channels. Our<br>\nanalysis is binned in terms of MET and jet multiplicities, to overcome<br>\nstatistical limitations in certain bins we integrate over the number of<br>\njets to leave ourselves with only a MET dependent rate parameter.</p>\n<p>We would like to study the fit per individual category (MET &amp; Jet mult)<br>\nbut this is proving difficult due to the shared rate parameter between<br>\ncategories.</p>\n<p>For example; our rate parameter is computed from the combination of<br>\ncategories: ttH5j1b, ttH5j2b, ttH6j1b, ttH6j2b (aka one rate param per<br>\n\"super-category\") is it possible to now study the individual category<br>\n(e.g. ttH5j1b) and somehow reference the shared rate parameter computed<br>\nfrom the \"super-category\"?</p>\n<p>Many thanks, Maciek</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-10-15T09:56:43.000Z",
+      "updated_at": "2021-11-17T08:39:42.143Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Maciek,\nI think it depends on exactly what you want to study - if you are\ninterested in the interplay of the rateParam with the other parameters\nin your category then I can't think of a good way of doing this test.\nOne thing that you can do is to take the value of the shared rateParam\nfrom the full combined fit, and use --setParameters to set the value of\nthe rateParam to that value, and --freezeParameters to freeze it, when\nyou do a fit just of the ttH5j1b category. Whether this makes sense to\ndo probably depends on how strongly the rateParam is constrained by the\nttH5j1b category itself - I think if most of the constraint on the\nrateParam comes from the other 3 categories then it is not unreasonable\nto follow this procedure.\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Maciek,</p>\n<p>I think it depends on exactly what you want to study - if you are<br>\ninterested in the interplay of the rateParam with the other parameters<br>\nin your category then I can't think of a good way of doing this test.<br>\nOne thing that you can do is to take the value of the shared rateParam<br>\nfrom the full combined fit, and use --setParameters to set the value of<br>\nthe rateParam to that value, and --freezeParameters to freeze it, when<br>\nyou do a fit just of the ttH5j1b category. Whether this makes sense to<br>\ndo probably depends on how strongly the rateParam is constrained by the<br>\nttH5j1b category itself - I think if most of the constraint on the<br>\nrateParam comes from the other 3 categories then it is not unreasonable<br>\nto follow this procedure.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "maglowac",
+      "name": "Maciej Mikolaj Glowacki",
+      "created_at": "2021-10-18T14:20:55.000Z",
+      "updated_at": "2021-11-17T08:39:42.263Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Adinda,\nthank you for the suggestion, on paper sounds like this would work for\nwhat I'm trying to achieve - have you seen something like this in\npractice? I only have experience of using --setParameters and\n--freezeParameters when it come to masking different channels.\nThanks, Maciek",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Adinda,</p>\n<p>thank you for the suggestion, on paper sounds like this would work for<br>\nwhat I'm trying to achieve - have you seen something like this in<br>\npractice? I only have experience of using --setParameters and<br>\n--freezeParameters when it come to masking different channels.</p>\n<p>Thanks, Maciek</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-10-19T09:51:33.000Z",
+      "updated_at": "2021-11-17T08:39:42.387Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi Maciek,\nYes, it's possible to set or freeze any parameter, and this is often\ndone when investigating fit problems (of course with the caveats that I\nmentioned in the first message).\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi Maciek,</p>\n<p>Yes, it's possible to set or freeze any parameter, and this is often<br>\ndone when investigating fit problems (of course with the caveats that I<br>\nmentioned in the first message).</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2021-10-21T12:59:45.000Z",
+      "updated_at": "2021-11-17T08:39:42.526Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear Maciek,\nI think it depends on exactly what you want to study - if you are\ninterested in the interplay of the rateParam with the other parameters\nin your category then I can't think of a good way of doing this test.\nOne thing that you can do is to take the value of the shared rateParam\nfrom the full combined fit, and use --setParameters to set the value of\nthe rateParam to that value, and --freezeParameters to freeze it, when\nyou do a fit just of the ttH5j1b category. Whether this makes sense to\ndo probably depends on how strongly the rateParam is constrained by the\nttH5j1b category itself - I think if most of the constraint on the\nrateParam comes from the other 3 categories then it is not unreasonable\nto follow this procedure.\nBest,\nAdinda",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear Maciek,</p>\n<p>I think it depends on exactly what you want to study - if you are<br>\ninterested in the interplay of the rateParam with the other parameters<br>\nin your category then I can't think of a good way of doing this test.<br>\nOne thing that you can do is to take the value of the shared rateParam<br>\nfrom the full combined fit, and use --setParameters to set the value of<br>\nthe rateParam to that value, and --freezeParameters to freeze it, when<br>\nyou do a fit just of the ttH5j1b category. Whether this makes sense to<br>\ndo probably depends on how strongly the rateParam is constrained by the<br>\nttH5j1b category itself - I think if most of the constraint on the<br>\nrateParam comes from the other 3 categories then it is not unreasonable<br>\nto follow this procedure.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "topic_id": 43615,
+  "title": "Question about JER on mass histogram",
+  "url": "https://cms-talk.web.cern.ch/t/43615",
+  "category_id": 279,
+  "created_at": "2024-07-15T17:38:12.508Z",
+  "last_posted_at": "2024-07-16T15:10:47.591Z",
+  "tags": [],
+  "accepted_answer_post_number": 4,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jiyoo",
+      "name": "Jieun Yoo",
+      "created_at": "2024-07-15T17:38:12.700Z",
+      "updated_at": "2024-07-15T17:38:12.700Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear CAT tools experts,\nI have a basic question about combine. We are fitting the soft drop jet mass in combine and have up and down shapes for uncertainties (JMR,JMS). I have up and down shapes for JER on the jet pT. But, we are fitting in combine the mass, not the pT. Sorry if this is obvious but do I pass these jet pT histograms and shapes to combine? I thought I could only pass the fit variable (mass) one. I am not sure. Can you please help on how to pass these JERs/what kind of histogram I need or the general idea and I can try to implement? Thank you.\nSincerely,\nJieun",
+      "cooked_html": "<p>Dear CAT tools experts,</p>\n<p>I have a basic question about combine. We are fitting the soft drop jet mass in combine and have up and down shapes for uncertainties (JMR,JMS). I have up and down shapes for JER on the jet pT. But, we are fitting in combine the mass, not the pT. Sorry if this is obvious but do I pass these jet pT histograms and shapes to combine? I thought I could only pass the fit variable (mass) one. I am not sure. Can you please help on how to pass these JERs/what kind of histogram I need or the general idea and I can try to implement? Thank you.</p>\n<p>Sincerely,<br>\nJieun</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-07-16T11:45:33.410Z",
+      "updated_at": "2024-07-16T11:45:33.410Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jieun,\nYou should make histograms of the mass with the JMR and JMS uncertainties varied (each uncertainty independently) - even if the JMR and JMS only modify the pT directly, this can have an effect on other variables (such as the mass that you reconstruct).\nHope that helps,\nAdinda",
+      "cooked_html": "<p>Dear Jieun,</p>\n<p>You should make histograms of the mass with the JMR and JMS uncertainties varied (each uncertainty independently) - even if the JMR and JMS only modify the pT directly, this can have an effect on other variables (such as the mass that you reconstruct).</p>\n<p>Hope that helps,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jiyoo",
+      "name": "Jieun Yoo",
+      "created_at": "2024-07-16T12:22:26.030Z",
+      "updated_at": "2024-07-16T12:22:26.030Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nHello. Thank you. It sounds like JMR and JMS then is only what we need, and we are not sensitive to things like \u201creduced set of uncertainty sources\u201d such as Absolute\u2019, \u2018Absolute_2018\u2019, \u2018BBEC1\u2019, \u2018BBEC1_2018\u2019, etc. Although we look for boosted jets at pT > 250 GeV, that pT cut would show minimal effect I guess? (If I am mistaken, please could you correct me?)\nThank you again!\nSincerely,\nJieun",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>Hello. Thank you. It sounds like JMR and JMS then is only what we need, and we are not sensitive to things like \u201creduced set of uncertainty sources\u201d such as Absolute\u2019, \u2018Absolute_2018\u2019, \u2018BBEC1\u2019, \u2018BBEC1_2018\u2019, etc. Although we look for boosted jets at pT &gt; 250 GeV, that pT cut would show minimal effect I guess? (If I am mistaken, please could you correct me?)</p>\n<p>Thank you again!</p>\n<p>Sincerely,<br>\nJieun</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-07-16T15:10:47.591Z",
+      "updated_at": "2024-07-16T15:10:47.591Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Dear Jieun,\nI\u2019m not sure about whether the reduced set of sources are relevant here; my response was simply on how the model would be set up, given some set of uncertainties. Which uncertainties should be applied is a question that you should discuss with the JetMET POG.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Jieun,</p>\n<p>I\u2019m not sure about whether the reduced set of sources are relevant here; my response was simply on how the model would be set up, given some set of uncertainties. Which uncertainties should be applied is a question that you should discuss with the JetMET POG.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

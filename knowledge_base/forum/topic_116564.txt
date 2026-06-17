@@ -1,0 +1,137 @@
+TOPIC: Limits with difference CRs give different results
+URL: https://cms-talk.web.cern.ch/t/116564
+DATE: 2025-02-20T12:49:09.682Z
+SOLVED: no
+============================================================
+
+QUESTION (by jihunk @ 2025-02-20T12:49:09.884Z):
+Dear experts,
+Currently, we are investigating the effect of including specific control regions (CRs) in our likelihood fit using a binned shape approach.
+While iterating the asymptotic limits in the Asimov setting with different combinations of CRs, we observed following trend:
+(1) Without adding any CR → gave the best limit,
+(2) Adding CR1 (defined by inverting the number of b-tagged jets and the MET cut from our signal region) → resulted in a 60% worse limit than (1),
+(3) Adding CR2 (similar to the SR but WZ-enriched) → resulted in a 14% worse limit than (1),
+(4) Adding CR1+CR2 → resulted in a 10% worse limit than (1).
+For context:
+We didn’t use channel masking but created individual data cards,
+The systematic sources include typical object-related uncertainties and an uncertainty in a data-driven background estimation, all of which are correlated across all the input SR and CRs,
+Both shape uncertainties and rateParam were assigned to all the input SR and CRs,
+And there are at least 5 events in each bin in CRs even in the 2016preVFP era so stats are not a major concern we believe.
+Given this observation, we have a few (naive) questions regarding our CR streategy:
+
+If there was no issue related to fit failure or bug in script side, would it be advisable to find more effective CRs to constrain uncertainties or to simply discard them?
+Is it common that adding a single CR leads to a much worse limit but then the limit is improved after combining another CR?
+Could you recommend any statistical tests that Combine provides to investigate this behavior in more detail?
+Additionally, we currently don’t include signal events in CRs (after checking the negligible contributions), which is a common practice. But at least in theory, would it be always safest to include signal events in CRs? When the absolute number of signal events are nonnegligible (say due to a large cross section), could excluding them introduce any bias, even if it only accounts for, e.g. 5% of the total signal?
+
+Many thanks,
+Jihun.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-02-21T11:08:19.571Z):
+Dear Jihun,
+Please find below some generic answers, since I don’t know the details of your setup.
+When you include CRs, you are asking your fit to estimate the background contribution in the signal region from the number of observed events in the CR. So, coming to your questions:
+
+It is always better to have more effective CRs, but one usually has experimental constraints in devising them. Also, it is very important that the CR are mutually exclusive if you include more than one.
+If in your CR the observation is larger than the expectation, this will translate in a larger background contribution in the SR and therefore a worst limit. So I would say this is not uncommon. Then when you add another CR you are adding additional constraints on the background which are probably helping you. From the numbers you sent, it seems CR2 is more precise (more populated?) than CR1, and has only a slight observed excess, so it dominates the background estimation.
+I’m not sure about this, the best way would be to first check the data/MC agreement in the CR and see if it makes sense
+If you don’t include the signal in the CR the fit will assume that any observed excess in the CR is due to the background. if the signal contribution is significant, this will translate in an artificial background excess and in the end on a lower limit, since you are degrading the S/B ratio. My suggestion would be to exclude the signal only if it really is negligible or if you don’t have a precise estimate of the signal distribution in the CR, otherwise is probably better to include it.
+
+I hope it helps,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by jihunk @ 2025-02-21T11:50:31.711Z):
+Dear Giacomo,
+Thank you for your prompt reply and for your comments.
+They were really helpful, especially your point on Q4.
+However, we still don’t fully understand this behavior, as we were running with the Asymptotic limit setting and believe that the normalization of backgrounds is unchanged.
+For your reference, I’ve attached the same data cards that I used as well as the input root files below:
+inputs.tar.gz (1.1 MB)
+The command lines that I used are:
+
+combine -M AsymptoticLimits card_SR[_Inv][_WZ].txt --run blind
+
+Could you have a look at it and advise us once again?
+Thank you for your time and help.
+Best regards,
+Jihun.
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-02-21T14:36:47.000Z):
+Dear Jihun,
+I might be wrong on this, and other experts are welcome to correct me, but I think the problem here is that you have 4 processes in the CR (WW, WZ, ZG, ZZ) and all of them are being constrained in the same CR, each with its own freely floating rateParam.
+The issue though is that you have more degrees of freedom than actual data to constraint them (1 CR against 4 processes).
+The result, I believe is that the fit assigns a lot of freedom (i.e., uncertainty) to the yield of the background, thus the degradation of the limit.
+Ideally, you want one CR (at least) for each of the processes you want to constraint.
+Best regards,
+Giacomo
+
+On 21 Feb 2025, at 12:51, Jihun Kim via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Jihun Kim jihunkFebruary 21
+
+Dear Giacomo,
+Thank you for your prompt reply and for your comments.
+They were really helpful, especially your point on Q4.
+However, we still don’t fully understand this behavior, as we were running with the Asymptotic limit setting and believe that the normalization of backgrounds is unchanged.
+For your reference, I’ve attached the same data cards that I used as well as the input root files below:
+inputs.tar.gz (1.1 MB)
+The command lines that I used are:
+
+combine -M AsymptoticLimits card_SR[_Inv][_WZ].txt --run blind
+
+Could you have a look at it and advise us once again?
+Thank you for your time and help.
+Best regards,
+Jihun.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaFebruary 21
+
+Dear Jihun,
+Please find below some generic answers, since I don’t know the details of your setup.
+When you include CRs, you are asking your fit to estimate the background contribution in the signal region from the number of observed events in the CR. So, coming to your questions:
+
+It is always better to have more effective CRs, but one usually has experimental constraints in devising them. Also, it is very important that the CR are mutually exclusive if you include more than one.
+If in your CR the observation is larger than the expectation, this will translate in a larger background contribution in the SR and therefore a worst limit. So I would say this is not uncommon. Then when you add another CR you are adding additional constraints on the background which are probably helping you. From the numbers you sent, it seems CR2 is more precise (more populated?) than CR1, and has only a slight observed excess, so it dominates the background estimation.
+I’m not sure about this, the best way would be to first check the data/MC agreement in the CR and see if it makes sense
+If you don’t include the signal in the CR the fit will assume that any observed excess in the CR is due to the background. if the signal contribution is significant, this will translate in an artificial background excess and in the end on a lower limit, since you are degrading the S/B ratio. My suggestion would be to exclude the signal only if it really is negligible or if you don’t have a precise estimate of the signal distribution in the CR, otherwise is probably better to include it.
+
+I hope it helps,
+Best regards,
+Giacomo
+
+Jihun Kim jihunkFebruary 20
+
+Dear experts,
+Currently, we are investigating the effect of including specific control regions (CRs) in our likelihood fit using a binned shape approach.
+While iterating the asymptotic limits in the Asimov setting with different combinations of CRs, we observed following trend:
+(1) Without adding any CR → gave the best limit,
+(2) Adding CR1 (defined by inverting the number of b-tagged jets and the MET cut from our signal region) → resulted in a 60% worse limit than (1),
+(3) Adding CR2 (similar to the SR but WZ-enriched) → resulted in a 14% worse limit than (1),
+(4) Adding CR1+CR2 → resulted in a 10% worse limit than (1).
+For context:
+We didn’t use channel masking but created individual data cards,
+The systematic sources include typical object-related uncertainties and an uncertainty in a data-driven background estimation, all of which are correlated across all the input SR and CRs,
+Both shape uncertainties and rateParam were assigned to all the input SR and CRs,
+And there are at least 5 events in each bin in CRs even in the 2016preVFP era so stats are not a major concern we believe.
+Given this observation, we have a few (naive) questions regarding our CR streategy:
+
+If there was no issue related to fit failure or bug in script side, would it be advisable to find more effective CRs to constrain uncertainties or to simply discard them?
+Is it common that adding a single CR leads to a much worse limit but then the limit is improved after combining another CR?
+Could you recommend any statistical tests that Combine provides to investigate this behavior in more detail?
+Additionally, we currently don’t include signal events in CRs (after checking the negligible contributions), which is a common practice. But at least in theory, would it be always safest to include signal events in CRs? When the absolute number of signal events are nonnegligible (say due to a large cross section), could excluding them introduce any bias, even if it only accounts for, e.g. 5% of the total signal?
+
+Many thanks,
+Jihun.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

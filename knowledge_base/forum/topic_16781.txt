@@ -1,0 +1,49 @@
+TOPIC: Freezing subset of POIs in likelihood scan
+URL: https://cms-talk.web.cern.ch/t/16781
+DATE: 2022-10-27T12:48:09.361Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by fiemmi @ 2022-10-27T12:48:09.628Z):
+Dear experts,
+I need your insights to perform a likelihood scan freezing a subset of my POIs. Let me briefly explain what the situation is, and what I would like to achieve.
+I have a model with 4 POIs, let’s call them par1, par2, par3, par4. Until now, I have successfully run likelihood scans as a function of, let’s say, par1, having all the remaining POIs floating, running MultiDimFit with the following options:
+-t -1 -P par1 --floatOtherPOIs 1 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51
+
+This gives the expected result of a likelihood scan consisting of 51 par1 points, evenly spaced from 0 to 5 like 0.0, 0.1, 0.2, 0.3, …
+Now, for debugging purposes I would like to modify the above command to perform a likelihood scan, as a function of par1, freezing one of the other POIs and letting the remaining two POIs float.
+First thing I tried was to combine --freezeParameters par2 with --floatOtherPOIs 1, something like
+-t -1 -P par1 --freezeParameters par2 --floatOtherPOIs 1 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51
+
+but it seesm that --floatOtherPOIs 1 is overriding --freezeParameters par2, so that all the POIs are still floating.
+I also tried to set par1, par3 and par4 as parameters with  the -P option, and then set --floatOtherPOIs 0, something like
+-t -1 -P par1 -P par3 -P par4 --floatOtherPOIs 0 --algo grid  --setParameters par1=0.004 --saveSpecifiedNuis all --saveInactivePOI 1 --setParameterRanges par1=0.0,5.0 --alignEdges 1 --points 51
+
+but in this case it seems Combine is performing a 3D scan made of 51 points, meaning that I don’t get the even spacing 0.0, 0.1, 0.2, 0.3, … for par1.
+Are there any command-line options to achieve what I need? If not, can you think of a workaround?
+Thank you very much,
+best,
+Fabio.
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by adewit @ 2022-10-27T13:00:35.970Z):
+Hi Fabio,
+I think you probably want to add --redefineSignalPOIs par1,par3,par4, to stop --floatOtherPOIs overriding --freezeParameters.
+Hope that helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by fiemmi @ 2022-10-28T15:03:33.424Z):
+Hi Adinda,
+thank you for your quick reply. Indeed--redefineSignalPOIs shuold do the trick. I didn’t think about that. What I plan to do is:
+
+“Downgrade” the POI I want to freeze (let’s say par2) to an unconstrained nuisance parameter by excluding it from the list of POIs, --redefineSignalPOIs par1,par3,par4
+
+Freeze it, --freezeParameters par2
+
+Let the other POIs float, --floatOtherPOIs 1.
+
+I believe this should work fine.
+Thanks again,
+F.
+----------------------------------------

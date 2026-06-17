@@ -1,0 +1,75 @@
+TOPIC: Help for combine Impact Plot
+URL: https://cms-talk.web.cern.ch/t/125883
+DATE: 2025-06-12T14:42:01.973Z
+SOLVED: no
+============================================================
+
+QUESTION (by santocch @ 2025-06-12T14:42:02.203Z):
+Hello,
+I’m doing an impact plot for my analysis [0] and I’d like to have some feedback about the results because I see few errors when running the suggested commands and I’m not sure how to interpretate/fix them.
+First of all the impact plot:
+impacts1134×932 61.4 KB
+Then the likelihood scan:
+scan_free1134×932 23.8 KB
+Finally few information:
+
+The combine card [1] is build from a model that include 3 different fit functions used for discrete profiling
+For all points of the likelihood scan, the function selected is the one using p5_0_Muo and p5_1_Muo parameters (the parameters starting with p1 and p7 are used for the other 2 functions)
+This is a mix of data (the background events from a signal free distribution) and MC (the signal) and the injected signal gives a significance as expected.
+
+And here are my questions:
+
+When I check the fit using the combine FitDiagnostics I get this warning:
+
+WARNING! You set the NLL evaluation backend to "legacy", which is not the default. This code path is not validated. Please don't use it for production!
+Fit B-only, status = 0, numBadNLL = 0, covariance quality = 3
+Running Minos for POI r
+Fit S+B, status = 0, numBadNLL = 0, covariance quality = 3
+
+--- FitDiagnostics ---
+Best fit r: 16.5529  -4.21706/+4.89504  (68% CL)
+
+but I don’t know its meaning  (because I didnt set any specific evaluation backend). The command used is
+combine -M FitDiagnostics -d $CARDROO -v 1 --setParameterRanges r=5,30
+
+Is this warning relevant?
+
+Sometimes I get this error when I run the 2 steps to produce the impact plots (the --doInitialFit and :
+
+[ERROR] Closed range without finding crossing!
+
+Which is reported also when I produce the impact plots… here is an example:
+>> Warning, the pull for r_p0width could not be computed
+
+Again: is this error relevant? How do I fix it?
+
+Is the impact plot reasonable? The fact that few parameters dont have a pull is important? Is it correct to say that the variation of these parameters don’t change the fit and the likelihood function does not depends from them?
+
+Thanks for any help/suggestion
+Attilio
+[0] https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=EXO-25-002
+[1] Here is the combine card
+imax 1
+jmax 1
+kmax *
+shapes * * ./file_bootstrap_0.05000_75_1_2.0000_400_16_4.00_RC/plotSM_250_DiPr_unbinned_0.05000_75_1_2.0000_400_16_4.00_BS_6.root w:$PROCESS
+bin Tag0
+observation -1
+bin          Tag0       Tag0
+process      signal     multipdf_Tag0
+process      0          1
+rate         1          1034
+alignment    lnN  1.016 1.016
+p1_0_Muo  param -9.02132 15.6399
+p1_1_Muo  param 4.89365 0.30369
+p5_0_Muo  param 5.26181 0.545806
+p5_1_Muo  param 10.3543 10.2614
+p7_0_Muo  param 2.69709e-08 6.49664e-05
+p7_1_Muo  param -477.974 401319
+p7_2_Muo  param -9.05882 0.197392
+p7_3_Muo  param 4.89219 0.0038358
+r_p0width param   0.0170958   0.0411914
+r_p1width param   0.00921983  0.000116042
+r_p2width param   2.8519e-05  5.71524e-08
+pdfindex_Tag0         discrete```
+----------------------------------------

@@ -1,0 +1,98 @@
+TOPIC: Segmentation error when combining full Run2
+URL: https://cms-talk.web.cern.ch/t/52558
+DATE: 2024-10-10T14:03:38.778Z
+SOLVED: no
+============================================================
+
+QUESTION (by slomte @ 2024-10-10T14:03:38.989Z):
+Dear Combine Experts,
+We have a question regarding combining datacards for 2016 published analysis with our ongoing 2017+2018 analysis. The fitting variable used is different for the two analyses, it was MET in 2016, and for 2017+2018 it is unrolled mass distribution. Would the usual COMBINE commands work for this scenario?
+We are using Combine-v10.0.2 and CMSSW_14_1_0 release, in EL9.
+At the moment, we are keeping all nuisance parameters uncorrelated. The combineCards.py command runs fine while combining 16 datacards with 17+18, however, we run into segmentation violation error when using the text2workspace command.
+The individual analyses (16 and 17+18) run perfectly fine on their own, but a naive combination for full run2 seems to fail.
+Could you please suggest how we should approach this problem? Happy to provide further details. Thank you.
+The datacards can be found below:
+2016: https://pages.hep.wisc.edu/~slomte/files_combination/workspace_2016.txt
+2017+2018: https://pages.hep.wisc.edu/~slomte/files_combination/workspace_20172018.txt
+Best,
+Shivani
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-10-10T14:11:16.316Z):
+Dear Shivani,
+The usual combine commands will work with your setup.
+About the segmentation violation error, can you try issue the command ulimit -s unlimited in the shell, before running text2workspace? You need to issue it only once per session.
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by slomte @ 2024-10-10T14:24:20.190Z):
+Dear Giacomo,
+Thank you for your prompt response.
+I tried the suggested command ulimit -s unlimited before running the text2workspace.py command, but I’m getting the same segmentation error. Adding it below if it helps understand.
+
+Traceback (most recent call last):   File "/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/bin/el9_amd64_gcc12/text2workspace.py", line 104, in <module>     MB.doModel(justCheckPhysicsModel=options.justCheckPhysicsModel)   File "/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ModelTools.py", line 172, in doModel     self.doObservables()   File "/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py", line 86, in doObservables     self.prepareAllShapes()   File "/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py", line 600, in prepareAllShapes     self.out.binVars.add(shapeObs[obs_key].find(k), True)   File "/afs/hep.wisc.edu/user/slomte/Combine/TmpFor2016/CMSSW_14_1_0/src/HiggsAnalysis/CombinedLimit/python/ShapeTools.py", line 24, in RooArgSet_add_patched     return RooArgSet_add_original(self, obj, *args, **kwargs) TypeError: Template method resolution failed:   none of the 2 overloaded methods succeeded. Full details:   bool RooAbsCollection::add(const RooAbsArg& var, bool silent = false) =>     SegmentationViolation: segfault in C++; program state was reset   bool RooAbsCollection::add(const RooAbsCollection& list, bool silent = false) =>     TypeError: could not convert argument 1   Failed to instantiate "add(RooArgSet&,RooAbsArg&,bool)"   Failed to instantiate "add(RooArgSet*,RooAbsArg*,bool)"   Failed to instantiate "add(RooArgSet,RooAbsArg,bool)"
+----------------------------------------
+
+REPLY 4 (by gortona @ 2024-10-10T14:38:29.201Z):
+Dear Shivani,
+Can you share the root files with the inputs as well?
+Thanks,
+Giacomo
+----------------------------------------
+
+REPLY 5 (by slomte @ 2024-10-10T14:55:36.292Z):
+Dear Giacomo,
+Sure, please find them added here: https://pages.hep.wisc.edu/~slomte/files_combination/
+For 2016: approval_combined_model.root
+For2017+2018, these are broken into year (2017 and 2018), category (Boosted and Resolved), and regions (SR and 4 CRs):
+AllHists2017_boosted_SR_METbins_Test11a.root AllHists2017_boosted_TopElCR_METbins_Test11a.root AllHists2017_boosted_TopMuCR_METbins_Test11a.root AllHists2017_boosted_ZElElCR_METbins_Test11a.root AllHists2017_boosted_ZMuMuCR_METbins_Test11a.root AllHists2017_resolved_SR_METbins_Test11a.root AllHists2017_resolved_TopElCR_METbins_Test11a.root AllHists2017_resolved_TopMuCR_METbins_Test11a.root AllHists2017_resolved_ZElElCR_METbins_Test11a.root AllHists2017_resolved_ZMuMuCR_METbins_Test11a.root AllHists2018_boosted_SR_METbins_Test11a.root AllHists2018_boosted_TopElCR_METbins_Test11a.root AllHists2018_boosted_TopMuCR_METbins_Test11a.root AllHists2018_boosted_ZElElCR_METbins_Test11a.root AllHists2018_boosted_ZMuMuCR_METbins_Test11a.root AllHists2018_resolved_SR_METbins_Test11a.root AllHists2018_resolved_TopElCR_METbins_Test11a.root AllHists2018_resolved_TopMuCR_METbins_Test11a.root AllHists2018_resolved_ZElElCR_METbins_Test11a.root AllHists2018_resolved_ZMuMuCR_METbins_Test11a.root
+For ease of reading, datacards for 2018 boosted category are also added, for eg https://pages.hep.wisc.edu/~slomte/files_combination/d18_boosted_TopElCR_bin1.txt
+Thanks,
+Shivani
+----------------------------------------
+
+REPLY 6 (by gortona @ 2024-10-11T12:04:28.464Z):
+Dear Shivani,
+I think the origin of the problem is that in your 2016 workspace the observable is called rather awkwardly min(999.9999,met)_monohiggs.
+When we have more than one observable, they are accessed by splitting the list of all observables by commas, so the comma in the middle of the variable name in this case breaks everything.
+I’m not sure there is an easy fix to your case. If possible, the best solution would be to recreate the 2016 workspace with a different observable name, such as met_monohiggs. Otherwise, you can try to hack the code here:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/python/ShapeTools.py#L599
+
+self.out.mode = "unbinned"
+if self.options.verbose > 1:
+stderr.write("Will work with unbinned datasets\n")
+if self.options.verbose > 1:
+stderr.write("Observables: %s\n" % str(list(shapeObs.keys())))
+if len(list(shapeObs.keys())) != 1:
+self.out.binVars = ROOT.RooArgSet()
+for obs_key in shapeObs.keys():
+# RooArgSet does not have method to add another RooArgSet (RooCollection does!) so we have to manually loop over the RooArgSet contents (in obs)
+if "," in obs_key:  # if multiple vars and looking at a RooArgSet value
+for k in obs_key.split(","):
+self.out.binVars.add(shapeObs[obs_key].find(k), True)
+else:
+self.out.binVars.add(shapeObs[obs_key], True)
+else:
+self.out.binVars = list(shapeObs.values())[0]
+self.out.safe_import(self.out.binVars)
+else:
+self.out.mode = "binned"
+if self.options.verbose > 1:
+stderr.write("Will make a binned dataset\n")
+
+and see if you manage to make it work with an ad-hoc solution.
+I hope it helps,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 7 (by slomte @ 2024-10-14T14:55:30.813Z):
+Dear Giacomo,
+Thanks a lot for this suggestion. The ad-hoc solution worked fine, and I’ll keep it for now.
+Best regards,
+Shivani
+----------------------------------------

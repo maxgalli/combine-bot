@@ -1,0 +1,34 @@
+TOPIC: Re-number process
+URL: https://cms-talk.web.cern.ch/t/32726
+DATE: 2023-12-14T13:57:20.550Z
+SOLVED: no
+============================================================
+
+QUESTION (by gallim @ 2023-12-14T13:57:20.771Z):
+Dear all,
+I need to change the role of a process from signal to background in a very large datacard (i.e. the number assigned to it that combine uses to distinguish between the two). I remember that there should be a function for it in CombineHarvester, but I can’t find it at the moment. Could anyone please point me to an example that I can use?
+Thank you,
+Massimiliano
+----------------------------------------
+
+REPLY 2 (by mrieger @ 2023-12-14T14:40:53.893Z):
+Hi @gallim ,
+in case using simple shell instructions is also an option, the following would do the trick.
+If your signal is “-10” and should be changed to “42”, do
+src="-10"
+dst="42"
+
+sed -r "$( sed -n -r '/^process\s+-?[0-9]/=' datacard.txt )s/\s${src}\s/ ${dst} /g" datacard.txt
+
+(the inner/first sed looks up the number of the process numbering line, the outer/second sed is doing the replacement only in that line)
+This stdout’s the new datacard. Add -i to the outer sed to make this in-place.
+Hope this helps,
+Marcel
+----------------------------------------
+
+REPLY 3 (by adewit @ 2023-12-14T14:40:55.610Z):
+Hi Massimiliano,
+I think you’re looking for the set_signal function: https://github.com/cms-analysis/CombineHarvester/blob/0f22c7b157c9aef62a593a80a092319eea38d523/docs/PythonInterface.md?plain=1#L166 (but you want true->false)
+Best,
+Adinda
+----------------------------------------

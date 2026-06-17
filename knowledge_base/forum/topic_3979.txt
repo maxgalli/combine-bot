@@ -1,0 +1,55 @@
+TOPIC: Goodness-of-fit measure for unbinned fits (RooMultPdf)
+URL: https://cms-talk.web.cern.ch/t/3979
+DATE: 2021-12-23T12:03:18.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by ekhazaie @ 2021-12-23T12:03:18.000Z):
+Dear experts,
+We are going through the first stage of the unblinding for HIG-21-021. In our analysis, we used the envelope method and RooMultiPdf, hence an unbinned fit.
+The instruction to compute the goodness-of-fit in the git book [1] is for binned fit.
+In the hn we see only [2] which does not help our case.
+We'd appreciate it if you could help us in this regard.
+Best Regards,
+Elham (for h->aa-> mumubb)
+[1]: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests
+[2]: https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1300.html
+----------------------------------------
+
+REPLY 2 (by ekhazaie @ 2021-12-23T15:22:17.000Z):
+Dear Jan,
+Thank you for your quick response.
+Best wishes for Christmas and the new year,
+Elham for the team
+
+···
+_______________________________________
+From: Jan Steggemann
+Sent: 23 December 2021 14:12
+To: hn-cms-hig-21-021 (CMS Analysis forum proxy)
+Subject: Re: Goodness-of-fit measure for unbinned fits (RooMultPdf)
+*** Discussion title: Review of HIG-21-021
+Dear Elham,
+For HIG-20-008, which is very similar to your case, we asked for the observed impacts (with blinded signal strength per the instructions), and to report the chi2 and n(dof) for each fit.
+Kind regards,
+Jan
+
+On 23 Dec 2021, at 13:46, Elham Khazaie <elham.khazaie@cern.ch> wrote:
+*** Discussion title: Review of HIG-21-021
+Dear experts,
+We are going through the first stage of the unblinding for HIG-21-021. In our analysis, we used the envelope method and RooMultiPdf, hence an unbinned fit.
+The instruction to compute the goodness-of-fit in the git book [1] is for binned fit.
+In the hn we see only [2] which does not help our case.
+We'd appreciate it if you could help us in this regard.
+Best Regards,
+Elham (for h->aa-> mumubb)
+[1]: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests
+[2]: https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1300.html
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+https://hypernews.cern.ch/HyperNews/CMS/get/HIG-21-021/4.html
+
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+https://hypernews.cern.ch/HyperNews/CMS/get/HIG-21-021/4/1.html
+----------------------------------------

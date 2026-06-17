@@ -1,0 +1,33 @@
+TOPIC: Post-fit parameters on Asimov datasets different from expected
+URL: https://cms-talk.web.cern.ch/t/73104
+DATE: 2024-12-04T08:41:58.283Z
+SOLVED: no
+============================================================
+
+QUESTION (by rgargiul @ 2024-12-04T08:42:03.411Z):
+Dear experts,
+with this post I’d like to ask for your help with an issue I get when performing likelihood scans using combine.
+I am doing an analysis on the extraction of Higgs boson width via the interference between signal and background in the diphoton channel, and I use the relation c (coupling) = sqrt(mu * gamma/gammaSM), so the interference is proportional to c and the signal to mu. Therefore I have two POIs, mu (the usual signal strength), and gamma/gammaSM (the Higgs boson width modifier).
+I have two shapes (pdfs) for the signal-only and signal+interference case, respectively, with the addition of other signal production modes with no interference and data-driven background.
+The physics model (I can provide the .py file if necessary) has:
+mu - sqrt(mugamma) as the coefficient for the signal-only pdf
+sqrt(mugamma) as the coefficient for the signal+interference pdf
+(This is done because the interference is negative)
+After slightly changing the pdf fits and normalizations (around a maximum of 10%), now I get post-fit values for gamma different from 1, ranging around 0.9 instead of 1, when fitting Asimov datasets (with the -t -1 option). The uncertainty on the parameter is around 4, therefore it is not a huge pull, but I expect to get exactly 1 with Asimov datasets.
+I tried fixing or initializing the background parameters (it worked the last time this happened), fitting only one category, and playing with the minimization settings but nothing worked.
+I tried with the FitDiagnostics tools but was not able to retrieve much useful information.
+I also tried removing all systematics (–freezeParameter allConstrainedNuisances), and fitting only gamma as POI.
+It is also worth mentioning that when fitting only mu as POI, the post-fit value is 1 as expected.
+The command I am currently using is this one:
+combine -M MultiDimFit -d Datacard_xsec.root \
+--floatOtherPOIs 0 -t -1 -n _profile1D_syst_xsec_gamma --algo grid -P gamma --points 101 -m 125.38 \
+--setParameters MH=125.38,mu=1,gamma=1 \
+--freezeParameters MH,allConstrainedNuisances \
+--setParameterRanges gamma=0,20 --X-rtd FITTER_NEW_CROSSING_ALGO --X-rtd FITTER_BOUND --saveSpecifiedNuis all \
+--saveInactivePOI 1 --cminDefaultMinimizerStrategy 0
+
+which does the most simple thing, i.e. fitting only gamma with no systematics
+I can provide the datacard .root file or other files if needed
+Thank you for your help,
+Ruben
+----------------------------------------

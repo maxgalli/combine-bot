@@ -1,0 +1,241 @@
+TOPIC: Stability of Upper Limit Extraction in Combine for Extremely Low Signal-to-Background Template Fits
+URL: https://cms-talk.web.cern.ch/t/140212
+DATE: 2025-12-18T10:51:51.485Z
+SOLVED: no
+============================================================
+
+QUESTION (by mpriyada @ 2025-12-18T10:51:51.673Z):
+Dear Combine experts,
+I am using the Combine framework to extract the signal strength in a template-based analysis, where both signal and background are provided as binned templates.
+The signal process under study is
+g d→tW, (W decaying leptonically)
+which is allowed in the Standard Model but is strongly suppressed due to its dependence on Vtd​. As a result, the expected signal yield after luminosity weighting is extremely small compared to the dominant backgrounds.
+The templates are constructed as follows:
+A BDT is trained to separate the signal from the dominant backgrounds  (ttbar and tW coming from gb→tW ). The BDT output is used to build a 2D discriminant distribution, which is then adaptively binned such that the lumi-weighted sum of signal events is approximately equal in all bins. This adaptively binned 2D distribution is subsequently unrolled into a 1D histogram, which is used as the final signal and background templates in the fit.
+At this stage of the study, no systematic uncertainties are included. I am also sharing the corresponding datacard, together with the signal and background templates used as input.
+To extract the upper limit, I run the following command:
+“combine -M HybridNew datacard.txt -t -1 --expectSignal 1 --LHCmode LHC-limits”
+When performing the fit using the HybridNew method, I observe that it fails to determine a stable upper limit on the signal strength. This appears to be driven by the very low signal-to-background ratio in the templates.
+I have also tried the Asymptotic method, which does converge, but it results in a very large upper limit on the signal strength (of order (10^3) ).
+My questions are:
+
+How should one properly deal with situations where the signal is orders of magnitude smaller than the background and HybridNew is unable to set a stable limit?
+Is it acceptable to rely on the Asymptotic limits in such a case, even if the resulting upper
+
+limit is very large, or is it strongly recommended to use HybridNew only?
+3. Are there recommended strategies to improve the stability of the limit extraction in this regime?
+Any guidance would be greatly appreciated.
+Best regards,
+Manaswini Priyadarshini
+Datacard used:
+Datacard882×397 33 KB
+Templates:
+Screenshot 2025-12-18 at 2.34.45 PM1826×1048 43.8 KB
+Screenshot 2025-12-18 at 2.35.11 PM1806×1056 43.4 KB
+Screenshot 2025-12-18 at 2.35.00 PM1808×1060 39.8 KB
+Screenshot 2025-12-18 at 2.35.20 PM1800×1044 49.4 KB
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-12-18T14:29:37.000Z):
+Dear Manaswini,
+At first glance, in your most sensitive bin you have ~1500 bakground event and 0.06 signal events. In these conditions, the expected upper limit should indeed be somewhere around r=1000, so it seems to me the asymptotic is working quite nicely.
+Do you have any particular reasons to expected a different results?
+About the HybridNew, can you try either enlarging the range with the —rMax option, or scaling the signal by a factor 1.000 (for example with a rateParameter) in order to have something O(1) for the signal strength?
+Best regards,
+Giacomo
+
+On 18 Dec 2025, at 11:52, Manaswini Priyadarshini via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Manaswini Priyadarshini mpriyadaDecember 18
+
+Dear Combine experts,
+I am using the Combine framework to extract the signal strength in a template-based analysis, where both signal and background are provided as binned templates.
+The signal process under study is
+g d→tW, (W decaying leptonically)
+which is allowed in the Standard Model but is strongly suppressed due to its dependence on Vtd​. As a result, the expected signal yield after luminosity weighting is extremely small compared to the dominant backgrounds.
+The templates are constructed as follows:
+A BDT is trained to separate the signal from the dominant backgrounds (ttbar and tW coming from gb→tW ). The BDT output is used to build a 2D discriminant distribution, which is then adaptively binned such that the lumi-weighted sum of signal events is approximately equal in all bins. This adaptively binned 2D distribution is subsequently unrolled into a 1D histogram, which is used as the final signal and background templates in the fit.
+At this stage of the study, no systematic uncertainties are included. I am also sharing the corresponding datacard, together with the signal and background templates used as input.
+To extract the upper limit, I run the following command:
+“combine -M HybridNew datacard.txt -t -1 --expectSignal 1 --LHCmode LHC-limits”
+When performing the fit using the HybridNew method, I observe that it fails to determine a stable upper limit on the signal strength. This appears to be driven by the very low signal-to-background ratio in the templates.
+I have also tried the Asymptotic method, which does converge, but it results in a very large upper limit on the signal strength (of order (10^3) ).
+My questions are:
+
+How should one properly deal with situations where the signal is orders of magnitude smaller than the background and HybridNew is unable to set a stable limit?
+Is it acceptable to rely on the Asymptotic limits in such a case, even if the resulting upper
+
+limit is very large, or is it strongly recommended to use HybridNew only?
+3. Are there recommended strategies to improve the stability of the limit extraction in this regime?
+Any guidance would be greatly appreciated.
+Best regards,
+Manaswini Priyadarshini
+Datacard used:
+
+Templates:
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by mpriyada @ 2025-12-19T12:15:57.477Z):
+Dear Giacomo,
+Thank you for the clarification. I would like to confirm my understanding of the signal scaling and how the extracted signal strength should be used for the determination of |Vtd|.
+In my analysis, I extract |Vtd| using the relation:
+Vtd_observed = sqrt(signal strength) × Vtd_SM
+I observe the following behavior depending on how the signal is treated in the datacard:
+When I introduce a scaling parameter
+Signal_scale rateParam ch1 Signal 1000 [1000,1000],
+the fit returns a signal strength of
+r < 1.59 ± 0.061.
+Without explicit signal scaling (using only –rmax 5000), the fit instead gives
+r < 676 ± 6.26.
+If I directly use r = 676 in the above relation, I obtain
+|Vtd| ~ O(10⁻¹), which is significantly larger than the Standard Model expectation.
+On the other hand, using r = 1.59 gives
+|Vtd| ~ O(10⁻²), which appears much more reasonable and closer to expectations.
+This leads to my main confusion. The value r = 1.59 is obtained after scaling the signal by a factor of 1000 in the datacard. In that case, when extracting Vtd_observed, should I:
+directly use r = 1.59, or
+interpret the effective signal strength as r_eff = 1.59 × 1000 = 1590 before applying
+Vtd_observed = sqrt(signal strength) × Vtd_SM?
+In other words, I am unsure whether the scaling factor applied in the datacard should be explicitly unfolded when translating the fitted signal strength into a physical Vtd value.
+I would greatly appreciate your guidance on which signal strength definition is the correct one to use for the final Vtd extraction.
+Best regards,
+Manaswini
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-12-19T13:25:33.000Z):
+Dear Manaswini,
+In your case, since you scale your signal by a factor of 1000, the actual value you should use is 1590.
+Basically you should either get 1590 (not scaling) or 1.59 (scaling), but these are actually the same quantity, you are just scaling it differently.
+As I said, given your inputs a signal strength of O(1000) is not unreasonable. If this is very far from your expectation my first suspect would be that maybe some input cross-sections was not correct, or that you are mixing fb and pb somewhere?
+Regardless of the cross-section, the HybridNew and the Asymptotic strategies should give you very similar - almost identical - results. Can you share the datacards and commands you are using? Also, do yo get any warning or error when running hybridNew?
+Best,
+Giacomo
+
+On 19 Dec 2025, at 13:17, Manaswini Priyadarshini via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Manaswini Priyadarshini mpriyadaDecember 19
+
+Dear Giacomo,
+Thank you for the clarification. I would like to confirm my understanding of the signal scaling and how the extracted signal strength should be used for the determination of |Vtd|.
+In my analysis, I extract |Vtd| using the relation:
+Vtd_observed = sqrt(signal strength) × Vtd_SM
+I observe the following behavior depending on how the signal is treated in the datacard:
+When I introduce a scaling parameter
+Signal_scale rateParam ch1 Signal 1000 [1000,1000],
+the fit returns a signal strength of
+r < 1.59 ± 0.061.
+Without explicit signal scaling (using only –rmax 5000), the fit instead gives
+r < 676 ± 6.26.
+If I directly use r = 676 in the above relation, I obtain
+|Vtd| ~ O(10⁻¹), which is significantly larger than the Standard Model expectation.
+On the other hand, using r = 1.59 gives
+|Vtd| ~ O(10⁻²), which appears much more reasonable and closer to expectations.
+This leads to my main confusion. The value r = 1.59 is obtained after scaling the signal by a factor of 1000 in the datacard. In that case, when extracting Vtd_observed, should I:
+directly use r = 1.59, or
+interpret the effective signal strength as r_eff = 1.59 × 1000 = 1590 before applying
+Vtd_observed = sqrt(signal strength) × Vtd_SM?
+In other words, I am unsure whether the scaling factor applied in the datacard should be explicitly unfolded when translating the fitted signal strength into a physical Vtd value.
+I would greatly appreciate your guidance on which signal strength definition is the correct one to use for the final Vtd extraction.
+Best regards,
+Manaswini
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaDecember 18
+
+Dear Manaswini,
+At first glance, in your most sensitive bin you have ~1500 bakground event and 0.06 signal events. In these conditions, the expected upper limit should indeed be somewhere around r=1000, so it seems to me the asymptotic is working quite nicely.
+Do you have any particular reasons to expected a different results?
+About the HybridNew, can you try either enlarging the range with the —rMax option, or scaling the signal by a factor 1.000 (for example with a rateParameter) in order to have something O(1) for the signal strength?
+Best regards,
+Giacomo
+
+On 18 Dec 2025, at 11:52, Manaswini Priyadarshini via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Manaswini Priyadarshini mpriyadaDecember 18
+
+Dear Combine experts,
+I am using the Combine framework to extract the signal strength in a template-based analysis, where both signal and background are provided as binned templates.
+The signal process under study is
+g d→tW, (W decaying leptonically)
+which is allowed in the Standard Model but is strongly suppressed due to its dependence on Vtd​. As a result, the expected signal yield after luminosity weighting is extremely small compared to the dominant backgrounds.
+The templates are constructed as follows:
+A BDT is trained to separate the signal from the dominant backgrounds (ttbar and tW coming from gb→tW ). The BDT output is used to build a 2D discriminant distribution, which is then adaptively binned such that the lumi-weighted sum of signal events is approximately equal in all bins. This adaptively binned 2D distribution is subsequently unrolled into a 1D histogram, which is used as the final signal and background templates in the fit.
+At this stage of the study, no systematic uncertainties are included. I am also sharing the corresponding datacard, together with the signal and background templates used as input.
+To extract the upper limit, I run the following command:
+“combine -M HybridNew datacard.txt -t -1 --expectSignal 1 --LHCmode LHC-limits”
+When performing the fit using the HybridNew method, I observe that it fails to determine a stable upper limit on the signal strength. This appears to be driven by the very low signal-to-background ratio in the templates.
+I have also tried the Asymptotic method, which does converge, but it results in a very large upper limit on the signal strength (of order (10^3) ).
+My questions are:
+
+How should one properly deal with situations where the signal is orders of magnitude smaller than the background and HybridNew is unable to set a stable limit?
+Is it acceptable to rely on the Asymptotic limits in such a case, even if the resulting upper
+
+limit is very large, or is it strongly recommended to use HybridNew only?
+3. Are there recommended strategies to improve the stability of the limit extraction in this regime?
+Any guidance would be greatly appreciated.
+Best regards,
+Manaswini Priyadarshini
+Datacard used:
+
+Templates:
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Manaswini Priyadarshini mpriyadaDecember 18
+
+Dear Combine experts,
+I am using the Combine framework to extract the signal strength in a template-based analysis, where both signal and background are provided as binned templates.
+The signal process under study is
+g d→tW, (W decaying leptonically)
+which is allowed in the Standard Model but is strongly suppressed due to its dependence on Vtd​. As a result, the expected signal yield after luminosity weighting is extremely small compared to the dominant backgrounds.
+The templates are constructed as follows:
+A BDT is trained to separate the signal from the dominant backgrounds (ttbar and tW coming from gb→tW ). The BDT output is used to build a 2D discriminant distribution, which is then adaptively binned such that the lumi-weighted sum of signal events is approximately equal in all bins. This adaptively binned 2D distribution is subsequently unrolled into a 1D histogram, which is used as the final signal and background templates in the fit.
+At this stage of the study, no systematic uncertainties are included. I am also sharing the corresponding datacard, together with the signal and background templates used as input.
+To extract the upper limit, I run the following command:
+“combine -M HybridNew datacard.txt -t -1 --expectSignal 1 --LHCmode LHC-limits”
+When performing the fit using the HybridNew method, I observe that it fails to determine a stable upper limit on the signal strength. This appears to be driven by the very low signal-to-background ratio in the templates.
+I have also tried the Asymptotic method, which does converge, but it results in a very large upper limit on the signal strength (of order (10^3) ).
+My questions are:
+
+How should one properly deal with situations where the signal is orders of magnitude smaller than the background and HybridNew is unable to set a stable limit?
+Is it acceptable to rely on the Asymptotic limits in such a case, even if the resulting upper
+
+limit is very large, or is it strongly recommended to use HybridNew only?
+3. Are there recommended strategies to improve the stability of the limit extraction in this regime?
+Any guidance would be greatly appreciated.
+Best regards,
+Manaswini Priyadarshini
+Datacard used:
+
+Templates:
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by mpriyada @ 2025-12-22T11:01:18.305Z):
+Dear Giacomo,
+Thanks for the explanation. Following your suggestion, we have checked and verified our input cross-section values, and they are indeed correct. We were having doubts because the signal strength we are getting will be used to extract Vtd, and by taking a signal strength of the order 10³, our Vtd is coming out large, of the order 10⁻¹.
+Yes, we checked our upper limit on signal strength from both HybridNew and Asymptotic strategies, and they are giving almost identical results.
+The commands I am using are:
+For HybridNew:  combine -M HybridNew datacard.txt -t -1 --expectSignal 1 --LHCmode LHC-limits --rMax 5000
+For Asymptotic:  combine -M AsymptoticLimits datacard.txt -t -1 --expectSignal 1
+Regarding errors or warnings when running HybridNew: Yes, I get warnings but no errors.
+The warning that appears repeatedly is: PDF didn’t factorize!
+This warning appears at each iteration as the HybridNew method searches for the limit by testing different values of the signal strength parameter. However, the fit completes successfully and produces a valid result.
+For your reference, I am attaching my datacard and the output from both the HybridNew and Asymptotic methods.
+Best regards,
+Manaswini
+AsymptoticLimits.txt (1.5 KB)
+datacard.txt (695 Bytes)
+HybridNew.txt (4.1 KB)
+----------------------------------------

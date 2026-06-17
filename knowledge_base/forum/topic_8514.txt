@@ -1,0 +1,78 @@
+TOPIC: MultiDimFit with "-t -1" option to fit to the Asimov dataset
+URL: https://cms-talk.web.cern.ch/t/8514
+DATE: 2022-03-22T22:33:17.019Z
+SOLVED: no
+============================================================
+
+QUESTION (by fuyan @ 2022-03-22T22:33:17.379Z):
+Dear Experts,
+I’m working on topEFT analysis with multiple Wilson coefficients (WCs) being the POIs. I’ve been using the MultiDimFit method with -t -1 option, which is supposed to fit to the Asimov dataset. The command I’m using is:
+combine wps_lj0pt_nonuis.root -M MultiDimFit --saveFitResult --redefineSignalPOI cpt
+The fit results[1] of the WCs are non-zero. However, the Asimov dataset corresponds to the SM case where all the WCs are zero. Thus fitting to the Asimov data would give all 0 for the postfit values of the WCs. Besides that, I expect the prefit values of the parameters should be the default values pulled from the workspace[2], which are all 0. But it’s not the case. I’m loading floatParsInit() as the prefit values and floatParsFinal() as the postfit values.
+I’m wondering if there is something I’ve been missing when doing the fitting, or maybe I’m looking at the incorrect set of the prefit and postfit results?
+Attached is the fit results[1], the workspace[2] and the datacard[3].
+[1] /afs/cern.ch/user/f/fuyan/public/TopEFT/multidimfit.root
+[2] /afs/cern.ch/user/f/fuyan/public/TopEFT/wps_lj0pt_nonuis.root
+[3] /afs/cern.ch/user/f/fuyan/public/TopEFT/combinedcard.txt
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-03-23T08:09:08.000Z):
+You can use --setParameters to set the default values of the POIs that will also be used to generate the Asimov Dataset.
+-Andrea
+On Tue, Mar 22, 2022 at 11:37 PM Furong Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Furong Yan fuyanMarch 22
+
+Dear Experts,
+I’m working on topEFT analysis with multiple Wilson coefficients (WCs) being the POIs. I’ve been using the MultiDimFit method with -t -1 option, which is supposed to fit to the Asimov dataset. The command I’m using is:
+combine wps_lj0pt_nonuis.root -M MultiDimFit --saveFitResult --redefineSignalPOI cpt
+The fit results[1] of the WCs are non-zero. However, the Asimov dataset corresponds to the SM case where all the WCs are zero. Thus fitting to the Asimov data would give all 0 for the postfit values of the WCs. Besides that, I expect the prefit values of the parameters should be the default values pulled from the workspace[2], which are all 0. But it’s not the case. I’m loading floatParsInit() as the prefit values and floatParsFinal() as the postfit values.
+I’m wondering if there is something I’ve been missing when doing the fitting, or maybe I’m looking at the incorrect set of the prefit and postfit results?
+Attached is the fit results[1], the workspace[2] and the datacard[3].
+[1] /afs/cern.ch/user/f/fuyan/public/TopEFT/multidimfit.root
+[2] /afs/cern.ch/user/f/fuyan/public/TopEFT/wps_lj0pt_nonuis.root
+[3] /afs/cern.ch/user/f/fuyan/public/TopEFT/combinedcard.txt
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by adavid @ 2022-03-23T21:57:56.716Z):
+Just to note that what @amarini replied (--setParameters) is described in the documentation…
+----------------------------------------
+
+REPLY 4 (by fuyan @ 2022-03-23T23:09:27.197Z):
+Thanks for replaying. The fitting failed when I set the parameters of all POIs to 0. I’ve been trying fitting option like --cminDefaultMinimizerStrategy 0 and other fitting algorithms but didn’t manage to make it work. Could you share some insights on this?
+----------------------------------------
+
+REPLY 5 (by adewit @ 2022-03-24T07:47:18.197Z):
+Dear Furong,
+There are a lot of POIs in your model - are you sure there aren’t strong correlations between them? This could lead to problems in the minimization. I think it would be useful to first restrict the number of POIs, and understand the model in these simplified configurations, before tackling the full fit.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 6 (by awightma @ 2022-03-24T17:30:52.817Z):
+I think right now we are more confused by why the prefit values for the parameters don’t correspond to what we expect. In our model, the prefit scenario should correspond to all WCs being equal to 0, but this is not what we see in the fit result returned from combine. We wanted to understand whether or not it is expected that combine is setting the prefit values to non-zero values when we don’t specify any sort of --setParameters options.
+Additionally, we expected that the Asimov dataset should correspond to this same scenario where all POIs=0, meaning that by construction the best fit values should all still be 0. Or is that an incorrect understanding of the Asimov dataset and/or how combine behaves with the -t -1 option?
+----------------------------------------
+
+REPLY 7 (by agilbert @ 2022-03-25T08:20:39.907Z):
+Hi,
+I think there are a few things going on:
+
+The floatParsInit values are not the real pre-fit values in this case. The analytic minimisation of autoMCStats parameters is enabled by default (i.e. they are frozen so as not to be seen by Minuit), but since you requested the RooFitResult, we run a 2nd fit after the initial fit with the autoMCStats parameters re-floated, so that they appear in the Hessian matrix. This means the initial values for this 2nd fit are the outcome of the 1st main fit. So there’s no problem here.
+The problem of the non-zero fitted values is that the Asimov data set is being generated from the background-only model by default. So excluding whichever processes in the datacard you marked as signal. Combine should be warning you about this, I get the message: Warning! -- You haven't picked default values for the Parameters of Interest (either with --expectSignal or --setParameters) for generating toys. Combine will use the 'B-only' ModelConfig to generate, which may lead to undesired behaviour if not using the default Physics Model
+
+When --setParameters is used, the fit does recover the correct pre-fit values, but indeed as Adinda said, it seems there are problems calculating an accurate covariance matrix. This suggests you have some strong degeneracy in the set of parameters you are trying to fit.
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 8 (by adewit @ 2022-03-25T08:26:56.321Z):
+Hi,
+Just to add - when running your fit with the parameter ranges for the POIs restricted ( using --setParameterRanges) to -5,5 the fit does converge (with some issues), so for your further investigations you might want to restrict the range to something considerably smaller than the current default of -200,200 as well.
+Best,
+Adinda
+----------------------------------------

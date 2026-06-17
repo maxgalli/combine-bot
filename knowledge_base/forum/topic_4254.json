@@ -1,0 +1,23 @@
+{
+  "topic_id": 4254,
+  "title": "[FitDiagnostics] Unable to determine uncertainties on all fit parameters",
+  "url": "https://cms-talk.web.cern.ch/t/4254",
+  "category_id": 279,
+  "created_at": "2022-01-05T13:39:25.272Z",
+  "last_posted_at": "2022-01-05T13:39:25.448Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "svanputt",
+      "name": "Senne Van Putte",
+      "created_at": "2022-01-05T13:39:25.448Z",
+      "updated_at": "2023-02-07T10:55:48.797Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am running in some trouble with my 2018 datacard, the FitDiagnostics is \u201cUnable to determine uncertainties on all fit parameters\u201d for both the b-only and the s+b fits.\nThe command I issued was:\ncombineTool.py -M FitDiagnostics <datacard> -n _u_fit --setParameterRanges 'rgx{.*norm_.*}'=0.1,10 --robustFit 1 --cminDefaultMinimizerStrategy 0 --rMin -10\n\nAnd the datacard can be found here [1].\nThe combine manual [2] suggests to look for correlations between the parameters, but looking at the correlation matrix (obtained with -robustHesse 1) there isn\u2019t anything special w.r.t. my 2016 and 2017 cards that run fine. (Also --robustHesse 1 indicates that all eigenvalues are positive).\nThe manual also suggest to look at the NLL shapes to look for discontinuities.\nI ran the commands\ncombine <datacard> -M MultiDimFit --algo grid --points 100 -m 125 --robustFit 1 --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs r -P <parameter> --floatOtherPOIs 1 --saveInactivePOI 1 --rMin -10 --setParameterRanges \\'rgx{.*norm_.*}\\'=0.5,1.5\n\nfor each <parameter> to scan the NLL near the fit values [3].\nI could not find anything special except for seemingly random failing points where the fit failed with  Minimization did NOT converge, Edm is above max.\nCan you help me find out what is wrong?\nCheers,\nSenne\n[1] /afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/datacard_darkHiggs_mhs_160_mx_100_mZp_500_comb_u.root\n[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties\n[3] /afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/scanNLL.pdf",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am running in some trouble with my 2018 datacard, the FitDiagnostics is \u201cUnable to determine uncertainties on all fit parameters\u201d for both the b-only and the s+b fits.<br>\nThe command I issued was:</p>\n<pre><code class=\"lang-auto\">combineTool.py -M FitDiagnostics &lt;datacard&gt; -n _u_fit --setParameterRanges 'rgx{.*norm_.*}'=0.1,10 --robustFit 1 --cminDefaultMinimizerStrategy 0 --rMin -10\n</code></pre>\n<p>And the datacard can be found here [1].</p>\n<p>The combine manual [2] suggests to look for correlations between the parameters, but looking at the correlation matrix (obtained with -robustHesse 1) there isn\u2019t anything special w.r.t. my 2016 and 2017 cards that run fine. (Also --robustHesse 1 indicates that all eigenvalues are positive).</p>\n<p>The manual also suggest to look at the NLL shapes to look for discontinuities.<br>\nI ran the commands</p>\n<pre><code class=\"lang-auto\">combine &lt;datacard&gt; -M MultiDimFit --algo grid --points 100 -m 125 --robustFit 1 --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs r -P &lt;parameter&gt; --floatOtherPOIs 1 --saveInactivePOI 1 --rMin -10 --setParameterRanges \\'rgx{.*norm_.*}\\'=0.5,1.5\n</code></pre>\n<p>for each <code>&lt;parameter&gt;</code> to scan the NLL near the fit values [3].<br>\nI could not find anything special except for seemingly random failing points where the fit failed with  <code>Minimization did NOT converge, Edm is above max</code>.</p>\n<p>Can you help me find out what is wrong?</p>\n<p>Cheers,<br>\nSenne</p>\n<p>[1] <code>/afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/datacard_darkHiggs_mhs_160_mx_100_mZp_500_comb_u.root</code><br>\n[2] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties</a><br>\n[3] <code>/afs/cern.ch/user/s/svanputt/public/for_CMStalk/combine/scanNLL.pdf</code></p>"
+    }
+  ]
+}

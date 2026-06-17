@@ -1,0 +1,157 @@
+TOPIC: GOF for background fit only with sidebands
+URL: https://cms-talk.web.cern.ch/t/19016
+DATE: 2023-01-09T09:03:44.366Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2023-01-09T09:03:44.551Z):
+Dear experts,
+in our di-muon+b jet analysis we were asked by SUSY conveners to get GOF
+for the background description by polynomial function evaluated in sidebands,
+[16-25] and [30-70] GeV (our signal region 25-30 GeV is blinded.
+I was trying to do it using some examples from
+Common statistical methods - Combine (cms-analysis.github.io)
+but with no success. It asked that I need to have al least one signal process:
+combine -M GoodnessOfFit --algorithm=saturated 2017ul_dimuon_SR1_FTEST.txt
+File “/afs/cern.ch/work/a/anikiten/public/CMSSW_11_0_4/python/HiggsAnalysis/CombinedLimit/DatacardParser.py”, line 167, in parseCard
+if len(ret.signals) == 0 and not options.allowNoSignal: raise RuntimeError, “You must have at least one signal process (id <= 0)”
+RuntimeError: Error reading line 16 of file /afs/cern.ch/work/a/anikiten/public/CMSSW_11_0_4/src/HiggsAnalysis/CombinedLimit/test/2017ul_dimuon_SR1_FTEST.txt: You must have at least one signal process (id <= 0)
+Error when running the combination:
+Failed to convert the input datacard from LandS to RooStats format. The lines above probably contain more information about the error.
+Could you, please advice how to do. I run first, root macro
+.L 13TeV_2017UL_RooFitTest_SR1_FTEST.C
+Draw()
+at
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_0_4/src/HiggsAnalysis/CombinedLimit/test
+it does unbinned fit and also prepares
+2017ul_RooFitWorkspaceSR1_FTEST.root
+then I run combine as described above with cards at the same directory.
+Thank you very much, cheers, Sasha.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-01-12T14:01:48.995Z):
+Hi Sasha,
+It’s possible to run fits like this without a signal process by passing --X-allow-no-signal. It’s probably easiest to run text2workspace manually, rather than letting combine call it under the hood. So for example:
+text2workspace.py 2017ul_dimuon_SR1_FTEST.txt --X-allow-no-signal -o ws_2017_sr1.root
+Then you can run combine -M GoodnessOfFit --algorithm=saturated -d ws_2017_sr1.root
+Before you do this however, there are a few of problems with the datacard that you need to fix, otherwise the fit will not run for other reasons:
+
+The shapes lines at the top are missing an entry for the bin label, it should say
+
+shapes data_obs Firstbump_mumu  2017ul_RooFitWorkspaceSR1_FTEST.root w:data
+shapes bkg      Firstbump_mumu  2017ul_RooFitWorkspaceSR1_FTEST.root w:bkg
+
+(or you can use * instead of Firstbump_mumu)
+
+The background rate cannot be set to -1, it’s not possible for combine to automatically determine the number of background events since bkg is just a pdf. I would set it to 1, then you can introduce a rateParam for the background normalization, by adding at the end of the datacard:
+
+bkgnorm rateParam Firstbump_mumu bkg 300 [0,3000]
+
+(or replace the nominal value of 300, and/or the fit range given in brackets, by something else. I took these numbers from the ‘norm’ parameter that is in the input workspace.
+Hope this helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2023-01-12T14:29:49.000Z):
+Thank you, Adinda !
+Will try it out and let you know.
+Cheers, Sasha.
+
+From: Adinda De Wit via CMS talk [noreply@cms-talk.web.cern.ch]
+Sent: 12 January 2023 15:03
+To: Alexandre Nikitenko
+Subject: [HIG PAG/Combination] GOF for background fit only with sidebands
+
+Adinda De Wit adewit Higgs convenerJanuary 12
+
+Hi Sasha,
+It’s possible to run fits like this without a signal process by passing --X-allow-no-signal. It’s probably easiest to run text2workspace manually, rather than letting combine call it under the hood. So for example:
+text2workspace.py 2017ul_dimuon_SR1_FTEST.txt --X-allow-no-signal -o ws_2017_sr1.root
+Then you can run combine -M GoodnessOfFit --algorithm=saturated -d ws_2017_sr1.root
+Before you do this however, there are a few of problems with the datacard that you need to fix, otherwise the fit will not run for other reasons:
+
+The shapes lines at the top are missing an entry for the bin label, it should say
+
+shapes data_obs Firstbump_mumu  2017ul_RooFitWorkspaceSR1_FTEST.root w:data
+
+shapes bkg      Firstbump_mumu  2017ul_RooFitWorkspaceSR1_FTEST.root w:bkg
+
+(or you can use * instead of Firstbump_mumu)
+
+The background rate cannot be set to -1, it’s not possible for combine to automatically determine the number of background events since bkg is just a pdf. I would set it to 1, then you can introduce a rateParam for the background normalization, by adding at the end of the datacard:
+
+bkgnorm rateParam Firstbump_mumu bkg 300 [0,3000]
+
+(or replace the nominal value of 300, and/or the fit range given in brackets, by something else. I took these numbers from the ‘norm’ parameter that is in the input workspace.
+Hope this helps,
+Adinda
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2023-01-12T15:19:16.021Z):
+Hi Adinda,
+it works ! Thanks.
+But when I was trying to run with toys
+combine -M GoodnessOfFit -t 400 --saveToys --algorithm=saturated -d ws_2017_sr1.root
+it says
+<<< Combine >>>
+
+random number generator seed is 123456
+Will use saturated models to compute goodness of fit for a binned likelihood
+method used is GoodnessOfFit
+Error when running the combination:
+Running with systematic variation in toys enabled, but I found floating parameters (which are not POIs) but no constrain terms have been defined in the datacard. If this is ok, re-run with -S 0
+
+when I run with option -S 0  it says
+combine -M GoodnessOfFit -t 400 -S 0 --saveToys --algorithm=saturated -d ws_2017_sr1.root
+<<< Combine >>>
+Invalid options: unrecognised option ‘-S’
+Invalid options: unrecognised option ‘-S’
+Use combine --help to get a list of all the allowed options
+Can you advice.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 5 (by adewit @ 2023-01-12T15:25:19.188Z):
+Dear Sasha,
+Ah, yes - the option - S has been removed, but it looks like this error message was not updated. You can run with --toysNoSystematics instead.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2023-01-13T08:01:00.741Z):
+Adinda de Wit:
+
+–toysNoSystematics
+
+Hi Adinda,
+it works !  Thanks a lot for your help.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 7 (by anikiten @ 2023-01-13T08:28:33.406Z):
+Hi Adinda,
+one more, I hope last question about this subject
+I got with
+combine -M GoodnessOfFit --algorithm=saturated -d ws_2017_sr1.root
+— GoodnessOfFit —
+Best fit test statistic: 402.643
+while when I run toys with
+combine -M GoodnessOfFit -t 400 --toysNoSystematics --saveToys --algorithm=saturated -d ws_2017_sr1.root
+I got
+mean   expected limit: r < 97.0413 +/- 0.726638 @ 95%CL (400 toyMC)
+median expected limit: r < 96.4647 @ 95%CL (400 toyMC)
+68% expected band : 82.6678 < r < 112.537
+95% expected band : 71.5909 < r < 128.294
+So, it looks like I am outside of 95% expected band.  It is hard to understand since I see from my RooFit macro plot that my background function nicely described data and chi2/ndof is good… Probably I do not understand how to treat output of GOF of something…  Could you comment, please.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 8 (by adewit @ 2023-01-18T08:43:10.146Z):
+Hi Sasha,
+Apologies for the slow reply. It would be best if you can make a histogram of the toy distribution, so you can see if it is healthy (then you can also calculate the p-value as discussed here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests). One thing you may also want to check is whether the initial values of the parameters of your function are the best fit values that you’d expect, or not. If not, this could lead to some discrepancies.
+Best,
+Adinda
+----------------------------------------

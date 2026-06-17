@@ -1,0 +1,45 @@
+{
+  "topic_id": 126166,
+  "title": "Warning in FitDiagnostics",
+  "url": "https://cms-talk.web.cern.ch/t/126166",
+  "category_id": 279,
+  "created_at": "2025-06-20T08:18:03.072Z",
+  "last_posted_at": "2025-06-20T13:22:22.366Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "abellora",
+      "name": "Andrea Bellora",
+      "created_at": "2025-06-20T08:18:03.602Z",
+      "updated_at": "2025-06-20T08:18:03.602Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI\u2019m working on a statistical analysis with 2 categories, 1(3) signal(background) processes, using shapes (it\u2019s a bump search over a distribution). If it helps, I can share a datacard, but it\u2019s basically identical to any tutorial, and cannot be run without having all the shape files, so I\u2019m skipping that for now, to keep things short.\nThe limits look reasonable, and the fits seem to converge nicely, but I have a warning that is puzzling me.\nWhen running the FitDiagnostics tools with\ncombine -M FitDiagnostics datacard.txt --keyword-value MS=1100 --keyword-value MX=895 --expectSignal 0 --rMin -1 --rMax 2 --plots --name test\nI get a warning saying:\nWARNING! You set the NLL evaluation backend to \"legacy\", which is not the default. This code path is not validated. Please don't use it for production!\nThis happens irrespectively of me setting or not the --forceRecreateNLL and I\u2019m not specifying a NLL backend in any place of my code. I\u2019m using v10.2.1 with CMSSW_14_1_0_pre4, so everything should be coherent with the recommendations.\nIs this something I should worry about? If so, what am I doing wrong?\nBest,\nAndrea",
+      "cooked_html": "<p>Dear Combine experts,<br>\nI\u2019m working on a statistical analysis with 2 categories, 1(3) signal(background) processes, using shapes (it\u2019s a bump search over a distribution). If it helps, I can share a datacard, but it\u2019s basically identical to any tutorial, and cannot be run without having all the shape files, so I\u2019m skipping that for now, to keep things short.<br>\nThe limits look reasonable, and the fits seem to converge nicely, but I have a warning that is puzzling me.</p>\n<p>When running the FitDiagnostics tools with<br>\n<code>combine -M FitDiagnostics datacard.txt --keyword-value MS=1100 --keyword-value MX=895 --expectSignal 0 --rMin -1 --rMax 2 --plots --name test</code><br>\nI get a warning saying:<br>\n<code>WARNING! You set the NLL evaluation backend to \"legacy\", which is not the default. This code path is not validated. Please don't use it for production!</code></p>\n<p>This happens irrespectively of me setting or not the <code>--forceRecreateNLL</code> and I\u2019m not specifying a NLL backend in any place of my code. I\u2019m using v10.2.1 with CMSSW_14_1_0_pre4, so everything should be coherent with the recommendations.</p>\n<p>Is this something I should worry about? If so, what am I doing wrong?</p>\n<p>Best,<br>\nAndrea</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-06-20T12:46:36.107Z",
+      "updated_at": "2025-06-20T12:46:36.107Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Andrea,\nThanks a lot for reporting it! I think it does not have any effect and is a remnant of the recent Combine developments. We\u2019ll fix it asap.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Andrea,</p>\n<p>Thanks a lot for reporting it! I think it does not have any effect and is a remnant of the recent Combine developments. We\u2019ll fix it asap.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "abellora",
+      "name": "Andrea Bellora",
+      "created_at": "2025-06-20T13:22:22.366Z",
+      "updated_at": "2025-06-20T13:22:22.366Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank you very much Aliya,\nthat\u2019s the easiest solution to implement\nBest,\nAndrea",
+      "cooked_html": "<p>Thank you very much Aliya,<br>\nthat\u2019s the easiest solution to implement <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/+1.png?v=14\" title=\":+1:\" class=\"emoji\" alt=\":+1:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>Best,<br>\nAndrea</p>"
+    }
+  ]
+}

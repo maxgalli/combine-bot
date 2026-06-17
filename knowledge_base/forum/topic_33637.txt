@@ -1,0 +1,75 @@
+TOPIC: Strange pre-fit rates, extracting rate modifier from lnN nuisances
+URL: https://cms-talk.web.cern.ch/t/33637
+DATE: 2024-01-24T14:05:02.498Z
+SOLVED: no
+============================================================
+
+QUESTION (by sbein @ 2024-01-24T14:05:02.581Z):
+Dear experts,
+I’m trying to make use of some of the pre-fit/post-fit information obtained from running the FitDiagnostics routine with combine for a disappearing track analysis. I actually have two questions. First, I am wondering why the pre-fit yields and nuisance parameters of type lnN as reported by
+file = ROOT.TFile.Open("fitDiagnosticsTest.root")
+fit_result = file.Get("fit_b")
+pre_fit_values = prefit_result.floatParsInit()
+print(pre_fit_values.at(i).getVal())
+
+are not 0 as I would expect, and in the rates in general do not correspond to the rates I dictated in the card. I’ll note I am not using any control regions in the fit or setting any internal parameters in the combine command - there is just one big card with many signal regions and gmN-based statistical treatment. mChine900GeV_dm0p342GeV_DTRun2.txt (384.0 KB)
+Second, since the prefit info alluded to above looks surprising, I’m not sure if I can trust the post-fit nuisances/rates, but assuming I can, I’d like to inquire about the proper way to extract the rate modifier from a lnN-type post-fit nuisance value. In my case, the lnN control overall uniform scale variations for each background - Do I simply need to exponentiate the post-fit nuisance parameter to obtain the factor by which i should scale the pre-fit yields, or  should I use a particular procedure to get this scaling factor?
+Apologies if these questions have been asked before, but I was not able to track this information down in the advanced uses documentation or on Talk yet.
+Many thanks!
+ps: the combine commands with the card as attached are here:
+cd CMSSW_10_2_13/src/
+cmsenv
+combineCards.py  mChine900GeV_dm0p342GeV_DTRun2.txt  -S > new_higgsino_mChine900GeV_dm0p342GeV_DTRun2.txt
+text2workspace.py new_higgsino_mChine900GeV_dm0p342GeV_DTRun2.txt -o workspace.root
+combine -M FitDiagnostics workspace.root --saveNormalizations --saveShapes --saveWithUncertainties --setParameters r=1 -n WithGammas
+----------------------------------------
+
+REPLY 2 (by nmangane @ 2024-01-24T14:23:46.351Z):
+Dear Sam,
+Answering as another user. fit_b is the post-fit under the background-only conditions, I think you might need to look for nuisances_prefit or similar [1,2].
+Best,
+Nick
+[1]
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters
+[2]
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py
+
+#!/usr/bin/env python3
+from __future__ import absolute_import, print_function
+
+import datetime
+import re
+from optparse import OptionParser
+from sys import argv, exit, stderr, stdout
+
+from six.moves import range
+
+import HiggsAnalysis.CombinedLimit.calculate_pulls as CP
+import ROOT
+
+# tool to compare fitted nuisance parameters to prefit values.
+#
+# Also used to check for potential problems in RooFit workspaces to be used with combine
+# (see https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/HiggsPAGPreapprovalChecks)
+
+# import ROOT with a fix to get batch mode (http://root.cern.ch/phpBB3/viewtopic.php?t=3198)
+hasHelp = False
+
+This file has been truncated. show original
+----------------------------------------
+
+REPLY 3 (by nmangane @ 2024-01-24T17:07:36.974Z):
+Apologies, I misread the code block and didn’t see the prefit coming from elsewhere.
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-01-25T10:15:34.152Z):
+Dear @sbein,
+As @nmangane mentioned the fit_b object corresponds to the post-fit results for background-only fit.
+But both fit_b and fit_s contain the shifts wrt to pre-fit NP values, which are conventionally set to 0 for log-normal nuisance parameters, more details at [1] from Nick’s message above.
+The post-fit shapes and normalisation including the rates and shapes modifications from all NP are saved in the fitDiagnosticsTest.root file as described here and also in one of the tutorials here.
+Best,
+Aliya
+----------------------------------------

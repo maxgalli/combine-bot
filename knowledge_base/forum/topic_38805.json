@@ -1,0 +1,45 @@
+{
+  "topic_id": 38805,
+  "title": "Custom rebinning with combine harvester tool",
+  "url": "https://cms-talk.web.cern.ch/t/38805",
+  "category_id": 279,
+  "created_at": "2024-04-09T13:12:36.759Z",
+  "last_posted_at": "2024-04-09T16:17:23.915Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "gbardell",
+      "name": "Giulio Bardelli",
+      "created_at": "2024-04-09T13:12:36.953Z",
+      "updated_at": "2024-04-09T13:12:36.953Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have a question about the AutoRebin tool available in Combine Harvester. I would like to merge only some specific bins of an histogram, without having them failing a condition on the Bin Threshold or Bin Uncertainty Fraction, but just merge these specific ones with their neighbouring bins.\nIn my case I have narrow bins (not failing any of the above mentioned conditions) in between wider bins and I would like to evaluate the impact on sensitivity after merging them.\nIs there a way to do this custom rebinning using the combine harvester tool as it is or I need to modify the code?\nAnd if the latter is the case do you perhaps have any experience ?\nThanks in advance,\nBest regards,\nGiulio",
+      "cooked_html": "<p>Dear experts,<br>\nI have a question about the AutoRebin tool available in Combine Harvester. I would like to merge only some specific bins of an histogram, without having them failing a condition on the Bin Threshold or Bin Uncertainty Fraction, but just merge these specific ones with their neighbouring bins.</p>\n<p>In my case I have narrow bins (not failing any of the above mentioned conditions) in between wider bins and I would like to evaluate the impact on sensitivity after merging them.</p>\n<p>Is there a way to do this custom rebinning using the combine harvester tool as it is or I need to modify the code?<br>\nAnd if the latter is the case do you perhaps have any experience ?</p>\n<p>Thanks in advance,<br>\nBest regards,<br>\nGiulio</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-04-09T13:28:14.163Z",
+      "updated_at": "2024-04-09T13:28:14.163Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Giulio,\nI haven\u2019t used AutoRebin for a while myself, so don\u2019t remember if there is an option to do this -  however, could you not use the VariableRebin method for what you want to do? That is, take the bin boundaries you get out of AutoRebin, manually remove the ones where you want to merge neighbouring bins, and apply them with VariableRebin? I see examples both in cpp and python in the CombineHarvester code, but let me know in case you cannot find them.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Giulio,</p>\n<p>I haven\u2019t used AutoRebin for a while myself, so don\u2019t remember if there is an option to do this -  however, could you not use the VariableRebin method for what you want to do? That is, take the bin boundaries you get out of AutoRebin, manually remove the ones where you want to merge neighbouring bins, and apply them with VariableRebin? I see examples both in cpp and python in the CombineHarvester code, but let me know in case you cannot find them.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gbardell",
+      "name": "Giulio Bardelli",
+      "created_at": "2024-04-09T16:17:23.915Z",
+      "updated_at": "2024-04-09T16:17:23.915Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nThanks for the advice, I didn\u2019t know there was this feature available, which perfectly worked for my purpose.\nThanks again,\nBest,\nGiulio",
+      "cooked_html": "<p>Hi Adinda,<br>\nThanks for the advice, I didn\u2019t know there was this feature available, which perfectly worked for my purpose.<br>\nThanks again,<br>\nBest,<br>\nGiulio</p>"
+    }
+  ]
+}

@@ -1,0 +1,475 @@
+TOPIC: Regarding the consideration of background function parameters in combine for envelop method
+URL: https://cms-talk.web.cern.ch/t/2181
+DATE: 2021-10-12T21:41:34.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Prafulla_Saha @ 2021-10-12T21:41:34.000Z):
+Hello Combine expert,
+I am working on an analysis of Vector like Quark T’, where T’ decays to the SM top and Higgs and Higgs further decays to two photons. So we use the framework of the Higgs to gamma gamma analysis called flashggFinalfit to fit diphoton invariant mass distributions for signal model and background model.
+For the signal model a sum of gaussian functions and for background modelling, four falling functions have been used. The background models plots are found here [1], [2] and model Workspaces are also kept here [3], [4].
+The datacard: https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.txt
+/eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root
+Combine command used extract the asymptotic statistics only limit:
+combine /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root -M AsymptoticLimits -m 125 --redefineSignalPOIs r --trackParameters r --freezeParameter MH --saveWorkspace --cminDefaultMinimizerStrategy 0 --X-rtd MINIMIZER_freezeDisassociatedParams --X-rtd MINIMIZER_multiMin_hideConstants --X-rtd MINIMIZER_multiMin_maskConstraints --X-rtd MINIMIZER_multiMin_maskChannels=2 -n ${label} --run=blind
+In the combine all the four background functions are considered for the envelope. However In the impact plot[5] we see only the variation of the parameters of the best fit functions and all other background functions parameters are at fixed value.
+Impacts is being checked with:
+combineTool.py -M Impacts -d Datacard_Tprime600_Syst.root -m 125 --doInitialFit --robustFit 1 -t -1 --setParameters r=1 --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 --freezeParameter MH
+combineTool.py -M Impacts -d Datacard_Tprime600_Syst.root -m 125 --doFits --robustFit 1 -t -1 --setParameters r=1 --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 --freezeParameter MH
+It will be great if anybody has any suggestion so that we can vary all the parameters of the function to have the proper consideration of the envelope of background functions.
+Best
+Prafulla
+[1] https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/multipdf_THQHadronicTag.png
+[2] https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/multipdf_THQLeptonicTag.png
+[3] /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/CMS-HGG_multipdf_THQHadronicTag.root
+[4] /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/CMS-HGG_multipdf_THQLeptonicTag.root
+[5] https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/impacts_StatOnly.pdf
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2021-10-13T09:09:44.000Z):
+Hi Prafulla,
+The impacts routine is doing what it's supposed to do - the issue is the non-active background parameters have no effect on the NLL value. So combine is scanning in each parameter, performing the fit, but will never find the deltaNLL value it needs to calculate the impact. This is why you get X +/- 0 returned for those parameters.
+I think you have a couple of options:
+- If you want to understand how these other background parameters would affect the signal strength if their associated pdf was the selected one, you could repeat the impacts calculation fixing the background pdf to that choice, and suppressing the discrete profiling. You'd have to repeat this for each pdf.
+- If you want a more global picture of how the envelope procedure affects the measurement, you could make a plot similar to the one here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling, where the NLL curves for each pdf choice are overlaid with the envelope
+Hope this is helpful.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by beaucero @ 2021-10-13T12:28:07.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrew,
+The question is mostly coming from me as my understanding was that the
+envelopp method would serve as systematics on the background estimation
+fit. Because some parameters are not influencing the impact, I made the
+direct conclusion that the systematics is very low, which is not what I
+would have expected. In the datacard, there are no further systematics
+linked to the background fit.
+So do I understand correctly that it is normal to have very low
+systematics on the background shape?
+Moreover, it seems that we can reduce even such errors by reducing the
+number of events in the side band... Which is slightly counter
+intuitive... I would prefer to have ~30 events in the side band to
+perform a fit but the results seems to be better if we have less than 10
+events... What about if we have 0 events ?
+Thanks for your explanations! Cheers,
+Steph
+----------------------------------------
+
+REPLY 4 (by beaucero @ 2021-10-13T13:51:15.000Z):
+*** Discussion title: Higgs Combination
+Hi Andrew,
+The question is mostly coming from me as my understanding was that the
+envelopp method would serve as systematics on the background estimation
+fit. Because some parameters are not influencing the impact, I made the
+direct conclusion that the systematics is very low, which is not what I
+would have expected. In the datacard, there are no further systematics
+linked to the background fit.
+So do I understand correctly that it is normal to have very low
+systematics on the background shape?
+Moreover, it seems that we can reduce even such errors by reducing the
+number of events in the side band... Which is slightly counter
+intuitive... I would prefer to have ~30 events in the side band to
+perform a fit but the results seems to be better if we have less than 10
+events... What about if we have 0 events ?
+Thanks for your explanations! Cheers,
+Steph
+----------------------------------------
+
+REPLY 5 (by amarini @ 2021-10-13T15:50:24.000Z):
+*** Discussion title: Higgs Combination
+Hi Stephanie,
+
+So do I understand correctly that it is normal to have very low
+
+systematics on the background shape?
+In order to assess the total impact of a discrete nuisance, and if this serve as systematic uncertainties, the scan suggested by Andrew is a better way.
+( -> this https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling )
+At the moment, we cannot conclude from what you linked if this is low or not.
+The background estimation have uncertainties related to the free parameter of the shapes and the discrete nuisances.
+The free parameters of the active (best-fit) shape are evaluated in the sense that you expect, since the likelihood is regular around the minimum on those parameters. The parameters of the non active shape do not influence the minimum of the likelihood nor they change its value if you move them a bit.
+For instance if I look at the impact plots you circulated,
+you have two categories, leptonic and hadronic, with fairly low counts (norm) and therefore the associated normalization is high impactful (~sqrt N). The best-fit pdfs are one Bernstein and one Exponential. These have relatively low number of degrees of freedom (probably because you expect few events) and the normalization happens to be more important than the actual shape degrees of freedom. The non active shapes are exponential, landau, powerlaw, and so on ... their parameters don't change the likelihood function when you scan them directly, one by one, as they can at most worsen the minimum of a non best-fit pdf. Therefore the profiled likelihood will never switch as you change one of them alone. To understand them, you need a different definition (not the one in the impacts) that accounts for these discreteness and for the activation of the new parameters.
+If you now want to conclude something about the other pdfs you should run the scans above, such that scanning the likelihood as function of r (and not as function of one of the inactive parameters, as in the impacts), you can see the discrete parameters moving around and changing their values. In particular, you can compare the scan with respect to the best-fit or an a-priori choice (I think you are still blind so this may be identical).
+Further, notice that usually coverage properties are studies on toys or Asimovs since they may include realizations that didn't happened in the data observation we have (but I don't think you are doing the observed impacts).
+if you want to derive how important are the free parameters in a non active pdf for that pdf choice, you should run the impacts as suggested by Andrew; but I guess this was not what you were asking for.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 6 (by Prafulla_Saha @ 2021-10-20T21:01:03.000Z):
+Hi Andrew and Andrea
+Thank you so much for your suggestions.
+As you suggested in order to assess the impact of different pdfs. I plotted[1] the 2*(deltaNLL+nll+nll0) for different pdfs and envelope in the hadronic channel.
+[1] [https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/r_Had_stat_Envelop.pdf](https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/r_Had_stat_Envelop.pdf)
+Here I observed that when I run the envelope(i.e without a fixed pdf index) I found that combine is considering the bestfit pdf of the sideband i.e the pdf_index 2(exponential). Even though in the datacard[2] I defined pdfindex_THQHadronicTag_13TeV discrete, the combine considered the best fit functions.
+Command used to run envelope:
+combine -M MultiDimFit -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Had_StatOnly.root --algo grid --setParameterRanges r=-1,3 --cminDefaultMinimizerStrategy 0 --saveNLL -n Envelope -m 125 --freezeParameters MH --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+Command used to run with fixed pdf_index:
+combine -M MultiDimFit -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Had_StatOnly.root --algo grid --setParameterRanges r=-1,3 --cminDefaultMinimizerStrategy 0 --saveNLL -m 125 --freezeParameters pdfindex_THQHadronicTag_13TeV, MH --setParameters pdfindex_THQHadronicTag_13TeV=3 -n fixed_pdf_index_3_Had --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+Please correct me if I am missing something in the envelope method.
+[2] https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Had_StatOnly.txt
+Best
+Prafulla
+----------------------------------------
+
+REPLY 7 (by agilbert @ 2021-10-22T10:26:57.000Z):
+Hi Prafulla,
+I'm not sure I understand what the issue is. Both the commands below look fine. In the plot I don't see the black line from the full envelope scan, but perhaps it is hidden under the other lines? It should correspond to the minimum among the different fixed function scans at each point in r.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 8 (by Prafulla_Saha @ 2021-10-22T12:20:33.000Z):
+Hi Andrew
+
+In the plot I don’t see the black line from the full envelope scan, but perhaps it is hidden under the other lines?
+
+Yes it is hidden under the pdf_index_2 line(blue)
+Best
+Prafulla
+----------------------------------------
+
+REPLY 9 (by Prafulla_Saha @ 2021-10-26T08:16:26.000Z):
+Hi Andrew
+I kept here the log of running combine for both the cases with envelope and the fixed pdf_index.
+Envelope: https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Envelope.log
+Fixed pdf_index: https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/fixed_pdf_index_3.log
+There I see a message of “PDF didn’t factorize!” for both the cases.
+For the fixed pdf_index case there is a message “Set Default Index of Parameter pdfindex_THQHadronicTag_13TeV To : 3 (was: 2 )”
+The pdf_index 2 is the best fit pdf and envelope taking that pdf by default.
+I am not sure if these messages make any sense of our problem.
+Best
+Prafulla
+----------------------------------------
+
+REPLY 10 (by agilbert @ 2021-10-26T08:46:43.000Z):
+Hi Prafulla,
+I'm sorry, I still don't understand what you actually want us to check - can you try to explain clearly what the problem is?
+I think the message "PDF didn't factorize!" is safe to ignore.
+The message "For the fixed pdf_index case there is a message "Set Default Index of Parameter pdfindex_THQHadronicTag_13TeV To : 3 (was: 2 )" just reflects the fact that you changed the initial value of the discrete index. If used in conjunction with --freezeParameters pdfindex_THQHadronicTag_13TeV you get the scan fixing to that particular pdf.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 11 (by Prafulla_Saha @ 2021-10-26T09:31:35.000Z):
+Hi Andrew,
+My main concern is that when I run the envelope(i.e without a fixed pdf index) I found that combine is considering the bestfit pdf of the sideband i.e the pdf_index 2(exponential). It doesn't pick out the best function (maximum corrected likelihood) for each value of the signal strength, It is visible in the below plot for r > 2. In the datacard[2] pdf_index is defined as pdfindex_THQHadronicTag_13TeV discrete.
+
+Best
+Prafulla``
+----------------------------------------
+
+REPLY 12 (by beaucero @ 2021-11-02T13:27:33.000Z):
+Dear all,
+Let me try below to summarise naively the potential issue that we see and we would like to understand if it is really an issue or not:
+In the plot send by Prafulla:
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/r_Had_stat_Envelop.pdf
+The envelope curve which is the black is ALWAYS behind the dark blue (so it is why you do not see).
+We would have expected that for value of r>2, the black curve would have follow the cyan curve instead of the dark blue one.
+We are surprised it is not the case, is that normal that it stays in the dark blue curve?
+(@Prafulla, perhaps you can make the same plots but with open circles as markers [style=24] and with different size (increase by 0.1 for each curve), so we can clearly visualise the various curves).
+Thanks!
+Stephanie on behalf of T' search with H->gg team
+
+*** Discussion title: Higgs Combination
+Hi Andrew,
+My main concern is that when I run the envelope(i.e without a fixed pdf
+index) I found that combine is considering the bestfit pdf of the sideband
+i.e the pdf_index 2(exponential). It doesn't pick out the best function
+(maximum corrected likelihood) for each value of the signal strength, It is
+visible in the below plot for r > 2. In the datacard[2] pdf_index is
+defined as pdfindex_THQHadronicTag_13TeV discrete.
+[image: r_Had_stat_Envelop_v1.png]
+Best
+Prafulla
+
+*** Discussion title: Higgs Combination
+Hi Prafulla,
+I'm sorry, I still don't understand what you actually want us to check -
+can you try to explain clearly what the problem is?
+I think the message "PDF didn't factorize!" is safe to ignore.
+The message "For the fixed pdf_index case there is a message "Set Default
+Index of Parameter pdfindex_THQHadronicTag_13TeV To : 3 (was: 2 )" just
+reflects the fact that you changed the initial value of the discrete index.
+If used in conjunction with --freezeParameters
+pdfindex_THQHadronicTag_13TeV you get the scan fixing to that particular
+pdf.
+cheers,
+Andrew
+
+Hi Andrew
+I kept here the log of running combine for both the cases with envelope
+
+and the fixed pdf_index.
+
+Envelope:
+
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Envelope.log
+
+Fixed pdf_index:
+
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/fixed_pdf_index_3.log
+
+There I see a message of "PDF didn't factorize!" for both the cases.
+For the fixed pdf_index case there is a message "Set Default Index of
+
+Parameter pdfindex_THQHadronicTag_13TeV To : 3 (was: 2 )"
+
+The pdf_index 2 is the best fit pdf and envelope taking that pdf by
+
+default.
+
+I am not sure if these messages make any sense of our problem.
+Best
+Prafulla
+*** Discussion title: Higgs Combination
+Hi Prafulla,
+I'm not sure I understand what the issue is. Both the commands below
+
+look fine. In the plot I don't see the black line from the full envelope
+scan, but perhaps it is hidden under the other lines? It should correspond
+to the minimum among the different fixed function scans at each point in r.
+
+cheers,
+Andrew
+
+*** Discussion title: Higgs Combination
+Hi Andrew and Andrea
+Thank you so much for your suggestions.
+As you suggested in order to assess the impact of different pdfs. I
+plotted[1] the  2*(deltaNLL+nll+nll0) for different pdfs and envelope
+
+in
+
+the hadronic channel.
+[1]
+
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/r_Had_stat_Envelop.pdf
+
+Here I observed that when I run the envelope(i.e without a fixed pdf
+
+index)
+
+I found that combine is considering the bestfit pdf of the sideband
+
+i.e the
+
+pdf_index 2(exponential). Even though in the datacard[2] I defined
+pdfindex_THQHadronicTag_13TeV discrete, the combine considered the
+
+best fit
+
+functions.
+Command used to run envelope:
+combine -M MultiDimFit -d
+
+/eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Had_StatOnly.root
+
+--algo grid --setParameterRanges r=-1,3 --cminDefaultMinimizerStrategy
+
+0
+
+--saveNLL -n Envelope -m 125 --freezeParameters MH --X-rtd
+REMOVE_CONSTANT_ZERO_POINT=1
+Command used to run with fixed pdf_index:
+combine -M MultiDimFit -d
+
+/eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Had_StatOnly.root
+
+--algo grid --setParameterRanges r=-1,3 --cminDefaultMinimizerStrategy
+
+0
+
+--saveNLL -m 125 --freezeParameters pdfindex_THQHadronicTag_13TeV, MH
+--setParameters pdfindex_THQHadronicTag_13TeV=3 -n
+
+fixed_pdf_index_3_Had
+
+--X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+Please correct me if I am missing something in the envelope method.
+[2]
+
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Had_StatOnly.txt
+
+Best
+Prafulla
+
+*** Discussion title: Higgs Combination
+Hi Stephanie,
+
+So do I understand correctly that it is normal to have very low
+
+systematics on the background shape?
+In order to assess the total impact of a discrete nuisance, and if
+
+this
+
+serve as systematic uncertainties, the scan suggested by Andrew is a
+
+better
+
+way.
+( -> this
+
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#discrete-profiling
+
+)
+At the moment, we cannot conclude from what you linked if this is low
+
+or
+
+not.
+The background estimation have uncertainties related to the free
+
+parameter
+
+of the shapes and the discrete nuisances.
+The free parameters of the active (best-fit) shape are evaluated in
+
+the
+
+sense that you expect, since the likelihood is regular around the
+
+minimum
+
+on those parameters. The parameters of the non active shape do not
+influence the minimum of the likelihood nor they change its value if
+
+you
+
+move them a bit.
+For instance if I look at the impact plots you circulated,
+you have two categories, leptonic and hadronic, with fairly low counts
+(norm) and therefore the associated normalization is high impactful
+
+(~sqrt
+
+N). The best-fit pdfs are one Bernstein and one Exponential. These
+
+have
+
+relatively low number of degrees of freedom (probably because you
+
+expect
+
+few events) and the normalization happens to be more important than
+
+the
+
+actual shape degrees of freedom. The non active shapes are
+
+exponential,
+
+landau, powerlaw, and so on ... their parameters don't change the
+likelihood function when you scan them directly, one by one, as they
+
+can at
+
+most worsen the minimum of a non best-fit pdf. Therefore the profiled
+likelihood will never switch as you change one of them alone. To
+
+understand
+
+them, you need a different definition (not the one in the impacts)
+
+that
+
+accounts for these discreteness and for the activation of the new
+parameters.
+If you now want to conclude something about the other pdfs you should
+
+run
+
+the scans above, such that scanning the likelihood as function of r
+
+(and
+
+not as function of one of the inactive parameters, as in the
+
+impacts), you
+
+can see the discrete parameters moving around and changing their
+
+values. In
+
+particular, you can compare the scan with respect to the best-fit or
+
+an
+
+a-priori choice (I think you are still blind so this may be
+
+identical).
+
+Further, notice that usually coverage properties are studies on toys
+
+or
+
+Asimovs since they may include realizations that didn't happened in
+
+the
+
+data observation we have (but I don't think you are doing the observed
+impacts).
+if you want to derive how important are the free parameters in a non
+active pdf for that pdf choice, you should run the impacts as
+
+suggested by
+
+Andrew; but I guess this was not what you were asking for.
+Cheers,
+-Andrea
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1685/1/2/1.html
+
+[ MIME part of type text/html without a name stripped ]
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1685/1/2/1/1.html
+
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1685/1/2/1/1/1.html
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1685/1/2/1/1/1/2.html
+
+[ MIME part of type text/html without a name stripped ]
+Attachment:
+https://hypernews.cern.ch/HyperNews/CMS/get/AUX/2021/10/26/12:56:28-15190-r_Had_stat_Envelop_v1.png
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1685/1/2/1/1/1/2/1.html
+
+Stephanie Beauceron
+stephanie.beauceron@cern.ch
+IP2I - Batiment Dirac - Piece 122
+Cern Office: 40-4B-16
+Cern Phone: 71558
+Outside Cern: +41 22 76 71 558
+Skype: stephanie.beauceron
+----------------------------------------
+
+REPLY 13 (by amarini @ 2021-11-02T13:56:07.000Z):
+*** Discussion title: Higgs Combination
+Hi Stephanie,
+in general, there is to consider that there are some optimization to the fitting routine in order to keep the fitting time for discrete nuisances reasonably small (especially with large number of categories). I would not be particularly worried as long as the deltaNNL is small and many sigma separated from the best-fit.
+In this case, you probably would not have a noticeable quotable difference on the two sigma interval (deltaNLL = +4).
+If you want, you can try to test it (to my knowledge, but someone else can jump in if I say something inaccurate) by running again with --cminRunAllDiscreteCombinations, but it should be clear that it will become more and more prohibitive (as running time) for the more and more categories you will fit simultaneously. However, I don't see if this test will give you an answer you are seeking for.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 14 (by agilbert @ 2021-11-05T12:37:58.000Z):
+Hi all,
+After some discussion off the HN, the issue is now understood. In this specific case with no lnN/shape systematics in the datacard, text2workspace does not define the discrete parameter correctly in the output workspace, hence no discrete profiling with MultiDimFit.
+Fix is rather simple: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/701
+Prafulla - you will need to apply this manually until it makes it into the next combine release.
+cheers,
+Andrew
+----------------------------------------

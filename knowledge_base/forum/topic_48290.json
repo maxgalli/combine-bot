@@ -1,0 +1,34 @@
+{
+  "topic_id": 48290,
+  "title": "Difference in expected limits with and without using -t -1",
+  "url": "https://cms-talk.web.cern.ch/t/48290",
+  "category_id": 279,
+  "created_at": "2024-09-09T06:29:31.719Z",
+  "last_posted_at": "2024-09-09T07:44:46.488Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "shachary",
+      "name": "Shriniketan Acharya",
+      "created_at": "2024-09-09T06:29:31.859Z",
+      "updated_at": "2024-09-09T06:29:31.859Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all\nWe are doing the unblinding of monophoton analysis, and while checking the limits, we saw change in expected limits with and without using -t -1.\nHere is the output which we are getting when we are using -t -1\ncombine -M AsymptoticLimits cards_NLO_Pt/comb_card_DM_NLO_Vector_Mx-1_Mv-1000_pta130.txt -t -1\nObserved Limit: r < 0.6083\nExpected 2.5%: r < 0.3428\nExpected 16.0%: r < 0.4469\nExpected 50.0%: r < 0.6094\nExpected 84.0%: r < 0.8328\nExpected 97.5%: r < 1.0998\nwhile without -t -1 in our combine command\ncombine -M AsymptoticLimits cards_NLO_Pt/comb_card_DM_NLO_Vector_Mx-1_Mv-1000_pta130.txt\nwe are getting\nObserved Limit: r < 0.7912\nExpected 2.5%: r < 0.3846\nExpected 16.0%: r < 0.5052\nExpected 50.0%: r < 0.6934\nExpected 84.0%: r < 0.9504\nExpected 97.5%: r < 1.2535\nAs you can see, expected limits are changing from 0.6069 to 0.6934, with and without -t -1, whereas I expect expected limits to not change. And for some other models, its changing even more. Please suggest what to do in this case. Also, please find the datacard in this link: Datacards and input files\nThank you\nRegards\nShriniketan",
+      "cooked_html": "<p>Dear all<br>\nWe are doing the unblinding of monophoton analysis, and while checking the limits, we saw change in expected limits with and without using -t -1.</p>\n<p>Here is the output which we are getting when we are using -t -1<br>\ncombine -M AsymptoticLimits cards_NLO_Pt/comb_card_DM_NLO_Vector_Mx-1_Mv-1000_pta130.txt -t -1<br>\nObserved Limit: r &lt; 0.6083<br>\nExpected 2.5%: r &lt; 0.3428<br>\nExpected 16.0%: r &lt; 0.4469<br>\nExpected 50.0%: r &lt; 0.6094<br>\nExpected 84.0%: r &lt; 0.8328<br>\nExpected 97.5%: r &lt; 1.0998</p>\n<p>while without -t -1 in our combine command<br>\ncombine -M AsymptoticLimits cards_NLO_Pt/comb_card_DM_NLO_Vector_Mx-1_Mv-1000_pta130.txt<br>\nwe are getting<br>\nObserved Limit: r &lt; 0.7912<br>\nExpected 2.5%: r &lt; 0.3846<br>\nExpected 16.0%: r &lt; 0.5052<br>\nExpected 50.0%: r &lt; 0.6934<br>\nExpected 84.0%: r &lt; 0.9504<br>\nExpected 97.5%: r &lt; 1.2535<br>\nAs you can see, expected limits are changing from 0.6069 to 0.6934, with and without -t -1, whereas I expect expected limits to not change. And for some other models, its changing even more. Please suggest what to do in this case. Also, please find the datacard in this link: <a href=\"https://cernbox.cern.ch/s/4tQ52WOTIrQnVQR\" rel=\"noopener nofollow ugc\">Datacards and input files</a></p>\n<p>Thank you</p>\n<p>Regards<br>\nShriniketan</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-09-09T07:44:46.488Z",
+      "updated_at": "2024-09-09T07:44:46.488Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Shriniketan,\nWhen you run the limits with -t -1 (note that --run blind would be better), the asimov data set that is used for calculating the expected limits is built from the pre-fit expectation, ie with all nuisance parameters at their nominal values. Without -t -1, a fit to data is performed (with the signal strength at 0) and the asimov dataset is constructed assuming the values of the fitted parameters. It is thus not unexpected that the expected limits can change between the two configurations.\nIf you haven\u2019t done so yet, you might also want to have a look at previous Combine tutorials (e.g. the exercises here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part5/longexercise/ or the longer tutorials linked from here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part4/usefullinks/), where your can learn a bit more about what happens in the limit setting procedure and what the functions of the different options are.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Shriniketan,</p>\n<p>When you run the limits with <code>-t -1</code> (note that <code>--run blind</code> would be better), the asimov data set that is used for calculating the expected limits is built from the pre-fit expectation, ie with all nuisance parameters at their nominal values. Without <code>-t -1</code>, a fit to data is performed (with the signal strength at 0) and the asimov dataset is constructed assuming the values of the fitted parameters. It is thus not unexpected that the expected limits can change between the two configurations.</p>\n<p>If you haven\u2019t done so yet, you might also want to have a look at previous Combine tutorials (e.g. the exercises here: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part5/longexercise/\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part5/longexercise/</a> or the longer tutorials linked from here: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part4/usefullinks/\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part4/usefullinks/</a>), where your can learn a bit more about what happens in the limit setting procedure and what the functions of the different options are.</p>\n<p>Best,<br>\nAdinda</p>"
+    }
+  ]
+}

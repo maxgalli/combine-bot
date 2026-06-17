@@ -1,0 +1,142 @@
+TOPIC: Questions on the uncertainty breakdown by Higgs combine tool
+URL: https://cms-talk.web.cern.ch/t/2165
+DATE: 2021-09-17T04:08:42.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Byeonghak_Ko @ 2021-09-17T04:08:42.000Z):
+*** Discussion title: Higgs Combination
+Hi experts,
+I have questions on a usage of HCT (Higgs Combine Tool), especially the uncertainty breakdown.
+1. I have found nice slides [1], which show how to do the uncertainty breakdown. Iâm just worried that I'm not sure whether or not the way introduced in these slides is a general and official way for the uncertainty breakdown in studies with HCT (although [1] was presented in the last HCT workshops in Dec. 2020).
+2. As in my understand, to obtain the breakdown parts for the exp.+theory*, MC sample size, and stat., the procedures could be like the following lines (without scanning of NLL graph):
+# ------------------------------------------------------------------------------------------------------------
+combine ws\_init\.root \-M MultiDimFit \-n MLUnfold \-\-saveWorkspace \-\-saveFitResult
+python3 extractUnc.py multidimfitMLUnfold.root  # It extracts the uncertainty from the fit, \sigma_{tot}
+$ mv higgsCombineMLUnfold.MultiDimFit.mH120.root ws_saved.root  # Moved for a convenience
+combine \-M MultiDimFit \-d ws\_saved\.root \-n MLUnfold \-\-snapshotName MultiDimFit \-\-saveFitResult \-\-freezeParameters \[\.\.\.\]
+python3 extractUnc.py multidimfitMLUnfold.root  # It extracts the uncertainty from the fit, \sigma_{exp.+theory frozen}
+combine \-M MultiDimFit \-d ws\_saved\.root \-n MLUnfold \-\-snapshotName MultiDimFit \-\-saveFitResult \-\-freezeParameters allConstrainedNuisances
+python3 extractUnc.py multidimfitMLUnfold.root  # It extracts the uncertainty from the fit, \sigma_{all frozen}
+# ------------------------------------------------------------------------------------------------------------
+Here, extractUnc.py prints, for example, file.Get("fit_mdf").find("r").getErrorHi() (and [...].getErrorLo()), and the printed values are set to be sigma_{tot}, sigma_{exp.+theory frozen} and sigma_{all frozen}, respectively (here I'm abusing the notations of + error and - error).
+Also, [...] in the second combine run is the list of the nuisance parameters for all experimental+theory uncertainties which is separated by ',', e.g., jer,jes,lumi,isrttbar (of course it could be the name of group of uncertainty, like exp,theory, with --freezeNuisanceGroups).
+And then,
+sigma_{exp.+theory}^2    = sigma_{tot}^2                - sigma_{exp.+theory frozen}^2
+sigma_{MC sample size}^2 = sigma_{exp.+theory frozen}^2 - sigma_{all frozen}^2
+sigma_{stat.}^2          = sigma_{all frozen}^2.
+This is the procedures of the breakdown from my understanding. But I'm not sure if it is correct. Could you tell me if there is a problem on this?
+3. And also it seems like there is another way to calculate sigma_{MC sample size}^2:
+sigma_{MC sample size}^2 = sigma_{tot}^2 - sigma_{autoMCStat frozen}^2,
+where sigma_{autoMCStat frozen} is obtained by the following command:
+# ------------------------------------------------------------------------------------------------------------
+combine \-M MultiDimFit \-d ws\_saved\.root \-n MLUnfold \-\-snapshotName MultiDimFit \-\-saveFitResult \-\-freezeParameters autoMCStats
+python3 extractUnc.py multidimfitMLUnfold.root  # It extracts the uncertainty from the fit, \sigma_{autoMCStat frozen}
+# ------------------------------------------------------------------------------------------------------------
+I'm not sure which way is right. Or, does it depend on my strategy(?) of the uncertainty breakdown?
+4. I'm not sure about which category of uncertainties (systematic uncertainty vs. statistical uncertainty) 'MC sample size' is in. Although it is the uncertainty from the "MC statistical uncertainty", it seems like it should be regarded as a systematic one because it is about the model, not about the real data. I also found that some studies classified it as a systematic uncertainty. But I'm still not sure about that.
+Best regards,
+Byeonghak Ko
+[1] https://indico.cern.ch/event/976099/contributions/4138475/attachments/2163619/3651163/UncertBreakdown_AdeWit.pdf
+* currently the separation of these two items is not considered yet.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-09-17T15:50:31.000Z):
+*** Discussion title: Higgs Combination
+Dear Byeonghak Ko,
+The uncertainty breakdown method in the slides you linked is what we
+usually do in the Higgs PAG. There are of course other ways to get an
+idea of the contribution of different (groups of) uncertainties, so let
+me start by saying that whatever you do, it's important to be clear in
+the documentation of your analysis about what was actually done. If you
+want to quote a measurement Â± uncertainty and break that uncertainty
+down into a few groups, then the method in the slides is reasonable
+because adding the different components in quadrature returns the total
+uncertainty, which is not always guaranteed with other methods.
+The procedure you wrote down in 2) looks correct, at least as far as the
+successive freezing and quadratic subtraction is concerned. You will
+however have to do the full likelihood scan (in any case we don't
+recommend quoting the uncertainties from the covariance matrix for a
+measured quantity).
+The procedure in 3) also works (you will need --freezeNuisanceGroups,
+though). You may get a different result than in 2) because there are
+correlations between the fitted parameters. That also means that if you
+do something like this for all your groups of systematics, adding them
+in quadrature might not give you the same answer as the total
+uncertainty.
+About 4): right, it is a systematic uncertainty (when we say
+"statistical uncertainties" that only relates to the size of the data
+sample, they are uncertainties that can only be reduced by improving the
+signal/background separation or collecting more data).
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by adewit @ 2021-09-17T15:50:38.000Z):
+*** Discussion title: Higgs Combination
+Dear Byeonghak Ko,
+The uncertainty breakdown method in the slides you linked is what we
+usually do in the Higgs PAG. There are of course other ways to get an
+idea of the contribution of different (groups of) uncertainties, so let
+me start by saying that whatever you do, it's important to be clear in
+the documentation of your analysis about what was actually done. If you
+want to quote a measurement Â± uncertainty and break that uncertainty
+down into a few groups, then the method in the slides is reasonable
+because adding the different components in quadrature returns the total
+uncertainty, which is not always guaranteed with other methods.
+The procedure you wrote down in 2) looks correct, at least as far as the
+successive freezing and quadratic subtraction is concerned. You will
+however have to do the full likelihood scan (in any case we don't
+recommend quoting the uncertainties from the covariance matrix for a
+measured quantity).
+The procedure in 3) also works (you will need --freezeNuisanceGroups,
+though). You may get a different result than in 2) because there are
+correlations between the fitted parameters. That also means that if you
+do something like this for all your groups of systematics, adding them
+in quadrature might not give you the same answer as the total
+uncertainty.
+About 4): right, it is a systematic uncertainty (when we say
+"statistical uncertainties" that only relates to the size of the data
+sample, they are uncertainties that can only be reduced by improving the
+signal/background separation or collecting more data).
+Best,
+Adinda
+----------------------------------------
+
+REPLY 4 (by Byeonghak_Ko @ 2021-09-19T08:43:15.000Z):
+*** Discussion title: Higgs Combination
+Dear Adinda,
+Thanks for your answers! Many things have get much clearer.
+And actually I wanted to ask (in another thread) about the difference between the summation of uncertainties in quadrature and the total systematic uncertainty obtained by the method in [1] (or in my 2nd question), which you mentioned in the answer for the 3rd question. Although we know that it is due to the correlations between uncertainty sources, I have no idea how to convince people who are unhappy with the difference. I think it would be good to show the correlation matrix of the uncertainty sources (I don't know how to draw it... Maybe by combineTool.py with CovMatrix method?), but I don't think it's enough just to display the matrix and end the interpretation. Is there a nice way or an instruction to explain the difference?
+Best regards,
+Byeonghak Ko
+----------------------------------------
+
+REPLY 5 (by adewit @ 2021-09-20T21:05:46.000Z):
+*** Discussion title: Higgs Combination
+Dear Byeonghak Ko,
+Just to be clear, if you follow the procedure as in your point 2) the
+sum in quadrature of the different components will give you the total
+uncertainty, while this is not necessarily the case if you only freeze a
+single set of uncertainty sources at a time (that is, if you are not
+freezing successively) - ie what you had in point 3.
+I don't think there's any way to define a correlation matrix between
+different groups of parameters, but you can of course show the
+correlation matrix between the individual parameters. The idea that
+correlations between parameters mean sigma_tot =
+sqrt(sigma_a^2+sigma_b^2) no longer holds should be familiar to most
+people, consider for example basic error propagation formulae. You could
+remind people who are not happy with the difference of this.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 6 (by Byeonghak_Ko @ 2021-09-21T02:45:53.000Z):
+*** Discussion title: Higgs Combination
+Dear Adinda,
+Yep, I only want to concern about the correlations between individual parameters, not the correlations between the uncertainties obtained successively (in point 2). Sorry for my unclear wordings...
+Well, I was worried too much about the convince. You're right, it would be enough to remind people of the basic knowledge on the statistics, with the correlation plot.
+Thanks a lot for your many and helpful answers!
+Best regards,
+Byeonghak Ko
+----------------------------------------

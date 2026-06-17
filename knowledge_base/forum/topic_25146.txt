@@ -1,0 +1,97 @@
+TOPIC: Limit calculation errors
+URL: https://cms-talk.web.cern.ch/t/25146
+DATE: 2023-06-07T06:19:35.016Z
+SOLVED: no
+============================================================
+
+QUESTION (by hyunyong @ 2023-06-07T06:19:35.212Z):
+Dear experts,
+I encountered an error while using the combine tool. The signal shape is identical and the background PDF is similar for both the 2017 and 2018 datasets, yet only the 2018 dataset is experiencing this issue.
+I have made attempts to debug the problem but I am unsure where to begin.
+I think it looks like a kind of general issue of input PDF but please help me.
+Cheers,
+Hyunyong Kim
+<<< Combine >>>
+>>> using the Profile Likelihood test statistics modified for upper limits (Q_LHC)
+>>> method used is HybridNew
+>>> Used OpenSSL to get a really random seed -3694912
+WARNING: underflow to 0 in pdf_binA_obsOnly for bin 1, weight 1
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(A) evaluation error,
+origin       : RooAbsReal::A[ params=(CMS_H2A4Mu_BBbar_norm,CMS_H2A4Mu_BBbar_syst,CMS_H2A4Mu_eff_llp_mu,CMS_H2A4Mu_eff_ovlp_mu,CMS_H2A4Mu_eff_ovlp_trk,CMS_H2A4Mu_effdimu_mass,CMS_H2A4Mu_nnlo_pt,CMS_eff_mu_hlt,CMS_eff_mu_id,CMS_eff_mu_iso,CMS_eff_mu_pileup,CMS_eff_mu_pu_eff,QCDscale_ggH,XSec_BR_gg_aa_4mu,lumi_13TeV,lumi_13TeV_1718_corr,lumi_13TeV_corr,r,signal1_alpha,signal1_mA,signal1_n,signal1_sigma) ]
+message      : Number of events is negative or error
+server values: params=(CMS_H2A4Mu_BBbar_norm = 0 +/- 1,CMS_H2A4Mu_BBbar_syst = 0 +/- 1,CMS_H2A4Mu_eff_llp_mu = 0 +/- 1,CMS_H2A4Mu_eff_ovlp_mu = 0 +/- 1,CMS_H2A4Mu_eff_ovlp_trk = 0 +/- 1,CMS_H2A4Mu_effdimu_mass = 0 +/- 1,CMS_H2A4Mu_nnlo_pt = 0 +/- 1,CMS_eff_mu_hlt = 0 +/- 1,CMS_eff_mu_id = 0 +/- 1,CMS_eff_mu_iso = 0 +/- 1,CMS_eff_mu_pileup = 0 +/- 1,CMS_eff_mu_pu_eff = 0 +/- 1,QCDscale_ggH = 0 +/- 1,XSec_BR_gg_aa_4mu = 0 +/- 1,lumi_13TeV = 0 +/- 1,lumi_13TeV_1718_corr = 0 +/- 1,lumi_13TeV_corr = 0 +/- 1,r = 0,signal1_alpha = 2.003,signal1_mA = 1.5,signal1_n = 1.311,signal1_sigma = 0.013)
+FASTEXIT from pdf_binA_obsOnly
+[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+/tmp/rstats-1iv6rU
+[#0] WARNING:InputArguments -- RooRealVar::setMin(r): Proposed new fit min. larger than max., setting min. to max.
+WARNING: underflow to 0 in pdf_binA_obsOnly for bin 1, weight 1
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(A) evaluation error,
+origin       : RooAbsReal::A[ params=(CMS_H2A4Mu_BBbar_norm,CMS_H2A4Mu_BBbar_syst,CMS_H2A4Mu_eff_llp_mu,CMS_H2A4Mu_eff_ovlp_mu,CMS_H2A4Mu_eff_ovlp_trk,CMS_H2A4Mu_effdimu_mass,CMS_H2A4Mu_nnlo_pt,CMS_eff_mu_hlt,CMS_eff_mu_id,CMS_eff_mu_iso,CMS_eff_mu_pileup,CMS_eff_mu_pu_eff,QCDscale_ggH,XSec_BR_gg_aa_4mu,lumi_13TeV,lumi_13TeV_1718_corr,lumi_13TeV_corr,r,signal1_alpha,signal1_mA,signal1_n,signal1_sigma) ]
+message      : Number of events is negative or error
+server values: params=(CMS_H2A4Mu_BBbar_norm = 0 +/- 1,CMS_H2A4Mu_BBbar_syst = 0 +/- 1,CMS_H2A4Mu_eff_llp_mu = 0 +/- 1,CMS_H2A4Mu_eff_ovlp_mu = 0 +/- 1,CMS_H2A4Mu_eff_ovlp_trk = 0 +/- 1,CMS_H2A4Mu_effdimu_mass = 0 +/- 1,CMS_H2A4Mu_nnlo_pt = 0 +/- 1,CMS_eff_mu_hlt = 0 +/- 1,CMS_eff_mu_id = 0 +/- 1,CMS_eff_mu_iso = 0 +/- 1,CMS_eff_mu_pileup = 0 +/- 1,CMS_eff_mu_pu_eff = 0 +/- 1,QCDscale_ggH = 0 +/- 1,XSec_BR_gg_aa_4mu = 0 +/- 1,lumi_13TeV = 0 +/- 1,lumi_13TeV_1718_corr = 0 +/- 1,lumi_13TeV_corr = 0 +/- 1,r = 0,signal1_alpha = 2.003,signal1_mA = 1.5,signal1_n = 1.311,signal1_sigma = 0.013)
+FASTEXIT from pdf_binA_obsOnly
+[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+/tmp/rstats-q9OUdO
+Error: Cannot compute CLs because CLb = 0. Returning CLs = -1
+WARNING: underflow to 0 in pdf_binA_obsOnly for bin 1, weight 1
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(A) evaluation error,
+origin       : RooAbsReal::A[ params=(CMS_H2A4Mu_BBbar_norm,CMS_H2A4Mu_BBbar_syst,CMS_H2A4Mu_eff_llp_mu,CMS_H2A4Mu_eff_ovlp_mu,CMS_H2A4Mu_eff_ovlp_trk,CMS_H2A4Mu_effdimu_mass,CMS_H2A4Mu_nnlo_pt,CMS_eff_mu_hlt,CMS_eff_mu_id,CMS_eff_mu_iso,CMS_eff_mu_pileup,CMS_eff_mu_pu_eff,QCDscale_ggH,XSec_BR_gg_aa_4mu,lumi_13TeV,lumi_13TeV_1718_corr,lumi_13TeV_corr,r,signal1_alpha,signal1_mA,signal1_n,signal1_sigma) ]
+message      : Number of events is negative or error
+server values: params=(CMS_H2A4Mu_BBbar_norm = 0 +/- 1,CMS_H2A4Mu_BBbar_syst = 0 +/- 1,CMS_H2A4Mu_eff_llp_mu = 0 +/- 1,CMS_H2A4Mu_eff_ovlp_mu = 0 +/- 1,CMS_H2A4Mu_eff_ovlp_trk = 0 +/- 1,CMS_H2A4Mu_effdimu_mass = 0 +/- 1,CMS_H2A4Mu_nnlo_pt = 0 +/- 1,CMS_eff_mu_hlt = 0 +/- 1,CMS_eff_mu_id = 0 +/- 1,CMS_eff_mu_iso = 0 +/- 1,CMS_eff_mu_pileup = 0 +/- 1,CMS_eff_mu_pu_eff = 0 +/- 1,QCDscale_ggH = 0 +/- 1,XSec_BR_gg_aa_4mu = 0 +/- 1,lumi_13TeV = 0 +/- 1,lumi_13TeV_1718_corr = 0 +/- 1,lumi_13TeV_corr = 0 +/- 1,r = 0,signal1_alpha = 2.003,signal1_mA = 1.5,signal1_n = 1.311,signal1_sigma = 0.013)
+FASTEXIT from pdf_binA_obsOnly
+[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model
+/tmp/rstats-FnnGPX
+
+-- Hybrid New --
+Limit: r < 4.13542 +/- 0.203944 @ 95% CL
+Done in 0.04 min (cpu), 1.50 min (real)
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-06-07T09:54:23.284Z):
+Hi Hyunyong,
+This error is giving a hint:
+
+Hyunyong Kim:
+
+WARNING: underflow to 0 in pdf_binA_obsOnly for bin 1, weight 1
+
+It means that the model expectation in bin 1 of channel A is zero where you have one event observed (this may be from a toy data set). It might be good to check the prediction in this bin, is it possible you have signal but no background there?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by hyunyong @ 2023-06-07T13:57:30.865Z):
+Dear Andrew,
+Thank you for your comment.
+When I tried to run the fit diagnostics, if I put the minimum r  > 0 (e.g. --rMin 0.1 ), the fitting is not failed.
+So, the background only fit is failed if I put the 0 signal strength.
+However, background normalization looks fine.
+It is the output of the fit diagnostics.
+norm_fit_b->Print(“A/BBbar_below_Jpsi_2D”)
+
+RooRealVar:: A/BBbar_below_Jpsi_2D = 4.27997 +/- 0
+RooRealVar::             A/signal1 = 0.100958 +/- 0
+
+norm_fit_s->Print(“A/BBbar_below_Jpsi_2D”)
+
+RooRealVar:: A/BBbar_below_Jpsi_2D = 4.27996 +/- 0
+RooRealVar::             A/signal1 = 1.00029 +/- 0
+
+I checked the input PDFs and the output of the combine -M FitDiagnostics with the plots option.
+
+Screenshot 2023-06-07 at 10.12.26 AM2062×1742 278 KB
+
+Cheers,
+Hyunyong Kim
+----------------------------------------
+
+REPLY 4 (by hyunyong @ 2023-06-07T17:02:40.992Z):
+Dear Andrew,
+Thank you!
+It seems that the problem was caused by an observed data point being located near the boundary of the background PDF. By improving the resolution in that region, I was able to resolve the problem successfully.
+Cheers,
+Hyunyong Kim
+----------------------------------------

@@ -1,0 +1,32 @@
+TOPIC: Background estimation via transfer factors and uncertainty correlations
+URL: https://cms-talk.web.cern.ch/t/11780
+DATE: 2022-06-16T15:35:47.562Z
+SOLVED: no
+============================================================
+
+QUESTION (by mwadud @ 2022-06-16T15:35:47.978Z):
+Dear all,
+We are performing a measurement of Z(NuNu)+gamma cross-section. The search observable is photon pT. We have two control regions for W+g (mu and e channels) in order estimate its contribution in the signal region via transfer factors estimated from MC. We followed the recipe given in [1].
+The the uncertainties on these transfer factors are correlated with the uncertainties of the other backgrounds in both the signal and control regions. For example, the photon ID scale factor uncertainty is fully correlated in all regions.
+We would like to implement this correlation in our Combine data cards and its not clear to us how to instruct Combine to enforce the correlation. If you have any suggestions, that would be most appreciated.
+Thanks.
+Mohammad
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes
+----------------------------------------
+
+REPLY 2 (by vischia @ 2022-06-16T16:04:03.000Z):
+HI Mohammad,
+the general gist of combine is that parameters with the same name are treated as fully correlated, while parameters with different names are treated as fully uncorrelated.
+Since this is a combine-specific question, however, it’s probably best if you pose it in the HIG-Combination channel.
+Cheers,
+Pietro
+
+···
+Dr. Pietro Vischia
+FNRS Fellow
+http://cp3.irmp.ucl.ac.be/Members/pvischia
+mobile: 0034 666 986 616 (ES)
+office: +32 10 473205
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------

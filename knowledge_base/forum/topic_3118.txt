@@ -1,0 +1,55 @@
+TOPIC: diffNuisances.py not properly working
+URL: https://cms-talk.web.cern.ch/t/3118
+DATE: 2021-12-09T13:38:29.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by mzeinali @ 2021-12-09T13:38:29.000Z):
+Dear Experts,
+We are doing the pre-approval checks for our analysis (h->aa->2mu2b) and now encountered an issue when running the diffNuisances.py script. While the impact plots seem reasonable (find an example in the attachment), the printout obtained from running that script is not as expected:
+name                                              b-only fit            s+b fit         rho  approx impact
+signalTHunc                                      +0.00, 0.00     ! -0.00, 0.00!     !-0.17!      -0.000
+purun2                                           +0.00, 0.00     ! -0.00, 0.00!     !+0.13!      +0.000
+bsf_lfrun2                                       +0.00, 0.00     ! -0.00, 0.00!     !+0.06!      +0.000
+JMEFlavorQCDrun2                                 +0.00, 0.00     ! -0.00, 0.00!     !+0.06!      +0.000
+....
+....
+....
+
+We are wondering what can explain such a difference and if there are tests/checks to be done to pin down this.
+Thanks in advance,
+Maryam
+for haa-mmbb analysis
+impacts_40-bkgOnly.pdf (17.6 KB)
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-12-09T14:46:28.752Z):
+Dear Maryam,
+If you open up the file produced by FitDiagnostics (fitdiagnostics.root), and call “fit_b->Print()” and “fit_s->Print()”, do you also see 0±0 for all these parameters? That will tell you if there is a problem with the fit or with the script. If you also have 0±0 for these parameters when you print from fitdiagnostics.root directly, something might have gone wrong when running FitDiagnostics. Did you see any error messages when you ran it?
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by mzeinali @ 2021-12-11T10:17:39.116Z):
+Dear Adinda,
+Many thanks for your response. The attached file contains the checks you asked for. The FitDiagnostics runs well (except for a couple of warnings , not errors ). The printout of fitdiagnostics.root shows non-zero parameters with zero uncertainties (please see the attachment). Just to emphasize that here the result for background-only model is provided. I can provide similar results for signal+background fit if required.
+Would you please let me know if I need to add more info.
+Thanks,
+Maryam
+for_diffNuisances_debug (24.3 KB)
+----------------------------------------
+
+REPLY 4 (by mzeinali @ 2021-12-14T12:55:33.898Z):
+Dear @adewit ,
+My apology for interruption. We know you may be busy during these last moments of the year, however would you please let’s know what you think concerning the followup checks, as we are heading toward unblinding and need to get the green light from HComb contacts?
+Your help will be much appreciated.
+Maryam
+----------------------------------------
+
+REPLY 5 (by adewit @ 2021-12-14T13:11:39.942Z):
+Dear Maryam,
+Ok, something is not working well in the calculation of the covariance matrix – in your printout I see
+“covariance matrix quality: Not calculated at all”, so that’s why you’re getting these strange results. You can run FitDiagnostics with the option -v 3 to get a more detailed error log from the minimizer. I don’t know exactly how you’re constructing your background model, but your AN mentions you’re using the discrete profiling. If that is the case then the covariance matrix calculation in FitDiagnostics will never work, so then I think this part of the checks should be ignored.
+Best,
+Adinda
+----------------------------------------

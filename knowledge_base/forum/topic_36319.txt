@@ -1,0 +1,62 @@
+TOPIC: Question about constraining background
+URL: https://cms-talk.web.cern.ch/t/36319
+DATE: 2024-03-04T16:22:18.145Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-04T16:22:18.273Z):
+Dear experts,
+Nick recommend to constraint background rate within some uncertainty
+using lines
+bkgrate_sr3_17 rateParam  SR3_2017 bkg 1
+bkgrate_sr3_17 param 1 0.025
+meaning that I want background to float within 2.5 % around the nominal value
+I defined in datacards (1850 events).
+The question is the following:
+does it assume flat distribution for bkg rate or Gaussian with sigma 2.5 % or simply does not allow bkg rate be outside 2.5%  variation in the fit ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-03-04T16:55:01.830Z):
+Hi Sasha,
+Both the lines:
+bkgrate_sr3_17 rateParam SR3_2017 bkg 1
+bkgrate_sr3_17 param 1 0.025
+
+will add a Gaussian constarin to the background of +/- 2.5%
+Only the first line:
+bkgrate_sr3_17 rateParam SR3_2017 bkg 1
+
+will add a free uncontrained parameter  to the background.
+-A
+----------------------------------------
+
+REPLY 3 (by nckw @ 2024-03-04T17:02:57.632Z):
+As Andrea said,
+The line you have will create a Gaussian constraint.
+I just want to clarify that I didn’t recommend adding any constraint, I just said how to add one of it’s needed.
+Nick
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2024-03-05T07:48:27.000Z):
+Thanks Andrea, Nick !
+Nick, no worry, I did not say that you recommend to use a constraint.
+We do want to have it from ourside.
+Cheers, Sasha
+
+···
+
+From: Nicholas Wardle via CMS talk noreply-cms-talk@cern.ch
+Sent: Monday, March 4, 2024 18:04
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Question about constraining background
+
+Nicholas Wardle nckw Higgs convenerMarch 4
+
+As Andrea said,
+The line you have will create a Gaussian constraint.
+I just want to clarify that I didn’t recommend adding any constraint, I just said how to add one of it’s needed.
+Nick
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

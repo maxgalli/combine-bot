@@ -1,0 +1,23 @@
+{
+  "topic_id": 11781,
+  "title": "Background estimation via transfer factors and uncertainty correlations",
+  "url": "https://cms-talk.web.cern.ch/t/11781",
+  "category_id": 279,
+  "created_at": "2022-06-16T16:14:16.870Z",
+  "last_posted_at": "2022-06-16T16:14:17.128Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mwadud",
+      "name": "Mohammad Abrar Wadud",
+      "created_at": "2022-06-16T16:14:17.128Z",
+      "updated_at": "2023-02-09T15:29:22.859Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nWe are performing a measurement of Z(NuNu)+gamma cross-section. The search observable is photon pT. We have two control regions for W+g (mu and e channels) in order estimate its contribution in the signal region via transfer factors estimated from MC. We followed the recipe given in [1].\nThe the uncertainties on these transfer factors are correlated with the uncertainties of the other backgrounds in both the signal and control regions. For example, the photon ID scale factor uncertainty is fully correlated in all regions.\nWe would like to implement this correlation in our Combine data cards and its not clear to us how to instruct Combine to enforce the correlation. If you have any suggestions, that would be most appreciated.\nThanks.\nMohammad\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes",
+      "cooked_html": "<p>Dear all,</p>\n<p>We are performing a measurement of Z(NuNu)+gamma cross-section. The search observable is photon pT. We have two control regions for W+g (mu and e channels) in order estimate its contribution in the signal region via transfer factors estimated from MC. We followed the recipe given in [1].</p>\n<p>The the uncertainties on these transfer factors are correlated with the uncertainties of the other backgrounds in both the signal and control regions. For example, the photon ID scale factor uncertainty is fully correlated in all regions.</p>\n<p>We would like to implement this correlation in our Combine data cards and its not clear to us how to instruct Combine to enforce the correlation. If you have any suggestions, that would be most appreciated.</p>\n<p>Thanks.</p>\n<p>Mohammad</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes</a></p>"
+    }
+  ]
+}

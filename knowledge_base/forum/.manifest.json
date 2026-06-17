@@ -1,0 +1,3299 @@
+{
+  "scraped_at": "2026-06-15T14:58:31.988212+00:00",
+  "topics": {
+    "10079": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-17T10:19:30.576Z",
+      "post_count": 5,
+      "title": "Uncertainties when gmN = 0"
+    },
+    "10099": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-09T13:00:11.504Z",
+      "post_count": 4,
+      "title": "Blinding datacards by inserting Asimov rate for observed rates"
+    },
+    "10112": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-01T15:52:02.301Z",
+      "post_count": 6,
+      "title": "Combining workspaces, not data cards"
+    },
+    "10137": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-06T16:11:45.179Z",
+      "post_count": 3,
+      "title": "Impacts for search with --expectSignal 0 failing"
+    },
+    "10150": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-12T17:35:25.083Z",
+      "post_count": 5,
+      "title": "Details of the Goodness-of-Fit tests"
+    },
+    "10219": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-09T15:19:37.000Z",
+      "post_count": 6,
+      "title": "Incorporate sPlots in combine template fit"
+    },
+    "10237": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-10T13:48:04.114Z",
+      "post_count": 9,
+      "title": "AN-20-098 HiggsCombine non-zero signal strengt warning question"
+    },
+    "10333": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-11T15:18:01.177Z",
+      "post_count": 3,
+      "title": "Toy generation for unequal binning RooDataHist"
+    },
+    "10354": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-21T18:12:14.995Z",
+      "post_count": 5,
+      "title": "Issue with pdf from RooIntegralMorph function"
+    },
+    "10375": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-13T14:34:29.706Z",
+      "post_count": 5,
+      "title": "Using extArg in ABCD method"
+    },
+    "10391": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-17T09:54:14.829Z",
+      "post_count": 4,
+      "title": "Binned shape analysis"
+    },
+    "105372": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-01-29T17:23:49.927Z",
+      "post_count": 2,
+      "title": "Help to debug a zero pull"
+    },
+    "10590": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-18T15:16:45.896Z",
+      "post_count": 1,
+      "title": "\"*\" and \"!\" meanings while doing a s+b fit in combine"
+    },
+    "10684": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-20T10:11:29.000Z",
+      "post_count": 2,
+      "title": "MultiPdf in limit estimation"
+    },
+    "10813": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-07T18:52:38.914Z",
+      "post_count": 3,
+      "title": "Cannot compute CLs in HybridNew method"
+    },
+    "10820": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-24T10:41:37.000Z",
+      "post_count": 4,
+      "title": "S+B fit from workspace"
+    },
+    "10825": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-06T10:46:34.000Z",
+      "post_count": 4,
+      "title": "Discrete profiling for signal?"
+    },
+    "108363": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-02-04T08:21:50.777Z",
+      "post_count": 2,
+      "title": "Post-fit error bands from PostFitShapesFromWorkspace"
+    },
+    "108649": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-02-07T16:36:49.330Z",
+      "post_count": 3,
+      "title": "Signal Injection Test Bias"
+    },
+    "111788": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-02-11T13:54:51.315Z",
+      "post_count": 6,
+      "title": "Error using X-assign-flatParam-prior with freely floating pdf parameters"
+    },
+    "111981": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-02-11T11:44:55.604Z",
+      "post_count": 6,
+      "title": "Goodness-of-fit with p-value=1"
+    },
+    "114140": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-16T21:37:06.586Z",
+      "post_count": 6,
+      "title": "Help and suggestions on Discrete Profiling method"
+    },
+    "11623": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-15T15:57:46.000Z",
+      "post_count": 3,
+      "title": "Shifted pulls"
+    },
+    "116490": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-02-28T21:39:55.776Z",
+      "post_count": 7,
+      "title": "Methods of debugging when observed significance is significantly higher than expected significance"
+    },
+    "116564": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-02-21T14:36:47.000Z",
+      "post_count": 4,
+      "title": "Limits with difference CRs give different results"
+    },
+    "116755": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-02-26T10:27:44.413Z",
+      "post_count": 2,
+      "title": "Negative saturated GoF with toysF"
+    },
+    "116756": {
+      "accepted_answer_post_number": 5,
+      "last_posted_at": "2025-02-26T09:39:36.736Z",
+      "post_count": 7,
+      "title": "GoF saturated - are rateParams varied when generating toys"
+    },
+    "116807": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-16T13:22:25.540Z",
+      "post_count": 5,
+      "title": "A report on a problem from Combine"
+    },
+    "116825": {
+      "accepted_answer_post_number": 3,
+      "last_posted_at": "2025-03-13T10:24:30.368Z",
+      "post_count": 3,
+      "title": "Gof for binned SR and 1-bin CR"
+    },
+    "116826": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-02-26T22:10:29.989Z",
+      "post_count": 1,
+      "title": "How to manually implement Beeston-Barlow lite in RooFit+Combine"
+    },
+    "116844": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-02-27T18:12:48.855Z",
+      "post_count": 7,
+      "title": "Issue with data_obs Growth"
+    },
+    "11689": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-14T20:14:46.168Z",
+      "post_count": 2,
+      "title": "2D binned ML fit with Combine"
+    },
+    "116945": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-03T13:30:33.610Z",
+      "post_count": 3,
+      "title": "Get NLL(B) and NLL(S+B) from MultiDimFit"
+    },
+    "117209": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-06T10:09:52.548Z",
+      "post_count": 2,
+      "title": "How to obtain a signal strength as combine MarkovChainMC output"
+    },
+    "117314": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-06T13:56:58.436Z",
+      "post_count": 5,
+      "title": "Toy generation from postfit workspace"
+    },
+    "117337": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-05T15:49:31.884Z",
+      "post_count": 1,
+      "title": "Larger post-fit uncertainties cause missing pulls"
+    },
+    "117348": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-03-06T18:03:04.611Z",
+      "post_count": 3,
+      "title": "Interplay of saturated GoF and mcstats"
+    },
+    "117420": {
+      "accepted_answer_post_number": 4,
+      "last_posted_at": "2025-03-10T16:08:41.000Z",
+      "post_count": 4,
+      "title": "Simultaneous fit with different fitting ranges in combine"
+    },
+    "117574": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-11T02:25:57.362Z",
+      "post_count": 3,
+      "title": "How to manually specify observables to combine"
+    },
+    "11780": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-16T16:04:03.000Z",
+      "post_count": 2,
+      "title": "Background estimation via transfer factors and uncertainty correlations"
+    },
+    "11781": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-16T16:14:17.128Z",
+      "post_count": 1,
+      "title": "Background estimation via transfer factors and uncertainty correlations"
+    },
+    "118044": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-12T09:36:12.733Z",
+      "post_count": 3,
+      "title": "Background-only impacts plots"
+    },
+    "118047": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-11T19:35:12.569Z",
+      "post_count": 2,
+      "title": "Observed limit much higher than expected with AsymptoticLimits"
+    },
+    "118148": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-13T10:24:56.940Z",
+      "post_count": 9,
+      "title": "Fit failure in impact plots doInitialFit step"
+    },
+    "119115": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-18T18:11:05.000Z",
+      "post_count": 7,
+      "title": "Non-commuting categories in combine fit"
+    },
+    "119262": {
+      "accepted_answer_post_number": 3,
+      "last_posted_at": "2025-03-21T10:31:52.000Z",
+      "post_count": 4,
+      "title": "Problems with likelihood calculation"
+    },
+    "119513": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-28T13:57:55.235Z",
+      "post_count": 4,
+      "title": "An over-constrained luminosity uncertainty"
+    },
+    "12039": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-06T07:03:08.881Z",
+      "post_count": 12,
+      "title": "Using autoMCstats giving error"
+    },
+    "12070": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-27T12:19:21.307Z",
+      "post_count": 4,
+      "title": "P-value or significance for `ChannelCompatibilityCheck` fits"
+    },
+    "12074": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-27T15:02:24.246Z",
+      "post_count": 3,
+      "title": "Uncertainty on the FitDiagnostics signal strength when using the discrete profiling method"
+    },
+    "121300": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-01T10:51:31.909Z",
+      "post_count": 5,
+      "title": "Goodness Of Fit with only poisson"
+    },
+    "121463": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-02T11:44:59.828Z",
+      "post_count": 3,
+      "title": "BiasTest question"
+    },
+    "122496": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-07T11:23:09.814Z",
+      "post_count": 1,
+      "title": "Signal significance with toys"
+    },
+    "122522": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-04-07T14:46:15.933Z",
+      "post_count": 3,
+      "title": "How to debug text2workspace.py Segfault"
+    },
+    "122712": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-08T15:16:04.994Z",
+      "post_count": 5,
+      "title": "Shape (for signal) and LnN (for minor backgrounds) implementation for a nuisance parameter in datacard"
+    },
+    "12272": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-06-29T15:13:34.916Z",
+      "post_count": 1,
+      "title": "Use of RooMorphingPdf"
+    },
+    "122839": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-09T13:31:39.000Z",
+      "post_count": 6,
+      "title": "AsymptoticLimits failed for \"search for crossing of r_bbH between 0.000266 and 0.001063 failed\""
+    },
+    "122918": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-10T08:55:55.399Z",
+      "post_count": 3,
+      "title": "Is combined NLL a sum of individual NLL?"
+    },
+    "123034": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-20T09:34:46.000Z",
+      "post_count": 13,
+      "title": "S+B and B fit in MultiDimFit"
+    },
+    "123766": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-14T13:58:20.085Z",
+      "post_count": 1,
+      "title": "Issue for one-sided pulls and bad goodness of fitness"
+    },
+    "123829": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-16T11:47:51.985Z",
+      "post_count": 2,
+      "title": "How to Profile Signal Samples Discretely"
+    },
+    "123962": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-28T10:46:07.298Z",
+      "post_count": 11,
+      "title": "How to get NLL from MultiDimFit"
+    },
+    "124017": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-22T16:10:41.535Z",
+      "post_count": 3,
+      "title": "How make background only fit in S+B model"
+    },
+    "124032": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-04-23T15:11:07.122Z",
+      "post_count": 3,
+      "title": "Combine failing to recognize `flatParam` that exists in RooWorkspace"
+    },
+    "124110": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-05-30T10:31:24.570Z",
+      "post_count": 17,
+      "title": "Save and use snapshot"
+    },
+    "124317": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-05-16T09:15:19.892Z",
+      "post_count": 9,
+      "title": "Multidimensional likelihood scan on promoted nuisance parameters gives error"
+    },
+    "124509": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-05-06T11:50:43.069Z",
+      "post_count": 3,
+      "title": "Segmentation fault (core dumped) when combining multiple channels"
+    },
+    "124620": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-05-08T18:44:03.048Z",
+      "post_count": 5,
+      "title": "Cannot reproduce limits of a published analysis which is included in an upcoming combination paper"
+    },
+    "124721": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-05-15T14:43:38.610Z",
+      "post_count": 5,
+      "title": "fitDiagnostics blows up pre-fit error bars"
+    },
+    "12478": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-06T12:25:40.216Z",
+      "post_count": 6,
+      "title": "Setting limits on Wilson coefficients using output of parametrised neural network"
+    },
+    "124977": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-06-05T10:30:58.365Z",
+      "post_count": 2,
+      "title": "MH_points and MH in datacard CI"
+    },
+    "125147": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-06-01T03:53:27.920Z",
+      "post_count": 3,
+      "title": "Issues with combine-standalone"
+    },
+    "12520": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-24T21:19:52.000Z",
+      "post_count": 10,
+      "title": "Fluctuations in Upper 95 CL Limits in Parametric Unbinned Model"
+    },
+    "125264": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-05-28T09:47:23.672Z",
+      "post_count": 6,
+      "title": "Connection between likelihood scan of NP and best fit in impact plots"
+    },
+    "125651": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-06-06T01:11:34.035Z",
+      "post_count": 1,
+      "title": "B2G-24-016 questions regarding significance and limits results"
+    },
+    "125883": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-06-12T14:42:02.203Z",
+      "post_count": 1,
+      "title": "Help for combine Impact Plot"
+    },
+    "125894": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-06-19T22:49:17.571Z",
+      "post_count": 3,
+      "title": "Issue making prefit snapshot file"
+    },
+    "125904": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-06-13T13:53:16.043Z",
+      "post_count": 5,
+      "title": "Implementing regularisation terms in the datacard"
+    },
+    "125908": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-06-25T14:08:09.755Z",
+      "post_count": 8,
+      "title": "Clarification on Constraining Signal and Background Normalisations in Combine"
+    },
+    "125946": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-06-19T13:41:12.229Z",
+      "post_count": 3,
+      "title": "Unexpected behavior in Combine with analytical pdf on binned background template"
+    },
+    "126166": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-06-20T13:22:22.366Z",
+      "post_count": 3,
+      "title": "Warning in FitDiagnostics"
+    },
+    "12631": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-08T11:30:45.165Z",
+      "post_count": 3,
+      "title": "Discrete profiling method does not pick the PDF that gives the maximum likelihood"
+    },
+    "126352": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-06-25T22:55:52.529Z",
+      "post_count": 8,
+      "title": "Accuracy of expected upper limits"
+    },
+    "126426": {
+      "accepted_answer_post_number": 4,
+      "last_posted_at": "2025-07-14T09:32:01.174Z",
+      "post_count": 6,
+      "title": "Problem setting up the latest version of combine"
+    },
+    "126510": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-05T09:34:56.834Z",
+      "post_count": 2,
+      "title": "Impact Fit Fail for Majority of Parameters and One-Sided Fit"
+    },
+    "126551": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-07-22T12:55:58.111Z",
+      "post_count": 3,
+      "title": "Fits fail for impacts"
+    },
+    "126780": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-07-11T14:59:29.674Z",
+      "post_count": 2,
+      "title": "Issue with fit minimization not converging"
+    },
+    "127265": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-07-15T06:27:23.955Z",
+      "post_count": 2,
+      "title": "Strange Bias test results from combined category"
+    },
+    "12736": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-11T14:11:06.861Z",
+      "post_count": 3,
+      "title": "How to use combine tool to perform the ABCD method bin by bin"
+    },
+    "12778": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-13T13:55:54.049Z",
+      "post_count": 3,
+      "title": "Too large impact by individual JES source uncertainty comparing with impact by total JES uncertainty"
+    },
+    "12787": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-12T20:46:45.079Z",
+      "post_count": 5,
+      "title": "One-sidede uncertianty and impact of the background function parameters when using discrete profiling method"
+    },
+    "127926": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-07-31T07:06:25.039Z",
+      "post_count": 2,
+      "title": "GoF saturated test distribution peaked at 0. Is it expected or is there a mistake?"
+    },
+    "128058": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-29T21:15:29.000Z",
+      "post_count": 11,
+      "title": "Post-fit yields with stat and syst separate"
+    },
+    "12889": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-01T17:21:26.832Z",
+      "post_count": 3,
+      "title": "Pulls and impacts on the Asimov dataset"
+    },
+    "12892": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-09T13:47:48.948Z",
+      "post_count": 5,
+      "title": "Negative significance with toys"
+    },
+    "128928": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-05T12:06:35.855Z",
+      "post_count": 3,
+      "title": "Background-only toys: Different variables, same seed"
+    },
+    "128954": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-08-20T21:28:32.000Z",
+      "post_count": 3,
+      "title": "Asymmetric Shrinkage of \u00b1\u03c3 Bands in Full CLs (--HybridNew) Compared to the Asymptotic Approach"
+    },
+    "129044": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-08-22T15:19:23.000Z",
+      "post_count": 6,
+      "title": "Fit issue after parameterization of background models"
+    },
+    "129139": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-12T17:35:42.099Z",
+      "post_count": 3,
+      "title": "Issue fitting signal over resonant background"
+    },
+    "129214": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-08-18T10:14:27.823Z",
+      "post_count": 3,
+      "title": "Questions Regarding Simultaneous Fit Scenarios in Combine"
+    },
+    "129825": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-08-22T14:12:35.595Z",
+      "post_count": 6,
+      "title": "Likelihood scan using CMS Combine"
+    },
+    "130063": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-08-25T10:38:16.865Z",
+      "post_count": 2,
+      "title": "Shape-only analysis"
+    },
+    "130272": {
+      "accepted_answer_post_number": 6,
+      "last_posted_at": "2025-09-03T03:25:27.231Z",
+      "post_count": 6,
+      "title": "Problem calculate observed and expected limits from crab output grid files"
+    },
+    "131325": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-09T19:31:22.505Z",
+      "post_count": 5,
+      "title": "FitDiagnostics output file missing a tree"
+    },
+    "131994": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-22T14:53:26.101Z",
+      "post_count": 15,
+      "title": "High failing rate for global significance calculation"
+    },
+    "132046": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-26T15:21:21.526Z",
+      "post_count": 3,
+      "title": "Adding yields and uncertainties output by FitDiagnostics"
+    },
+    "132401": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-09-22T04:43:08.729Z",
+      "post_count": 1,
+      "title": "Regarding ABCD method for QCD estimation"
+    },
+    "133341": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-10-02T12:52:25.468Z",
+      "post_count": 2,
+      "title": "How to get deltaNLL from discrete profiling"
+    },
+    "133362": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-19T17:10:06.261Z",
+      "post_count": 9,
+      "title": "Strange bias test results after including ``autoMCstat``"
+    },
+    "13344": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-07-28T07:11:39.425Z",
+      "post_count": 2,
+      "title": "Recalculate minimum of NLL scan?"
+    },
+    "133813": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-10-15T16:15:36.969Z",
+      "post_count": 3,
+      "title": "Distributions of the toys outputs"
+    },
+    "134293": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-10-13T13:33:58.000Z",
+      "post_count": 2,
+      "title": "Making a likelihood scan with postfit Asimov"
+    },
+    "13433": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-01T13:37:33.524Z",
+      "post_count": 3,
+      "title": "How to properly interpret channel compatibility results?"
+    },
+    "134746": {
+      "accepted_answer_post_number": 3,
+      "last_posted_at": "2025-10-20T17:24:29.826Z",
+      "post_count": 3,
+      "title": "Systematically asymmetric impacts of nuisance parameters due to offest"
+    },
+    "135078": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-10-22T10:08:50.721Z",
+      "post_count": 2,
+      "title": "Unfolding using Combine: combination (semilep+dilep) workspace mapping"
+    },
+    "135169": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-10-28T16:31:52.522Z",
+      "post_count": 8,
+      "title": "COMBINE Physics model for simultaneous measurements"
+    },
+    "135222": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-10-31T15:34:09.390Z",
+      "post_count": 13,
+      "title": "Significance calculation in discrete profiling"
+    },
+    "13530": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-03T14:54:50.372Z",
+      "post_count": 3,
+      "title": "Acceptable Goodness-of-Fit distributions"
+    },
+    "136112": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-01-12T08:08:48.028Z",
+      "post_count": 3,
+      "title": "Significance with Toys always inf -nan/+-nan"
+    },
+    "13666": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-05T13:57:53.159Z",
+      "post_count": 2,
+      "title": "Fit is not performing well in some bins"
+    },
+    "136721": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-05T20:30:36.859Z",
+      "post_count": 12,
+      "title": "Help with Combine issues for H\u2192aa\u2192mmtt, Run 2 analysis (SUS-23-005)"
+    },
+    "137088": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2025-11-14T15:28:46.711Z",
+      "post_count": 2,
+      "title": "combineCreateNLL not properly integrated with pyROOT on with combine v10.2.0 onwards"
+    },
+    "137473": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-11-14T11:00:58.769Z",
+      "post_count": 5,
+      "title": "One NP dropped during fitDiagnostics"
+    },
+    "13777": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-11T12:11:11.616Z",
+      "post_count": 9,
+      "title": "Expected upper limit with toys"
+    },
+    "13788": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-11T19:06:15.171Z",
+      "post_count": 5,
+      "title": "P.d.f negative error in AsymptoticLimits but not in FitDiagnostics"
+    },
+    "138780": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-11-19T14:44:38.174Z",
+      "post_count": 2,
+      "title": "CMSHistSum vs. CMSHistErrorPropagator"
+    },
+    "138817": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-11-24T12:43:58.845Z",
+      "post_count": 2,
+      "title": "Parametrization of shape systematics vs POI"
+    },
+    "139130": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-11-24T10:45:48.744Z",
+      "post_count": 3,
+      "title": "Review Invitation for the HIG-25-011 Hypothesis Test on the SM HZZ Polarization Fraction"
+    },
+    "139253": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-11-24T18:20:11.168Z",
+      "post_count": 3,
+      "title": "Seg fault when importing CombineHarvester and some numpy versions"
+    },
+    "139305": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-11-25T15:50:52.238Z",
+      "post_count": 1,
+      "title": "Overconstraints appearing when combining regions"
+    },
+    "139451": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-01T09:11:30.566Z",
+      "post_count": 2,
+      "title": "autoMCstats"
+    },
+    "139609": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-02T12:16:43.078Z",
+      "post_count": 2,
+      "title": "Combine survey"
+    },
+    "139640": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-05T17:08:09.467Z",
+      "post_count": 6,
+      "title": "Understanding different significance results"
+    },
+    "139738": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-07T15:29:23.000Z",
+      "post_count": 6,
+      "title": "Fit failed in `FitDiagnostics` method"
+    },
+    "140212": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-22T11:01:18.305Z",
+      "post_count": 5,
+      "title": "Stability of Upper Limit Extraction in Combine for Extremely Low Signal-to-Background Template Fits"
+    },
+    "140245": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-19T05:32:51.647Z",
+      "post_count": 1,
+      "title": "About fit failure of impact calculations"
+    },
+    "140247": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-12-19T15:26:35.063Z",
+      "post_count": 3,
+      "title": "Warning when running FitDiagnostics"
+    },
+    "140430": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-01-05T18:45:18.359Z",
+      "post_count": 3,
+      "title": "Question about toy generatios"
+    },
+    "140468": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-01-07T17:46:17.253Z",
+      "post_count": 5,
+      "title": "Bin-to-bin correlations in combine"
+    },
+    "140477": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-01-06T18:59:53.664Z",
+      "post_count": 1,
+      "title": "Initial fit does not find true minimum Combine"
+    },
+    "140512": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-13T08:46:42.842Z",
+      "post_count": 9,
+      "title": "Difference in initial fit result in toy generation vs using toy as a dataset"
+    },
+    "14091": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-19T12:05:52.965Z",
+      "post_count": 3,
+      "title": "Permanently freeze scale parameters?"
+    },
+    "14109": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-20T21:12:16.005Z",
+      "post_count": 3,
+      "title": "Signal scaling with different function but same POI"
+    },
+    "141272": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-01-28T15:01:01.822Z",
+      "post_count": 6,
+      "title": "Issue with RooFFTConvPDF + FitDiagnostics + --plots"
+    },
+    "141321": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-01-25T09:38:28.428Z",
+      "post_count": 1,
+      "title": "Problem with snapshot"
+    },
+    "141488": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-12T19:26:56.574Z",
+      "post_count": 5,
+      "title": "Shifted values of SignalPOIs between syst+stat and stat only fits"
+    },
+    "141504": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-01-29T14:13:50.155Z",
+      "post_count": 4,
+      "title": "Signal Strength Modifier Ranges"
+    },
+    "141538": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-02T12:18:15.000Z",
+      "post_count": 4,
+      "title": "Cannot get InitialFit to work for data_noSignal Impacts"
+    },
+    "141644": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-19T21:40:33.000Z",
+      "post_count": 6,
+      "title": "Help with bias in combine fits"
+    },
+    "141651": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-03T12:41:19.000Z",
+      "post_count": 2,
+      "title": "Validation of five-POI simultaneous differential A_C Combine fit"
+    },
+    "141689": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-03T22:22:39.302Z",
+      "post_count": 4,
+      "title": "PostFitShapesFromWorkspace: histogram errors smaller than printed fractions"
+    },
+    "141928": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-11T16:22:17.833Z",
+      "post_count": 1,
+      "title": "Next Combine tutorial"
+    },
+    "141934": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-13T16:51:35.947Z",
+      "post_count": 3,
+      "title": "Problem running Combine on CRAB"
+    },
+    "141947": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-12T12:43:23.183Z",
+      "post_count": 4,
+      "title": "Multi-analysis impact and pulls"
+    },
+    "141951": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-20T14:37:31.142Z",
+      "post_count": 13,
+      "title": "Difference in binErrors before and after fitDiagnostics in `prefit` shapes"
+    },
+    "141983": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-14T16:42:08.198Z",
+      "post_count": 3,
+      "title": "Plot likelihood scans for many POIs"
+    },
+    "142141": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-02-19T14:04:03.000Z",
+      "post_count": 6,
+      "title": "Combine FitDiagnostics failure with zero events in the signal region"
+    },
+    "142151": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-25T13:42:11.607Z",
+      "post_count": 4,
+      "title": "Large prefit uncertainty using FitDiagnostics"
+    },
+    "142397": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-04T12:22:33.804Z",
+      "post_count": 8,
+      "title": "Significance with multiple POIs"
+    },
+    "14241": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-08-25T09:32:50.000Z",
+      "post_count": 6,
+      "title": "Issues with unbinned shape analysis using discrete profiling"
+    },
+    "142411": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-19T10:55:04.614Z",
+      "post_count": 9,
+      "title": "Comparison between MarkovChainMC method in Combine and external tool"
+    },
+    "142439": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-05T09:18:22.519Z",
+      "post_count": 2,
+      "title": "Significance with zero background and a small upper uncertainty"
+    },
+    "142546": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-20T14:20:20.375Z",
+      "post_count": 2,
+      "title": "Impact order changes after renaming of nuisance parameters"
+    },
+    "142624": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-04T10:21:04.151Z",
+      "post_count": 1,
+      "title": "Simultaneous Fit of S+B and B distribution"
+    },
+    "142813": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-10T15:40:14.723Z",
+      "post_count": 8,
+      "title": "Pulls for nuisances could not be computed"
+    },
+    "142815": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-10T09:25:00.801Z",
+      "post_count": 2,
+      "title": "Approaches for correlating shapeN and shape nuisances"
+    },
+    "142928": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-13T10:41:05.785Z",
+      "post_count": 5,
+      "title": "Statistical uncertainties on the MC signal, a simple question"
+    },
+    "142937": {
+      "accepted_answer_post_number": 10,
+      "last_posted_at": "2026-05-04T10:12:03.472Z",
+      "post_count": 11,
+      "title": "Spikes in regularization \ud835\udeff scans"
+    },
+    "142991": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-13T15:59:41.960Z",
+      "post_count": 3,
+      "title": "Is it possible to use RooParametricHist for one process and still use autoMCStats for the others"
+    },
+    "143006": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-17T13:04:26.250Z",
+      "post_count": 3,
+      "title": "Handling of rateParam in HybridNew/AsymptoticLimits"
+    },
+    "143351": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-03-23T19:39:45.658Z",
+      "post_count": 3,
+      "title": "Signal injection test commands"
+    },
+    "143395": {
+      "accepted_answer_post_number": 6,
+      "last_posted_at": "2026-03-25T18:35:38.384Z",
+      "post_count": 6,
+      "title": "Debugging FitDiagnostics / Closed range without finding crossing"
+    },
+    "143693": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-03T10:01:12.000Z",
+      "post_count": 2,
+      "title": "Extended likelihood fit converging to negative n_sig \u2014 seeking input on treatment"
+    },
+    "143770": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-07T09:03:00.370Z",
+      "post_count": 4,
+      "title": "Problematic Post fit normalisations"
+    },
+    "143940": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-13T12:57:52.633Z",
+      "post_count": 3,
+      "title": "Non-parabolic likelihood shapes"
+    },
+    "144106": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-17T00:09:39.796Z",
+      "post_count": 1,
+      "title": "Stability of signal injection test fit interval using singles algo in Combine"
+    },
+    "144117": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-18T17:25:07.969Z",
+      "post_count": 3,
+      "title": "Goodness of Fit for many POIs and channels"
+    },
+    "144224": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-20T16:06:43.810Z",
+      "post_count": 1,
+      "title": "Compilaiton failure on lxplus el9"
+    },
+    "144322": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-23T12:43:32.001Z",
+      "post_count": 3,
+      "title": "Scaling shape systematics"
+    },
+    "144347": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2026-04-23T17:51:47.972Z",
+      "post_count": 3,
+      "title": "Unwanted behavior of impacts plots routine with '--toysFrequentist'"
+    },
+    "144631": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-05-05T10:59:40.606Z",
+      "post_count": 7,
+      "title": "Question about discrete profiling: NLL for background"
+    },
+    "144699": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-05-04T21:00:21.562Z",
+      "post_count": 1,
+      "title": "Negative Bins in Shape Variations"
+    },
+    "14510": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-09-06T09:35:19.336Z",
+      "post_count": 4,
+      "title": "Fit failure at doInitialFit stage"
+    },
+    "145225": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-05-21T07:36:27.386Z",
+      "post_count": 4,
+      "title": "itDiagnostics Asimov closure check for Combine review when POI is not r"
+    },
+    "145358": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-05-26T13:04:10.176Z",
+      "post_count": 6,
+      "title": "Post-fit distributions: histogram normalization"
+    },
+    "145422": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-05-27T15:04:43.171Z",
+      "post_count": 1,
+      "title": "Change of the labels/Title size"
+    },
+    "14591": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-09-05T16:31:10.000Z",
+      "post_count": 8,
+      "title": "Combine Envelope Method Quitting with No Limit Output"
+    },
+    "14735": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-09-06T19:39:34.802Z",
+      "post_count": 3,
+      "title": "Jump in likelihood profile"
+    },
+    "15010": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-09-16T14:09:54.519Z",
+      "post_count": 4,
+      "title": "Per-process channel yields with autoMCStats"
+    },
+    "15061": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-03T10:25:17.030Z",
+      "post_count": 7,
+      "title": "Likelihood scans using GSLMultiMin over Minuit2 for final results in paper"
+    },
+    "15097": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-09-26T10:25:58.669Z",
+      "post_count": 4,
+      "title": "Parameter aliases"
+    },
+    "15285": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-05T13:25:27.412Z",
+      "post_count": 3,
+      "title": "MultiDimFit and FitDiagnostics with `--robustHesse 1`"
+    },
+    "15564": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-09-29T08:33:47.216Z",
+      "post_count": 2,
+      "title": "Shape Systematic Uncertainties in Unbinned Parametric Fit Model"
+    },
+    "15578": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-07T13:26:03.953Z",
+      "post_count": 6,
+      "title": "Parameter values in toys with toysFrequentist option"
+    },
+    "15891": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-04T21:59:14.267Z",
+      "post_count": 2,
+      "title": "MultiDimFit options"
+    },
+    "15934": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-04-17T11:29:07.959Z",
+      "post_count": 11,
+      "title": "Accelerating Postfits (FitDiagnostics)"
+    },
+    "15995": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-07T09:32:13.596Z",
+      "post_count": 2,
+      "title": "RooAbsReal::logEvalError(model_s) evaluation error"
+    },
+    "16121": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-11T08:14:32.885Z",
+      "post_count": 5,
+      "title": "One-sidede uncertianty and impact of bkg function parameters with the discrete profiling method"
+    },
+    "16228": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-14T08:12:01.241Z",
+      "post_count": 6,
+      "title": "Number of toys for the uncertainty bands in prefit/postfit plots"
+    },
+    "16230": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-13T16:53:33.361Z",
+      "post_count": 4,
+      "title": "Postfit uncertainty band size in analyses with enormous number of events"
+    },
+    "16268": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-14T09:23:52.725Z",
+      "post_count": 3,
+      "title": "toysFrequentist and toysFile options"
+    },
+    "16270": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-14T09:27:04.450Z",
+      "post_count": 3,
+      "title": "Understanding the memory pattern as a function of toys"
+    },
+    "16544": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-10-21T10:04:06.900Z",
+      "post_count": 5,
+      "title": "Question about upper limits"
+    },
+    "16781": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2022-10-28T15:03:33.424Z",
+      "post_count": 3,
+      "title": "Freezing subset of POIs in likelihood scan"
+    },
+    "17036": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-11-08T18:44:06.061Z",
+      "post_count": 3,
+      "title": "Bias Test with signal strength 0"
+    },
+    "17037": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-30T12:26:19.788Z",
+      "post_count": 7,
+      "title": "No valid high-error found for MultiDimFit!"
+    },
+    "17239": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-11-09T10:56:35.672Z",
+      "post_count": 2,
+      "title": "Correlations in Unbinned Parametric Fit"
+    },
+    "17280": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-11-10T03:00:11.404Z",
+      "post_count": 3,
+      "title": "Using Combine for bias tests (Crash)"
+    },
+    "17670": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-11-22T09:00:26.380Z",
+      "post_count": 3,
+      "title": "Extract asymmetry using physics model"
+    },
+    "17677": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-11-28T14:11:42.681Z",
+      "post_count": 4,
+      "title": "Fluctuations in combine fit using Morphing"
+    },
+    "17850": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-11-24T12:21:51.239Z",
+      "post_count": 5,
+      "title": "High uncertainty on r in pull-impacts"
+    },
+    "17876": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-11-23T13:40:35.000Z",
+      "post_count": 4,
+      "title": "Using 2D histograms as inputs for estimating limits"
+    },
+    "18199": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-12-01T06:21:41.704Z",
+      "post_count": 2,
+      "title": "Largely asymmetric systematic uncertainties"
+    },
+    "18406": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-12-08T09:56:23.538Z",
+      "post_count": 2,
+      "title": "Function value nan while computing limit"
+    },
+    "18537": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-12-12T07:54:15.853Z",
+      "post_count": 2,
+      "title": "--trackParameters in AsymptoticLimits"
+    },
+    "18599": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-06T14:39:45.051Z",
+      "post_count": 8,
+      "title": "Understanding inconsistent channel masking results"
+    },
+    "18612": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-08T10:37:02.746Z",
+      "post_count": 10,
+      "title": "Toys in combine with multiple POIs"
+    },
+    "18642": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-12-15T14:17:39.341Z",
+      "post_count": 3,
+      "title": "How to freeze constrained nuisances and PDF indices simultaneously?"
+    },
+    "19016": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-01-18T08:43:10.146Z",
+      "post_count": 8,
+      "title": "GOF for background fit only with sidebands"
+    },
+    "19142": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-01-12T13:03:42.133Z",
+      "post_count": 3,
+      "title": "How to use combine with DATA only"
+    },
+    "19298": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-10T14:37:23.282Z",
+      "post_count": 6,
+      "title": "Computing expected blind limits with HybridNew"
+    },
+    "19401": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-01-22T12:38:06.473Z",
+      "post_count": 3,
+      "title": "Upper Limits with partially correlated measurements"
+    },
+    "19916": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-06T19:41:54.265Z",
+      "post_count": 4,
+      "title": "Error warning while using Combine"
+    },
+    "20047": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-06T19:33:32.717Z",
+      "post_count": 3,
+      "title": "Running scans while freezing autoMCstats nuisances"
+    },
+    "20288": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-14T08:34:53.587Z",
+      "post_count": 7,
+      "title": "Use combine to get fit results for both signal and background"
+    },
+    "20332": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-15T21:21:23.237Z",
+      "post_count": 11,
+      "title": "Combine's math for optimizing systematics"
+    },
+    "20344": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-16T15:22:20.296Z",
+      "post_count": 5,
+      "title": "Shape variations for the RooParametricHist (RooParametricHist::addMorphs)"
+    },
+    "20504": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-20T10:46:44.330Z",
+      "post_count": 2,
+      "title": "flatParam for rateParam example"
+    },
+    "20672": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-23T21:10:39.292Z",
+      "post_count": 6,
+      "title": "Channel compatibility test fails: Parameter not found in the RooFitResult"
+    },
+    "20735": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-24T14:23:14.000Z",
+      "post_count": 3,
+      "title": "\"Segmentation fault\" in Combine"
+    },
+    "20967": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-04-15T07:20:19.114Z",
+      "post_count": 29,
+      "title": "Postfit uncertainty bands very large"
+    },
+    "21126": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-07T09:06:57.777Z",
+      "post_count": 2,
+      "title": "Restrict range of nuisance parameter parametrizing an efficiency"
+    },
+    "2113": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-07-23T08:00:39.000Z",
+      "post_count": 7,
+      "title": "Help with writing PhysicsModel for tagging scale factor derivation"
+    },
+    "2119": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-10T18:24:11.000Z",
+      "post_count": 7,
+      "title": "Re: Flag used for the FitDiagnostics"
+    },
+    "2122": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-07-26T15:37:07.000Z",
+      "post_count": 7,
+      "title": "Goodness-of-fit in more detail in Combine for studying agreement between control regions"
+    },
+    "2124": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-07-20T11:35:49.000Z",
+      "post_count": 1,
+      "title": "Re: combineTool ImpactsFromScans"
+    },
+    "21257": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-20T18:27:10.923Z",
+      "post_count": 13,
+      "title": "Wrong error bar in the binned fit in Combine"
+    },
+    "2127": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-07-23T17:30:28.000Z",
+      "post_count": 6,
+      "title": "Limits using B-fit only"
+    },
+    "2128": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-11T13:44:43.000Z",
+      "post_count": 9,
+      "title": "Getting NAN value while doing postfit plot"
+    },
+    "21285": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-14T08:21:44.280Z",
+      "post_count": 3,
+      "title": "Unbinned Shape Analysis using Combine tool"
+    },
+    "2130": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-07-26T14:58:24.000Z",
+      "post_count": 3,
+      "title": "Technicalities about FitDiagnostics --saveShapes and --saveWithUncertainties"
+    },
+    "2131": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-17T09:05:12.000Z",
+      "post_count": 5,
+      "title": "Errors bars on data points from FitDiagnostics"
+    },
+    "2132": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-07-28T07:48:53.000Z",
+      "post_count": 2,
+      "title": "Constraint line with combineCards"
+    },
+    "2134": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-03T09:13:14.000Z",
+      "post_count": 1,
+      "title": "Process renaming?"
+    },
+    "2135": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-03T09:36:48.000Z",
+      "post_count": 1,
+      "title": "Re: Process renaming?"
+    },
+    "2136": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-04T17:06:09.000Z",
+      "post_count": 3,
+      "title": "Differences between STXS Analysis and Likelihood Unfolding"
+    },
+    "2137": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-09T09:49:38.000Z",
+      "post_count": 2,
+      "title": "Potential bug in Combine `calculate_pulls.py` for pull definition `unconstPullAsym`"
+    },
+    "2139": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-10T13:25:58.000Z",
+      "post_count": 2,
+      "title": "Simplified likelihood runs forever"
+    },
+    "2140": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-07T10:01:18.000Z",
+      "post_count": 1,
+      "title": "Acquiring postfit nuisance templates to compare to prefit"
+    },
+    "2141": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-07T19:24:21.000Z",
+      "post_count": 1,
+      "title": "Re: Acquiring postfit nuisance templates to compare to prefit"
+    },
+    "2144": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-11T09:42:55.000Z",
+      "post_count": 4,
+      "title": "Combine versions changing limits in MultiDimFit"
+    },
+    "2145": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-10-29T19:36:17.000Z",
+      "post_count": 4,
+      "title": "Large datacard in combine"
+    },
+    "2146": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-14T11:03:05.000Z",
+      "post_count": 8,
+      "title": "Limits from Simplified Likelihood"
+    },
+    "2147": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-12T18:09:32.000Z",
+      "post_count": 1,
+      "title": "Re: Limits from Simplified Likelihood"
+    },
+    "2148": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-16T12:25:12.000Z",
+      "post_count": 9,
+      "title": "Using snapshots from initial fit for nuisance pulls and impacts"
+    },
+    "2151": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-18T18:53:32.000Z",
+      "post_count": 2,
+      "title": "Parametrization of the signal strength parameters for MLF"
+    },
+    "2156": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-08-28T21:59:34.000Z",
+      "post_count": 5,
+      "title": "Issue with using combine"
+    },
+    "21576": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-17T23:17:56.640Z",
+      "post_count": 3,
+      "title": "Abnormal postfit uncertainty"
+    },
+    "2161": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-14T20:12:22.000Z",
+      "post_count": 1,
+      "title": "Question on template morphing algorithm"
+    },
+    "2162": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-15T10:35:05.000Z",
+      "post_count": 3,
+      "title": "Re: Question on template morphing algorithm"
+    },
+    "2163": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-20T11:24:39.000Z",
+      "post_count": 6,
+      "title": "combineCards functionality in combineTool"
+    },
+    "2164": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-17T04:08:31.000Z",
+      "post_count": 1,
+      "title": "Questions on the uncertainty breakdown by Higgs combine tool"
+    },
+    "2165": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-21T02:45:53.000Z",
+      "post_count": 6,
+      "title": "Questions on the uncertainty breakdown by Higgs combine tool"
+    },
+    "2167": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-20T10:31:03.000Z",
+      "post_count": 1,
+      "title": "Running blind with ABCD in the datacard"
+    },
+    "2168": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-10-29T09:23:07.000Z",
+      "post_count": 4,
+      "title": "Re: Running blind with ABCD in the datacard"
+    },
+    "21686": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-23T13:55:09.000Z",
+      "post_count": 3,
+      "title": "MC stat. unc. and RooParametricHisto"
+    },
+    "2171": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-24T20:30:49.000Z",
+      "post_count": 2,
+      "title": "Decreased observed search significance after combination of analyses"
+    },
+    "2172": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-09-24T16:23:23.000Z",
+      "post_count": 1,
+      "title": "Observed significance calculated from HybridNew method"
+    },
+    "2178": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-12-15T13:40:41.979Z",
+      "post_count": 18,
+      "title": "Compatibility between fits"
+    },
+    "2181": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-05T12:37:58.000Z",
+      "post_count": 14,
+      "title": "Regarding the consideration of background function parameters in combine for envelop method"
+    },
+    "2182": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-10-21T12:59:45.000Z",
+      "post_count": 5,
+      "title": "Studying fit model in categories with shared rate parameters"
+    },
+    "2183": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-10-15T09:29:11.000Z",
+      "post_count": 3,
+      "title": "Including contraint in signal model"
+    },
+    "2188": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-10-22T17:39:42.000Z",
+      "post_count": 5,
+      "title": "Pre-fit covariance matrix"
+    },
+    "2189": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-05T14:55:44.000Z",
+      "post_count": 10,
+      "title": "Difference in excess between AsymptoticLimits and Significance"
+    },
+    "2191": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-10-29T08:58:00.000Z",
+      "post_count": 3,
+      "title": "Question about accuracy of fit"
+    },
+    "2192": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-02-07T10:31:00.457Z",
+      "post_count": 2,
+      "title": "Issues with non converging MultiDimFit for pulls and impacts"
+    },
+    "21928": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-29T16:39:42.846Z",
+      "post_count": 5,
+      "title": "Different limits with seemingly same uncertainties"
+    },
+    "2193": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-10-30T21:12:47.000Z",
+      "post_count": 2,
+      "title": "Question about limit calculation"
+    },
+    "2196": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-03T19:17:24.000Z",
+      "post_count": 4,
+      "title": "Toy data from GenerateOnly not distributed as I'd expect"
+    },
+    "2197": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-04T06:43:35.000Z",
+      "post_count": 3,
+      "title": "Understanding very tiny impacts"
+    },
+    "2198": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-04T09:03:04.000Z",
+      "post_count": 2,
+      "title": "A question on how to implement Hessian PDF uncertainty"
+    },
+    "2199": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-04T18:00:50.000Z",
+      "post_count": 10,
+      "title": "Re: A question on how to implement Hessian PDF uncertainty"
+    },
+    "22034": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-03-31T12:52:34.689Z",
+      "post_count": 4,
+      "title": "Question on how to veto within combine"
+    },
+    "2204": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-10T16:11:54.000Z",
+      "post_count": 4,
+      "title": "Re: Unbinned Fit - POI Interpolation and Systematics"
+    },
+    "22161": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-04-04T17:27:20.578Z",
+      "post_count": 5,
+      "title": "Postfit Distributions using Asimov Dataset"
+    },
+    "22541": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-22T16:36:08.212Z",
+      "post_count": 19,
+      "title": "Using HiggsCombine to measure top Yukawa coupling values"
+    },
+    "22555": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-04-13T07:49:37.199Z",
+      "post_count": 6,
+      "title": "Discrete profiling shows the wrong profile"
+    },
+    "22869": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-04-19T14:52:02.892Z",
+      "post_count": 4,
+      "title": "Two different PhysicsModels"
+    },
+    "22878": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-04-21T02:26:01.863Z",
+      "post_count": 3,
+      "title": "Using transfer function to constrain QCD background: how to include other backgrounds in the fit?"
+    },
+    "22973": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-04-24T08:16:02.453Z",
+      "post_count": 4,
+      "title": "Higgs combine: How to apply background closure unc./pre-fit background unc. limited by stat. unc"
+    },
+    "22974": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-25T12:53:03.544Z",
+      "post_count": 9,
+      "title": "Expected significances using HybridNew"
+    },
+    "23010": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-12T13:02:54.318Z",
+      "post_count": 10,
+      "title": "rateParam for individual bins of templates"
+    },
+    "23334": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-04-28T13:32:54.196Z",
+      "post_count": 2,
+      "title": "Fitting the ratio of two signal strenghts"
+    },
+    "23552": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-02T19:13:23.440Z",
+      "post_count": 2,
+      "title": "Is It Possible To Create Channel Masks without Text2Workspace Step?"
+    },
+    "23847": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-10T08:56:48.132Z",
+      "post_count": 2,
+      "title": "Combine 2D PDF with the signal region masking problem"
+    },
+    "23857": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-19T07:31:18.153Z",
+      "post_count": 9,
+      "title": "Get fit parameters uncertainties"
+    },
+    "24036": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-15T13:41:28.750Z",
+      "post_count": 6,
+      "title": "Freeze nuisances in impacts"
+    },
+    "24050": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-29T13:31:26.000Z",
+      "post_count": 8,
+      "title": "Issue with Combine fit of DY->MuMu"
+    },
+    "24543": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-05-24T09:01:47.924Z",
+      "post_count": 2,
+      "title": "Unfolding for the charge asymmetry in top pair production"
+    },
+    "24907": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-06-01T13:43:19.102Z",
+      "post_count": 4,
+      "title": "Toy generation options"
+    },
+    "24931": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-06-07T17:01:38.437Z",
+      "post_count": 2,
+      "title": "Issue with maximum profile likelihood"
+    },
+    "25146": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-06-07T17:02:40.992Z",
+      "post_count": 4,
+      "title": "Limit calculation errors"
+    },
+    "2538": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-18T20:50:24.000Z",
+      "post_count": 2,
+      "title": "Correlation of parametric uncertainty"
+    },
+    "25462": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2026-04-13T07:00:34.717Z",
+      "post_count": 21,
+      "title": "The latest recommended Combine and CombineHarvester versions"
+    },
+    "2588": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-21T07:23:11.000Z",
+      "post_count": 4,
+      "title": "How to make shape nuisance unconstrained"
+    },
+    "25899": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-12T11:50:11.000Z",
+      "post_count": 10,
+      "title": "Different results between MultiDimFit method and Impacts"
+    },
+    "26109": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-06-28T13:35:18.639Z",
+      "post_count": 2,
+      "title": "How separate syst. and stat. uncertainties"
+    },
+    "2611": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-23T11:53:14.000Z",
+      "post_count": 2,
+      "title": "Freezing rateParams with regexp"
+    },
+    "2612": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-11-23T11:55:52.000Z",
+      "post_count": 1,
+      "title": "Re: Toy distributions in goodnesses-of-fit changing between Combine tags version 8.1 and 8.2"
+    },
+    "26127": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-06-29T15:42:40.867Z",
+      "post_count": 3,
+      "title": "Set a fit parameter at datacard level"
+    },
+    "26158": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-06-29T15:21:34.959Z",
+      "post_count": 2,
+      "title": "Question about parametric exercise part 5"
+    },
+    "26324": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-04T08:42:12.011Z",
+      "post_count": 2,
+      "title": "How to obtain the template given a nuisance parameter value in Combine"
+    },
+    "26488": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-11T08:06:47.226Z",
+      "post_count": 4,
+      "title": "How to treat FS uncertainties in combine"
+    },
+    "26558": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-10T07:59:16.046Z",
+      "post_count": 1,
+      "title": "High Energy Physics Statistics Serialization Standard discussion at CAT meeting this Wednesday at 14:00"
+    },
+    "26580": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-11T08:26:09.758Z",
+      "post_count": 2,
+      "title": "Generate pseudo-data with all nuisances equal exactly postfit values"
+    },
+    "26626": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-18T11:32:45.440Z",
+      "post_count": 8,
+      "title": "Two Variable Combine Fit"
+    },
+    "27399": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-24T14:01:58.162Z",
+      "post_count": 7,
+      "title": "Correctly make impact plots for models with more than 1 POI"
+    },
+    "27562": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-26T10:24:00.620Z",
+      "post_count": 3,
+      "title": "Minimisation procedures before b and s+b fits"
+    },
+    "27632": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-28T12:04:01.951Z",
+      "post_count": 3,
+      "title": "Error in <RooFormula::Compile> in FitDiagnostics"
+    },
+    "27650": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-28T08:44:12.326Z",
+      "post_count": 6,
+      "title": "Fixing a value of r for FitDiagnostics"
+    },
+    "27688": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-01T06:01:35.614Z",
+      "post_count": 3,
+      "title": "Using alternate functional form (pdf) for background process"
+    },
+    "27791": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-07-31T14:41:00.716Z",
+      "post_count": 1,
+      "title": "CMS Combine tutorial on September 27th"
+    },
+    "27897": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-02T12:40:02.440Z",
+      "post_count": 2,
+      "title": "Pull plot for each POIs"
+    },
+    "27943": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-03T13:43:55.995Z",
+      "post_count": 4,
+      "title": "Segmentation fault (core dumped) in Combine v9"
+    },
+    "28010": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-08T15:31:04.088Z",
+      "post_count": 2,
+      "title": "Error bars calculation in combine on data"
+    },
+    "28232": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-11T10:24:52.651Z",
+      "post_count": 3,
+      "title": "Rescaling Luminosity in Combine"
+    },
+    "28416": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-15T20:03:09.010Z",
+      "post_count": 4,
+      "title": "Understanding `--signalPdfNames` in FitDiagnostics"
+    },
+    "28444": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-16T10:30:59.747Z",
+      "post_count": 5,
+      "title": "dNLL curve as a function of a constrained parameter"
+    },
+    "28775": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-31T13:34:54.000Z",
+      "post_count": 7,
+      "title": "Question about using 2D model in Combine tool"
+    },
+    "28841": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-09-05T16:38:06.446Z",
+      "post_count": 3,
+      "title": "Wiggle in expected 2D limits"
+    },
+    "28942": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-08-29T18:11:40.751Z",
+      "post_count": 4,
+      "title": "Shape vs lnN uncertainty for single-bin histogram"
+    },
+    "29408": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-17T21:10:28.706Z",
+      "post_count": 9,
+      "title": "Trouble calculating expected limits with HybridNew"
+    },
+    "29453": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-09-20T08:29:44.216Z",
+      "post_count": 2,
+      "title": "Feldman-Cousins"
+    },
+    "29979": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-20T13:34:02.219Z",
+      "post_count": 10,
+      "title": "Questions on HybridNew results"
+    },
+    "2999": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-01-13T21:09:26.747Z",
+      "post_count": 5,
+      "title": "Possibility of using a hybrid (template signal and parametric background) approach in combine"
+    },
+    "29995": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-03-03T16:09:43.049Z",
+      "post_count": 8,
+      "title": "\u201cNuisance parameter pulls\u201d tests"
+    },
+    "30056": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-02T12:02:14.309Z",
+      "post_count": 2,
+      "title": "Some use cases of datacards validation ci/cd"
+    },
+    "30215": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-11T16:43:38.985Z",
+      "post_count": 7,
+      "title": "Large profile-likelihood uncertainties"
+    },
+    "30224": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-04T07:49:57.576Z",
+      "post_count": 2,
+      "title": "Pyhf Users and Developers Workshop 2023"
+    },
+    "30374": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-07T10:15:18.948Z",
+      "post_count": 4,
+      "title": "Correlation in combine"
+    },
+    "30701": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-18T09:04:44.245Z",
+      "post_count": 2,
+      "title": "Combinimg two bumps in 2017 and 2018 data in one Search Region"
+    },
+    "30702": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-17T08:36:03.000Z",
+      "post_count": 19,
+      "title": "Combinimg two bumps in 2017 and 2018 data in one Search Region"
+    },
+    "30750": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-25T07:23:36.942Z",
+      "post_count": 11,
+      "title": "Why combined significance from two Search Regions (SR1 and SR2) is smaller than the significance from SR1 alone"
+    },
+    "30900": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-24T10:19:11.077Z",
+      "post_count": 3,
+      "title": "Combining n channels with positive mu_i > 0 - the di-muon analysis case, SUS-23-011"
+    },
+    "30950": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-10-27T13:27:56.000Z",
+      "post_count": 10,
+      "title": "multSignalModel"
+    },
+    "3098": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-12-14T15:34:16.201Z",
+      "post_count": 4,
+      "title": "Question about trying random starting points for profiled POIs"
+    },
+    "31131": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-02T15:18:18.625Z",
+      "post_count": 3,
+      "title": "What distribution to use for uncertainties in a Smoothed background in Combine"
+    },
+    "3118": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-12-14T13:11:39.942Z",
+      "post_count": 5,
+      "title": "diffNuisances.py not properly working"
+    },
+    "31239": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-16T16:21:45.040Z",
+      "post_count": 3,
+      "title": "Combine pull plot: pulls vs fit"
+    },
+    "31313": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-06T09:02:06.988Z",
+      "post_count": 1,
+      "title": "Error in combine installation when I run ```make CONDA=1 -j 8```"
+    },
+    "31400": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-10T21:24:58.074Z",
+      "post_count": 8,
+      "title": "Proper way to do background-only postfit plot with FitDiagnostics in multi POI model"
+    },
+    "31441": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-09T10:43:41.578Z",
+      "post_count": 2,
+      "title": "Minimisation finished with status=-1"
+    },
+    "31505": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-10T07:31:36.717Z",
+      "post_count": 1,
+      "title": "Do you use pyhf? We need your input!"
+    },
+    "31551": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-13T14:31:39.894Z",
+      "post_count": 5,
+      "title": "Combine impact plot"
+    },
+    "31626": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-16T06:35:17.857Z",
+      "post_count": 7,
+      "title": "Expected limit increases when excluding some categories"
+    },
+    "31676": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-08T15:14:09.444Z",
+      "post_count": 9,
+      "title": "Trouble with HybridNew limits"
+    },
+    "31769": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-11-17T16:30:46.425Z",
+      "post_count": 5,
+      "title": "HS3 discussion at the HSF Data Analysis WG meeting Monday, Nov 27 at 16:00 CET"
+    },
+    "32255": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-19T17:13:05.362Z",
+      "post_count": 5,
+      "title": "Switch from 1 sigma input histograms to 3 sigma variations"
+    },
+    "32268": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-06T12:31:51.335Z",
+      "post_count": 5,
+      "title": "Segmentation violation in Combine Harvester"
+    },
+    "32496": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-13T14:49:34.384Z",
+      "post_count": 2,
+      "title": "Unable to recover injected POI value when fitting to Asimov"
+    },
+    "32570": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-02T13:48:53.829Z",
+      "post_count": 4,
+      "title": "New draft of HEP Statistics Serialization Standard (v0.2)"
+    },
+    "32726": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-14T14:40:55.610Z",
+      "post_count": 3,
+      "title": "Re-number process"
+    },
+    "32744": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-15T07:07:36.340Z",
+      "post_count": 4,
+      "title": "Segfault when combining multiple years with combine"
+    },
+    "32844": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-20T18:26:24.385Z",
+      "post_count": 3,
+      "title": "Too large error with HybridNew"
+    },
+    "32979": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2023-12-31T17:48:40.819Z",
+      "post_count": 3,
+      "title": "Error while compiling combine v9 in lxplus"
+    },
+    "32996": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-08T08:23:52.500Z",
+      "post_count": 2,
+      "title": "Query on defining control region histo in datacard"
+    },
+    "33139": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-12T20:54:29.786Z",
+      "post_count": 4,
+      "title": "GOF with two bumps in combination of analyses"
+    },
+    "33484": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-22T14:13:50.318Z",
+      "post_count": 2,
+      "title": "How are `flatParams` in maximum likelihood fit initialized? Having difficulty setting their initial value using `--setParameters` option"
+    },
+    "33485": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-22T13:16:59.808Z",
+      "post_count": 6,
+      "title": "Guidance on Likelihood Scan for Top Quark Pair Analysis"
+    },
+    "33497": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-22T13:48:30.375Z",
+      "post_count": 5,
+      "title": "Problem with GoodnessOfFit in SUS-23-011"
+    },
+    "33637": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-25T10:15:34.152Z",
+      "post_count": 4,
+      "title": "Strange pre-fit rates, extracting rate modifier from lnN nuisances"
+    },
+    "33655": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-25T09:05:17.656Z",
+      "post_count": 2,
+      "title": "NLL shapes using FastScan"
+    },
+    "33707": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-01T17:15:35.076Z",
+      "post_count": 5,
+      "title": "Question on background normalization sampling range for running combine with HybridNew for expected upper limits"
+    },
+    "33710": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-30T12:30:00.353Z",
+      "post_count": 5,
+      "title": "Questions about GoF test"
+    },
+    "33711": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-05T09:52:34.062Z",
+      "post_count": 8,
+      "title": "Penalty terms in the combine discrete profiling"
+    },
+    "3373": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-12-15T07:35:09.036Z",
+      "post_count": 3,
+      "title": "FitDiagnostics file generated from uneven bins"
+    },
+    "33793": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-01-30T12:41:55.163Z",
+      "post_count": 2,
+      "title": "File access issues within cmssw"
+    },
+    "33903": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-01T13:53:38.905Z",
+      "post_count": 5,
+      "title": "Splitting statistical uncertainty in counting experiments"
+    },
+    "34111": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-18T09:26:46.061Z",
+      "post_count": 6,
+      "title": "Combine: warning the pull could not be computed"
+    },
+    "34649": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-23T12:39:37.446Z",
+      "post_count": 3,
+      "title": "Compilation error in CombineHarvester"
+    },
+    "34782": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-17T05:24:10.725Z",
+      "post_count": 5,
+      "title": "In CMS Combine Toolkit, when the value of integral of MVA score distribution is less than 0"
+    },
+    "34816": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-18T21:28:37.000Z",
+      "post_count": 6,
+      "title": "One-sided impact"
+    },
+    "34830": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-22T10:37:10.184Z",
+      "post_count": 8,
+      "title": "Significance calculation of multiple bins"
+    },
+    "35066": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-26T15:22:15.265Z",
+      "post_count": 8,
+      "title": "FitDiagnostics vs Impacts"
+    },
+    "35329": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-24T07:33:29.000Z",
+      "post_count": 9,
+      "title": "Significance with MC toys"
+    },
+    "35563": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-23T09:53:51.588Z",
+      "post_count": 4,
+      "title": "Inconsistent signal strength between plot and json with plotImpact"
+    },
+    "35696": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-26T21:53:05.000Z",
+      "post_count": 7,
+      "title": "Behavior of the stat. uncertainty for the grand 2016/17/18 combination"
+    },
+    "35719": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-25T21:07:12.177Z",
+      "post_count": 2,
+      "title": "What Goodness of Fit is doing?"
+    },
+    "36024": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-19T08:29:05.662Z",
+      "post_count": 11,
+      "title": "Running combine with 2 POIs and HybridNew"
+    },
+    "36117": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-09T15:04:51.882Z",
+      "post_count": 4,
+      "title": "Fitting a ratio (Response)"
+    },
+    "36119": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-02-28T15:50:51.969Z",
+      "post_count": 2,
+      "title": "Is it possible to save each nuisances in different histograms instead of just \"total_background\""
+    },
+    "36151": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-01T12:41:28.551Z",
+      "post_count": 7,
+      "title": "How to have a nuisance affecting both normalization and shape in the parameterized model?"
+    },
+    "36319": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-05T07:48:27.000Z",
+      "post_count": 4,
+      "title": "Question about constraining background"
+    },
+    "36367": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-06T12:30:13.813Z",
+      "post_count": 4,
+      "title": "MultiDimFit vs FitDiagnostics"
+    },
+    "36486": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-08T13:53:38.924Z",
+      "post_count": 3,
+      "title": "Combine failing to perform MultiDimFit"
+    },
+    "36502": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-11T08:31:18.548Z",
+      "post_count": 4,
+      "title": "Once again: combining SR1 and SR2 2017 data with two signal strenghts"
+    },
+    "36736": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-13T06:55:11.000Z",
+      "post_count": 3,
+      "title": "ln(Lb)-Ln(Ls+b) from RooFit and \"FINAL NLL - NLL0 VALUE\" from MultiDimFit"
+    },
+    "36760": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-13T08:45:24.057Z",
+      "post_count": 3,
+      "title": "The meaning of NLL0"
+    },
+    "36780": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-14T17:18:40.534Z",
+      "post_count": 6,
+      "title": "Saving the data_obs from the Asimov dataset"
+    },
+    "36789": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-14T17:41:01.000Z",
+      "post_count": 3,
+      "title": "How to access ln(Lb) and ln(Ls+b) (or difference) for each Search Region during combination"
+    },
+    "36823": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-18T16:40:45.000Z",
+      "post_count": 20,
+      "title": "Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)"
+    },
+    "36834": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-14T15:52:33.768Z",
+      "post_count": 3,
+      "title": "ValidateDatacards.py not working for RooDataHist"
+    },
+    "37070": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-19T07:52:19.452Z",
+      "post_count": 1,
+      "title": "Question about FitDiagnostics and scan for resonance width"
+    },
+    "37085": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-19T10:38:05.000Z",
+      "post_count": 3,
+      "title": "Problem with scan"
+    },
+    "37088": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-31T12:37:02.324Z",
+      "post_count": 7,
+      "title": "What is the meaning of --rMin and --rMax what I run FitDiagnostics with --redefineSignalPOIs"
+    },
+    "37193": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-25T21:45:00.269Z",
+      "post_count": 4,
+      "title": "Clarification on two issues - HybridNew and autoMCStats"
+    },
+    "37228": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-01T18:17:51.757Z",
+      "post_count": 5,
+      "title": "Question on making plot of the GoF test statistic distribution"
+    },
+    "37654": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-20T16:09:06.000Z",
+      "post_count": 4,
+      "title": "Combination of three Search Regions using toys and three independent signal strengths"
+    },
+    "37754": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-02T07:24:42.356Z",
+      "post_count": 5,
+      "title": "Unreasonable GoF performance"
+    },
+    "37889": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-02T14:19:58.190Z",
+      "post_count": 3,
+      "title": "ABCD Statistical Uncertainties on Sideband Regions"
+    },
+    "37938": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-04T08:34:28.120Z",
+      "post_count": 3,
+      "title": "Question about descrite profilling method"
+    },
+    "38064": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-03-31T15:12:11.737Z",
+      "post_count": 1,
+      "title": "Question about MultiDimFIt"
+    },
+    "38228": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-02T11:14:35.984Z",
+      "post_count": 1,
+      "title": "Bad numerical expression : \"mu_sr1_2017\""
+    },
+    "38251": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-04T10:55:06.000Z",
+      "post_count": 8,
+      "title": "Follow up question to Alyia about two years and three SR combination for dimuon excess 28 GeV"
+    },
+    "38712": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-12T07:25:13.995Z",
+      "post_count": 6,
+      "title": "ABCD method with MC in Combine"
+    },
+    "38805": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-09T16:17:23.915Z",
+      "post_count": 3,
+      "title": "Custom rebinning with combine harvester tool"
+    },
+    "38810": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-09T21:30:53.738Z",
+      "post_count": 5,
+      "title": "Setting up Combine on EL9 machine other than lxplus9"
+    },
+    "38830": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-11T10:06:15.000Z",
+      "post_count": 10,
+      "title": "Plot Nuisance parameters"
+    },
+    "39017": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-15T08:08:19.388Z",
+      "post_count": 4,
+      "title": "Calculating expected limits from grid"
+    },
+    "39053": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-15T09:05:19.235Z",
+      "post_count": 2,
+      "title": "Analytic functions and profile NPs with combine"
+    },
+    "39098": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-23T15:07:32.928Z",
+      "post_count": 18,
+      "title": "Confidence Bands with HybridNew for low (~O(1)) background prediction"
+    },
+    "39486": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-12T11:41:07.657Z",
+      "post_count": 40,
+      "title": "Problem (?) with HybridNew --LHCmode LHC-feldman-cousins and 3 independent signal strengths"
+    },
+    "39547": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-22T10:11:29.251Z",
+      "post_count": 3,
+      "title": "Copied topic: Fit shapes using \u2013saveshapes not being saved using Higgs Combine tool"
+    },
+    "3979": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2021-12-23T15:22:17.000Z",
+      "post_count": 2,
+      "title": "Goodness-of-fit measure for unbinned fits (RooMultPdf)"
+    },
+    "39814": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-04-25T06:40:25.000Z",
+      "post_count": 2,
+      "title": "Interpreting Systematic Uncertainties in Shape Analysis"
+    },
+    "39991": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-07T18:52:53.816Z",
+      "post_count": 8,
+      "title": "Higgs Combine Workspace Segmentation Fault Issue"
+    },
+    "4002": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-01-03T14:49:52.187Z",
+      "post_count": 4,
+      "title": "Error while compiling Higgs combine (adding information)"
+    },
+    "40325": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-02T08:47:40.491Z",
+      "post_count": 3,
+      "title": "Inflate bin-by-bin statistical uncertainties for a specific process/region"
+    },
+    "40390": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-13T10:13:53.083Z",
+      "post_count": 2,
+      "title": "Inconsistency between the Higgs combine and the Roofit"
+    },
+    "40933": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-10T10:24:26.370Z",
+      "post_count": 2,
+      "title": "Understanding signal strength for a given signal normalization"
+    },
+    "40957": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-10T14:29:41.182Z",
+      "post_count": 5,
+      "title": "Understanding asymmetric impact (BPH-23-001)"
+    },
+    "40999": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-19T09:32:38.652Z",
+      "post_count": 6,
+      "title": "Condor does not work on SL9 with combine environment"
+    },
+    "41045": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-12T16:34:45.030Z",
+      "post_count": 1,
+      "title": "Suppress minuit warnings"
+    },
+    "41362": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-20T21:01:28.669Z",
+      "post_count": 5,
+      "title": "Understanding toy datasets generation and fitting"
+    },
+    "41391": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-21T15:07:08.996Z",
+      "post_count": 2,
+      "title": "RooFit sideband fit involving FFT evaluated PDF"
+    },
+    "41481": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-30T19:29:05.235Z",
+      "post_count": 3,
+      "title": "Combine Fit failing with large underflow in some bins"
+    },
+    "41682": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-05-28T16:11:05.767Z",
+      "post_count": 13,
+      "title": "Questions about filling out the datacard"
+    },
+    "41937": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-10T18:43:47.949Z",
+      "post_count": 3,
+      "title": "Implementing bin correction factors"
+    },
+    "42188": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-11T15:32:43.013Z",
+      "post_count": 3,
+      "title": "Unexpected Minimum in MultidimFit Workspace - Uncertainty Breakdown in Combine v9.1.0"
+    },
+    "42380": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-06-22T21:07:56.718Z",
+      "post_count": 3,
+      "title": "Segv with ValidateDatacards.py"
+    },
+    "42425": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-03T11:04:33.809Z",
+      "post_count": 6,
+      "title": "Segmentation fault with Combine v10 release"
+    },
+    "42514": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-19T03:41:38.060Z",
+      "post_count": 1,
+      "title": "How to select part of the discrete parameter for the envelope profiling fit?"
+    },
+    "4254": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-01-05T13:39:25.448Z",
+      "post_count": 1,
+      "title": "[FitDiagnostics] Unable to determine uncertainties on all fit parameters"
+    },
+    "42589": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-28T10:22:49.142Z",
+      "post_count": 7,
+      "title": "Failing fits for unblinded impacts"
+    },
+    "42641": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-01T01:26:30.209Z",
+      "post_count": 2,
+      "title": "pyROOT compatibility with comebine"
+    },
+    "42675": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-24T07:04:34.405Z",
+      "post_count": 2,
+      "title": "Combine tutorial today and tomorrow"
+    },
+    "42705": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-26T15:46:07.000Z",
+      "post_count": 3,
+      "title": "Question about retreaving p-values from feldman-cousins runs with toys"
+    },
+    "42751": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-26T20:15:06.000Z",
+      "post_count": 12,
+      "title": "LEE with feldma-cousins"
+    },
+    "42752": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-29T21:25:11.918Z",
+      "post_count": 7,
+      "title": "Porting counting DC with gmN and ABCD to shape based DC"
+    },
+    "42793": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-26T15:05:37.462Z",
+      "post_count": 5,
+      "title": "0 impact on POI / Negative bin issue"
+    },
+    "42850": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-06-28T10:57:13.283Z",
+      "post_count": 1,
+      "title": "Follow-up \"Post-fit worse than pre-fit\""
+    },
+    "42869": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-08T16:26:45.930Z",
+      "post_count": 4,
+      "title": "Segmentation violation with Combine v10.0.1 / Asimov vs identical data with bkgs"
+    },
+    "42901": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-19T14:21:28.188Z",
+      "post_count": 8,
+      "title": "Test statistic in combine tool for spin-parity separation"
+    },
+    "42917": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-04T22:54:42.188Z",
+      "post_count": 5,
+      "title": "Minimization problems when running combine with HybridNew and discrete profiling"
+    },
+    "43056": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-08T13:58:08.536Z",
+      "post_count": 2,
+      "title": "Different limits using MultiDimFit with two signals (Impact plots)"
+    },
+    "43213": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-10T14:29:09.282Z",
+      "post_count": 4,
+      "title": "Two questions about toys with feldman-cousins method"
+    },
+    "43258": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-08T08:37:20.795Z",
+      "post_count": 1,
+      "title": "Question on LEE with Feldman-Cousins for the combination of 6 regions"
+    },
+    "43313": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-08T18:01:59.377Z",
+      "post_count": 2,
+      "title": "LEE due to mass range [25-30] GeV in dimuon excess analysis SUS-23-011"
+    },
+    "43431": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-16T15:09:25.063Z",
+      "post_count": 5,
+      "title": "RooFit - different RooParametricHists sharing a similar floating parameter"
+    },
+    "43443": {
+      "accepted_answer_post_number": 4,
+      "last_posted_at": "2024-07-12T11:24:39.017Z",
+      "post_count": 5,
+      "title": "Abnormal large pull of a systematic nuisance when utilizing `autoMCstats` feature"
+    },
+    "43595": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-16T10:54:04.402Z",
+      "post_count": 6,
+      "title": "Masking channels for expected exclusion"
+    },
+    "43615": {
+      "accepted_answer_post_number": 4,
+      "last_posted_at": "2024-07-16T15:10:47.591Z",
+      "post_count": 4,
+      "title": "Question about JER on mass histogram"
+    },
+    "44158": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-24T08:55:41.311Z",
+      "post_count": 3,
+      "title": "Is it possible to get L(S+B) and L(B) from combine -M MultiDimFit --algo fixed"
+    },
+    "44238": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-28T11:09:58.298Z",
+      "post_count": 9,
+      "title": "Combine fitting not working with RooMultiPdf, leading to bad Signal Significance"
+    },
+    "44242": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-25T00:41:43.191Z",
+      "post_count": 4,
+      "title": "Order of magnitude increase in runtime for Simultaneous fit"
+    },
+    "44273": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-25T16:33:13.165Z",
+      "post_count": 5,
+      "title": "Combine half sided impacts"
+    },
+    "44296": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-29T10:20:28.205Z",
+      "post_count": 8,
+      "title": "Question about --cminDefaultMinimizerTolerance"
+    },
+    "44698": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-07-31T07:07:31.385Z",
+      "post_count": 3,
+      "title": "Statistical uncertainty in counting datacard and use of rateParam to calculate the BK normalization from control region"
+    },
+    "44939": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-08-02T13:57:36.745Z",
+      "post_count": 3,
+      "title": "Understanding MultiDimFit result for a particular rateParam as POI"
+    },
+    "45078": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-08-05T08:35:45.085Z",
+      "post_count": 2,
+      "title": "FITTER_NEWER_GIVE_UP and FITTER_BOUND flags"
+    },
+    "45162": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-08-05T19:01:34.638Z",
+      "post_count": 4,
+      "title": "Understanding rateParam from long Exercise"
+    },
+    "45260": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-08-08T14:20:20.303Z",
+      "post_count": 8,
+      "title": "Question on parallelizing Goodness of Fit method using condor"
+    },
+    "45765": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-08-22T16:25:18.274Z",
+      "post_count": 6,
+      "title": "Unsufficient number of entries when producing impact plots"
+    },
+    "46655": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-08-31T17:06:01.864Z",
+      "post_count": 7,
+      "title": "Question for multiSignalModel with QuadraticScaling"
+    },
+    "46701": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-08-27T11:05:11.399Z",
+      "post_count": 4,
+      "title": "Expected values for FC upper limits"
+    },
+    "46739": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-24T08:35:07.000Z",
+      "post_count": 7,
+      "title": "Number of Iterations in MCMC for Bayesian Limit Estimation"
+    },
+    "46924": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-08-29T09:04:01.730Z",
+      "post_count": 3,
+      "title": "Error in RooFit: FitDiagnostics unrecognized CMS_channel name"
+    },
+    "47023": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-08-29T21:20:49.199Z",
+      "post_count": 3,
+      "title": "Excluding Parameters with combineTool.py"
+    },
+    "47082": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-02T09:25:35.228Z",
+      "post_count": 2,
+      "title": "Error after a small fluctuation in event yields in the datacards"
+    },
+    "47445": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-02T15:22:51.364Z",
+      "post_count": 3,
+      "title": "Error on T2W with expression for POI, on combine v10"
+    },
+    "48290": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-09T07:44:46.488Z",
+      "post_count": 2,
+      "title": "Difference in expected limits with and without using -t -1"
+    },
+    "48533": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-13T08:43:57.718Z",
+      "post_count": 2,
+      "title": "Segmentation violation with FastScan, pull with combination of cards"
+    },
+    "48643": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-16T08:10:16.157Z",
+      "post_count": 4,
+      "title": "Bin-per-bin parametrisation in combine"
+    },
+    "49010": {
+      "accepted_answer_post_number": 6,
+      "last_posted_at": "2024-09-16T15:43:04.611Z",
+      "post_count": 7,
+      "title": "Discrepancy in Errors Between Impact Plot and Scanned Likelihood Plot"
+    },
+    "49441": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-17T15:59:17.316Z",
+      "post_count": 3,
+      "title": "Help for systematics study on parametric function"
+    },
+    "49570": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-09T08:13:35.728Z",
+      "post_count": 2,
+      "title": "Help for Goodness-of-Fit results"
+    },
+    "5023": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-07T18:58:21.246Z",
+      "post_count": 3,
+      "title": "Negative Interpolated Summed Signal Pdf in HH Combination"
+    },
+    "5057": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-01-25T10:23:40.406Z",
+      "post_count": 3,
+      "title": "What does the \"(limited)\" tag of parameters mean?"
+    },
+    "50850": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-09-30T11:48:05.377Z",
+      "post_count": 5,
+      "title": "Import error while running text2workspace.py with combine tool v10"
+    },
+    "5092": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-01-26T15:57:08.493Z",
+      "post_count": 4,
+      "title": "An unfolding problem with combination tools"
+    },
+    "51383": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-16T12:45:59.103Z",
+      "post_count": 4,
+      "title": "Debugging MultiDimFit failures/EDM too large"
+    },
+    "51642": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-08T11:11:30.163Z",
+      "post_count": 5,
+      "title": "Covariance matrix for CR included and not included"
+    },
+    "52093": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-09T08:49:49.234Z",
+      "post_count": 3,
+      "title": "Parameter and its error"
+    },
+    "52259": {
+      "accepted_answer_post_number": 3,
+      "last_posted_at": "2024-10-08T14:27:03.812Z",
+      "post_count": 3,
+      "title": "No PYROOT with CMSSW_14_1_0_pre4"
+    },
+    "52306": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-10-09T14:09:17.622Z",
+      "post_count": 3,
+      "title": "How to add asymmetric values to AddSyst in CombineHarvester"
+    },
+    "52345": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-09T07:44:53.307Z",
+      "post_count": 2,
+      "title": "One-Sided Impacts in BDT Score Distribution"
+    },
+    "52421": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-10T09:57:10.235Z",
+      "post_count": 5,
+      "title": "B-only fit"
+    },
+    "52423": {
+      "accepted_answer_post_number": 5,
+      "last_posted_at": "2024-10-11T08:52:00.101Z",
+      "post_count": 9,
+      "title": "Error in combine FitDiagnostics"
+    },
+    "52558": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-14T14:55:30.813Z",
+      "post_count": 7,
+      "title": "Segmentation error when combining full Run2"
+    },
+    "53426": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-27T14:39:19.247Z",
+      "post_count": 7,
+      "title": "ChannelCompatibilitiyCheck with POIs other than r"
+    },
+    "55796": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-23T20:47:59.121Z",
+      "post_count": 1,
+      "title": "Fisher Test for background modelling"
+    },
+    "56180": {
+      "accepted_answer_post_number": 4,
+      "last_posted_at": "2024-10-25T14:55:45.669Z",
+      "post_count": 5,
+      "title": "Regarding integer values in the gmN model in Combine v9"
+    },
+    "56276": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-29T11:00:10.198Z",
+      "post_count": 3,
+      "title": "How to diagnose fit issues using --robustHesse"
+    },
+    "56684": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-10-28T11:49:18.265Z",
+      "post_count": 3,
+      "title": "Plots from combine harvester"
+    },
+    "57128": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-10-31T08:09:26.970Z",
+      "post_count": 7,
+      "title": "Toys vs. AsymptoticLimits"
+    },
+    "5878": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-16T13:11:51.172Z",
+      "post_count": 2,
+      "title": "Questions about discrete profiling method"
+    },
+    "5974": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-11T15:06:53.224Z",
+      "post_count": 3,
+      "title": "Nuisance renaming"
+    },
+    "60064": {
+      "accepted_answer_post_number": 9,
+      "last_posted_at": "2024-12-20T22:46:08.895Z",
+      "post_count": 10,
+      "title": "Cannot get fit over Measurement Regions to converge"
+    },
+    "60373": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-11-11T15:35:02.978Z",
+      "post_count": 3,
+      "title": "Systematic uncertainties at pre-selection"
+    },
+    "60424": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-11-11T15:46:02.258Z",
+      "post_count": 4,
+      "title": "Question regarding FAQ: Why does Combine have trouble with bins that have zero expected content"
+    },
+    "6444": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-14T18:04:27.297Z",
+      "post_count": 2,
+      "title": "The effect of --StepSize option on all POI's"
+    },
+    "66529": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-11-22T15:24:45.331Z",
+      "post_count": 3,
+      "title": "Error when running T2W in combineTool.py"
+    },
+    "66551": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-11-21T19:51:36.069Z",
+      "post_count": 2,
+      "title": "Method to Ignore \"RuntimeError: Found x systematics, expected y\" error message"
+    },
+    "6660": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-16T14:04:49.593Z",
+      "post_count": 1,
+      "title": "GoF equivalent test for unbinned fits"
+    },
+    "6725": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-18T09:06:23.888Z",
+      "post_count": 5,
+      "title": "Unblinded GoFs yielding wildly different test statistics for v8.1 versus v8.2"
+    },
+    "6790": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-18T15:27:18.270Z",
+      "post_count": 3,
+      "title": "autoMCStats nuisance parameter constraints smaller than expected"
+    },
+    "68867": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-11-26T10:59:03.175Z",
+      "post_count": 2,
+      "title": "Issue with Observed Limir When Combining Data from 2016, 2017, and 2018"
+    },
+    "6917": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-24T14:08:23.592Z",
+      "post_count": 3,
+      "title": "Combine Harvester: different processes in each signal region"
+    },
+    "69575": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-01-28T14:19:08.254Z",
+      "post_count": 12,
+      "title": "Faster way to derive covariance matrix"
+    },
+    "69997": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-11-29T08:06:35.716Z",
+      "post_count": 8,
+      "title": "Question about Combine Parametric Exercise"
+    },
+    "71890": {
+      "accepted_answer_post_number": 2,
+      "last_posted_at": "2024-12-02T08:01:19.499Z",
+      "post_count": 2,
+      "title": "Data yields have an impact in calculating expected significance?"
+    },
+    "73104": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-12-04T08:42:03.411Z",
+      "post_count": 1,
+      "title": "Post-fit parameters on Asimov datasets different from expected"
+    },
+    "7356": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-02-24T16:41:47.724Z",
+      "post_count": 1,
+      "title": "Impact of parametric uncertainty"
+    },
+    "7443": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-03-21T16:59:59.741Z",
+      "post_count": 16,
+      "title": "Combine does not recognize \"--quantileExpected\" option"
+    },
+    "76106": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-01-08T16:39:31.000Z",
+      "post_count": 14,
+      "title": "Need help"
+    },
+    "77423": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-12-12T11:24:50.849Z",
+      "post_count": 1,
+      "title": "Impact plot debugging"
+    },
+    "77547": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-12-13T09:58:18.594Z",
+      "post_count": 2,
+      "title": "Standard nuisance parameter names for muons"
+    },
+    "7829": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-03-10T17:08:24.000Z",
+      "post_count": 4,
+      "title": "Asymptotic Limit sensitive to arbitrary signal BR"
+    },
+    "7917": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-03-11T09:21:27.076Z",
+      "post_count": 2,
+      "title": "Regarding goodness of fit test while blinded"
+    },
+    "7918": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-03-10T17:27:20.492Z",
+      "post_count": 2,
+      "title": "One sided impact of Systematics on POI"
+    },
+    "82176": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2024-12-20T12:27:32.115Z",
+      "post_count": 1,
+      "title": "Understanding the pre-fit and post-fit distributions with FitDiagnostics"
+    },
+    "8461": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-03-21T20:07:02.764Z",
+      "post_count": 2,
+      "title": "How to include statistical uncertainty in the combine fit"
+    },
+    "8514": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-03-25T08:26:56.321Z",
+      "post_count": 8,
+      "title": "MultiDimFit with \"-t -1\" option to fit to the Asimov dataset"
+    },
+    "8561": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-03-24T09:20:58.846Z",
+      "post_count": 3,
+      "title": "Plotting the fit error band within the Combine tool"
+    },
+    "8874": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-04-06T10:24:49.386Z",
+      "post_count": 9,
+      "title": "Flat parameter postfit values in GoF test"
+    },
+    "92777": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-01-16T11:24:29.367Z",
+      "post_count": 7,
+      "title": "Issue with 'combine' command for Run2 datacard in SUSY Analysis"
+    },
+    "9319": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-04-14T13:40:58.933Z",
+      "post_count": 5,
+      "title": "Combining analyses with different signal normalizations"
+    },
+    "9326": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-20T13:11:59.742Z",
+      "post_count": 7,
+      "title": "MultiDimFit failed warning in -doInitialFit during nuisance parameter impact check"
+    },
+    "93844": {
+      "accepted_answer_post_number": 3,
+      "last_posted_at": "2025-02-26T14:39:05.870Z",
+      "post_count": 4,
+      "title": "Obtain the post-fit shape of one nuisance"
+    },
+    "9401": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-06T11:21:50.844Z",
+      "post_count": 3,
+      "title": "Excluding a background process from autoMCstats"
+    },
+    "9471": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-04-20T20:18:45.265Z",
+      "post_count": 3,
+      "title": "Get post-fit uncertainty on total background integral?"
+    },
+    "9499": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-04-20T13:45:32.480Z",
+      "post_count": 7,
+      "title": "Throwing post-fit toys from snapshot"
+    },
+    "9610": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-04-26T07:53:42.231Z",
+      "post_count": 9,
+      "title": "Template morphing and shape uncertainty for RooHistPdf"
+    },
+    "9658": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-04-26T08:19:08.567Z",
+      "post_count": 7,
+      "title": "GoodnessOfFit with unconstrained nuisance"
+    },
+    "9683": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-02T09:33:59.206Z",
+      "post_count": 5,
+      "title": "Discrete profiling with RooParametricHists"
+    },
+    "97034": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-01-15T14:50:48.798Z",
+      "post_count": 3,
+      "title": "Asymmetric impacts (SUS-24-006)"
+    },
+    "97413": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2025-01-16T10:21:11.613Z",
+      "post_count": 2,
+      "title": "Physics model definition for Higgs Combine"
+    },
+    "9785": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-04T10:33:54.658Z",
+      "post_count": 5,
+      "title": "Use of toysFrequentist for Goodness-of-Fit tests (unblind)"
+    },
+    "9932": {
+      "accepted_answer_post_number": null,
+      "last_posted_at": "2022-05-02T09:07:09.077Z",
+      "post_count": 3,
+      "title": "Why running FitDiagnostics take too much time"
+    }
+  }
+}

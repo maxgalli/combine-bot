@@ -1,0 +1,69 @@
+TOPIC: Question on making plot of the GoF test statistic distribution
+URL: https://cms-talk.web.cern.ch/t/37228
+DATE: 2024-03-20T20:23:55.489Z
+SOLVED: no
+============================================================
+
+QUESTION (by agapitos @ 2024-03-20T20:23:55.685Z):
+Dear experts;
+I’m following combine instructions on GoF where I can successfully run [1] and get file [2], however, the next steps are unclear to me, so I would appreciate your help very much.
+I read here: “…run batch jobs…and produce a plot of the results…once the jobs have completed, you can hadd them together and run [3]”.
+Is it necessary to use condor to submit jobs or this can be bypassed? If so, what is the indicative command to be used for GoF? And finally, in command [3], how does one obtain the two input root files?
+Any relevant workflow example would be very welcome.
+Thanks, best regards,
+Antonis
+[1] combine -M GoodnessOfFit datacard.txt --algo=saturated --toysFreq --fixedSignalStrength 0  -t 1000 -n SR --bypassFrequentistFit
+[2] higgsCombineSR.GoodnessOfFit.mH120.123456.root
+[3] combineTool.py -M CollectGoodnessOfFit --input data_run.root toys_run.root -m 125.0 -o gof.json
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-03-25T15:50:41.304Z):
+Dear Antonios,
+The idea of GOF in a nutshell is that we want to calculate the goodness of fit p-value by comparing the expected GOF test-statistics distribution which is generated with [1] (from your post) with the best-fit value which you can get by running the following command without option for toys:
+combine -M GoodnessOfFit datacard.txt --algo=saturated -n SR_bestfit --fixedSignalStrength=<value>
+To combine the GOF results into json file [3] you should add them using the option
+--input higgsCombineSR_bestfit.GoodnessOfFit.mH120.123456.root higgsCombineSR.GoodnessOfFit.mH120.123456.root ,
+where the first file obtained by evaluation the GOF best-fit value and the second file contains toys from [1].
+In general, it is not necessary to use the condor or any other batch system to generate the toys, but in case your model is complicated you might want to parallelize the process. Instructions can be found here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by agapitos @ 2024-03-26T18:00:27.041Z):
+Dear Aliya;
+Thank you very much for your response - now it is clear to me.
+I have one more question on running “combine -M GoodnessOfFit datacard.txt --algo=saturated …”
+Is there a way to mask some of the bins of (let’s say) a 20-bin distribution observable and get GoF with only a particular subset of the bins?
+This would be useful as a test to mask a region that could spoil the GoF.
+Thanks again,
+best regards, Antonis
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2024-03-27T16:54:24.821Z):
+Dear Antonis,
+Unfortunately, it is not possible to mask bins for the GOF or anything else in Combine.
+If you suspect that some regions of your distributions are not well described, I would suggest to move  them into a different category and use channel masking features with --channelMasks option as described here.  Perhaps, others have better suggestions.
+I think it would be actually great to have this feature implemented in Combine. Let us know if you are particularly interested to have it implemented and willing to devote some time to this project, we would be very happy to support it and provide pointers where to start.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by agapitos @ 2024-04-01T18:17:51.757Z):
+Dear Aliya;
+Thanks for your reply.
+I have implemented this bin-masking and share it with you (all in public dir).
+The code is here [0]. This script runs as:
+python MaskBins.py Shapes.root Shapes_maskbin_8_10.root “9,11”
+with the first(second) file being the original(modified) file with the histos.
+We remove histo bins 9 & 11 which appear as bins 8 & 10 in the impact plots.
+The code clones each initial histo, removing these two bins and storing the new histos (which have 2 fewer bins) in a new file.
+It also prints old vs new total yields (integrals) of each histos, needed for updating the datacard (copy-pasting from the shell).
+Then, one has to update yields in the cards and run over the output file to get GoF.
+The code reads hist-names, kyes, and subdirectories in the input file and makes the same directory structure in the new one.
+You can try for example the command here [1] after copping in your directory cards and the input rootfile (all under the same dir).
+You can check the change in GoF w/o a particular bin.
+Let me know if you are interested in adopting this code centrally.
+Best regards, Antonis
+[0] /afs/cern.ch/work/a/agapitos/public/WWW/Combine2/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/MaskBins/MaskBins.py
+[1] python MaskBins.py Shapes_SR5b_2000_1600.root Shapes_SR5b_2000_1600_maskbin8.root “9”
+----------------------------------------

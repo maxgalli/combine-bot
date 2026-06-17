@@ -1,0 +1,89 @@
+{
+  "topic_id": 9326,
+  "title": "MultiDimFit failed warning in -doInitialFit during nuisance parameter impact check",
+  "url": "https://cms-talk.web.cern.ch/t/9326",
+  "category_id": 279,
+  "created_at": "2022-04-14T12:04:16.896Z",
+  "last_posted_at": "2022-05-20T13:11:59.742Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "prsaha",
+      "name": "Prafulla Saha",
+      "created_at": "2022-04-14T12:04:17.098Z",
+      "updated_at": "2023-02-07T11:02:47.929Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Combine experts,\nI am working on an analysis of Vector like Quark T\u2019, where T\u2019 decays to the SM top and Higgs and Higgs further decays to two photons.\nThe Tprime signal and the SM-Higgs background processes are modeled from MC simulation with a sum of Gaussian functions and the non-resonant backgrounds are modeled from data with the four falling functions.\nTherefore the background model is the combination of the falling function for non-resonant background and the Gaussian function for the SM-Higgs. One example signal and background model plot can be seen here[1].\nDuring the unblinding step we wanted to look at the impact of the nuisances in the data fit. For that in the initial fit process in the combine I get the MultiDimFit failed warning using the below command. Tried with different POI range, minimizer tolerance etc. couldn\u2019t get rid of this issue. Without putting the POI range I had a fit without the failed message but the impact plot[3] I get is not convincing. There are very few events in the signal region to fit the signal peak with the data which could be the one region to fail the MultiDimFit.\nIt would be very helpful if you suggest some way to get rid of the issue in such a scenario.\nCombine command used to check the impact:\ncombineTool.py -M Impacts -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root -m 125 --doInitialFit --robustFit 1 --cminDefaultMinimizerStrategy 0 --rMin -50 --rMax 50 --freezeParameter MH\ncombineTool.py -M Impacts -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root -m 125 --doFits --robustFit 1 --cminDefaultMinimizerStrategy 0 --rMin -50 --rMax 50 --freezeParameter MH\nThanks in advance for the help\nPrafulla\n[1] https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/all_CMS_hgg_mass_Tprime600.pdf\n[2] /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root\n[3] https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/impactsT600_obs.pdf",
+      "cooked_html": "<p>Hello Combine experts,</p>\n<p>I am working on an analysis of Vector like Quark T\u2019, where T\u2019 decays to the SM top and Higgs and Higgs further decays to two photons.</p>\n<p>The Tprime signal and the SM-Higgs background processes are modeled from MC simulation with a sum of Gaussian functions and the non-resonant backgrounds are modeled from data with the four falling functions.<br>\nTherefore the background model is the combination of the falling function for non-resonant background and the Gaussian function for the SM-Higgs. One example signal and background model plot can be seen here[1].</p>\n<p>During the unblinding step we wanted to look at the impact of the nuisances in the data fit. For that in the initial fit process in the combine I get the <strong>MultiDimFit failed warning</strong> using the below command. Tried with different POI range, minimizer tolerance etc. couldn\u2019t get rid of this issue. Without putting the POI range I had a fit without the failed message but the impact plot[3] I get is not convincing. There are very few events in the signal region to fit the signal peak with the data which could be the one region to fail the MultiDimFit.</p>\n<p>It would be very helpful if you suggest some way to get rid of the issue in such a scenario.</p>\n<p><strong>Combine command used to check the impact:</strong></p>\n<p>combineTool.py -M Impacts -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root -m 125 --doInitialFit --robustFit 1 --cminDefaultMinimizerStrategy 0 --rMin -50 --rMax 50 --freezeParameter MH</p>\n<p>combineTool.py -M Impacts -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root -m 125 --doFits --robustFit 1 --cminDefaultMinimizerStrategy 0 --rMin -50 --rMax 50 --freezeParameter MH</p>\n<p>Thanks in advance for the help<br>\nPrafulla</p>\n<p>[1] <a href=\"https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/all_CMS_hgg_mass_Tprime600.pdf\" rel=\"noopener nofollow ugc\">https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/all_CMS_hgg_mass_Tprime600.pdf</a></p>\n<p>[2] /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root</p>\n<p>[3] <a href=\"https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/impactsT600_obs.pdf\" rel=\"noopener nofollow ugc\">https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/impactsT600_obs.pdf</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-04-21T12:59:16.581Z",
+      "updated_at": "2022-04-21T12:59:16.581Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Prafulla,\nSorry for the slow reply on this. Unfortunately I can\u2019t access the file in [2], there is a problem with the permissions. I\u2019d recommend putting it in an afs public directory. One possibility - are you using the discrete profiling in this analysis? It is known not to work very well with the impacts, so you could try freezing the discrete indexes to their best-fit values.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Prafulla,</p>\n<p>Sorry for the slow reply on this. Unfortunately I can\u2019t access the file in [2], there is a problem with the permissions. I\u2019d recommend putting it in an afs public directory. One possibility - are you using the discrete profiling in this analysis? It is known not to work very well with the impacts, so you could try freezing the discrete indexes to their best-fit values.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "prsaha",
+      "name": "Prafulla Saha",
+      "created_at": "2022-04-21T14:29:14.088Z",
+      "updated_at": "2022-04-21T14:30:00.096Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Andrew,\nThanks for your reply.\nI have moved the files to the afs area: /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_Syst.root\nYes I am using discrete profiling in the analysis. With very quick try I checked the Initial fit with different pdf index, but that also didn\u2019t work.\nBest regards\nPrafulla",
+      "cooked_html": "<p>Hello Andrew,</p>\n<p>Thanks for your reply.</p>\n<p>I have moved the files to the afs area: /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_Syst.root</p>\n<p>Yes I am using discrete profiling in the analysis. With very quick try I checked the Initial fit with different pdf index, but that also didn\u2019t work.</p>\n<p>Best regards<br>\nPrafulla</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-04-22T10:44:32.526Z",
+      "updated_at": "2022-04-22T10:44:32.526Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Leaving the impacts aside, are you even sure the nominal fit is working? If I run:\ncombine -M MultiDimFit --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 -v 3 --freezeParameters MH -m 125 -d Datacard_Tprime600_Syst.root -n .Test\n\nor\ncombine -M MultiDimFit --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 -v 3 --freezeParameters MH,pdfindex_THQHadronicTag_13TeV,pdfindex_THQLeptonicTag_13TeV -m 125 -d Datacard_Tprime600_Syst.root -n .Test\n\nboth fail, due the PDF going negative in at least one bin. This can be prevented by restricting r to positive values, which may be acceptable if you only intend to set upper lmits, but if you want to give the best-fit value will mean either fixing the issue of the pdf going negative, or using an alternative to the profile likelihood method to determine the confidence intervals.\ncheers,\nAndrew",
+      "cooked_html": "<p>Leaving the impacts aside, are you even sure the nominal fit is working? If I run:</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 -v 3 --freezeParameters MH -m 125 -d Datacard_Tprime600_Syst.root -n .Test\n</code></pre>\n<p>or</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 -v 3 --freezeParameters MH,pdfindex_THQHadronicTag_13TeV,pdfindex_THQLeptonicTag_13TeV -m 125 -d Datacard_Tprime600_Syst.root -n .Test\n</code></pre>\n<p>both fail, due the PDF going negative in at least one bin. This can be prevented by restricting <code>r</code> to positive values, which may be acceptable if you only intend to set upper lmits, but if you want to give the best-fit value will mean either fixing the issue of the pdf going negative, or using an alternative to the profile likelihood method to determine the confidence intervals.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "prsaha",
+      "name": "Prafulla Saha",
+      "created_at": "2022-04-23T09:29:43.298Z",
+      "updated_at": "2022-04-23T09:29:43.298Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThe nominal fit is working if I don\u2019t put the range on r, In that case basically r is not moving below 0 and best fit values coming out 0.\nIn the analysis we are only intend to set up upper limit on cross-section but for few sanity checks we require this multidim fit to be successful.\nI think -ve pdf issue can be solved with increasing the sideband events, however at this stage(after unblinding) doing that may be biased in the analysis. Is there any other possibility to solve this -ve pdf issue without changing the number of events in the sideband?\nBest\nPrafulla",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>The nominal fit is working if I don\u2019t put the range on r, In that case basically r is not moving below 0 and best fit values coming out 0.</p>\n<p>In the analysis we are only intend to set up upper limit on cross-section but for few sanity checks we require this multidim fit to be successful.</p>\n<p>I think -ve pdf issue can be solved with increasing the sideband events, however at this stage(after unblinding) doing that may be biased in the analysis. Is there any other possibility to solve this -ve pdf issue without changing the number of events in the sideband?</p>\n<p>Best<br>\nPrafulla</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-04-23T09:38:33.369Z",
+      "updated_at": "2022-04-23T09:38:33.369Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Prafulla,\nUnfortunately not - you can try to compute the impacts keeping the bound on r at zero - you will only get one side of the impacts of course, but this can still give you the idea of the most important systematics.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Prafulla,</p>\n<p>Unfortunately not - you can try to compute the impacts keeping the bound on r at zero - you will only get one side of the impacts of course, but this can still give you the idea of the most important systematics.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "prsaha",
+      "name": "Prafulla Saha",
+      "created_at": "2022-05-20T13:11:59.742Z",
+      "updated_at": "2022-05-20T13:11:59.742Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Andrew and Experts,\nThanks for your support.\nI have another query with the same datacard[1]. Since we are dealing with a low stat. category[2] and we are calculating the Asymptotic upper limit. In the ARC review, having concerns on the validity of the Asymptotic method on these statistics, we have been asked to check the upper limit with the full CLs(HybridNew) method .\nI used the following combine command[3] to calculate it. For other mass points I could get the result which is close to the Asymptotic method. But for the 600GeV mass point the fit couldn\u2019t converge and terminates with the error message[4]\nIt would be very helpful if you suggest some way to get rid of the issue.\nBest\nPrafulla\n[1] /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root\n[2] https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/UL/result_v2/SplusBModels_muFit_unblind/all_CMS_hgg_mass_Tprime600.pdf\n[3]Combine command:\ncombine /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root -M HybridNew -m 125 --freezeParameter MH --saveWorkspace --cminDefaultMinimizerStrategy 0 --LHCmode LHC-limits --saveToys --saveHybridResult --clsAcc 0.5 -T 20\n[4]\nError: Cannot compute CLs because CLb = 0. Returning CLs = -1\nCannot set higher limit: at r = 1280 still get CLs = -1",
+      "cooked_html": "<p>Hello Andrew and Experts,</p>\n<p>Thanks for your support.</p>\n<p>I have another query with the same datacard[1]. Since we are dealing with a low stat. category[2] and we are calculating the Asymptotic upper limit. In the ARC review, having concerns on the validity of the Asymptotic method on these statistics, we have been asked to check the upper limit with the full CLs(HybridNew) method .</p>\n<p>I used the following combine command[3] to calculate it. For other mass points I could get the result which is close to the Asymptotic method. But for the 600GeV mass point the fit couldn\u2019t converge and terminates with the error message[4]</p>\n<p>It would be very helpful if you suggest some way to get rid of the issue.</p>\n<p>Best</p>\n<p>Prafulla</p>\n<p>[1] /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root</p>\n<p>[2] <a href=\"https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/UL/result_v2/SplusBModels_muFit_unblind/all_CMS_hgg_mass_Tprime600.pdf\" rel=\"noopener nofollow ugc\">https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/UL/result_v2/SplusBModels_muFit_unblind/all_CMS_hgg_mass_Tprime600.pdf</a></p>\n<p>[3]<strong>Combine command:</strong></p>\n<p>combine /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root -M HybridNew -m 125 --freezeParameter MH --saveWorkspace --cminDefaultMinimizerStrategy 0 --LHCmode LHC-limits --saveToys --saveHybridResult --clsAcc 0.5 -T 20</p>\n<p>[4]</p>\n<p>Error: Cannot compute CLs because CLb = 0. Returning CLs = -1<br>\nCannot set higher limit: at r = 1280 still get CLs = -1</p>"
+    }
+  ]
+}

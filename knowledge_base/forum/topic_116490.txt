@@ -1,0 +1,126 @@
+TOPIC: Methods of debugging when observed significance is significantly higher than expected significance
+URL: https://cms-talk.web.cern.ch/t/116490
+DATE: 2025-02-18T22:47:51.882Z
+SOLVED: no
+============================================================
+
+QUESTION (by hyeonseo @ 2025-02-18T22:47:52.162Z):
+Dear combine experts,
+Hello. I am working in H->MuMu analysis for Run2 UL samples and I am coming across a weird behaviour when comparing expected and observed significance values. When calculating individually, the two of the five categories result in much higher observed significance compared to the expected one. However, when calculating the significances by combining all five data categories, the expected and observed significance are a lot more similar in value.
+For reference, I have pasted a small table below listing the significance value for the two misbehaving(?) categories and combined category.
+
+Category
+Expected
+Observed
+
+Cat 3
+0.836
+1.823
+
+Cat 4
+0.754
+1.365
+
+Combined
+1.701
+1.806
+
+While the problematic two categories are two most signal-pure categories extracted from a MVA discriminator, my instinct tells me that is not enough of an explanation to observe such a stark discrepancy between expected and observed values, especially when a previous study with Run2 RERECO data didn’t observe such discrepancy of significances.
+I tried to look for any combine debugging guidance for my specific problem of having much higher observed significance vs expected, but I have hit a wall and was wondering if the combine experts were aware of any hints in this situation. Any suggestions would be deeply appreciated!
+FYI, The NPs and fits are smooth and no error statements are given when running combine with --verbose 3 , and please also find the combine commands that I used to calculate the expected and observed significances.
+Expected:
+text2workspace.py -m 125 datacard_comb_sig_all_ggh_test.txt
+combine -M Significance -d datacard_comb_sig_all_ggh_test.root -m 125 -n _signif_comb_ggh --cminDefaultMinimizerStrategy=0 -t -1 --toysFrequentist --expectSignal 1 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --setParameters pdf_index_ggh=0 --cminRunAllDiscreteCombinations --setParameterRanges r=0,10 --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPHcat  -v 3  > comb_expSignificance.log
+
+Observed:
+combine -M Significance -d datacard_comb_sig_all_ggh_test.root -m 125 -n _signif_comb_ggh --cminDefaultMinimizerStrategy=0 --toysFrequentist  --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_BOUND --setParameters pdf_index_ggh=0 --cminRunAllDiscreteCombinations --setParameterRanges r=0,10 --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd FAST_VERTICAL_MORPH -v 3  > comb_obsSignificance.log
+
+If you need any more information on my end, please do not hesitate to ask!
+Thank you in advance,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2025-02-19T08:12:33.079Z):
+Hi Hyeon-Seo,
+in principle, there can be differences between the expected and observed significance if the observed post-fit estimate of your POI and/or the associated uncertainties are different from your expectation. There are a number of reasons where such differences can come from, e.g.
+
+differences between the simulation and data are mitigated by adjusting nuisance parameters, which can also influence the POI estimate (i.e. correlations)
+you constrain (a set of) parameters much more strongly than you would have expected (might be the case depending on the analysis details and the parameters)
+your estimate of the POI is different from the expectations (similar to the first point, but the change wouldn’t arise from higher-order correlations)
+
+Additionally, imho, comparing to an older version of the analysis is of course advisable, but the findings there might not be applicable directly to your iteration. This depends obviously on the details of the analysis, but if you for example use a new MVA that is trained on (simulated) data with an updated calibration, things might be a little different. Of course, the exact effect of all these differences are hard to pin down though.
+Just based on the numbers you have shared, it’s a little hard to see if things are working as they should. It’s already encouraging that there are no obvious errors in the parameter estimation, but here are a couple of other things you might want to check:
+
+expected/observed NLL curves of the POI in the individual categories and the combination (if your analysis is fully unblinded of course, which I guess it is at this point)
+look at the pulls (and maybe impacts?) in the categories and in the combination and try to see the difference between the observed and the expected constraints
+compare the observed post-fit values of the nuisance parameters between the fits in the individual categories and the combination
+have a look at the correlations in these fits and see if correlations between parameters change depending on which categories you use in the fit.
+
+Maybe this will give you more insight into what is happening. If you don’t want to build individual workspaces for the categories, you can also build a combined workspace with channel masks. This will enable you to turn individual categories on and off on the fly, which can be useful for debugging purposes.
+Let us know if you have any additional questions!
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 3 (by hyeonseo @ 2025-02-21T16:30:24.268Z):
+Dear Philip,
+Thank you very much for the quick reply! These are very good suggestions and we will apply these tests and see what comes out of them.
+Best,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 4 (by hyeonseo @ 2025-02-28T03:52:25.062Z):
+Dear @pkeicher ,
+I have made some progress on this issue: I have generated the impact plots for Expected and Observed significance for cat4 (one of the problematic categories with significantly higher observed significance), but I didn’t observe any clear signs of a constrained parameters:
+Expected impact:
+image1772×1450 373 KB
+Observed impact:
+image1782×1456 332 KB
+I will be the first to admit that beyond just making sure the pulls are centered and fit range reaching ±1 range, I don’t really know what further information can be gathered. Please let me know if I am missing something.
+Next, I ran a fitDiagnostic to the observed fit  with this command:
+combine -M FitDiagnostics datacard_comb_sig_cat4_ggh.root -m 125 --rMin 0 --rMax 2 --saveShapes --saveWithUncertainties -n .Cat4 --freezeParameters pdf_index_ggh shapeBkg_bkg_ch5__norm --setParameters pdf_index_ggh=2 --cminDefaultMinimizerStrategy 0
+, and I compared the prefit and postfit parameters from the fit diagnostic results. In that result, I observe something interesting. If I plot the signal histogram from “shapes_prefit” with signal histogram from “shapes_fit_s”, I get this plot:
+image1696×1252 137 KB
+Where red line is prefit signal shape and blue is postfit signal shape
+Therefore, when plotting total shape (signal+ background), we have this:
+image1668×1180 66.6 KB
+Where again red line is prefit shape and blue is postfit shape
+Essentially, we observe that the integral of the postfit signal histogram is about double that from prefit. This is surprising to me, since all of our signal model parameters (including its integral) should be frozen (we’re using H->GammaGamma core-PDF fit method). Yet, combine is somehow doubling my signal model’s yield when fitting signal + background to data. Do you happen to know in which stage of the fit and why this is happening?
+Best,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 5 (by pkeicher @ 2025-02-28T11:01:47.696Z):
+Hi Hyeon-Seo,
+thanks for the update. Here are a couple of thoughts to your observations:
+Impacts
+It’s a little hard to compare the details of the expected and observed impacts you share because of the following reasons
+
+the set of parameters shown in your pngs is not exactly the same. Particularly for the floating parameters (in grey) things makes formulating an expectation hard, mainly because I don’t know the details of your models and what values they should have.
+since you shared a screen shot and not the full pdf, I can’t look for the parameters in each version of the impact routine.
+
+Can you perhaps share the command you used and the pdf instead of pngs? Based on the constrained parameters (in black), I agree that there aren’t any pulls or constraints to worry about. However, looking at the shapeBkg_bkg_ch5__norm parameter is interesting. Based on your FitDiagnostics command, you actually freeze this parameter in the fit - it’s mainly in the impacts because the combineTool routine submits the impact for all parameters in the workspace by default, regardless of the freezeParameters option (there is another, separate option in the combineTool to skip specific parameters btw). So looking at this too much won’t tell us a lot about your final fit in the end.
+However, I noticed that this is pulled up w.r.t. the expected value for this parameter, from 15020 → 20840. To me, this might indicate that there is a surplus in data that the fit tries to mitigate by increasing the yield of processes where it’s allowed. In the normal fit, this wouldn’t be this background shape since it’s frozen, so maybe the fit uses the signal instead?
+FitDiagnostics and shapes
+First question: At least for me, the command you sent renders such as this: --freezeParameters pdf_index_ggh shapeBkg_bkg_ch5__norm (i.e. a space between pdf_index_ggh and shapeBkg_bkg_ch5__norm). I think this should be a comma separated list, Is that actually the case?
+I must admit that I’m not an expert with the H->GammaGamma core-PDF fit method, so take the following with a grain of salt - maybe one of the other experts can chime in here. But I’m guessing that different models are parameterized with the pdf_index_ggh parameter, which fixes model parameters such as e.g. the width? I’m not sure if I understand your comment about fixing the integral of the signal model. The signal strength r is a multiplicative parameters that scales the yield (i.e. the integral) of your signal across all fit categories. So even if the nominal integral is fixed, the signal strength is still floating and can increase the yield, right?
+The shapes you shared show exectly this increase in yield - based on the impact plots, you increase the signal yield by a factor of 2.6 (if there aren’t any additional parameters that scale the signal yield of course). It would be interesting to see the data points in your plot - based on the post-fit values, I’d guess that the MC undershoots the data, which is why the fit mitigates by increasing the yield of the processes.
+I think comparing the MC and data yields and shapes in the individual categories might be a good next step to take (assuming you’re far along in the unblinding procedure of course). Let us know how it goes!
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 6 (by amarini @ 2025-02-28T13:04:56.523Z):
+Hi Hyeon-Seo,
+if this is related to any hmm activities, as pointed out yesterday during the meeting,
+please stop looking at the observed.
+-Andrea
+----------------------------------------
+
+REPLY 7 (by rasharma @ 2025-02-28T21:39:55.776Z):
+Dear Andrea,
+I agree with you that we should not discuss the unblinded UL results! Hyeon-Seo (a PhD student) was just learning these things and he should have been more careful.
+As we set up the new analysis framework based on the latest Coffea tool, we validated its functionality with UL samples. To cross-check and debug some strange results we switched back to ReReco and ran our tool with the exact same configuration. Next, we attempted to compare our results with those from the published analysis (which is unblinded). While our expected results were similar, we observed a significant discrepancy in the observed results. At this stage, we had not applied any improvements— using the ReReco dataset, our selections were identical to those in the published paper (HIG-19-006), and yet, we saw a difference between the observed and expected results. However, this was not the case in the published analysis. So the intention really was to check with the unblinded dataset ReReco sample.
+With regards,
+Ram
+----------------------------------------

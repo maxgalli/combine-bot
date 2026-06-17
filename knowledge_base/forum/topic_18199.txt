@@ -1,0 +1,30 @@
+TOPIC: Largely asymmetric systematic uncertainties
+URL: https://cms-talk.web.cern.ch/t/18199
+DATE: 2022-11-30T19:13:54.895Z
+SOLVED: no
+============================================================
+
+QUESTION (by mukherje @ 2022-11-30T19:13:55.216Z):
+Dear Higgs combination experts,
+We are doing VBFHbb resolved analysis [HIG-22-009] where for one case we are treating 3 POI, a) mu_qqH b) mu_ggH and c) mu_Zbb. When we are estimating the breakdown of the corresponding uncertainties for the three signal strengths, we have found for mu_ggH the uncertainties due to the systematic source is largely asymmetric while for rest of the two signal strengths the value is reasonable.
+You can find the corresponding 2D likelihood scan for mu_qqH vs mu_ggH and the respective best fit values  with the measured unc in the attached slides[1].
+Command to prepare the 3 POI datacards
+text2workspace.py datacard.txt -m 125.0 -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO ‘map=./qqH_hbb:r_qqH[1,-30,30]’ --PO 'map=./ggH_hbb:r_ggH[1,-30,30]’ -o datacard_3POIs.root
+Command to find the best fit value with stat + syst unc.
+combine -M FitDiagnostics --robustFit 1 --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy=0 --X-rtd FITTER_NEW_CROSSING_ALGO --redefineSignalPOIs r_qqH,r_ggH -m 125 -d  datacard_3POIs.root -v 3
+Command to find the  best fit value only with syst unc.
+combine -M FitDiagnostics --robustFit 1 --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy=0 --X-rtd FITTER_NEW_CROSSING_ALGO --redefineSignalPOIs r_qqH,r_ggH -m 125 -d  datacard_3POIs.root -v 3 --freezeParameters allConstrainedNuisances
+Can you kindly help us in the context that whether it is okay in the three floating parameters scan case as we are floating 3 POI at the same time or we need to check further.
+[1] https://cernbox.cern.ch/s/dKwxmXUMUndxknw
+Yours sincerely,
+Soumya,
+For HIG-22-009 analysis team
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-12-01T06:21:41.704Z):
+Hi Soumya,
+To do the uncertainty breakdown via freezing the systematics, you need to freeze them to their best-fit values. In your third command you’re freezing to their nominal values, which effectively changes the best-fit value of the POIs.
+I’d suggest following the procedure here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#e-signal-strength-measurement-and-uncertainty-breakdown. Note that you should add --floatOtherPOIs=1 to the commands in this case.
+cheers,
+Andrew
+----------------------------------------

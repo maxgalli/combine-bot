@@ -1,0 +1,58 @@
+TOPIC: Questions about GoF test
+URL: https://cms-talk.web.cern.ch/t/33710
+DATE: 2024-01-26T12:04:27.828Z
+SOLVED: no
+============================================================
+
+QUESTION (by rasp @ 2024-01-26T12:04:27.987Z):
+Dear experts the Higgs Combination toolkit,
+I have a couple of questions regarding GoF test with the saturated model.
+I have read the suggested note [1] on the definition of the saturated model and
+relevant part of the documentation of the Higgs Combination toolkit [2], but several
+points remained obscure to me.
+
+What one exactly uses as sigma_i in formula (4) of [1]. Note refers to d_i+sigma_i as “the i-th measured data point with rms deviation sigma_i (each assumed to be a known constant)”. But what is actually sigma_i? Is it statistical uncertainty associated with the number of observed data events in bin “i” (sigma_i = sqrt(d_i))? But what about poorly populated bins for which pdf deviates from the Gaussian distribution. In particular, what one uses for sigma_i, when there is no data events in bin “i”, d_i=0.
+Or is sigma_i taken to be uncertainty of the model (either b-only or s+b, depending on the kind of test we intend to perform). If the second guess is true then it entails another questions.
+Is sigma_i uncertainty of the postfit or prefit model? Do we perform sampling of chi2 test-statistics using postfit predictions in each bin and postfit values of nuisance parameters? Do we perform ML fit for each toy to update predictions and uncertainties of our model in each bin “i” (f_i and sigma_i in notation of article [1]) and compute chi2 for a given toy?
+
+And another couple of questions
+3) Do I understand correctly that GoF test for the b-only hypothesis is performed by using the following input arguments “–fixParameters r  --setParameters r=0” (“r” should be replaced by the names of POIs related to the strength modifiers in the multisignal models).
+4) How does one stay agnostic to the signal strength modifier when performing GoF test for the s+b model. Do I understand correctly that initial ML fit is performed with freely floating signal strength modifier and the extracted best-fit value of the signal strength and its uncertainty are then used to generate toys for the s+b model.
+Thank you,
+Alexei.
+[1] https://www.physics.ucla.edu/~cousins/stats/cousins_saturated.pdf
+[2] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-01-30T05:34:44.845Z):
+Dear Alexei,
+@cousins may want to jump in for addition or in case I misstate something, since he is the author of the note. But as is mentioned in the note, its scope is about “a generalization of this usual chisquare to the case where the data are not gaussian.” That is a partial answer to your first question. The formula you cite is one that is constructed using  the assumption that the data are gaussian; the note is pointing out how the chi-squared can be derived from the likelihood ratio with the saturated model in this case. But, one of the advantages of the likelihood ratio is that it does not rely on this assumption, its just that in that case you get back the more familiar chi-squared. Combine uses the likelihood defined with poisson terms, not gaussian ones.
+For question two, \sigma_i is not the uncertainty of the model, either pre-fit or post-fit. The relevant quantity for the saturated goodness of fit test is the likelihood of the parameters given the data, which is numerically equal to the probability of the data given the parameters.  For simplicity and definiteness, lets consider the Poisson likelihood since that is what combine actually uses for counts or histograms.  The likelihood terms for each bin which go into the ratio are Poisson, where the expectation is the central value of the model, and Poisson is evaluated for the actual number of observed data.
+Note that this depends only on the expected value of the model at the point being evaluated and the observed data, the model uncertainties do not explicitly enter the calculation. The sigma from the note is taken by approximating the Poisson as a Gaussian, since its dealing with the Gaussian limit. But it still comes from the form of the likelihood directly and is not equal to the model uncertainties, except in special cases where the two may coincide.
+To run the goodness of fit for the background-only case you can use the argument --fixedSignalStrength 0 which is special for the GoodnessOfFit method, but fixing and setting the signal strength to 0 in the ‘generic’ way that you have should also work.
+For the last question, I wouldn’t say that one is agnostic to the signal strength. You are right that first a fit is performed to the data, then toys are generated in order to estimate the distribution of the saturated test statistic under the hypothesis that those best fit values are the ‘true’ parameter values. I’m not quite sure what you mean by ‘agnostic to the signal’, so I don’t know if that fully answers your question or not. But the Goodness of Fit will, in general depend on the best fit parameters, including the signal strength when looking at the signal+background model.
+I hope that helps.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2024-01-30T11:21:49.593Z):
+Dear Alexei,
+Let me just add that it is recommended to run the saturated GOF algorithm with the --toysFrequentist option so that the constraint terms are randomised around the post-fit values of nuisance parameters [1].
+Best,
+Aliya
+[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#nuisance-parameter-generation
+----------------------------------------
+
+REPLY 4 (by rasp @ 2024-01-30T12:18:42.557Z):
+Dear Kyle,
+Thank you so much for your comprehensive answer. It sheds a light on points that were obscure to me. I was under false impression that combine directly uses formula [4] of Cousins’ note in the saturated GoF test, assuming the gaussian distribution for data.
+I probably failed to formulate my last question in a clear way. What I meant is the following. Suppose we search for the decay X->ffbar of unknown resonance X with a given mass as a bump in the invariant mass distribution of fermion-antifermion pair (e.i. we are testing a model, assuming a certain signal shape). We would like to test the data against s+b model without any prior assumption on the signal strength. When performing GoF test against the s+b model with certain signal strength modifier (say mu=1) we may obtain a poor p-value of GoF test, if the actual signal with significantly higher signal strength modifier (say mu=100) is present in the data. As far as I understood from your answer, combine indeed performs initial fit with freely floating signal strength modifier and uses best-fit value of mu (and best-fit values of other parameters) to compute observed value of test-statistics and generate toys (unless option --fixSignalStrength is used). Am I right in my guess?
+Thank you again for your enlightening answer.
+Alexei.
+----------------------------------------
+
+REPLY 5 (by rasp @ 2024-01-30T12:30:00.353Z):
+Thank you so much, Aliya! This is exactly what I wanted to know.
+Alexei.
+----------------------------------------

@@ -1,0 +1,45 @@
+{
+  "topic_id": 20735,
+  "title": "\"Segmentation fault\" in Combine",
+  "url": "https://cms-talk.web.cern.ch/t/20735",
+  "category_id": 279,
+  "created_at": "2023-02-24T13:46:36.668Z",
+  "last_posted_at": "2023-02-24T14:23:14.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "matariq",
+      "name": "Maida Tariq",
+      "created_at": "2023-02-24T13:46:36.868Z",
+      "updated_at": "2023-02-24T13:46:36.868Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am trying to create my workspace in Combine using text2workspace.py but I am getting a \u201cSegmentation fault\u201d. I have about 180 shape nuisance parameters. If I randomly discard 80 of them, I don\u2019t get the \u201cSegmentation fault\u201d any more. Is this error due to memory allocation issues and how to get around it?\nThanks,\nMaida",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am trying to create my workspace in Combine using text2workspace.py but I am getting a \u201cSegmentation fault\u201d. I have about 180 shape nuisance parameters. If I randomly discard 80 of them, I don\u2019t get the \u201cSegmentation fault\u201d any more. Is this error due to memory allocation issues and how to get around it?</p>\n<p>Thanks,<br>\nMaida</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-02-24T14:25:53.717Z",
+      "updated_at": "2023-02-24T14:25:53.717Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Maida,\nYou could try running ulimit -s unlimited in the shell beforehand, it\u2019s helped in other models with large numbers of inputs.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Maida,</p>\n<p>You could try running <code>ulimit -s unlimited</code> in the shell beforehand, it\u2019s helped in other models with large numbers of inputs.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2023-02-24T14:23:14.000Z",
+      "updated_at": "2023-02-24T14:26:45.293Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Dear Maida,\nYou can try calling\nulimit -s unlimited\nbefore running text2workspace.\nAlthough I would also encourage you to check if all the shape nuisances you are applying are actually meaningful and couldn\u2019t be replaced by lnN. For example by running the card validation tools or by checking that the up/down shapes are indeed different.\nCheers,\nGiacomo\n\nOn 24 Feb 2023, at 14:47, Maida Tariq via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nMaida Tariq matariqFebruary 24\n\nDear experts,\nI am trying to create my workspace in Combine using text2workspace.py but I am getting a \u201cSegmentation fault\u201d. I have about 180 shape nuisance parameters. If I randomly discard 80 of them, I don\u2019t get the \u201cSegmentation fault\u201d any more. Is this error due to memory allocation issues and how to get around it?\nThanks,\nMaida\n\nVisit Topic or reply to this email to respond.\nYou are receiving this because you enabled mailing list mode.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Dear Maida,</p>\n<p>You can try calling<br>\nulimit -s unlimited<br>\nbefore running text2workspace.</p>\n<p>Although I would also encourage you to check if all the shape nuisances you are applying are actually meaningful and couldn\u2019t be replaced by lnN. For example by running the card validation tools or by checking that the up/down shapes are indeed different.</p>\n<p>Cheers,<br>\nGiacomo</p>\n<blockquote>\n<p>On 24 Feb 2023, at 14:47, Maida Tariq via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/m/8baadc/45.png\" title=\"matariq\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/matariq\">Maida Tariq</a> matariq<br>February 24</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear experts,</p>\n<p>I am trying to create my workspace in Combine using text2workspace.py but I am getting a \u201cSegmentation fault\u201d. I have about 180 shape nuisance parameters. If I randomly discard 80 of them, I don\u2019t get the \u201cSegmentation fault\u201d any more. Is this error due to memory allocation issues and how to get around it?</p>\n<p>Thanks,<br>\nMaida</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/segmentation-fault-in-combine/20735/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>You are receiving this because you enabled mailing list mode.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/b6c1882d125a7a96758dfae88631fd6a5dcfe485037c0f353c51e270fcc2014a\">click here</a>.</p>\n</blockquote>"
+    }
+  ]
+}

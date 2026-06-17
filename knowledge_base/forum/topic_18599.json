@@ -1,0 +1,100 @@
+{
+  "topic_id": 18599,
+  "title": "Understanding inconsistent channel masking results",
+  "url": "https://cms-talk.web.cern.ch/t/18599",
+  "category_id": 279,
+  "created_at": "2022-12-13T10:30:08.394Z",
+  "last_posted_at": "2023-03-06T14:39:45.051Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-12-13T10:30:08.710Z",
+      "updated_at": "2023-02-07T10:53:03.672Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi experts,\nI explored channel masking in trying to improve the efficiency of my workflow. In this context, I want to use common datacards from the combined channel with channel masking instead of making specific channel datacards.\nPerforming some basic consistency tests, I was surprised to find that they are not consistent. For a given impact fit [1], and focusing on an arbitrary nuisance parameter:\nlj:\n1- fit using pure lj datacards (the numbers below are the pulls and constraints):\n-0.6405759453773499,\n1.3223180772570231e-08,\n0.7072017192840576\n2- fit using combined datacard, with all non-lj channels masked:\n-0.2961540222167969,\n1.3223180772570231e-08,\n0.250918984413147\nThey are wildly inconsistent with each other. In fact this is even more apparent in another case, where combine reports nontrivial constraints for nuisance parameters that do not affect the allowed channels, and can\u2019t therefore enter the likelihood due to the masking. Is there something I\u2019m missing that can lead to this behavior?\nIf you would like to test further, I put the datacards in [2].\nCheers,\nAfiq\n[1] removing the channel masking bits where relevant\ncombineTool.py -M Impacts -d A_m400_w5p0_lx/workspace_one-poi.root -m 400 --doFits -n _pull --cminPreScan --cminDefaultMinimizerAlgo Migrad --cminDefaultMinimizerStrategy 1 --cminFallbackAlgo Minuit2,Simplex,1 --robustFit 1 --setRobustFitStrategy 1 --setParameterRanges 'r=0.,5.' -t -1 --X-rtd MINIMIZER_analytic --named 'm4pj_TTsub_EWQCD_2016post,m4pj_TTsub_EWQCD_2016pre,m4pj_TTsub_EWQCD_2017,m4pj_TTsub_EWQCD_2018,m4pj_shape_EWQCD,tmass_3GeV_TT' --setParameters 'r=1.0,mask_mm_2018=1,mask_em_2016pre=1,mask_mm_2016post=1,mask_ee_2016pre=1,mask_em_2017=1,mask_mm_2017=1,mask_ee_2018=1,mask_ee_2017=1,mask_em_2016post=1,mask_em_2018=1,mask_mm_2016pre=1,mask_ee_2016post=1'\n\n[2] /afs/cern.ch/work/a/afiqaize/public/ahtt_run2ul/misc",
+      "cooked_html": "<p>Hi experts,</p>\n<p>I explored channel masking in trying to improve the efficiency of my workflow. In this context, I want to use common datacards from the combined channel with channel masking instead of making specific channel datacards.</p>\n<p>Performing some basic consistency tests, I was surprised to find that they are not consistent. For a given impact fit [1], and focusing on an arbitrary nuisance parameter:<br>\nlj:<br>\n1- fit using pure lj datacards (the numbers below are the pulls and constraints):<br>\n-0.6405759453773499,<br>\n1.3223180772570231e-08,<br>\n0.7072017192840576<br>\n2- fit using combined datacard, with all non-lj channels masked:<br>\n-0.2961540222167969,<br>\n1.3223180772570231e-08,<br>\n0.250918984413147</p>\n<p>They are wildly inconsistent with each other. In fact this is even more apparent in another case, where combine reports nontrivial constraints for nuisance parameters that do not affect the allowed channels, and can\u2019t therefore enter the likelihood due to the masking. Is there something I\u2019m missing that can lead to this behavior?</p>\n<p>If you would like to test further, I put the datacards in [2].</p>\n<p>Cheers,<br>\nAfiq</p>\n<p>[1] removing the channel masking bits where relevant</p>\n<pre><code class=\"lang-auto\">combineTool.py -M Impacts -d A_m400_w5p0_lx/workspace_one-poi.root -m 400 --doFits -n _pull --cminPreScan --cminDefaultMinimizerAlgo Migrad --cminDefaultMinimizerStrategy 1 --cminFallbackAlgo Minuit2,Simplex,1 --robustFit 1 --setRobustFitStrategy 1 --setParameterRanges 'r=0.,5.' -t -1 --X-rtd MINIMIZER_analytic --named 'm4pj_TTsub_EWQCD_2016post,m4pj_TTsub_EWQCD_2016pre,m4pj_TTsub_EWQCD_2017,m4pj_TTsub_EWQCD_2018,m4pj_shape_EWQCD,tmass_3GeV_TT' --setParameters 'r=1.0,mask_mm_2018=1,mask_em_2016pre=1,mask_mm_2016post=1,mask_ee_2016pre=1,mask_em_2017=1,mask_mm_2017=1,mask_ee_2018=1,mask_ee_2017=1,mask_em_2016post=1,mask_em_2018=1,mask_mm_2016pre=1,mask_ee_2016post=1'\n</code></pre>\n<p>[2] /afs/cern.ch/work/a/afiqaize/public/ahtt_run2ul/misc</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-12-14T14:48:53.578Z",
+      "updated_at": "2022-12-14T14:48:53.578Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nIt\u2019s possible this is an incompatibility with the analytic minimisation in autoMCStats and the channel masking (essentially that the former should be disabled for masked channels). Are you using the recommended v8.2.0 combine tag? If so, you could try with the v8.2.1 tag, where this issue should have been fixed, or alternatively, disable the analytic minimisation with --X-rtd MINIMIZER_no_analytic.\nIf this doesn\u2019t fix the discrepancy will have to investigate more.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>It\u2019s possible this is an incompatibility with the analytic minimisation in autoMCStats and the channel masking (essentially that the former should be disabled for masked channels). Are you using the recommended v8.2.0 combine tag? If so, you could try with the v8.2.1 tag, where this issue should have been fixed, or alternatively, disable the analytic minimisation with <code>--X-rtd MINIMIZER_no_analytic</code>.</p>\n<p>If this doesn\u2019t fix the discrepancy will have to investigate more.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-12-14T15:05:41.724Z",
+      "updated_at": "2022-12-14T15:05:41.724Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nI use v8.2.0 and --X-rtd MINIMIZER_no_analytic indeed. Isn\u2019t the latter always recommended for autoMCStats?\nI\u2019ll look into v8.2.1 sometime and let you know.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>I use v8.2.0 and <code>--X-rtd MINIMIZER_no_analytic</code> indeed. Isn\u2019t the latter always recommended for autoMCStats?</p>\n<p>I\u2019ll look into v8.2.1 sometime and let you know.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-12-14T15:06:59.840Z",
+      "updated_at": "2022-12-14T15:06:59.840Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nIt\u2019s enabled by default now (i.e. --X-rtd MINIMIZER_analytic is not needed). Instead it can be disabled with MINIMIZER_no_analytic.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>It\u2019s enabled by default now (i.e. <code>--X-rtd MINIMIZER_analytic</code> is not needed). Instead it can be disabled with <code>MINIMIZER_no_analytic</code>.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jdulemba",
+      "name": "Joseph Lynn Dulemba",
+      "created_at": "2023-03-01T10:02:36.423Z",
+      "updated_at": "2023-03-01T10:02:36.423Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nI\u2019ve tried to implement the channel masking you suggested using v8.2.1 on behalf of Afiq. The results obtained from masking the combined datacard and the results from specific channel datacards are now consistent with one another, but it appears that the masking takes a much much longer time. For instance, running the initial fit without masking any channels takes about 20 minutes, but when 20/28 channels are masked the initial fit takes more than 200 minutes to complete. And calculating the impacts of individual nuisances can take more than 5 hours to complete when attempting to mask channels.\nI would naively think that the more channels that are masked, the faster the fit should be, so are there any other input options to test? Updating to v9.0.0 in CMSSW_11_3_4 isn\u2019t an option because it isn\u2019t compatible with the rest of the code needed for our analysis.\nBelow I\u2019ve copied the command to run the initial fit masking 20/28 of the channels.\nCheers,\nJoseph\nExecuting: combineTool.py -M Impacts -d /afs/cern.ch/work/j/jdulemba/Htt_Limit_Validation/CMSSW_10_2_13/src/CombineHarvester/ahtt/hig-22-013/A_m400_w5p0_lx_nominal/workspace_one-poi.root -m 400 --doInitialFit -n _pull --cminPreScan --cminDefaultMinimizerAlgo Migrad --cminDefaultMinimizerStrategy 1 --cminFallbackAlgo Minuit2,Simplex,1 --robustFit 1 --setRobustFitStrategy 1 --setParameterRanges 'r=0.,5.' -t -1  --setParameters 'r=1.0,mask_mm_2018=1,mask_em_2016pre=1,mask_m4pj_2016post=1,mask_mm_2016post=1,mask_e4pj_2016post=1,mask_ee_2016pre=1,mask_m4pj_2016pre=1,mask_em_2017=1,mask_mm_2017=1,mask_m4pj_2017=1,mask_e4pj_2017=1,mask_e4pj_2018=1,mask_m4pj_2018=1,mask_ee_2018=1,mask_ee_2017=1,mask_em_2016post=1,mask_e4pj_2016pre=1,mask_em_2018=1,mask_mm_2016pre=1,mask_ee_2016post=1'",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>I\u2019ve tried to implement the channel masking you suggested using v8.2.1 on behalf of Afiq. The results obtained from masking the combined datacard and the results from specific channel datacards are now consistent with one another, but it appears that the masking takes a much much longer time. For instance, running the initial fit without masking any channels takes about 20 minutes, but when 20/28 channels are masked the initial fit takes more than 200 minutes to complete. And calculating the impacts of individual nuisances can take more than 5 hours to complete when attempting to mask channels.</p>\n<p>I would naively think that the more channels that are masked, the faster the fit should be, so are there any other input options to test? Updating to v9.0.0 in CMSSW_11_3_4 isn\u2019t an option because it isn\u2019t compatible with the rest of the code needed for our analysis.</p>\n<p>Below I\u2019ve copied the command to run the initial fit masking 20/28 of the channels.</p>\n<p>Cheers,<br>\nJoseph</p>\n<pre><code class=\"lang-auto\">Executing: combineTool.py -M Impacts -d /afs/cern.ch/work/j/jdulemba/Htt_Limit_Validation/CMSSW_10_2_13/src/CombineHarvester/ahtt/hig-22-013/A_m400_w5p0_lx_nominal/workspace_one-poi.root -m 400 --doInitialFit -n _pull --cminPreScan --cminDefaultMinimizerAlgo Migrad --cminDefaultMinimizerStrategy 1 --cminFallbackAlgo Minuit2,Simplex,1 --robustFit 1 --setRobustFitStrategy 1 --setParameterRanges 'r=0.,5.' -t -1  --setParameters 'r=1.0,mask_mm_2018=1,mask_em_2016pre=1,mask_m4pj_2016post=1,mask_mm_2016post=1,mask_e4pj_2016post=1,mask_ee_2016pre=1,mask_m4pj_2016pre=1,mask_em_2017=1,mask_mm_2017=1,mask_m4pj_2017=1,mask_e4pj_2017=1,mask_e4pj_2018=1,mask_m4pj_2018=1,mask_ee_2018=1,mask_ee_2017=1,mask_em_2016post=1,mask_e4pj_2016pre=1,mask_em_2018=1,mask_mm_2016pre=1,mask_ee_2016post=1'\n</code></pre>"
+    },
+    {
+      "post_number": 6,
+      "username": "ncsmith",
+      "name": "Nick Smith",
+      "created_at": "2023-03-01T14:21:36.926Z",
+      "updated_at": "2023-03-01T14:21:36.926Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Can I ask more details about not being able to use v9.0? The CMSSW release should be able to support python2 or python3 code, or is there some other conflict? Could you use this environment for the cards and a separate one for the rest of your analysis code perhaps?",
+      "cooked_html": "<p>Can I ask more details about not being able to use v9.0? The CMSSW release should be able to support python2 or python3 code, or is there some other conflict? Could you use this environment for the cards and a separate one for the rest of your analysis code perhaps?</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "jdulemba",
+      "name": "Joseph Lynn Dulemba",
+      "created_at": "2023-03-06T09:58:32.609Z",
+      "updated_at": "2023-03-06T09:58:32.609Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "The issue was that our analysis-specific code was compatible only with the older version of CombineHarvester, but I was able to update it to work with CombineHarvester v2 and CombineLimit v9 in order to continue testing the channel masking.\nI computed the initial fit for various channel-masking combinations, and I found that when < 10 channels were masked (out of 28 in our case), the initial fit took about the same amount of time as when no masking was done at all, but as soon as this threshold was reached the amount of time to finish at least tripled. Additionally, when I tried masking all but one channel (27/28 masked) the fit was unsuccessful even after running for 20 hours on condor.\nSince the most useful cases for our analysis involve masking at least 12 of the 28 channels, this way of calculating things isn\u2019t feasible given the amount of time it would take.",
+      "cooked_html": "<p>The issue was that our analysis-specific code was compatible only with the older version of CombineHarvester, but I was able to update it to work with CombineHarvester v2 and CombineLimit v9 in order to continue testing the channel masking.</p>\n<p>I computed the initial fit for various channel-masking combinations, and I found that when &lt; 10 channels were masked (out of 28 in our case), the initial fit took about the same amount of time as when no masking was done at all, but as soon as this threshold was reached the amount of time to finish at least tripled. Additionally, when I tried masking all but one channel (27/28 masked) the fit was unsuccessful even after running for 20 hours on condor.</p>\n<p>Since the most useful cases for our analysis involve masking at least 12 of the 28 channels, this way of calculating things isn\u2019t feasible given the amount of time it would take.</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-03-06T14:39:45.051Z",
+      "updated_at": "2023-03-06T14:39:45.051Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Hi Joseph,\nIt\u2019s hard to know for sure without an example to run, but I have a guess that it might be due to Hesse() calls being triggered more often when channels are masked, possibly caused by floating parameters that have no effect of the NLL value. If this is the case, you might find better performance using strategy 0:\n--cminDefaultMinimizerStrategy 0 --setRobustFitStrategy 0\nIf this doesn\u2019t work, then further debugging, with -v 3, would be needed, in order to see if Minuit is encountering specific problems in the masking case.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Joseph,</p>\n<p>It\u2019s hard to know for sure without an example to run, but I have a guess that it might be due to Hesse() calls being triggered more often when channels are masked, possibly caused by floating parameters that have no effect of the NLL value. If this is the case, you might find better performance using strategy 0:</p>\n<p><code>--cminDefaultMinimizerStrategy 0 --setRobustFitStrategy 0</code></p>\n<p>If this doesn\u2019t work, then further debugging, with <code>-v 3</code>, would be needed, in order to see if Minuit is encountering specific problems in the masking case.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

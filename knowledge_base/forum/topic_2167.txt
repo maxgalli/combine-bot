@@ -1,0 +1,21 @@
+TOPIC: Running blind with ABCD in the datacard
+URL: https://cms-talk.web.cern.ch/t/2167
+DATE: 2021-09-20T10:31:03.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Peter_Major @ 2021-09-20T10:31:03.000Z):
+*** Discussion title: Higgs Combination
+Dear Experts,
+I have implemented the ABCD method in our datacard as described in
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters
+An example of my implementation is available here:
+https://drive.google.com/drive/folders/1H_iemGQqnLKYJ5kZrBbnaEHl-AF1VX4H?usp=sharing
+I am wondering if it is possible to run blind with this datacard
+somehow. Unfortunately ```combine -M AsymptoticLimits -d
+./combinedCard.csv --run blind``` leads to a lot of error messages,
+which only makes sense, as the ABCD implementation is basically ruined
+by this option.
+The error messages are also saved and are accessible on the link above.
+Thank you for your input!
+----------------------------------------

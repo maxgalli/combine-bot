@@ -1,0 +1,56 @@
+{
+  "topic_id": 44242,
+  "title": "Order of magnitude increase in runtime for Simultaneous fit",
+  "url": "https://cms-talk.web.cern.ch/t/44242",
+  "category_id": 279,
+  "created_at": "2024-07-24T15:18:59.173Z",
+  "last_posted_at": "2024-07-25T00:41:43.191Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-07-24T15:18:59.512Z",
+      "updated_at": "2024-07-24T15:18:59.512Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine Experts,\nSorry for another question, but I am having an issue regarding simultaneous fit. I have followed this tutorial, and tried to implement it for my own use case. The issue is that my simultaneous fit takes a very long time. If I keep everything the same, but have only one category, it takes about 2.4 seconds. However, the moment I have two categories, the runtime jumps up an order of magnitude to 75 seconds. I have also tried simultaneous fitting with three categories and that also jumps the runtime to 161 seconds.\nHere\u2019s my question: Is this significant increase in runtime just a normal feature of simultaneous fit? Or am I doing something wrong with my setup? Thank you in advance!\nPlease find attached the python script and the dataset I used to run my fitting:\nprocessed_events_data.parquet (9.1 MB)\nquick_simultanFitting_v2.py (5.7 KB)\nTo rerun the script just run python quick_simultanFitting_v2.py",
+      "cooked_html": "<p>Dear Combine Experts,</p>\n<p>Sorry for another question, but I am having an issue regarding simultaneous fit. I have followed this <a href=\"https://root.cern/doc/master/rf501__simultaneouspdf_8py.html\" rel=\"noopener nofollow ugc\">tutorial</a>, and tried to implement it for my own use case. The issue is that my simultaneous fit takes a very long time. If I keep everything the same, but have only one category, it takes about 2.4 seconds. However, the moment I have two categories, the runtime jumps up an order of magnitude to 75 seconds. I have also tried simultaneous fitting with three categories and that also jumps the runtime to 161 seconds.</p>\n<p>Here\u2019s my question: Is this significant increase in runtime just a normal feature of simultaneous fit? Or am I doing something wrong with my setup? Thank you in advance!</p>\n<p>Please find attached the python script and the dataset I used to run my fitting:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/o1H1wGlejOunpkyDnop93yA2iHB.parquet\">processed_events_data.parquet</a> (9.1 MB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/51NvxC9jrb2nRwraQlXQw07xf9b.py\">quick_simultanFitting_v2.py</a> (5.7 KB)</p>\n<p>To rerun the script just run <code>python quick_simultanFitting_v2.py</code></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-07-24T16:06:39.857Z",
+      "updated_at": "2024-07-24T16:06:39.857Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear @hyeonseo,\nI think you are timing the full script (starting on line 28), not just the fitting (line 161).\nSo I think in this case runtime largely depends on your for loops, not the RooFit minimization. I would suggest to check the runtime for the fit itself, and I don\u2019t expect such a difference.\nBest,\nAliya",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/hyeonseo\">@hyeonseo</a>,</p>\n<p>I think you are timing the full script (starting on line 28), not just the fitting (line 161).<br>\nSo I think in this case runtime largely depends on your <code>for</code> loops, not the RooFit minimization. I would suggest to check the runtime for the fit itself, and I don\u2019t expect such a difference.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-07-24T16:25:30.284Z",
+      "updated_at": "2024-07-24T16:25:50.857Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear @anigamov ,\nThank you for the prompt response. I have updated my code such that the timer start just before the fitting begins, and timer ends right after fitting. Sadly, the new results are worse: 73.6 seconds for categories 0 and 1, and 0.395 seconds for category  0 only.\nI have attached the updated python script here:\nquick_simultanFitting_v2_updated.py (5.7 KB)",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/anigamov\">@anigamov</a> ,</p>\n<p>Thank you for the prompt response. I have updated my code such that the timer start just before the fitting begins, and timer ends right after fitting. Sadly, the new results are worse: 73.6 seconds for categories <code>0</code> and <code>1</code>, and 0.395 seconds for category  <code>0</code> only.</p>\n<p>I have attached the updated python script here:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/ngMKLAjMTklgLnKRYwCsA65pyYB.py\">quick_simultanFitting_v2_updated.py</a> (5.7 KB)</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-07-25T00:41:43.191Z",
+      "updated_at": "2024-07-25T00:41:43.191Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "As a quick update, I have started from scratch by modifying from the tutorial and making incremental tests, and now this issue seems to be gone for now. Now fitting three categories takes less than a second.\nI am still quite unsure what exactly I was doing wrong that was causing this, but it seems to have been solved for now, though I may follow up if I come across more issues once I have scaled up my code further with more categories.",
+      "cooked_html": "<p>As a quick update, I have started from scratch by modifying from the <a href=\"https://root.cern/doc/master/rf501__simultaneouspdf_8py.html\" rel=\"noopener nofollow ugc\">tutorial</a> and making incremental tests, and now this issue seems to be gone for now. Now fitting three categories takes less than a second.</p>\n<p>I am still quite unsure what exactly I was doing wrong that was causing this, but it seems to have been solved for now, though I may follow up if I come across more issues once I have scaled up my code further with more categories.</p>"
+    }
+  ]
+}

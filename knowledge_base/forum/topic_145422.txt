@@ -1,0 +1,12 @@
+TOPIC: Change of the labels/Title size
+URL: https://cms-talk.web.cern.ch/t/145422
+DATE: 2026-05-27T15:04:42.877Z
+SOLVED: no
+============================================================
+
+QUESTION (by alkaloge @ 2026-05-27T15:04:43.171Z):
+Hello
+Is there an easy way to adjust the size of the axis/labels so that units fit nicely in the canvas and tat we dont get the x10 cropped out like in my case? I know that there is a --left-margin option, but there is no --right-margin one.
+TIA
+Screenshot 2026-05-27 at 16.59.29948×152 30.9 KB
+----------------------------------------

@@ -1,0 +1,31 @@
+TOPIC: Freezing rateParams with regexp
+URL: https://cms-talk.web.cern.ch/t/2611
+DATE: 2021-11-23T11:17:19.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by rseidita @ 2021-11-23T11:17:19.000Z):
+*** Discussion title: Higgs Combination
+Dear combine experts,
+I recently stumbled across this while trying to freeze multiple rateParams in the fit. If I use the rgx{...} syntax, no parameter is frozen. This only appears to be a problem for rateParams, as I did the following tests:
+--freezeParameters CMS_hww_WWnorm1j_DF_2016 --> This works correctly
+--freezeParameters rgx{.*_hww_WWnorm1j_DF_2016} --> This does not freeze any parameter
+and as a cross check with constrained nuisances
+--freezeParameters rgx{.*_eff_e_.*},rgx{.*_eff_m_.*} --> Correctly freezes what I expect
+Am I doing something wrong or is this unintended? Thanks a lot in advance,
+Cheers,
+Roberto
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-11-23T11:53:14.000Z):
+*** Discussion title: Higgs Combination
+Dear Roberto,
+The behaviour is as intended - the rgx syntax only freezes constrained
+nuisance parameters, so rateParams indeed don't get frozen. You can use
+"var" instead of "rgx" to also freeze unconstrained parameters, see more
+details here [*], a little way down the list.
+Hope this helps,
+Adinda
+[*]
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#common-command-line-options
+----------------------------------------

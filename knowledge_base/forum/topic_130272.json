@@ -1,0 +1,78 @@
+{
+  "topic_id": 130272,
+  "title": "Problem calculate observed and expected limits from crab output grid files",
+  "url": "https://cms-talk.web.cern.ch/t/130272",
+  "category_id": 279,
+  "created_at": "2025-08-28T21:06:14.185Z",
+  "last_posted_at": "2025-09-03T03:25:27.231Z",
+  "tags": [],
+  "accepted_answer_post_number": 6,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dazhang",
+      "name": "Danyi Zhang",
+      "created_at": "2025-08-28T21:06:14.397Z",
+      "updated_at": "2025-08-28T21:06:14.397Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to follow the instructions on the grid submission with crab3. I did the same steps and commands as the tutorial, submitted crab jobs, and they finished without errors.\nAfter that, I performed an hadd operation on the output files from the crab jobs, as required at the end of the instructions. Then I tried to run the commands here to calculate the expected and observed limits. However, both commands gave me the same error:\n(twoD-env) dazhang@uaf-2 crab_B1_MD2000_MBH10000_n2 $ combine card.root -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged.root --expectedFromGrid 0.5 -v 2\n\n>>> Random number generator seed is 123456\n>>> using the Profile Likelihood test statistic modified for upper limits (Q_LHC)\n>>> Method used is HybridNew\nSearch for upper limit using pre-computed grid of p-values\nGRID, as is.\n\nCaught exception The grid must contain at least 2 points.\n0 log messages saved to combine_logger.out\n\nI attached the card.root file converted from the datacard, and the merged grid file merged.root. Could you please look into this issue?\ncard.root (36.1 KB)\nmerged.root (171.1 KB)\nThank you for your help!\nBest,\nDanyi",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to follow the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/?h=crab#grid-submission-with-combinetool\" rel=\"noopener nofollow ugc\">instructions</a> on the grid submission with crab3. I did the same steps and commands as the tutorial, submitted crab jobs, and they <a href=\"https://monit-grafana.cern.ch/d/cmsTMDetail/cms-task-monitoring-task-view?orgId=11&amp;var-user=dazhang&amp;var-task=250828_191947:dazhang_crab_grid-test&amp;from=1756407461146&amp;to=now\" rel=\"noopener nofollow ugc\">finished without errors</a>.</p>\n<p>After that, I performed an <code>hadd</code> operation on the output files from the crab jobs, as required at the end of the instructions. Then I tried to run the commands <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#complex-models\" rel=\"noopener nofollow ugc\">here</a> to calculate the expected and observed limits. However, both commands gave me the same error:</p>\n<pre><code class=\"lang-auto\">(twoD-env) dazhang@uaf-2 crab_B1_MD2000_MBH10000_n2 $ combine card.root -M HybridNew --LHCmode LHC-limits --readHybridResults --grid=merged.root --expectedFromGrid 0.5 -v 2\n\n&gt;&gt;&gt; Random number generator seed is 123456\n&gt;&gt;&gt; using the Profile Likelihood test statistic modified for upper limits (Q_LHC)\n&gt;&gt;&gt; Method used is HybridNew\nSearch for upper limit using pre-computed grid of p-values\nGRID, as is.\n\nCaught exception The grid must contain at least 2 points.\n0 log messages saved to combine_logger.out\n</code></pre>\n<p>I attached the <code>card.root</code> file converted from the datacard, and the merged grid file <code>merged.root</code>. Could you please look into this issue?</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/bGTKJpz32gpFauyTJ6iGAIB0lp0.root\">card.root</a> (36.1 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/qBIFNwkf2IkolRTWm13pfXM8dJG.root\">merged.root</a> (171.1 KB)</p>\n<p>Thank you for your help!</p>\n<p>Best,<br>\nDanyi</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "dazhang",
+      "name": "Danyi Zhang",
+      "created_at": "2025-08-28T21:10:45.381Z",
+      "updated_at": "2025-08-28T21:10:45.381Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "For your reference, I\u2019m using Combine version v10.0.1.",
+      "cooked_html": "<p>For your reference, I\u2019m using Combine version v10.0.1.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "tvami",
+      "name": "Tamas Almos Vami",
+      "created_at": "2025-09-02T17:28:45.267Z",
+      "updated_at": "2025-09-02T17:28:45.267Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi @nckw @gortona , all,\ndo you have any suggestions for this?\nThanks,\nTamas",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/nckw\">@nckw</a> <a class=\"mention\" href=\"/u/gortona\">@gortona</a> , all,<br>\ndo you have any suggestions for this?</p>\n<p>Thanks,<br>\nTamas</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2025-09-02T17:50:33.447Z",
+      "updated_at": "2025-09-02T17:50:33.447Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Can you share the command you used to generate the grid?\nIt should look like this plus the grid submission from combineTools\n-A",
+      "cooked_html": "<p>Can you share the command you used to generate the grid?<br>\nIt should look like <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#complex-models\" rel=\"noopener nofollow ugc\">this</a> plus the grid submission from combineTools</p>\n<p>-A</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "dazhang",
+      "name": "Danyi Zhang",
+      "created_at": "2025-09-02T19:48:24.647Z",
+      "updated_at": "2025-09-02T19:48:24.647Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Yes! Here is the command:\ncombineTool.py -d card.root -M HybridNew --LHCmode LHC-limits --clsAcc 0 -T 2000 -s -1 --singlePoint 0.01:0.21:0.02 --saveToys --saveHybridResult -m 125 --job-mode crab3 --task-name grid-test --custom-crab ../custom_crab.py",
+      "cooked_html": "<p>Yes! Here is the command:</p>\n<pre><code class=\"lang-auto\">combineTool.py -d card.root -M HybridNew --LHCmode LHC-limits --clsAcc 0 -T 2000 -s -1 --singlePoint 0.01:0.21:0.02 --saveToys --saveHybridResult -m 125 --job-mode crab3 --task-name grid-test --custom-crab ../custom_crab.py\n</code></pre>"
+    },
+    {
+      "post_number": 6,
+      "username": "dazhang",
+      "name": "Danyi Zhang",
+      "created_at": "2025-09-03T03:25:27.231Z",
+      "updated_at": "2025-09-03T03:25:27.231Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": true,
+      "text": "Hello Andrea,\nWe figured out the solution is to add the option --mass 125 when running the limits.\nThank you for your time!\nBest,\nDanyi",
+      "cooked_html": "<p>Hello Andrea,</p>\n<p>We figured out the solution is to add the option <code>--mass 125</code> when running the limits.</p>\n<p>Thank you for your time!</p>\n<p>Best,<br>\nDanyi</p>"
+    }
+  ]
+}

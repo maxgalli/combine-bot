@@ -1,0 +1,37 @@
+TOPIC: Approaches for correlating shapeN and shape nuisances
+URL: https://cms-talk.web.cern.ch/t/142815
+DATE: 2026-03-09T20:54:48.197Z
+SOLVED: no
+============================================================
+
+QUESTION (by nmangane @ 2026-03-09T20:54:48.786Z):
+For our analysis, we are doing a combination between the ongoing SMP-23-001 (VBS ZZ to 2l2nu) and SMP-20-001 (VBS ZZ to 4l) utilizing Higgs Combine. Unfortunately, the most important systematics we might correlate between the two (renormalization/factorization scale) are not implemented as the same types, with the published analysis utilizing lnN for some of these and shapeN for others; the ongoing analysis utilizes shape consistently for all of them.
+We are not permitted to alter the published analysis implementation, but we find that our results are not equivalent when switching from shape to shapeN in 2l2nu (the description of these nuisances being log normalized is not immediately translatable to bin-by-bin numbers/nuisances, so it’s unclear to us what conditions might trigger such differences and whether they indicate an issue in e.g. Asymptotic results or simply inappropriate application of shapeN).
+The first question is, is an alternative way to correlate these systematics possible without converting one from shape to shapeN (or vice-versa, due to the restriction on altering the published analysis approach, although we find that analysis’ significance unchanged in that case)?
+Second, should we be concerned by differences when swapping these types in the ongoing analysis, or is this expected under certain conditions (i.e. misapplication when systematic templates fail certain criteria) and what conditions might trigger such?
+Third, just to ensure this is well-defined, is it acceptable (or inadvisable) to correlate lnN and shape systematics between different categories (combine “bin”s)? Technically this appears to work, but if warnings/errors are subtler than crashes, we probably have missed them.
+Thanks in advance,
+ZZ 2l2nu Team
+----------------------------------------
+
+REPLY 2 (by amarini @ 2026-03-10T09:25:00.801Z):
+Hi Nick,
+First of all, I would disagree with the sentence We are not permitted to alter the published analysis implementation. A part of the combination job is to harmonize the analyses as much as possible, in order to achieve a meaningful combination. The job of a combination is not merely run combineCards and hope for the best.
+Second question
+The question about a difference in shape and shapeN result may be investigated further. There may be physical motivations for which one is better than the other, but they are not obvious to me a priori. Moreover, they should differ only in large extrapolations, so pulls may be investigated and understood (especially if you are correlating these results in a combination). You can see here that within -1 and 1 sigma, they yield very close results. For these reasons, I would be concern in correlating these uncertainties blindly.
+Third question
+lnN and shape uncertainties can be correlated and usually they are. CombineCards will handle them correctly (with shape?), but this will not raise errors if the shape is not found; so make sure the input cards are ok. Furthermore, shape (and shapeN) uncertainties are separated into a lnN contribution and a pure-shape contribution in each category (as described here). When correlating uncertainties, you need to pay attention to whether the sign of the correlation is correct (as they may result in anti-correlation otherwise).
+First question answer
+Let me also say that the mixing of shape and shapeN interpolations is non-standard in constructing datacards for the same nuisance, so things may break things or tools (like combine-harvester parsing, combineCard … may fail in performing the task), so it is advised to keep an eye on the results and double-check every step. There should be no fundamental flow in constructing the likelihood, as each channel can have a different interpolation algorithm.
+A possible solution could be (this seems to work, I didn’t check if there are more minimal implementations)
+[...]
+beta extArg 0 [-7,7]
+beta param 0 1
+
+beta  shape     1         -
+beta  shapeN     -         1
+[...]
+
+Cheers,
+-Andrea
+----------------------------------------

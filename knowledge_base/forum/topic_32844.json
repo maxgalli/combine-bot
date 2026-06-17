@@ -1,0 +1,45 @@
+{
+  "topic_id": 32844,
+  "title": "Too large error with HybridNew",
+  "url": "https://cms-talk.web.cern.ch/t/32844",
+  "category_id": 279,
+  "created_at": "2023-12-19T04:24:26.738Z",
+  "last_posted_at": "2023-12-20T18:26:24.385Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2023-12-19T04:24:27.432Z",
+      "updated_at": "2023-12-19T04:24:27.432Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m currently estimating the expected limits with the HybridNew method.\nWhile running the command below, however, I\u2019ve found too large error in some cases, e.g. with\ncombine -M HybridNew --LHCmode LHC-limits card_2017_MuMu_M100.txt -n 2017_MuMu_M100 --saveHybridResult --expectedFromGrid 0.500 -T 1000\nI get\n-- Hybrid New --\nLimit: r < 0.078125 +/- 0.078125 @ 95% CL\nDone in 1.05 min (cpu), 1.05 min (real)\n\nwhich obviously doesn\u2019t seem to be correct (limit value = error).\nFurthermore, when I try other quantiles with the same method, for instance, 0.025, or 0.16, I still get the exactly same limit value and the error of 0.078125 (which are not consistent with the results from the Asymptotic method at all).\nCould you let me know where to start to diagnose & solve the issue?\nI attach the input histogram [1] and the datacard [2] to be reproduced.\nBest regards,\nJihun.\n[1] M100_MuMu_card_input.root (7.7 KB)\n[2] card_2017_MuMu_M100.txt (1.0 KB)",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m currently estimating the expected limits with the HybridNew method.<br>\nWhile running the command below, however, I\u2019ve found too large error in some cases, e.g. with</p>\n<p><code>combine -M HybridNew --LHCmode LHC-limits card_2017_MuMu_M100.txt -n 2017_MuMu_M100 --saveHybridResult --expectedFromGrid 0.500 -T 1000</code></p>\n<p>I get</p>\n<pre><code class=\"lang-auto\"> -- Hybrid New --\nLimit: r &lt; 0.078125 +/- 0.078125 @ 95% CL\nDone in 1.05 min (cpu), 1.05 min (real)\n</code></pre>\n<p>which obviously doesn\u2019t seem to be correct (limit value = error).</p>\n<p>Furthermore, when I try other quantiles with the same method, for instance, 0.025, or 0.16, I still get the exactly same limit value and the error of 0.078125 (which are not consistent with the results from the Asymptotic method at all).</p>\n<p>Could you let me know where to start to diagnose &amp; solve the issue?<br>\nI attach the input histogram [1] and the datacard [2] to be reproduced.</p>\n<p>Best regards,<br>\nJihun.</p>\n<p>[1] <a class=\"attachment\" href=\"/uploads/short-url/qhWji6MxoGaKRxq6hGJPdTP66D4.root\">M100_MuMu_card_input.root</a> (7.7 KB)<br>\n[2] <a class=\"attachment\" href=\"/uploads/short-url/sr6aBxuXiEU5QLjLzIdiX8KwxgJ.txt\">card_2017_MuMu_M100.txt</a> (1.0 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-12-19T09:39:01.855Z",
+      "updated_at": "2023-12-19T09:39:01.855Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jihun,\nWhat you are seeing is most likely an artifact of the fact that your limit is small in units of r. Both HybridNew and AsymptoticLimits approximate the exact calculation of the limit in an iterative procedure and stop after some desired accuracy is reached.\nThe desired accuracy that you run with can be controlled via the command line options --rAbsAcc and --rRelAcc, which set the accuracy on r at which the algorithm stops.\nThe asymptotic method uses and analytic approximation of the test statistic distribution, which saves a lot of computational time, and therefore the default value of these parameters is fairly small (0.005 relative accuracy and 0.0005 absolute accuracy). On the other hand, the HybridNew method estimates the test statistic distribution using toy experiments, which is much more computationally expensive, therefore the default values of these parameters are much larger to avoid spending a lot of extra computation time on precision that may not be helpful, the defaults are 0.05 relative accuracy and 0.1 absolute accuracy.\nSo typically, if your limit is below 0.078125,  the algorithm will start at higher values, work its way down, get to this number and then stop because it is below the required absolute accuracy of the limit.\nYou can adjust this behaviour with the command line options above. Sometimes it is also useful to simply scale r such that the limit is ~1.\nI hope that helps,\nKyle",
+      "cooked_html": "<p>Dear Jihun,</p>\n<p>What you are seeing is most likely an artifact of the fact that your limit is small in units of <code>r</code>. Both <code>HybridNew</code> and <code>AsymptoticLimits</code> approximate the exact calculation of the limit in an iterative procedure and stop after some desired accuracy is reached.</p>\n<p>The desired accuracy that you run with can be controlled via the command line options <code>--rAbsAcc</code> and <code>--rRelAcc</code>, which set the accuracy on <code>r</code> at which the algorithm stops.</p>\n<p>The asymptotic method uses and analytic approximation of the test statistic distribution, which saves a lot of computational time, and therefore the default value of these parameters is fairly small (0.005 relative accuracy and 0.0005 absolute accuracy). On the other hand, the HybridNew method estimates the test statistic distribution using toy experiments, which is much more computationally expensive, therefore the default values of these parameters are much larger to avoid spending a lot of extra computation time on precision that may not be helpful, the defaults are 0.05 relative accuracy and 0.1 absolute accuracy.</p>\n<p>So typically, if your limit is below 0.078125,  the algorithm will start at higher values, work its way down, get to this number and then stop because it is below the required absolute accuracy of the limit.</p>\n<p>You can adjust this behaviour with the command line options above. Sometimes it is also useful to simply scale <code>r</code> such that the limit is ~1.</p>\n<p>I hope that helps,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2023-12-20T18:26:24.385Z",
+      "updated_at": "2023-12-20T18:26:24.385Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThanks a lot!\nThat solved the issue.\nBest,\nJihun.",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>Thanks a lot!<br>\nThat solved the issue.</p>\n<p>Best,<br>\nJihun.</p>"
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+TOPIC: Debugging FitDiagnostics / Closed range without finding crossing
+URL: https://cms-talk.web.cern.ch/t/143395
+DATE: 2026-03-24T17:23:23.682Z
+SOLVED: yes (reply 6)
+============================================================
+
+QUESTION (by jowulff @ 2026-03-24T17:23:24.174Z):
+Dear Combine Experts,
+I’m trying to run FitDiagnostics on a single datacard and it is failing with the error message [ERROR] Closed range without finding crossing!. So in order to estimate where the crossing could be I ran a scan with MultiDimFit and it gives the following result:
+image1132×921 76.5 KB
+So when I run the fit within a range of r=-3,3, I get the following output:
+```
+Running RobustFit for POI r. Configured with strategy 0
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < 3
+r lvl-here lvl-there 	stepping
+-0.366761    +0.26452  +0.49447    0.374085
+0.007323    -0.42617  +0.26452    0.374085
+-0.254536    +0.10341  -0.42617    0.112225
+-0.142310    -0.09826  +0.10341    0.112225
+-0.220868    +0.04722  -0.09826    0.033668
+-0.187201    -0.01266  +0.04722    0.033668
+-0.220710    +0.04688  -0.01266    0.000158
+-0.220631    +0.04672  +0.04688    0.000079
+-0.220592    +0.04663  +0.04672    0.000039
+[ERROR] Closed range without finding crossing!
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < -3
+r lvl-here lvl-there 	stepping
+(…)
+[WARNING]: Unable to determine uncertainties on all fit parameters in s+b fit. Have a look at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties for more information.
+Fit S+B, status = 0, numBadNLL = 0, covariance quality = 2
+— FitDiagnostics —
+Best fit r: -0.740846  -0.550351/+3.74085  (68% CL)
+```
+`combine --method FitDiagnostics workspace.root --verbose 1 --mass 125.0 --robustFit 1 --redefineSignalPOIs r --setParameterRanges r=-3.0,3.0 --setParameters r=1.0  --stepSize 0.1 --maxFailedSteps 10 --skipBOnlyFit  --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1`
+It looks to me that combine is closing the range at a value of r which is practically almost exactly at the -68% crossing in the above plot. My question is: how can i debug this fit? I already increased the number of steps from 5 to 10 (before it was saying maximum number of failed steps reached
+Thanks for any suggestions
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-03-25T13:51:07.000Z):
+Dear Johan,
+Can you please share your datacard so we can try to reproduce the error?
+Thank you,
+Giacomo
+
+On 24 Mar 2026, at 18:24, Johan Wilfried Wulff noreply-cms-talk@cern.ch wrote:
+
+Johan Wilfried Wulff jowulffMarch 24
+
+Dear Combine Experts,
+I’m trying to run FitDiagnostics on a single datacard and it is failing with the error message [ERROR] Closed range without finding crossing!. So in order to estimate where the crossing could be I ran a scan with MultiDimFit and it gives the following result:
+
+So when I run the fit within a range of r=-3,3, I get the following output:
+Running RobustFit for POI r. Configured with strategy 0
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < 3
+r lvl-here lvl-there stepping
+-0.366761 +0.26452 +0.49447 0.374085
+0.007323 -0.42617 +0.26452 0.374085
+-0.254536 +0.10341 -0.42617 0.112225
+-0.142310 -0.09826 +0.10341 0.112225
+-0.220868 +0.04722 -0.09826 0.033668
+-0.187201 -0.01266 +0.04722 0.033668
+-0.220710 +0.04688 -0.01266 0.000158
+-0.220631 +0.04672 +0.04688 0.000079
+-0.220592 +0.04663 +0.04672 0.000039
+[ERROR] Closed range without finding crossing!
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < -3
+r lvl-here lvl-there stepping
+
+(…)
+
+[WARNING]: Unable to determine uncertainties on all fit parameters in s+b fit. Have a look at [https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties) for more information.
+Fit S+B, status = 0, numBadNLL = 0, covariance quality = 2
+
+— FitDiagnostics —
+Best fit r: -0.740846 -0.550351/+3.74085 (68% CL)
+
+combine --method FitDiagnostics workspace.root --verbose 1 --mass 125.0 --robustFit 1 --redefineSignalPOIs r --setParameterRanges r=-3.0,3.0 --setParameters r=1.0 --stepSize 0.1 --maxFailedSteps 10 --skipBOnlyFit --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+It looks to me that combine is closing the range at a value of r which is practically almost exactly at the -68% crossing in the above plot. My question is: how can i debug this fit? I already increased the number of steps from 5 to 10 (before it was saying maximum number of failed steps reached
+Thanks for any suggestions
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by jowulff @ 2026-03-25T14:08:49.907Z):
+Thanks for your reply Giacomo.
+of course! Here is the datacard and the shapes.root file
+datacard_cat_2018_tautau_resolved2b_first_os_iso_spin_2_mass_300.txt (47.6 KB)
+shapes_cat_2018_tautau_resolved2b_first_os_iso_spin_2_mass_300.root (1.4 MB)
+btw i forgot to mention i’m using the latest combine version (10.5.1)
+Best
+----------------------------------------
+
+REPLY 4 (by gortona @ 2026-03-25T14:39:59.000Z):
+Hi Johan,
+As far as I can tell, everything seems to be correct in the model.
+Reducing the step size seems to be solving your issue (I used —stepSize 0.05), although I am not really sure why the algorithm can’t find the crossing with the default value.
+Best,
+Giacomo
+
+On 25 Mar 2026, at 15:10, Johan Wilfried Wulff noreply-cms-talk@cern.ch wrote:
+
+Johan Wilfried Wulff jowulffMarch 25
+
+Thanks for your reply Giacomo.
+of course! Here is the datacard and the shapes.root file
+datacard_cat_2018_tautau_resolved2b_first_os_iso_spin_2_mass_300.txt (47.6 KB)
+shapes_cat_2018_tautau_resolved2b_first_os_iso_spin_2_mass_300.root (1.4 MB)
+btw i forgot to mention i’m using the latest combine version (10.5.1)
+Best
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaMarch 25
+
+Dear Johan,
+Can you please share your datacard so we can try to reproduce the error?
+Thank you,
+Giacomo
+
+On 24 Mar 2026, at 18:24, Johan Wilfried Wulff noreply-cms-talk@cern.ch wrote:
+
+Johan Wilfried Wulff jowulffMarch 24
+
+Dear Combine Experts,
+I’m trying to run FitDiagnostics on a single datacard and it is failing with the error message [ERROR] Closed range without finding crossing!. So in order to estimate where the crossing could be I ran a scan with MultiDimFit and it gives the following result:
+
+So when I run the fit within a range of r=-3,3, I get the following output:
+Running RobustFit for POI r. Configured with strategy 0
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < 3
+r lvl-here lvl-there stepping
+-0.366761 +0.26452 +0.49447 0.374085
+0.007323 -0.42617 +0.26452 0.374085
+-0.254536 +0.10341 -0.42617 0.112225
+-0.142310 -0.09826 +0.10341 0.112225
+-0.220868 +0.04722 -0.09826 0.033668
+-0.187201 -0.01266 +0.04722 0.033668
+-0.220710 +0.04688 -0.01266 0.000158
+-0.220631 +0.04672 +0.04688 0.000079
+-0.220592 +0.04663 +0.04672 0.000039
+[ERROR] Closed range without finding crossing!
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < -3
+r lvl-here lvl-there stepping
+
+(…)
+
+[WARNING]: Unable to determine uncertainties on all fit parameters in s+b fit. Have a look at [[https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties)]([https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties)) for more information.
+Fit S+B, status = 0, numBadNLL = 0, covariance quality = 2
+
+— FitDiagnostics —
+Best fit r: -0.740846 -0.550351/+3.74085 (68% CL)
+
+combine --method FitDiagnostics workspace.root --verbose 1 --mass 125.0 --robustFit 1 --redefineSignalPOIs r --setParameterRanges r=-3.0,3.0 --setParameters r=1.0 --stepSize 0.1 --maxFailedSteps 10 --skipBOnlyFit --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+It looks to me that combine is closing the range at a value of r which is practically almost exactly at the -68% crossing in the above plot. My question is: how can i debug this fit? I already increased the number of steps from 5 to 10 (before it was saying maximum number of failed steps reached
+Thanks for any suggestions
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Johan Wilfried Wulff jowulffMarch 24
+
+Dear Combine Experts,
+I’m trying to run FitDiagnostics on a single datacard and it is failing with the error message [ERROR] Closed range without finding crossing!. So in order to estimate where the crossing could be I ran a scan with MultiDimFit and it gives the following result:
+
+So when I run the fit within a range of r=-3,3, I get the following output:
+Running RobustFit for POI r. Configured with strategy 0
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < 3
+r lvl-here lvl-there stepping
+-0.366761 +0.26452 +0.49447 0.374085
+0.007323 -0.42617 +0.26452 0.374085
+-0.254536 +0.10341 -0.42617 0.112225
+-0.142310 -0.09826 +0.10341 0.112225
+-0.220868 +0.04722 -0.09826 0.033668
+-0.187201 -0.01266 +0.04722 0.033668
+-0.220710 +0.04688 -0.01266 0.000158
+-0.220631 +0.04672 +0.04688 0.000079
+-0.220592 +0.04663 +0.04672 0.000039
+[ERROR] Closed range without finding crossing!
+Searching for crossing at nll = 449.879, in the interval -0.740846 < r < -3
+r lvl-here lvl-there stepping
+
+(…)
+
+[WARNING]: Unable to determine uncertainties on all fit parameters in s+b fit. Have a look at [https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties](https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#fit-parameter-uncertainties) for more information.
+Fit S+B, status = 0, numBadNLL = 0, covariance quality = 2
+
+— FitDiagnostics —
+Best fit r: -0.740846 -0.550351/+3.74085 (68% CL)
+
+combine --method FitDiagnostics workspace.root --verbose 1 --mass 125.0 --robustFit 1 --redefineSignalPOIs r --setParameterRanges r=-3.0,3.0 --setParameters r=1.0 --stepSize 0.1 --maxFailedSteps 10 --skipBOnlyFit --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1
+It looks to me that combine is closing the range at a value of r which is practically almost exactly at the -68% crossing in the above plot. My question is: how can i debug this fit? I already increased the number of steps from 5 to 10 (before it was saying maximum number of failed steps reached
+Thanks for any suggestions
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by jowulff @ 2026-03-25T16:35:18.197Z):
+Hello Giacomo,
+could you perhaps share the command you’re executing? I do not see the fit converging with a step size of 0.05.
+Best,
+----------------------------------------
+
+REPLY 6 [ACCEPTED ANSWER] (by gortona @ 2026-03-25T18:35:38.384Z):
+Hi Johan,
+Sure, here they are:
+combine -M FitDiagnostics datacard_cat_2018_tautau_resolved2b_first_os_iso_spin_2_mass_300.txt --mass 125.0 --robustFit 1 --setParameterRanges r=-3.0,3.0 --stepSize 0.05 --maxFailedSteps 10 --skipBOnlyFit --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4
+<<< Combine >>>
+<<< v10.5.1 >>>
+>>> Random number generator seed is 123456
+
+…
+
+--- FitDiagnostics ---
+Best fit r: -0.740676  -0.550396/+0.542891  (68% CL)
+
+Best,
+Giacomo
+----------------------------------------

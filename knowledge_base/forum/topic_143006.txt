@@ -1,0 +1,44 @@
+TOPIC: Handling of rateParam in HybridNew/AsymptoticLimits
+URL: https://cms-talk.web.cern.ch/t/143006
+DATE: 2026-03-13T18:11:37.935Z
+SOLVED: no
+============================================================
+
+QUESTION (by cbasile @ 2026-03-13T18:11:38.180Z):
+Dear experts,
+I am working in the search for LFV in the τ→3μ decay (BPH-24-010) and I have few question concerning the handling of rateParam when computing limits with toys.
+This is a shape analysis in the invariant mass of 3μ and the POI is the Br(τ→3μ). Given the low number of expected events in the signal region we use HibridNew to compute limits with the following settings:
+tau3mu-combine.key (564.7 KB)
+text2workspace.py datacard.txt --X-assign-flatParam-prior
+combine -M HybridNew -d datacard.root --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --X-rtd MINIMIZER_freezeDisassociatedParams --cminDefaultMinimizerStrategy=0 --testStat LHC -T [Ntoys] --clsAcc=0 --rule CLs
+
+And rateParam are associated to the background normalization in order to randomize also the bkg yield in the toy generation. The interval allowed is given by the 99% Clopper-Pearson interval around the expected yield. As suggested in the Run2 version of this analysis.
+I’ll start from a direct example of what triggered these questions and attach few slides to support my description.
+In category C of 2022 I observe the following behavior: the obs.(exp.) number of events in the full mass spectrum is 11(10.6) and the best-fit r (from fitDiagnostics) is negative, with relatively large uncertainty, though. Still, the observed exclusion limit is larger than the expected (see slide 1).
+I want to make sure that this does not indicate any buggy behavior of my workflow.
+The larger observed limit could be explained by the presence of 2 events in the signal region, post unblind. As a test I shrink the signal region and extend the sidebands in order to include those events in the expected background estimation. The expected outcome is that the expected exclusion limit get larger and the observed would result in a more stringent bound, since no additional event are in the signal region w/ this configuration.
+For a fast check I use AsymptoticLimits and I find that the results are independent from the size of the signal region, and in both cases I have the same expected and observed limits (slide 2 top table).
+Conversely, if the rateParam associated with the bkg normalization is removed, the expected exclusion limit is better (worse) than the observed when calculated with the larger (narrower) signal region (slide 2 top table).
+My guess is that in the first case the expected background is given by the post-fit rateParam which is obtained on observed data and therefore independent on the signal region. In the latter, the expected background is fixed to the nominal value, extrapolated from the fit to the sidebands. Is this interpretation correct?
+As reference in slide 3 the datacard I am using for this study.
+Now my concern is on the validity of the limit calculation with the HybridNew options, listed above. Given I am using --fitNuisance=1, is there a risk I am getting a biased evaluation of the expected/observed limits?
+Thank you in advance for your help
+Chiara for the τ3μ analysis team
+----------------------------------------
+
+REPLY 2 (by cbasile @ 2026-03-13T18:27:13.225Z):
+tau3mu-combine.pdf (306.3 KB)
+Attaching the .pdf version of the slides.
+Sorry for the noise
+----------------------------------------
+
+REPLY 3 (by kcormier @ 2026-03-17T13:04:26.250Z):
+Hi Chiara,
+As we discussed briefly in person, I’ll just summarize here for documentation purposes.
+I don’t see anything concerning about your setup. You’re right that when you introduce a rateParam for the background normalization, your initial value that you give it doesn’t make much of a difference (it is only affecting the edges of the range currently). You could even extend the edges of the range.
+You methodology appears fine, and if there is no outside constrain on your background, then allowing the normalization to float as you do with the rateParam and have it set by the fit makes sense.
+The behaviour that you see in terms of whether the observed limit is above or below the expected does not make me think there is something wrong. Firstly, the change is relatively small with respect to the expected quantiles of the limit, so they are still in a very reasonable range. Secondly the observed limit will be affected not just by the number of observed background events but where the events are observed and the values of the background and signal PDFs at those points.
+In short, I did not try to validate your model or all the numbers you got explicitly, but nothing in what I saw jumps out at me as concerning or a likely indiciation of a problem.
+Best,
+Kyle
+----------------------------------------

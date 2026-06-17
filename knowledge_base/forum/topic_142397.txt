@@ -1,0 +1,114 @@
+TOPIC: Significance with multiple POIs
+URL: https://cms-talk.web.cern.ch/t/142397
+DATE: 2026-02-25T17:19:57.370Z
+SOLVED: no
+============================================================
+
+QUESTION (by rkunnila @ 2026-02-25T17:19:57.820Z):
+Hello,
+I am working with a 4-POI model (signal strengths: r_ttZ, r_ttH, r_ttC, r_ttB), for a simultaneous measurement
+I compute the expected significance for r_ttB using:
+combine -M Significance --setParameterRanges r_ttZ=-10,10:r_ttH=-10,10:r_ttC=-10,10:r_ttB=-10,10 --setParameters r_ttZ=1,r_t
+tH=1,r_ttC=1,r_ttB=1 --redefineSignalPOIs r_ttB --cminDefaultMinimizerTolerance 1e-2 --cminDefaultMinimizerStrategy 0 --rMin=-10 --rMax=10 --X-rtd MINIMIZER_analytic -t -1 --signalForSignificance 0 -n _significance_withSysts_fourDim_r_ttB_grouped_ge5 /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/datacards/grouped_ge5_fourDim_r_ttB.root | tee /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/fits/significances/significance_withSysts_fourDim_r_ttB_grouped_ge5.log￼
+
+This gives an expected significance of about 35. Does this make sense?
+The expected best fit value is 1.00 +0.3 -0.26, run with the command
+combine -M FitDiagnostics -m 125 --setParameterRanges r_ttZ=-10,10:r_ttH=-10,10:r_ttC=-10,10:r_ttB=-10,10 --setParameters r_ttZ=1,r_ttH=1,r_ttC=1,r_ttB=1 --redefineSignalPOIs r_ttB --cminDefaultMi
+nimizerTolerance 1e-2 --cminDefaultMinimizerStrategy 0 --rMin=-10 --rMax=10 --X-rtd MINIMIZER_analytic -t -1 --robustFit 1 --saveShapes --saveWithUnc -n _bestfit_withSysts_fourDim_r_ttB_grouped_ge5 /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx_noLF1ZnB/run2/datacards/grouped_ge5_fourDim_r_ttB.root | tee /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/frodo/workdir/rpLFVx
+_noLF1ZnB/run2/fits/bestfits/bestfit_withSysts_fourDim_r_ttB_grouped_ge5.log
+So, isn’t the expected significance supposed to be 3𝜎? Or is it valid only in case of a single POI setup or when other POIs are fixed? Is this 35𝜎 because 𝜇\ttB is entangled with other signal strengths?
+----------------------------------------
+
+REPLY 2 (by rkunnila @ 2026-02-25T17:23:50.891Z):
+I am trying to understand why the significance calculation gives ~35σ.
+Any clarification would be appreciated.
+----------------------------------------
+
+REPLY 3 (by gortona @ 2026-02-26T08:38:48.632Z):
+Dear Rufa,
+Can you please share your log, datacards, and workspaces so that we can have a look?
+Thank you,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 4 (by rkunnila @ 2026-02-26T16:01:25.041Z):
+Thank you for your reply. I attach the documents here.
+grouped_ge5_fourDim_r_ttB.root (2.9 MB)
+grouped_ge5.txt (1.0 MB)
+this is the workspace.
+Datacards:
+datacard__ge5_other_Run2.txt (67.6 KB)
+datacard__ge5_ttB_Run2.txt (67.6 KB)
+datacard__ge5_ttC_Run2.txt (67.6 KB)
+datacard__ge5_ttH_Run2.txt (67.6 KB)
+datacard__ge5_ttZB_Run2.txt (67.6 KB)
+datacard__ge5_ttZnonB_Run2.txt (67.7 KB)
+One of the log out files:
+submitScript.833556_2.out (224.3 KB)
+Thanks!
+----------------------------------------
+
+REPLY 5 (by gortona @ 2026-03-02T09:41:15.236Z):
+Dear Rufa,
+It seems to me the background-only fit is failing, both for the significance calculation and for the fitDiagnostics step. Did you by any chance run the ValidateDatacards tools? If so, can you post the results here?
+Also, it would be good if you can give me access to the input files using to create the workspaces, so that I can recreate the workspaces myself.
+Thank you,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 6 (by rkunnila @ 2026-03-02T15:49:18.281Z):
+Dear Giacomo,
+I am working on naf server, the path to datacards is /data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/hogwarts/workdir/run2/glp_run7rep2/rpLFVx_noLF1ZnB/run2/datacards
+I produce these datacards by combining per year datacards (/data/dust/user/rrafeek/CMSSW_14_1_0_pre4/src/hogwarts/workdir/run2/glp_run7rep2/rpLFVx_noLF1ZnB//datacards) corresponding to each year from 2016preVFP-2018 of Run2.
+For eg, combine the datacards corresponding to each event-class as below:
+combineCards.py \
+y16pre=../../2016preVFP/datacards/datacard__ge5_ttZB.txt \
+y16post=../../2016postVFP/datacards/datacard__ge5_ttZB.txt \
+y17=../../2017/datacards/datacard__ge5_ttZB.txt \
+y18=../../2018/datacards/datacard__ge5_ttZB.txt \
+
+datacard__ge5_ttZB_Run2.txt
+Can you access this? or should i copy this to cern server or so?
+
+validateDatacards run on one single datacard for eg, ttB, showed:
+ValidateDatacards.py datacard__ge5_ttB_Run2.txt
+[SetFlag] Changing value of flag "check-negative-bins-on-import" from 1 to 0
+[SetFlag] Changing value of flag "workspaces-use-clone" from 0 to 1
+[#1] INFO:ObjectHandling -- RooWorkspace::import(_rateParams) importing RooRealVar::xsnorm_vx
+[#1] INFO:ObjectHandling -- RooWorkspace::import(_rateParams) importing RooRealVar::xsnorm_ttlf
+================================
+=======Validation results=======
+================================
+>>>There were  10 warnings of type  'up/down templates vary the yield in the same direction'
+>>>There were  184 warnings of type  'up/down templates are identical'
+>>>There were no warnings of type  'At least one of the up/down systematic uncertainty templates is empty'
+>>>There were  75 warnings of type  'Uncertainty has normalisation effect of more than 10.0%'
+>>>There were  275 warnings of type  'Uncertainty probably has no genuine shape effect'
+>>>There were no warnings of type 'Empty process'
+>>>There were no warnings of type 'Bins of the template empty in background'
+>>>There were no alerts of type 'Small signal process'
+
+On the workspace showed
+``ValidateDatacards.py grouped_ge5_fourDim_r_ttH.root
+[SetFlag] Changing value of flag “check-negative-bins-on-import” from 1 to 0
+[SetFlag] Changing value of flag “workspaces-use-clone” from 0 to 1
+=======Validation results=======
+
+There were no warnings
+
+Thanks and regards,
+----------------------------------------
+
+REPLY 7 (by gortona @ 2026-03-04T09:41:25.181Z):
+Dear Rufa,
+Unfortunately I can’t access the naf server.
+My suggestion would be to test the individual cards to see if the background only fit fails in any of them or only in the combination, and to check some of the warnings you get from the validation. The most critical are probably the up/down templates vary the yield in the same direction ones.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 8 (by rkunnila @ 2026-03-04T12:22:33.804Z):
+ok thank you
+----------------------------------------

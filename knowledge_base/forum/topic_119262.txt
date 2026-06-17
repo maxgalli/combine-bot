@@ -1,0 +1,59 @@
+TOPIC: Problems with likelihood calculation
+URL: https://cms-talk.web.cern.ch/t/119262
+DATE: 2025-03-19T09:54:46.349Z
+SOLVED: yes (reply 3)
+============================================================
+
+QUESTION (by rgargiul @ 2025-03-19T09:54:46.413Z):
+Dear experts,
+with this post I’d like to ask for your help with an issue I get when performing likelihood scans using combine.
+I am doing an analysis on the extraction of Higgs boson width via the interference between signal and background in the diphoton channel, and I use the relation c (coupling) = sqrt(mu * gamma/gammaSM), so the interference is proportional to c and the signal to mu. Therefore I have two POIs, mu (the usual signal strength), and gamma/gammaSM (the Higgs boson width modifier).
+I have two shapes (pdfs) for the signal-only and signal+interference case, respectively, with the addition of other signal production modes with no interference and data-driven background.
+The physics model (I can provide the .py file if necessary) has:
+mu - sqrt(mu * gamma) as the coefficient for the signal-only pdf
+sqrt(mu * gamma) as the coefficient for the signal+interference pdf
+(This is done because the interference is negative).
+For one year I get post-fit values for gamma different from 1 when fitting Asimov datasets (with the -t -1 option). The uncertainty on the parameter is around 4, therefore it is not a huge pull, but I expect to get exactly 1 with Asimov datasets. If I fit only one category of that year I get values very different from one, i.e. 4. In the following I’ll stick to the situation of this one category and one year.
+I tried fixing all the background parameters and nuisances and playing with the minimizer options but nothing worked. In the following I’ll stick to this situation of all parameters freezed except gamma.
+If a make a likelihood scan with --algo grid, I see where is an actual minimum at gamma~4.
+I tried with the FitDiagnostics tools, with every parameter freezed except for gamma (also getting the message “1 free parameters” from Minuit2) and saving the shapes prefit and post-fit. To check for numerical problems I made a standalone chi2 scan (summing the squared residuals of each bin) vs. gamma, and I get what I expect, i.e. a function with the minimum at 1 (with chi2(gamma=1) = 0). If I vary the prefit value for gamma (tried 0.5, 2, 3, 4, 5), I then get the same value for the minimum of my chi2 scan.
+This convinced me that the problems are due to problems in combine when evaluating the likelihood. All the pdfs are positive, but the physics model scalings (mu - sqrt(mu * gamma)  in particular) can be negative for gamma > mu. I checked and also the “total_signal” shape in the diagnostics result is negative for some bins, even in the “prefit” case. This however should not pose a problem, because the background is larger and covers from these negative bins, i.e. signal+background is positive everywhere (checked).
+Moreover, if I switch to a non-physical physics model, with |mu - sqrt(mu * gamma)| instead of mu - sqrt(mu * gamma, I get everything working, i.e. minima at 1.
+I also tried with a FastScan on the Asimov but I get functions without minima (monotonic) for both mu and gamma.
+If you need I can send you further material, for example the .root workspace and the .py physics model
+thanks for your help,
+Ruben
+----------------------------------------
+
+REPLY 2 (by adewit @ 2025-03-21T08:42:34.724Z):
+Dear Ruben,
+It’s difficult to say from your description of the issue what the underlying problem might be. If you could share the workspace that you’re running the fits on (and the physics model file, even if the model will be embedded in the workspace), it would probably be easier to help you.
+Best wishes,
+Adinda
+----------------------------------------
+
+REPLY 3 [ACCEPTED ANSWER] (by rgargiul @ 2025-03-21T10:17:45.993Z):
+Hi Adinda,
+Actually yesterday we managed to solve after asking around - the problem was that for binned analyses combine evaluates PDFs at the center of the bins. Since we are looking at subtle shape effects and were using 1 GeV bins the likelihood calculation was not exact at all. Now we are using 0.25 GeV bins and the minimum is still not exactly one, but ranging in a 5% region around 1 which I think should be OK.
+Thank you anyway for your help,
+Ruben
+----------------------------------------
+
+REPLY 4 (by nckw @ 2025-03-21T10:31:52.000Z):
+Hi Ruben,
+I just thought I would point out that you can avoid the evaluation at the centre of the bin by using our wrapper, which instead takes the proper integral (see https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#unbinned-or-parametric-shape-analyses)
+Best
+Nick
+
+| Ruben Gargiulo rgargiulMarch 21 |
+
+| - |
+
+Hi Adinda,
+Actually yesterday we managed to solve after asking around - the problem was that for binned analyses combine evaluates PDFs at the center of the bins. Since we are looking at subtle shape effects and were using 1 GeV bins the likelihood calculation was not exact at all. Now we are using 0.25 GeV bins and the minimum is still not exactly one, but ranging in a 5% region around 1 which I think should be OK.
+Thank you anyway for your help,
+Ruben
+
+···
+On 21 Mar 2025 10:20, Ruben Gargiulo via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------

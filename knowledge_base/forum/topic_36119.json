@@ -1,0 +1,34 @@
+{
+  "topic_id": 36119,
+  "title": "Is it possible to save each nuisances in different histograms instead of just \"total_background\"",
+  "url": "https://cms-talk.web.cern.ch/t/36119",
+  "category_id": 279,
+  "created_at": "2024-02-28T14:47:32.809Z",
+  "last_posted_at": "2024-02-28T15:50:51.969Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "alkaloge",
+      "name": "Alexis Kalogeropoulos",
+      "created_at": "2024-02-28T14:47:32.924Z",
+      "updated_at": "2024-02-28T14:47:32.924Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello\nI have a probably naive question. While running the FitDiagnostics, is there a way to have in the post-fit directory the nuisances (shapes) saved separately as histograms? I would like to be able to make a ratio band showing the different nuisances contributing to the total error band if possible.\nI hope my question makes sense.\nThanks,\nAlexis",
+      "cooked_html": "<p>Hello</p>\n<p>I have a probably naive question. While running the <code>FitDiagnostics</code>, is there a way to have in the post-fit directory the nuisances (shapes) saved separately as histograms? I would like to be able to make a ratio band showing the different nuisances contributing to the total error band if possible.</p>\n<p>I hope my question makes sense.</p>\n<p>Thanks,<br>\nAlexis</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-02-28T15:50:51.969Z",
+      "updated_at": "2024-02-28T15:50:51.969Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Alexis,\nSo you mean for example, a TH1 of total_background where the uncertainty comes just from a JES nuisance, say? I don\u2019t think there\u2019s an easy way to do that it FitDiagnostics, but others may want to comment.\nIt could be done with PostFitShapesFromWorkspace (from CombineHarvester), there is a --freeze option that stops the list of parameters being varied in the covariance matrix sampling. So it\u2019s a bit clunky, you\u2019d have to list all the N-1 nuisances to freeze each time, but it should work.\nOne thing to keep in mind, because of correlations in the fit, the simple sum in quadrature of the uncertainties for each NP could be much larger than the total uncertainty determined directly.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Alexis,</p>\n<p>So you mean for example, a TH1 of total_background where the uncertainty comes just from a JES nuisance, say? I don\u2019t think there\u2019s an easy way to do that it FitDiagnostics, but others may want to comment.</p>\n<p>It could be done with PostFitShapesFromWorkspace (from CombineHarvester), there is a <code>--freeze</code> option that stops the list of parameters being varied in the covariance matrix sampling. So it\u2019s a bit clunky, you\u2019d have to list all the N-1 nuisances to freeze each time, but it should work.</p>\n<p>One thing to keep in mind, because of correlations in the fit, the simple sum in quadrature of the uncertainties for each NP could be much larger than the total uncertainty determined directly.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

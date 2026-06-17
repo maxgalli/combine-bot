@@ -1,0 +1,106 @@
+{
+  "topic_id": 33711,
+  "title": "Penalty terms in the combine discrete profiling",
+  "url": "https://cms-talk.web.cern.ch/t/33711",
+  "category_id": 279,
+  "created_at": "2024-01-26T12:23:06.659Z",
+  "last_posted_at": "2024-02-05T09:52:34.062Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2024-01-26T12:23:06.812Z",
+      "updated_at": "2024-01-26T12:23:06.812Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nCan anyone explain what penalty terms regarding the number of parameters are used in combine discrete profiling? and kindly point me to the code that implements them?\nBest\nXingchen",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>Can anyone explain what penalty terms regarding the number of parameters are used in combine discrete profiling? and kindly point me to the code that implements them?</p>\n<p>Best<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-01-29T15:04:47.957Z",
+      "updated_at": "2024-01-29T15:04:47.957Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nThis is something that can be set on the RooMultiPdf object using the setCorrectionFactor(value) method. The default value is 0.5 (which corresponds to a penalty of 1 per parameter on 2*deltaNLL). You can change the value to something else if you need to.\nBest,\nNick\n\ngithub.com\n\ncms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/RooMultiPdf.cxx#L81-L83\n\nvoid RooMultiPdf::setCorrectionFactor(double penal){\ncFactor=penal;\n}",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>This is something that can be set on the RooMultiPdf object using the <code>setCorrectionFactor(value)</code> method. The default value is 0.5 (which corresponds to a penalty of 1 per parameter on 2*deltaNLL). You can change the value to something else if you need to.</p>\n<p>Best,<br>\nNick</p>\n<aside class=\"onebox githubblob\" data-onebox-src=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/RooMultiPdf.cxx#L81-L83\">\n  <header class=\"source\">\n\n      <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/RooMultiPdf.cxx#L81-L83\" target=\"_blank\" rel=\"noopener\">github.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <h4><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/RooMultiPdf.cxx#L81-L83\" target=\"_blank\" rel=\"noopener\">cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/RooMultiPdf.cxx#L81-L83</a></h4>\n\n\n\n    <pre class=\"onebox\"><code class=\"lang-cxx\">\n      <ol class=\"start lines\" start=\"81\" style=\"counter-reset: li-counter 80 ;\">\n          <li>void RooMultiPdf::setCorrectionFactor(double penal){</li>\n          <li>  cFactor=penal;</li>\n          <li>}</li>\n      </ol>\n    </code></pre>\n\n\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n"
+    },
+    {
+      "post_number": 4,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2024-01-30T17:28:20.915Z",
+      "updated_at": "2024-01-30T17:28:20.915Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Thank you!",
+      "cooked_html": "<p>Thank you!</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2024-01-30T17:38:38.395Z",
+      "updated_at": "2024-01-30T17:38:38.395Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "I have a further question about the discrete profiling. So I am using the profiling with the Significance method. And fitting of some of my functions are very sensitive to the change of the initial values. I notice that after the discrete profiling decide which function is preferred, the initial values of that function is no longer what I set. And the fitting process in the significance calculation is based up that new set of initial values. This sometimes causes failure to the fitting.\nI know that the discrete profiling r scan must happen before the actual calculation of the significance, but I don\u2019t know where the code is. And I want to make sure each fit in the scan is actually good.\nIf you can provide some insight on this issue, I would appreciate it very much. If you think this is beyond this post, maybe I should open another post.",
+      "cooked_html": "<p>I have a further question about the discrete profiling. So I am using the profiling with the Significance method. And fitting of some of my functions are very sensitive to the change of the initial values. I notice that after the discrete profiling decide which function is preferred, the initial values of that function is no longer what I set. And the fitting process in the significance calculation is based up that new set of initial values. This sometimes causes failure to the fitting.<br>\nI know that the discrete profiling r scan must happen before the actual calculation of the significance, but I don\u2019t know where the code is. And I want to make sure each fit in the scan is actually good.<br>\nIf you can provide some insight on this issue, I would appreciate it very much. If you think this is beyond this post, maybe I should open another post.</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-01-31T10:50:25.441Z",
+      "updated_at": "2024-01-31T10:50:33.693Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nCould you please tell us which Combine version and CMSSW  are you using?\nIn order to make sure that the significance results are ok it is always good to scan the likelihood with the -M MultiDimFit --algo grid method as described here.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>Could you please tell us which Combine version and CMSSW  are you using?<br>\nIn order to make sure that the significance results are ok it is always good to scan the likelihood with the <code>-M MultiDimFit --algo grid</code> method as described <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2024-02-01T11:50:39.000Z",
+      "updated_at": "2024-02-01T11:50:39.000Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya,\nMy combine version is v9.1.0, and CMSSW version is CMSSW_12_6_0_patch1. If I understand correctly, -M MultiDimFit --algo grid scans over the r, not necessarily gives the significance. Should I use -M Significance for this matter? and maybe use MultiDimFit as a crosscheck?\nBest\nXingchen",
+      "cooked_html": "<p>Hi Aliya,<br>\nMy combine version is v9.1.0, and CMSSW version is CMSSW_12_6_0_patch1. If I understand correctly, <code>-M MultiDimFit --algo grid</code> scans over the r, not necessarily gives the significance. Should I use <code>-M Significance</code> for this matter? and maybe use <code>MultiDimFit</code> as a crosscheck?</p>\n<p>Best<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-02-02T10:43:26.696Z",
+      "updated_at": "2024-02-02T10:43:26.696Z",
+      "reply_to_post_number": 8,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nI would suggest to try recommended CMSSW_11_3_4 (with ROOT v6.22) with Combine v9.1.0 and check if you still run into the same issues. CMSSW_12_6_0 has different ROOT version 6.24, and it is not guaranteed that everything works as expected. And yes, I suggested to run the -M MultiDimFit with --algo grid as a crosscheck.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>I would suggest to try recommended CMSSW_11_3_4 (with ROOT v6.22) with Combine v9.1.0 and check if you still run into the same issues. CMSSW_12_6_0 has different ROOT version 6.24, and it is not guaranteed that everything works as expected. And yes, I suggested to run the<code> -M MultiDimFit</code> with <code>--algo grid</code> as a crosscheck.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 11,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2024-02-05T09:52:34.062Z",
+      "updated_at": "2024-02-05T09:52:34.062Z",
+      "reply_to_post_number": 9,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya,\nThank you for the suggestion, and I will try it out! But I doubt it is about the ROOT version, but more about the functions I put in the profile. They are just not easy to use. Do you know where the discrete profiling happens in these methods code-wise?\nBest\nXingchen",
+      "cooked_html": "<p>Hi Aliya,</p>\n<p>Thank you for the suggestion, and I will try it out! But I doubt it is about the ROOT version, but more about the functions I put in the profile. They are just not easy to use. Do you know where the discrete profiling happens in these methods code-wise?</p>\n<p>Best<br>\nXingchen</p>"
+    }
+  ]
+}

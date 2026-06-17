@@ -1,0 +1,34 @@
+{
+  "topic_id": 71890,
+  "title": "Data yields have an impact in calculating expected significance?",
+  "url": "https://cms-talk.web.cern.ch/t/71890",
+  "category_id": 279,
+  "created_at": "2024-12-02T06:11:41.901Z",
+  "last_posted_at": "2024-12-02T08:01:19.499Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-12-02T06:11:42.384Z",
+      "updated_at": "2024-12-02T06:11:42.384Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nIf I could give a bit of context, I was doing my MC template fitting and had accidentally only processed half of my data samples and thus had \"data_obs \"histograms with about half the normal yields. This made the expected postfit significance value to change from 0.89071 to 1.04959, which is a significant change.\nI apologize if this is a basic question, but it is my understanding that data (data_obs) should not contribute to calculating expected significances. The prefit expected signifcance doesn\u2019t change, so it\u2019s somewhere in the posfit phase of combine that\u2019s touching data, but I am having a hard time isolating the cause.\nHere\u2019s the combine command that I have used to generate the results:\nprefit exp signifcance:\ncombine -d combined_2017.root -M Significance -m 125 --expectSignal=1 -n _2017_ -t -1 --rMin -2 --rMax 5\nposfit significance:\ncombine -d combined_2017.root -M Significance -m 125 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 0 --cminRunAllDiscreteCombinations --cminApproxPreFitTolerance=0.01 --cminFallbackAlgo Minuit2,Migrad,0:0.01 --cminFallbackAlgo Minuit2,Migrad,0:0.1 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd MINIMIZER_analytic --X-rtd FAST_VERTICAL_MORPH --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_freezeDisassociatedParams  -n _2017_ --toysFrequentist --rMin -2 --rMax 5 -t -1 --expectSignal 1\nI have also attached the root file just in case:\ncombined_2017.root (73.6 KB)\nI tried to see if the hint lies in the combine commands, but I wasn\u2019t successful. If you see anything I have missed or require more information, please let me know!\nThank you in advance,\nHyeon-Seo",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>If I could give a bit of context, I was doing my MC template fitting and had accidentally only processed half of my data samples and thus had \"data_obs \"histograms with about half the normal yields. This made the expected postfit significance value to change from 0.89071 to 1.04959, which is a significant change.</p>\n<p>I apologize if this is a basic question, but it is my understanding that data (data_obs) should not contribute to calculating expected significances. The prefit expected signifcance doesn\u2019t change, so it\u2019s somewhere in the posfit phase of combine that\u2019s touching data, but I am having a hard time isolating the cause.</p>\n<p>Here\u2019s the combine command that I have used to generate the results:<br>\nprefit exp signifcance:<br>\n<code>combine -d combined_2017.root -M Significance -m 125 --expectSignal=1 -n _2017_ -t -1 --rMin -2 --rMax 5</code><br>\nposfit significance:<br>\n<code>combine -d combined_2017.root -M Significance -m 125 --X-rtd FITTER_NEWER_GIVE_UP --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 0 --cminRunAllDiscreteCombinations --cminApproxPreFitTolerance=0.01 --cminFallbackAlgo Minuit2,Migrad,0:0.01 --cminFallbackAlgo Minuit2,Migrad,0:0.1 --X-rtd MINIMIZER_MaxCalls=9999999 --X-rtd MINIMIZER_analytic --X-rtd FAST_VERTICAL_MORPH --cminDefaultMinimizerTolerance 0.01 --X-rtd MINIMIZER_freezeDisassociatedParams  -n _2017_ --toysFrequentist --rMin -2 --rMax 5 -t -1 --expectSignal 1</code></p>\n<p>I have also attached the root file just in case:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/xvI9znt23rbO4n2Ow5XTM3bbno0.root\">combined_2017.root</a> (73.6 KB)</p>\n<p>I tried to see if the hint lies in the combine commands, but I wasn\u2019t successful. If you see anything I have missed or require more information, please let me know!</p>\n<p>Thank you in advance,</p>\n<p>Hyeon-Seo</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "fiemmi",
+      "name": "Fabio Iemmi",
+      "created_at": "2024-12-02T08:01:19.499Z",
+      "updated_at": "2024-12-02T08:01:19.499Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi Hyeon-Seo,\nwhen you do --toysFrequentist --expectSignal 1 -t -1 you are:\n\n--toysFrequentist: fitting the data (that is, data_obs) to get the values of the nuisance parameters; then\n--expectSignal 1: setting the signal strength value to 1; and finally\n-t -1: throwing an Asimov dataset with the values obtained from steps 1. and 2.\n\nSo, the part in which you touch the data is the frequentist fit used to determine the nuisance parameter used to throw the Asimov dataset. I do not know the details of your analysis, but in several cases this is the best thing to do (e.g. in diphoton analyses where the parameters describing the background function(s) need to be extracted from the data).\nI hope this helps.\nAll the best,\nFabio.",
+      "cooked_html": "<p>Hi Hyeon-Seo,</p>\n<p>when you do <code>--toysFrequentist --expectSignal 1 -t -1</code> you are:</p>\n<ol>\n<li><code>--toysFrequentist</code>: fitting the data (that is, <code>data_obs</code>) to get the values of the nuisance parameters; then</li>\n<li><code>--expectSignal 1</code>: setting the signal strength value to 1; and finally</li>\n<li><code>-t -1</code>: throwing an Asimov dataset with the values obtained from steps 1. and 2.</li>\n</ol>\n<p>So, the part in which you touch the data is the frequentist fit used to determine the nuisance parameter used to throw the Asimov dataset. I do not know the details of your analysis, but in several cases this is the best thing to do (e.g. in diphoton analyses where the parameters describing the background function(s) need to be extracted from the data).</p>\n<p>I hope this helps.<br>\nAll the best,<br>\nFabio.</p>"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "topic_id": 44939,
+  "title": "Understanding MultiDimFit result for a particular rateParam as POI",
+  "url": "https://cms-talk.web.cern.ch/t/44939",
+  "category_id": 279,
+  "created_at": "2024-08-02T13:33:33.141Z",
+  "last_posted_at": "2024-08-02T13:57:36.745Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2024-08-02T13:33:33.328Z",
+      "updated_at": "2024-08-02T13:33:33.328Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI have this blind datacard that I was examining with grid scans and noticed that a rateParam is way off of the value I would expect it to be at.\nThe parameter in question:\nCMS_THIS_Kfactor\trateParam\tsb_*\tQCD\t1.204\t[0.867,1.541]\nCMS_THIS_Kfactor\tparam\t1.204\t0.168\n\nThe difference is also seen when I perform a MultiDimFit with the POI redefined as this parameter. Even better, the result is outside of the limits I set.\ncombine -M MultiDimFit -d g2000chi700.noSysLim.extABCDLL.csv --redefineSignalPOIs CMS_THIS_Kfactor --robustFit 1 -t -1 --setParameters r=0\n[...]\n--- MultiDimFit ---\nbest fit parameter values:\nCMS_THIS_Kfactor :    +1.744\nDone in 0.00 min (cpu), 0.00 min (real)\n\nThe funny thing is, that the parameter is sitting near the proper value when the POI is r.\ncombine -M MultiDimFit -d g2000chi700.noSysLim.extABCDLL.csv --robustFit 1 -t -1 --expectSignal 0 -v3\n[...]\nCMS_THIS_Kfactor\t  = 1.20787\t +/-  0.165663\t(limited)\n[...]\n\nHow should one interpret this result? Is there some test I could do / output I should look at to see what is going on?\nSincerely,\nPeter",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I have <a href=\"https://cernbox.cern.ch/s/GtEHpi1rGB9A0A3\" rel=\"noopener nofollow ugc\">this</a> blind datacard that I was examining with grid scans and noticed that a rateParam is way off of the value I would expect it to be at.</p>\n<p>The parameter in question:</p>\n<pre><code class=\"lang-auto\">CMS_THIS_Kfactor\trateParam\tsb_*\tQCD\t1.204\t[0.867,1.541]\nCMS_THIS_Kfactor\tparam\t1.204\t0.168\n</code></pre>\n<p>The difference is also seen when I perform a MultiDimFit with the POI redefined as this parameter. Even better, the result is outside of the limits I set.</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit -d g2000chi700.noSysLim.extABCDLL.csv --redefineSignalPOIs CMS_THIS_Kfactor --robustFit 1 -t -1 --setParameters r=0\n[...]\n --- MultiDimFit ---\nbest fit parameter values: \n   CMS_THIS_Kfactor :    +1.744\nDone in 0.00 min (cpu), 0.00 min (real)\n\n</code></pre>\n<p>The funny thing is, that the parameter is sitting near the proper value when the POI is r.</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit -d g2000chi700.noSysLim.extABCDLL.csv --robustFit 1 -t -1 --expectSignal 0 -v3\n[...]\nCMS_THIS_Kfactor\t  = 1.20787\t +/-  0.165663\t(limited)\n[...]\n</code></pre>\n<p>How should one interpret this result? Is there some test I could do / output I should look at to see what is going on?</p>\n<p>Sincerely,<br>\nPeter</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-08-02T13:44:24.915Z",
+      "updated_at": "2024-08-02T13:44:24.915Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Peter,\nI think this is consistent with the documentation. Please read:\nDocumentation\n\nNote that constraint terms for the nuisances are dropped after promotion to a POI using --redefineSignalPOI. To produce a likelihood scan for a nuisance parameter, using MultiDimFit with --algo grid, you should instead use the --parameters (-P) option, which will not cause the loss of the constraint term when scanning.\n\n-Andrea",
+      "cooked_html": "<p>Hi Peter,</p>\n<p>I think this is consistent with the documentation. Please read:</p>\n<p><a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/#common-command-line-options\" rel=\"noopener nofollow ugc\">Documentation</a></p>\n<blockquote>\n<p>Note that constraint terms for the nuisances are <strong>dropped</strong> after promotion to a POI using <code>--redefineSignalPOI</code>. To produce a likelihood scan for a nuisance parameter, using <code>MultiDimFit</code> with <strong><code>--algo grid</code></strong>, you should instead use the <code>--parameters (-P)</code> option, which will not cause the loss of the constraint term when scanning.</p>\n</blockquote>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "pmajor",
+      "name": "Peter Major",
+      "created_at": "2024-08-02T13:57:36.745Z",
+      "updated_at": "2024-08-02T13:57:36.745Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nthank you for the heads up. I should have looked more carefully at the documentation.\nSincerely,\nPeter",
+      "cooked_html": "<p>Hi Andrea,<br>\nthank you for the heads up. I should have looked more carefully at the documentation.<br>\nSincerely,<br>\nPeter</p>"
+    }
+  ]
+}

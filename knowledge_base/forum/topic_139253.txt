@@ -1,0 +1,29 @@
+TOPIC: Seg fault when importing CombineHarvester and some numpy versions
+URL: https://cms-talk.web.cern.ch/t/139253
+DATE: 2025-11-24T18:07:27.058Z
+SOLVED: no
+============================================================
+
+QUESTION (by dstaffor @ 2025-11-24T18:07:27.380Z):
+Dear combine experts
+Having installed combine and combine harvester in CMSSW_14_1_0_pre4 following the usual instructions, I got a segfault when doing:
+import CombineHarvester.CombineTools.ch as ch
+import numpy as np
+
+in python. After some exploration of why this was affecting me but not others, I found the issue was I had numpy==1.23.5 installed in my user directory (confirmed this was the issue by installing this version in a venv on lxplus). After deleting my user numpy install I no longer got the error, so it’s not critical for me this gets fixed, but wanted to report it in case other people encounter the error (or if it’s easy to fix, which I doubt).
+Best,
+Dominic
+----------------------------------------
+
+REPLY 2 (by sqian @ 2025-11-24T18:13:10.531Z):
+I think I ran into similar issues with pandas etc. wonder if https://cms-sw.github.io/venv.html could be helpful for handling such issues.
+----------------------------------------
+
+REPLY 3 (by amarini @ 2025-11-24T18:20:11.168Z):
+Hi,
+there are some incompatibilities with pandas and numpy, which could be inherited w/ local user installation. On top of the virtualenv  solution (which should be more stable), you could also try to set:
+export PYTHONNOUSERSITE=nothingmeaningful
+
+We may try as well to understand how much are the pandas library used, effectively.
+-Andrea
+----------------------------------------

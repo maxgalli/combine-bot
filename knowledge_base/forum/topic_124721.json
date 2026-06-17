@@ -1,0 +1,67 @@
+{
+  "topic_id": 124721,
+  "title": "fitDiagnostics blows up pre-fit error bars",
+  "url": "https://cms-talk.web.cern.ch/t/124721",
+  "category_id": 279,
+  "created_at": "2025-05-12T13:22:33.256Z",
+  "last_posted_at": "2025-05-15T14:43:38.610Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "lnoehte",
+      "name": "Lars Edelmann",
+      "created_at": "2025-05-12T13:22:33.513Z",
+      "updated_at": "2025-05-12T13:22:33.513Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am performing a combine fit with the following command:\ncombine -M FitDiagnostics ../datacards/datacard_${IDENTIFIER}.txt -n .${IDENTIFIER} \\\n--saveShapes \\\n--saveWorkspace \\\n--saveNormalizations \\\n--saveWithUncertainties \\\n--plots \\\n--skipBOnlyFit \\\n--verbose 9\n\nIn my datacard I use \u2217 autoMCStats 0 1 1.\nIn the output root file I find the TDirectory shapes_prefit. The histograms stored in there have significantly higher error bars compared to my input histograms.\nThe following screenshot shows in the left TBrowser window one of the nominal input histograms I created. The right TBrowser shows the equivalent histogram in the output file under the shapes_prefit TDirectroy.\nScreenshot From 2025-05-12 15-08-341600\u00d7540 84.1 KB\nI hope you can see the difference in the size of the error bars.\nWhy are the error bars not the same and is this of any concern for my fit? What does combine make out of the prefit error bars?\nHoping to get an answer.\nBest Lars",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am performing a combine fit with the following command:</p>\n<pre data-code-wrap=\"bash\"><code class=\"lang-bash\">    combine -M FitDiagnostics ../datacards/datacard_${IDENTIFIER}.txt -n .${IDENTIFIER} \\\n        --saveShapes \\\n        --saveWorkspace \\\n        --saveNormalizations \\\n        --saveWithUncertainties \\\n        --plots \\\n        --skipBOnlyFit \\\n        --verbose 9\n</code></pre>\n<p>In my datacard I use <code>\u2217 autoMCStats 0 1 1</code>.</p>\n<p>In the output root file I find the TDirectory <code>shapes_prefit</code>. The histograms stored in there have significantly higher error bars compared to my input histograms.</p>\n<p>The following screenshot shows in the left TBrowser window one of the nominal input histograms I created. The right TBrowser shows the equivalent histogram in the output file under the <code>shapes_prefit</code> TDirectroy.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/3/392004e62a5e69148737e3f176e73b09b95d25e0.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/392004e62a5e69148737e3f176e73b09b95d25e0\" title=\"Screenshot From 2025-05-12 15-08-34\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/392004e62a5e69148737e3f176e73b09b95d25e0_2_690x232.png\" alt=\"Screenshot From 2025-05-12 15-08-34\" data-base62-sha1=\"89lOCCTj6odNUgiJabuY8Eb0iwE\" width=\"690\" height=\"232\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/392004e62a5e69148737e3f176e73b09b95d25e0_2_690x232.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/392004e62a5e69148737e3f176e73b09b95d25e0_2_1035x348.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/392004e62a5e69148737e3f176e73b09b95d25e0_2_1380x464.png 2x\" data-dominant-color=\"E4E4E5\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot From 2025-05-12 15-08-34</span><span class=\"informations\">1600\u00d7540 84.1 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>I hope you can see the difference in the size of the error bars.</p>\n<p>Why are the error bars not the same and is this of any concern for my fit? What does combine make out of the prefit error bars?</p>\n<p>Hoping to get an answer.<br>\nBest Lars</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "ineuteli",
+      "name": "Izaak Neutelings",
+      "created_at": "2025-05-12T13:35:08.035Z",
+      "updated_at": "2025-05-12T13:35:08.035Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Lars,\nIt is as expected that pre-fit histograms have larger bin errors because Combine propagates the (symmetrized?) uncertainties from the nuisances to the histogram bin errors, before they are constrained in the fit. If you could constrain the nuisances, the postfit shapes should look more reasonable. You can confirm this is the case by removing most or all nuisances from the datacards (not sure if freezing will do the same trick), including autoMCStats.\nCheers,\nIzaak",
+      "cooked_html": "<p>Hi Lars,</p>\n<p>It is as expected that pre-fit histograms have larger bin errors because Combine propagates the (symmetrized?) uncertainties from the nuisances to the histogram bin errors, before they are constrained in the fit. If you could constrain the nuisances, the postfit shapes should look more reasonable. You can confirm this is the case by removing most or all nuisances from the datacards (not sure if freezing will do the same trick), including <code>autoMCStats</code>.</p>\n<p>Cheers,<br>\nIzaak</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "lnoehte",
+      "name": "Lars Edelmann",
+      "created_at": "2025-05-15T14:10:19.207Z",
+      "updated_at": "2025-05-15T14:10:19.207Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Indeed, leaving only one nuisance parameter in the datacard shrunk the error bars.\nThanks a lot for the insight. This was not obvious to me but I am relieved that this is intended behavior.",
+      "cooked_html": "<p>Indeed, leaving only one nuisance parameter in the datacard shrunk the error bars.</p>\n<p>Thanks a lot for the insight. This was not obvious to me but I am relieved that this is intended behavior.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "ineuteli",
+      "name": "Izaak Neutelings",
+      "created_at": "2025-05-15T14:34:48.301Z",
+      "updated_at": "2025-05-15T14:35:41.686Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Lars,\nOkay, good to know!\nJust to add one point: Combine does not really use the bin errors of the input histograms, except if you use autoMCStats in the datacards, which computes the thresholds and size of the statistical uncertainty from the histogram bin errors with the Barlow\u2013Beeston-lite algorithm, see the manual.\nSo if you include bin-by-bin uncertainties via autoMCStats, you should make sure that the histogram bin errors are just the statistical uncertainty in those bins, which is typically the square root of the sum of squared weights. This can be ensured if you call TH1::Sumw2 before filling the histogram, although in my understanding this setting should be the default upon initiation of the TH1 object in most newer ROOT version.\nBy design, the systematic uncertainties is fully taken care of by the nuisance parameters defined in the datacard, which later get added to the output histograms if you use --saveShapes.\nHope that helps,\nIzaak",
+      "cooked_html": "<p>Hi Lars,</p>\n<p>Okay, good to know!</p>\n<p>Just to add one point: Combine does not really use the bin errors of the input histograms, except if you use <code>autoMCStats</code> in the datacards, which computes the thresholds and size of the statistical uncertainty from the histogram bin errors with the Barlow\u2013Beeston-lite algorithm, see the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/bin-wise-stats/?h=auto\" rel=\"noopener nofollow ugc\">manual</a>.</p>\n<p>So if you include bin-by-bin uncertainties via <code>autoMCStats</code>, you should make sure that the histogram bin errors are just the statistical uncertainty in those bins, which is typically the square root of the sum of squared weights. This can be ensured if you call <a href=\"https://root.cern.ch/doc/master/classTH1.html#aefa4ee94f053ec3d217f3223b01fa014\" rel=\"noopener nofollow ugc\"><code>TH1::Sumw2</code></a> before filling the histogram, although in my understanding this setting should be the default upon initiation of the <code>TH1</code> object in most newer ROOT version.</p>\n<p>By design, the systematic uncertainties is fully taken care of by the nuisance parameters defined in the datacard, which later get added to the output histograms if you use <code>--saveShapes</code>.</p>\n<p>Hope that helps,<br>\nIzaak</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "lnoehte",
+      "name": "Lars Edelmann",
+      "created_at": "2025-05-15T14:43:38.610Z",
+      "updated_at": "2025-05-15T14:43:38.610Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Thanks for clarification. I believe I am doing things correctly then. I also use Sumw2 just to be sure.",
+      "cooked_html": "<p>Thanks for clarification. I believe I am doing things correctly then. I also use Sumw2 just to be sure.</p>"
+    }
+  ]
+}

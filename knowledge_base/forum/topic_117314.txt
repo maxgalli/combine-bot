@@ -1,0 +1,65 @@
+TOPIC: Toy generation from postfit workspace
+URL: https://cms-talk.web.cern.ch/t/117314
+DATE: 2025-03-05T13:21:22.443Z
+SOLVED: no
+============================================================
+
+QUESTION (by gboldrin @ 2025-03-05T13:21:23.132Z):
+Dear Combine experts,
+We are trying to build postfit uncertainty bands for a binned shape analysis with Combine. We are using the MultiSignal physics model defining four parameter of interest (signal strengths).
+The first step after the creation of the workspace is to use MultiDimFit to save a snapshot of the best-fit workspace. Then we would like to use this snapshot to throw pseudo-random toys (GenerateOnly) and fit them wither with MultiDimFit method or with FitDiagnostics to save the toy shapes.
+Using this procedure we realized that the snapshot was not loaded correctly when throwing toys, in particular the value of the POIs seemed to be random. This behaviour was cured by specifying the POI post-fit values when throwing toys (–setParameters).
+You can find a summary of this in the following slides:
+VBS_Combination_toys.pdf (1.4 MB)
+While generating toys within frequentist approach, it seems that Combine is really trying to retrieve the POI values from the snapshot and setting them to constants here.
+Am I misunderstanding something or is this the Combine expected behaviour?
+Thank you!
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-03-06T10:39:47.617Z):
+Dear Giacomo,
+I think the behavior you are observing is totally expected, when throwing the toys with --toysFrequentist option you only specify that constraint terms should be centered around best-fit values, the treatment for other parameters is not specified, but you can do it with --bypassFrequentist and --setParameters.
+For the post-fit plots, why don’t you use the FitDiagnostics routine with --saveWithUncertainties or the PostFitShapesFromWorkspace, both of them sample from the covariance matrix to account for the correlations between the parameters.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by gboldrin @ 2025-03-06T10:49:37.335Z):
+Dear Aliya,
+thank you for confirming and for the prompt answer. Is there a reason why you would fix constrain terms from the snapshot and not the POI? It seems very counter-intuitive to me but probably I am just missing the use case.
+I know about the tools you mentioned but I find the toy approach way faster and more parallelizable given the size of my workspace.
+Best,
+Giacomo
+----------------------------------------
+
+REPLY 4 (by nckw @ 2025-03-06T13:51:00.000Z):
+The reason is that often when wants “post-fit expected”, it means “expected assuming the a model like the SM” and for this reason, the POIs are set to their default values, not those that we obtain from data.
+The SM says nothing about the value of the JES, electron ID etc etc, so those we take from out best knowledge in the post-fit – i.e from the data.
+Best,
+Nick
+
+···
+From: Giacomo Boldrini via CMS talk noreply-cms-talk@cern.ch
+Date: Thursday, 6 March 2025 at 10:53
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Toy generation from postfit workspace
+
+Giacomo Boldrini gboldrinMarch 6
+
+Dear Aliya,
+thank you for confirming and for the prompt answer. Is there a reason why you would fix constrain terms from the snapshot and not the POI? It seems very counter-intuitive to me but probably I am just missing the use case.
+I know about the tools you mentioned but I find the toy approach way faster and more parallelizable given the size of my workspace.
+Best,
+Giacomo
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by gboldrin @ 2025-03-06T13:56:58.436Z):
+Hi Nick,
+Ok this is understood, but one could do this by saving the snapshot after profiling NP from data in CR fixing signal strengths to 1 (I usually call it “data”-asimov). This was my source of confusion.
+But I now understand the behaviour, thank you for pointing it out.
+Best,
+Giacomo
+----------------------------------------

@@ -1,0 +1,26 @@
+TOPIC: Standard nuisance parameter names for muons
+URL: https://cms-talk.web.cern.ch/t/77547
+DATE: 2024-12-12T16:16:20.720Z
+SOLVED: no
+============================================================
+
+QUESTION (by lmoureau @ 2024-12-12T16:16:20.829Z):
+Dear CAT friends,
+I’m posting here with my MUO-B2G contact hat. While reviewing an analysis I checked the naming conventions for muon SF nuisances. The table of common names we provide contains the following (among others - this is only to illustrate my point):
+muon_efficiency:
+CMS_eff_m_(2016|2017|2018|2022|2022EE|2023|2023BPix):
+description: 'overall muon efficiency uncertainty separated by year'
+
+Is this really a common pattern found in analyses? The recommendation is to split the systematic and statistical parts, and keep the former uncorrelated while the latter should be correlated. Since systematic uncertainties usually dominate by far, decorrelating by era as the names above suggest is not correct. If decorrelating, one should first consider stat/syst then individual syst components.
+If some PAGs have different recommendations, there’s something that needs to be solved at the POG level, so I was wondering where these examples came from?
+Thanks,
+Louis
+----------------------------------------
+
+REPLY 2 (by lenzip @ 2024-12-13T09:58:18.594Z):
+Dear Louis,
+Maybe others can comment with more details (@kcormier and @anigamov feel free to chime in).
+I think the inconsistency you are referring to will be resolved once the branches featuring integration with jsonPogintegration will be merged, since that has the correlation schemes recommended by the pogs builtin. However Kyle was mentioning to me he had some doubts bout how to implement the correlation scheme proposed by the muon POG specifically, so maybe you could help in that respect.
+Cheers
+Giulio
+----------------------------------------

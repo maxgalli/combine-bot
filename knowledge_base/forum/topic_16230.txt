@@ -1,0 +1,90 @@
+TOPIC: Postfit uncertainty band size in analyses with enormous number of events
+URL: https://cms-talk.web.cern.ch/t/16230
+DATE: 2022-10-13T13:14:50.421Z
+SOLVED: no
+============================================================
+
+QUESTION (by mfackeld @ 2022-10-13T13:14:50.561Z):
+Dear combine experts,
+we observe a large postfit uncertainty band compared to the stat. unc. of the data in some of our control regions in the scope of our semileptonic HH → bbWW analysis (see attached slides). Our analysis is very inclusive and deals with an enormous amount of events (see slide 2), which are categorised using a physics process multi-classification (DNN).
+We have the following questions for you:
+
+Is the observation of a large postfit uncertainty band compared to the stat. unc. of the data worrisome here?
+Are you aware of other analysis with such a large number of events? If yes, is this a known behaviour?
+
+Thank you very much,
+Peter for the bbWW analysis team
+20221013-fackeldey-cmsTalk-Postfit-Uncertainty-Band.pdf (700.2 KB)
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-10-13T15:18:45.000Z):
+Is this still relevant in the view of the reply we gave on the other thread?
+-A
+On Thu, Oct 13, 2022 at 3:16 PM Manfred Peter Fackeldey via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Manfred Peter Fackeldey mfackeldOctober 13
+
+Dear combine experts,
+we observe a large postfit uncertainty band compared to the stat. unc. of the data in some of our control regions in the scope of our semileptonic HH → bbWW analysis (see attached slides). Our analysis is very inclusive and deals with an enormous amount of events (see slide 2), which are categorised using a physics process multi-classification (DNN).
+We have the following questions for you:
+
+Is the observation of a large postfit uncertainty band compared to the stat. unc. of the data worrisome here?
+Are you aware of other analysis with such a large number of events? If yes, is this a known behaviour?
+
+Thank you very much,
+Peter for the bbWW analysis team
+20221013-fackeldey-cmsTalk-Postfit-Uncertainty-Band.pdf (700.2 KB)
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by agbet @ 2022-10-13T15:31:30.000Z):
+yes, this is a different issue.
+Cheers,
+Agni
+
+From: Andrea Carlo Marini via CMS talk [noreply@cms-talk.web.cern.ch]
+Sent: 13 October 2022 17:24
+To: Agni Bethani
+Subject: [HIG PAG/Combination] Postfit uncertainty band size in analyses with enormous number of events
+
+Andrea Carlo Marini amariniOctober 13
+
+Is this still relevant in the view of the reply we gave on the other thread?
+-A
+On Thu, Oct 13, 2022 at 3:16 PM Manfred Peter Fackeldey via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Manfred Peter Fackeldey mfackeldOctober 13
+
+Dear combine experts,
+we observe a large postfit uncertainty band compared to the stat. unc. of the data in some of our control regions in the scope of our semileptonic HH → bbWW analysis (see attached slides). Our analysis is very inclusive and deals with an enormous amount of events (see slide 2), which are categorised using a physics process multi-classification (DNN).
+We have the following questions for you:
+
+Is the observation of a large postfit uncertainty band compared to the stat. unc. of the data worrisome here?
+Are you aware of other analysis with such a large number of events? If yes, is this a known behaviour?
+
+Thank you very much,
+Peter for the bbWW analysis team
+20221013-fackeldey-cmsTalk-Postfit-Uncertainty-Band.pdf (700.2 KB)
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Manfred Peter Fackeldey mfackeldOctober 13
+
+Dear combine experts, we observe a large postfit uncertainty band compared to the stat. unc. of the data in some of our control regions in the scope of our semileptonic HH → bbWW analysis (see attached slides). Our analysis is very inclusive and deals with an enormous amount of events (see slide 2)…
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-10-13T16:53:33.361Z):
+Can you tell us a little more about the systematics in the analysis?
+Are you using toys or hessian? how (anti) correlated are the nuisances affecting the background predictions in those regions?
+-Andrea
+----------------------------------------

@@ -1,0 +1,23 @@
+{
+  "topic_id": 12272,
+  "title": "Use of RooMorphingPdf",
+  "url": "https://cms-talk.web.cern.ch/t/12272",
+  "category_id": 279,
+  "created_at": "2022-06-29T15:13:34.203Z",
+  "last_posted_at": "2022-06-29T15:13:34.916Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "friti",
+      "name": "Federica Riti",
+      "created_at": "2022-06-29T15:13:34.916Z",
+      "updated_at": "2023-02-07T12:10:54.052Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am trying to implement a fit which includes a signal (S) and two backgrounds: X (from MC simulation) and Y (data-driven).\nThe normalisation of bkg X is left floating in the fit as RateParam x.\nThe other background Y is data driven and its shape changes depending on the value of x, in a non trivial way.\nFor Y I was thinking of using the morphing function RooMorphingPdf to interpolate between some shapes obtained at different x. Do you think it is the right approach? I saw the definition here [0], but I don\u2019t think I can use the BuildRooMorphing function here described, because of how my workspace is already defined. Can I directly define a RooMorphingPdf in my workspace?\nAlso I am not sure how to communicate to Combine in the workspace (or in the datacard?) that the variable associated to the morphing is the RateParam x already defined for the bkg X normalisation.\nThanks a lot in advance,\nFederica Riti\n[0] https://cms-analysis.github.io/CombineHarvester/intro_morph.html",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am trying to implement a fit which includes a signal (S) and two backgrounds: X (from MC simulation) and Y (data-driven).<br>\nThe normalisation of bkg X is left floating in the fit as RateParam x.<br>\nThe other background Y is data driven and its shape changes depending on the value of x, in a non trivial way.</p>\n<p>For Y I was thinking of using the morphing function RooMorphingPdf to interpolate between some shapes obtained at different x. Do you think it is the right approach? I saw the definition here [0], but I don\u2019t think I can use the BuildRooMorphing function here described, because of how my workspace is already defined. Can I directly define a RooMorphingPdf in my workspace?</p>\n<p>Also I am not sure how to communicate to Combine in the workspace (or in the datacard?) that the variable associated to the morphing is the RateParam x already defined for the bkg X normalisation.</p>\n<p>Thanks a lot in advance,<br>\nFederica Riti</p>\n<p>[0] <a href=\"https://cms-analysis.github.io/CombineHarvester/intro_morph.html\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/CombineHarvester/intro_morph.html</a></p>"
+    }
+  ]
+}

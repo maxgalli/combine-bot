@@ -1,0 +1,34 @@
+{
+  "topic_id": 2538,
+  "title": "Correlation of parametric uncertainty",
+  "url": "https://cms-talk.web.cern.ch/t/2538",
+  "category_id": 279,
+  "created_at": "2021-11-18T20:34:55.000Z",
+  "last_posted_at": "2021-11-18T20:50:24.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Ka_Wa_Ho",
+      "name": "Ka Wa Ho",
+      "created_at": "2021-11-18T20:34:55.000Z",
+      "updated_at": "2023-02-07T10:55:46.467Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi combine experts,\nI am doing an unbinned parametric fit of an invariant e+mu mass peak for several categories. I have a parametric uncertainty on the mean/sigma of the fitted shape coming from the lepton energy scale/resolution.  These are specified at the end of the Datacard like the tutorial from here [1] with the \u00e2\u0080\u009cparam\u00e2\u0080\u009d key word. But how do I combine them if they have different values for different categories? For rate uncertainties, combine can specify a different value for different categories for the same uncertainty source but I am not sure how this is done for shape uncertainties.\nThank you, Ka Wa\n[1]:\n\ngithub.com\n\ncms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/data/tutorials/shapes/simple-shapes-parametric.txt\n\n# Simple parametric shape based on a RooChebyChev background with freely floating normalisation and a RooVoigtian signal model.\n# To run, make sure to add the option `-m 30` since the MH parameter is contained in the input workspace\n\nimax 1\njmax 1\nkmax *\n---------------\nshapes * * simple-shapes-parametric_input.root w:$PROCESS\n---------------\nbin bin1\nobservation -1\n------------------------------\nbin          bin1       bin1\nprocess      sig \tbkg\nprocess      0          1\nrate         1          1\n--------------------------------\nlumi    lnN  1.1       1.0\nvogian_sigma   param 1.0      0.1",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi combine experts,</p>\n<p>\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0\u00a0I am doing an unbinned parametric fit of an invariant e+mu mass peak for several categories. I have a parametric uncertainty on the mean/sigma of the fitted shape coming from the lepton energy scale/resolution.  These are specified at the end of the Datacard like the tutorial from here [1] with the \u00e2\u0080\u009cparam\u00e2\u0080\u009d key word. But how do I combine them if they have different values for different categories? For rate uncertainties, combine can specify a different value for different categories for the same uncertainty source but I am not sure how this is done for shape uncertainties.</p>\n<p>Thank you, Ka Wa</p>\n<p>[1]:</p><aside class=\"onebox githubblob\" data-onebox-src=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/data/tutorials/shapes/simple-shapes-parametric.txt\">\n  <header class=\"source\">\n\n      <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/data/tutorials/shapes/simple-shapes-parametric.txt\" target=\"_blank\" rel=\"noopener\">github.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <h4><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/data/tutorials/shapes/simple-shapes-parametric.txt\" target=\"_blank\" rel=\"noopener\">cms-analysis/HiggsAnalysis-CombinedLimit/blob/81x-root606/data/tutorials/shapes/simple-shapes-parametric.txt</a></h4>\n\n\n      <pre><code class=\"lang-txt\"># Simple parametric shape based on a RooChebyChev background with freely floating normalisation and a RooVoigtian signal model.\n# To run, make sure to add the option `-m 30` since the MH parameter is contained in the input workspace\n\nimax 1\njmax 1\nkmax *\n---------------\nshapes * * simple-shapes-parametric_input.root w:$PROCESS\n---------------\nbin bin1\nobservation -1\n------------------------------\nbin          bin1       bin1\nprocess      sig \tbkg\nprocess      0          1\nrate         1          1\n--------------------------------\nlumi    lnN  1.1       1.0\nvogian_sigma   param 1.0      0.1\n</code></pre>\n\n\n\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2021-11-18T20:50:24.000Z",
+      "updated_at": "2021-11-18T20:50:40.826Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nHi,\n\"Systematics which have different names will be assumed to be uncorrelated, and the ones with the same name will be assumed 100% correlated.\"\nIn your case, you can use the same parameter name for the scale uncertainty in all the categories. For instance, if you have as signal model a gaussian distribution in the two (or +) categories, it is convenient to separate the constraint part to its value (and sign for anticorrelation); a multiplicative gaussian constrain on the scale can be written as follow:\n[ws content]\nmu1= mu1_value[125.1] * (1+scale_value1[0.03]*scale)\nmu2= mu2_value[124.9] * (1+scale_value2[0.06]*scale)\n[*] the only floating variable above is 'scale'.\nyou can use\n[datacard content]\nscale param 0 1\nto correlate both the categories to the common constraint scale.\nCheers,\n-Andrea",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Hi,</p>\n<p>\"Systematics which have different names will be assumed to be uncorrelated, and the ones with the same name will be assumed 100% correlated.\"</p>\n<p>In your case, you can use the same parameter name for the scale uncertainty in all the categories. For instance, if you have as signal model a gaussian distribution in the two (or +) categories, it is convenient to separate the constraint part to its value (and sign for anticorrelation); a multiplicative gaussian constrain on the scale can be written as follow:</p>\n<p>[ws content]<br>\nmu1= mu1_value[125.1] * (1+scale_value1[0.03]*scale)<br>\nmu2= mu2_value[124.9] * (1+scale_value2[0.06]*scale)</p>\n<p>[*] the only floating variable above is 'scale'.</p>\n<p>you can use<br>\n[datacard content]<br>\nscale param 0 1</p>\n<p>to correlate both the categories to the common constraint scale.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    }
+  ]
+}

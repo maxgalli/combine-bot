@@ -1,0 +1,32 @@
+TOPIC: Using alternate functional form (pdf) for background process
+URL: https://cms-talk.web.cern.ch/t/27688
+DATE: 2023-07-28T13:34:36.671Z
+SOLVED: no
+============================================================
+
+QUESTION (by anmehta @ 2023-07-28T13:34:37.019Z):
+Dear experts,
+I am trying to estimate a background process using the alpha ratio method. In nutshell, the background shape is obtained in the signal region by multiplying the background shape in the side-band region obtained after fit to data times the transfer factor (alpha) where this alpha is simply a MC-based ratio of SR to SB region. To add uncertainty on this background estimation, I want to vary the shape of background in the SB region using another functional form and similarly for alpha.
+Could you please suggest a way out to implement this using workspaces?
+Best,
+Ankita
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-07-31T09:00:07.582Z):
+Dear Ankita,
+I think the most optimal way would be to use the discrete profiling method [0] and define the various pdfs as RooMultiPdf. There are instructions available on how to implement it in Combine documentation pages [1] as well as from the most recent Combine tutorial [2-3].  I hope this helps to get started, let me know if something is unclear.
+Best,
+Aliya
+[0] https://arxiv.org/pdf/1408.6865.pdf
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#roomultipdf-conventional-bias-studies
+[2] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#part-5-discrete-profiling
+[3] https://gitlab.cern.ch/jlangfor/combinetutorial-2023-parametric/-/blob/master/construct_models_multipdf_part5.py
+----------------------------------------
+
+REPLY 3 (by anmehta @ 2023-08-01T06:01:35.614Z):
+Dear Aliya,
+many thanks for your response and pointers.
+This is exactly what I was looking for and will get back to you in case I run into further problems.
+Best,
+Ankita
+----------------------------------------

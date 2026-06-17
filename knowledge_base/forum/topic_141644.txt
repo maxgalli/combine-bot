@@ -1,0 +1,131 @@
+TOPIC: Help with bias in combine fits
+URL: https://cms-talk.web.cern.ch/t/141644
+DATE: 2026-02-02T20:26:07.883Z
+SOLVED: no
+============================================================
+
+QUESTION (by nbruhwil @ 2026-02-02T20:26:08.767Z):
+Dear experts,
+We are having an issue in our Combine bias studies where we see a consistent bias in r even when generating a background-only Asimov toy and fitting with the exact same functions used to generate.
+I have created a simple example setup where this is demonstrated:
+
+Signal is a gaussian curve with all parameters fixed and signal yield fixed to 1 (so r represents number of signal events)
+Background is a single exponential with the shape parameter fixed and the yield fixed to a number similar to our dataset (1.5e7 events).
+
+The datacard and workspace for this setup are attached, as well as the python script used to create them.
+workspace_simple.root (10.1 KB)
+datacard_simple.txt (398 Bytes)
+simple_combine_example.py (3.2 KB)
+When running the following command:
+combine -M FitDiagnostics datacard_simple.txt -t -1 --expectSignal 0 --rMax 10000 --rMin -10000 --plots
+A best fit r of 427 is returned, even though there are 0 signal events injected and r is the only floating parameter. The effect scales with the background norm (for example, if it is set to 1.5e4, the fit returns a best fit r of 0.427 events).
+We see the same thing when running an ensemble of frequentist toys:
+combine -M GenerateOnly datacard_simple.txt -t 500 --expectSignal 0 --saveToys -n _simple --rMax 10000 --rMin -10000 -v 3
+combine -M FitDiagnostics datacard_simple.txt -t 500 --toysFile higgsCombine_simple.GenerateOnly.mH120.123456.root -n _simple --rMin -10000 --rMax 10000
+Screenshot 2026-02-02 at 12.19.52 PM1310×1030 23.7 KB
+When looking at the fit, it seems the background-only shape fits the asimov toy better, but Combine still finds 400 signal events:
+image896×872 12 KB
+It seems to be finding a real minimum log likelihood:
+image596×572 5.09 KB
+If the background is allowed to float, it just finds the same r and decreases the background yield by that amount:
+image896×872 12.3 KB
+Any insights as to why this is happening would be greatly appreciated!
+Best,
+Natalie
+----------------------------------------
+
+REPLY 2 (by kaulmer @ 2026-02-09T14:37:19.000Z):
+Hello combine experts,
+This is just a ping on the question below. This behavior looks inconsistent with our expectations for combine. Hoping someone can help us sort this out.
+Best regards, Keith
+
+On Feb 2, 2026, at 1:29 PM, Natalie Joan Bruhwiler noreply-cms-talk@cern.ch wrote:
+[External email - use caution]
+
+Natalie Joan Bruhwiler nbruhwilFebruary 2
+
+Dear experts,
+We are having an issue in our Combine bias studies where we see a consistent bias in r even when generating a background-only Asimov toy and fitting with the exact same functions used to generate.
+I have created a simple example setup where this is demonstrated:
+
+Signal is a gaussian curve with all parameters fixed and signal yield fixed to 1 (so r represents number of signal events)
+Background is a single exponential with the shape parameter fixed and the yield fixed to a number similar to our dataset (1.5e7 events).
+
+The datacard and workspace for this setup are attached, as well as the python script used to create them.
+workspace_simple.root (10.1 KB)
+datacard_simple.txt (398 Bytes)
+simple_combine_example.py (3.2 KB)
+When running the following command:
+combine -M FitDiagnostics datacard_simple.txt -t -1 --expectSignal 0 --rMax 10000 --rMin -10000 --plots
+A best fit r of 427 is returned, even though there are 0 signal events injected and r is the only floating parameter. The effect scales with the background norm (for example, if it is set to 1.5e4, the fit returns a best fit r of 0.427 events).
+We see the same thing when running an ensemble of frequentist toys:
+combine -M GenerateOnly datacard_simple.txt -t 500 --expectSignal 0 --saveToys -n _simple --rMax 10000 --rMin -10000 -v 3
+combine -M FitDiagnostics datacard_simple.txt -t 500 --toysFile higgsCombine_simple.GenerateOnly.mH120.123456.root -n _simple --rMin -10000 --rMax 10000
+
+When looking at the fit, it seems the background-only shape fits the asimov toy better, but Combine still finds 400 signal events:
+
+It seems to be finding a real minimum log likelihood:
+
+If the background is allowed to float, it just finds the same r and decreases the background yield by that amount:
+
+Any insights as to why this is happening would be greatly appreciated!
+Best,
+Natalie
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+<simple_combine_example.py>
+----------------------------------------
+
+REPLY 3 (by adewit @ 2026-02-09T20:26:10.754Z):
+Dear Natalie, Keith,
+I only had a quick look, but I think you may be seeing the effect outlined here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#caveat-on-using-parametric-pdfs-with-binned-datasets
+If I rerun your example script (thanks!) to create the workspace+datacard with 5000 bins instead of 50, the same FitDiagnostics command as you ran before gives a best fit r very close to 0.
+Hope this helps a bit,
+Adinda
+----------------------------------------
+
+REPLY 4 (by nbruhwil @ 2026-02-12T18:03:24.005Z):
+Dear Adinda,
+Thank you for your reply! I think this was the problem, and making the signal and background shapes binned seemed to fix it.
+Best,
+Natalie
+----------------------------------------
+
+REPLY 5 (by nbruhwil @ 2026-02-19T21:02:56.901Z):
+Dear experts,
+As a follow up here, increasing the number of bins to a very large number makes the bias much smaller but doesn’t get rid of it in every case.
+We have also tried switching our setup so all shapes are binned. For the shapes with floating parameters we are using RooBinSamplingPDF, but this causes our fits to be very slow, which is explained here: https://root.cern.ch/doc/v634/classRooBinSamplingPdf.html
+It seems like RooParametricShapeBinPdf is better suited for our case, but it doesn’t seem to be available in PyRoot. If anyone has used this class in PyRoot before or has other ideas to eliminate this bias effect it would be greatly appreciated!
+Thanks,
+Natalie
+----------------------------------------
+
+REPLY 6 (by nckw @ 2026-02-19T21:40:33.000Z):
+Hi Natalie,
+The RooParametricShapeBinPdf is part of the combine package. If you’ve compiles combine you can load the shared library in your pyROOT script and use the class as normal.
+You’ll need something like the following in your script (assuming you’ve sourced the CMSSW environment)
+ROOT.gSystem.Load(“libHiggsAnalysisCombinedLimit.so”)
+I don’t have an example python script to hand but I think that should work
+Best
+Nick
+
+···
+
+From: Natalie Joan Bruhwiler noreply-cms-talk@cern.ch
+Sent: Thursday, February 19, 2026 9:10:31 PM
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Help with bias in combine fits
+Someone replied to a topic you are Watching.
+
+Natalie Joan Bruhwiler nbruhwilFebruary 19
+
+Dear experts,
+As a follow up here, increasing the number of bins to a very large number makes the bias much smaller but doesn’t get rid of it in every case.
+We have also tried switching our setup so all shapes are binned. For the shapes with floating parameters we are using RooBinSamplingPDF, but this causes our fits to be very slow, which is explained here: https://root.cern.ch/doc/v634/classRooBinSamplingPdf.html
+It seems like RooParametricShapeBinPdf is better suited for our case, but it doesn’t seem to be available in PyRoot. If anyone has used this class in PyRoot before or has other ideas to eliminate this bias effect it would be greatly appreciated!
+Thanks,
+Natalie
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

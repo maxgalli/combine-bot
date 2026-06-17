@@ -1,0 +1,113 @@
+TOPIC: Issue with 'combine' command for Run2 datacard in SUSY Analysis
+URL: https://cms-talk.web.cern.ch/t/92777
+DATE: 2025-01-07T16:11:47.152Z
+SOLVED: no
+============================================================
+
+QUESTION (by trmishra @ 2025-01-07T16:11:47.304Z):
+Dear Experts,
+I am working on a SUSY analysis with a lepton+photon final state. I am performing the full analysis chain separately for each year: 2016-preVFP, 2016-postVFP, 2017, and 2018, resulting in four sets of data cards for each year. To obtain the Run 2 expected limit, these data cards are combined using the combineCards.py script.
+While the combine command [0] works fine for the individual data cards [3-6], I encounter an issue [2] when running the combine command for the Run 2 data card [1]. I believe the Run 2 card might not be correct. I have saved the error output generated when using the Run 2 card with the combine command [0] in a text file [7].
+Please advise if I am missing something and suggest how to resolve this issue.
+Thank you in advance for your help. I look forward to hearing from you soon.
+Best regards,
+Tribeni
+[0] combine -M AsymptoticLimits counting_t5Wg_1400_625.txt -t -1 --expectSignal=1 -n t5wg | tee limit_1400_625.txt
+[1] Run 2 Card
+[2]
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,
+[#0] ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset__with_constr) evaluation error
+
+[3] 2016-preVFP Card
+[4] 2016-postVFP Card
+[5] 2017 Card
+[6] 2018 Card
+[7] Combine Output Log
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2025-01-07T16:26:14.252Z):
+Hi @trmishra ,
+I’ll have to look into this a little more closely, but I noticed that you run your blinded AsymptoticLimits in [0] with the -t -1 option. Note that this is not recommended for this method, see e.g. the docs under blinded limits.
+Can you try running your command with --run blind instead of -t -1? Just to verify that it’s not a unwanted effect from this set of options.
+Additionally, can you run the text2workspace.py script on your combined datacard and see if that runs correctly? This is also done under the hood if you give combine the datacard itself, but you might be able to gain further insights about a potential problem if you can’t build the workspace in the first place.
+Side note: Particularly for larger combinations (such as full Run2 combinations), it’s generally recommended to run the text2workspace step once in a separate command. That way, you don’t have to spend the time it takes to create the workspace for every method you run with combine.
+Hope this helps! Cheers,
+Philip
+----------------------------------------
+
+REPLY 3 (by trmishra @ 2025-01-07T16:53:27.739Z):
+Hi @pkeicher
+Thanks for your prompt suggestions.
+When using the command with --run blind [0], it gives the same error as before [1] with -t -1.
+I checked the text2workspace command [2], and it doesn’t give any errors except for some warnings, which are quite obvious [3].
+Thanks
+Tribeni
+
+[0]. combine -M AsymptoticLimits cards_Run2/counting_t5Wg_1400_625.txt --run blind --expectSignal=1 -n t5wg | tee limit_1400_625.txt
+[1].
+ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,
+ERROR:Eval -- RooAbsReal::logEvalError(model_s) evaluation error,
+ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset_) evaluation error,
+ERROR:Eval -- RooAbsReal::logEvalError(nuisancePdf) evaluation error,
+ERROR:Eval -- RooAbsReal::logEvalError(nll_model_s__Asymptotic_asimovDataset__with_constr) evaluation error
+
+[2]. text2workspace.py cards_Run2/counting_t5Wg_1400_625.txt -o Run2_text2workspace.root
+[3].
+Warning: Bin ch1_bin1 has no signal processes contributing to it
+Warning: Bin ch1_bin2 has no signal processes contributing to it
+Warning: Bin ch1_bin3 has no signal processes contributing to it
+Warning: Bin ch1_bin4 has no signal processes contributing to it
+----------------------------------------
+
+REPLY 4 (by pkeicher @ 2025-01-08T09:57:01.441Z):
+Hi Tribeni,
+thanks for the follow up. I had a closer look at your full Run2 card, and noticed that the signal process SUSY is empty in many channels. I assume that’s because most of your channels are actually control regions, right?
+I did a very quick test where I removed the gmN uncertainties to simply for the model and also remove the empty SUSY processes and their associated stat uncertainties. I was able to successfully run your AsymptoticLimits command afterwards. Based on this, I think the problem might be that you try to evaluate lnN uncertainties on empty processes. Can you maybe remove the empty processes at your end and try again (also including the gmN uncertainties where appropriate of course)? Of course, if a given uncertainty only has an effect on empty processes, I’d also recommend removing it for this test.
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 5 (by trmishra @ 2025-01-10T16:45:06.366Z):
+Hi @pkeicher,
+all the channels here are signal regions, not control regions. Thank you for taking the time to look closely into this issue. I couldn’t reproduce your observation where you successfully ran the AsymptoticLimits. Could you please share the modified datacard that worked for you?
+Thanks again.
+Best regards
+Tribeni
+----------------------------------------
+
+REPLY 6 (by pkeicher @ 2025-01-16T10:39:38.925Z):
+Hi Tribeni,
+sorry for the late reply! You can find the datacard attached to this message. As I said, I removed the gmN uncertainties as well as the empty signal processes, so this would need to be studied a little more. I used these commands (*), which produced this output.
+<<< Combine >>>
+<<< v10.0.2 >>>
+>>> Random number generator seed is 123456
+Will use a-priori instead of a-posteriori expected background.
+>>> Method used is AsymptoticLimits
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 0.0497
+Expected 16.0%: r < 0.0691
+Expected 50.0%: r < 0.1025
+Expected 84.0%: r < 0.1581
+Expected 97.5%: r < 0.2380
+
+Done in 0.10 min (cpu), 0.10 min (real)
+
+Hope this helps!
+Cheers,
+Philip
+full_run2_validated.txt (884.9 KB)
+(*)
+text2workspace.py -m 125 full_run2_validated.txt
+combine -M AsymptoticLimits full_run2_validated.root --run blind --expectSignal=1
+----------------------------------------
+
+REPLY 7 (by trmishra @ 2025-01-16T11:24:29.367Z):
+Hi @pkeicher
+Thanks a lot.
+Best regards
+Tribeni
+----------------------------------------

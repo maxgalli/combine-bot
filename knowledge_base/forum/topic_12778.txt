@@ -1,0 +1,51 @@
+TOPIC: Too large impact by individual JES source uncertainty comparing with impact by total JES uncertainty
+URL: https://cms-talk.web.cern.ch/t/12778
+DATE: 2022-07-12T09:30:38.774Z
+SOLVED: no
+============================================================
+
+QUESTION (by bko @ 2022-07-12T09:30:38.977Z):
+Dear experts,
+I’m studying the measurement of asymmetry of a particular angular distribution (denoted by cos θ^N) [1] with the Higgs combine tool, and currently, I’m looking at the impacts of JES uncertainties.
+I made two processes; one has “total” JES uncertainty, and the other has uncertainties from individual JES sources [2], [3]. I put JES uncertainties by drawing histograms with varied jet pT* and inserting them into the Higgs combine tool, and calculated the pulls and impacts with the Asimov dataset. And then, I obtained these plots. (The asymmetry is set as the POI.)
+
+unc_impact_jecSum_fixed_WnJ_METfixed_2017_r17mael-01182×971 85.9 KB
+
+(“Total” JES uncertainty)
+
+unc_impact_jecDivFull_fixed_WnJ_METfixed_2017_r17mael-01182×971 89.5 KB
+
+(Uncertainties from individual JES sources)
+I expected that “Total” JES uncertainty gives a larger impact than each of the individual JES sources. But in this result, many sources of JES have much larger impacts than the “Total” JES, even considering its constraint. I’m not sure whether or not it can happen… Or, is there any similar case, I mean, any other case with a larger impact by individual JES sources than the “total” JES?
+… It will be better to share more about this situation. These plots show the variations of “Total” JES uncertainty and “TimePtEta” source, giving the largest impact.
+
+unc_hist_deviation_tempvar_r17mjes_jecSum_allProc_fixed_METfixed_2017_el_parallel1592×172 4.43 KB
+
+(“Total” JES uncertainty)
+
+unc_hist_deviation_tempvar_r17mjecTimePtEta_jecDivFull_onlyV_fixed_METfixed_2017_el_parallel1592×172 4.82 KB
+
+(Uncertainties from a JES source, “TimePtEta”)
+The distributions draw the template variable (a BDT score, more precisely), which are divided into two parts; with cut cos θ^N < 0 (left) and with cut cos θ^N > 0 (right). This analysis aims to measure the asymmetry of these two regions. The above plots show the difference between the nominal and varied distributions by each uncertainty (“Total” JES or TimePtEta). The error bar contains only the (MC) statistical uncertainty. FYI, the lack of W+jets events mainly contributes to these large error bars…
+Best regards,
+Byeonghak Ko
+[1] https://indico.cern.ch/event/1177421/#4-cp-violation-measurement-in
+[2] https://twiki.cern.ch/twiki/bin/view/CMS/JECDataMC#Jet_Energy_Corrections_in_Run2
+[3] https://github.com/cms-jet/JECDatabase/blob/master/textFiles/Summer19UL17_V5_MC/Summer19UL17_V5_MC_UncertaintySources_AK4PF.txt
+
+Of course, the jet object selection and the event selection were performed again after the shift of jet pT, and then the ‘varied’ histogram was drawn with this individual set of events.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-07-12T20:36:52.009Z):
+Dear Byeonghak Ko,
+Yes, what you are observing can certainly happen. The assumption that the impact of a total uncertainty should be larger than that of individual sources corresponding to the same uncertainty is probably roughly right for pure normalisation effects, but no longer holds for uncertainties with a shape effect. What matters in that case is how much the total uncertainty and the individual sources mimic the signal. To take the example you give here: if the effect of shifting JES TimePtEta by ±1sigma on the background model (with AFB=0) “looks like” a signal+background model (ie for some nonzero AFB value), but the same ±1sigma shift for the total JES does not mimic the signal+background model,  then I think it is expected that the impact of JES TimePtEta is larger than the impact of the total JES.
+Hope this helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by bko @ 2022-07-13T13:55:54.049Z):
+Dear Adinda,
+Aha, the shape of the varies and the signal should be considered… It seems not a simple task, but it’s a good hint for me. Thanks a lot!
+Best regards,
+Byeonghak Ko
+----------------------------------------

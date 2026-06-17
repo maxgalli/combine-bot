@@ -1,0 +1,34 @@
+{
+  "topic_id": 7917,
+  "title": "Regarding goodness of fit test while blinded",
+  "url": "https://cms-talk.web.cern.ch/t/7917",
+  "category_id": 279,
+  "created_at": "2022-03-08T18:11:21.274Z",
+  "last_posted_at": "2022-03-11T09:21:27.076Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "prsaha",
+      "name": "Prafulla Saha",
+      "created_at": "2022-03-08T18:11:21.587Z",
+      "updated_at": "2023-02-07T11:03:25.085Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Combine experts,\nI am working on an analysis of Vector like Quark T\u2019, where T\u2019 decays to the SM top and Higgs and Higgs further decays to two photons. So we use the framework of the Higgs to gamma gamma analysis called flashggFinalfit to fit diphoton invariant mass distributions for signal model and background model.\nThe Tprime signal and the SM-Higgs background processes are modeled from MC simulation with a sum of Gaussian functions and the non-resonant backgrounds are modeled from data with the four falling functions.\nTherefore the background model is the combination of the falling function for non-resonant background and the Gaussian function for the SM-Higgs. One example signal and background model plot can be seen here[1].\nThe datacard can be seen here[2]\nIn the process of object review of the analysis in the B2G group, it is recommended to perform a goodness of fit test.\nThe command line we would like to run are presented in [3].\nAs we are still blind, can we obtain a \u2018meaningful\u2019 goodness of fit? If yes, how should be modify the combine command line to remain blind?\n[1] https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/all_CMS_hgg_mass_Tprime600.pdf\n[2]Datacard:\nhttps://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.txt\n/eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root\n[3]Goodness of fit test command\ncombine -M GoodnessOfFit --algo=saturated -d Datacard_Tprime600_StatOnly.root -m 125 --freezeParameter MH\ncombine -M GoodnessOfFit --algo=saturated -d Datacard_Tprime600_StatOnly.root -t 1000 -m 125 --freezeParameter MH --toysNoSystematics\nThanks in advance for your help.",
+      "cooked_html": "<p>Hello Combine experts,</p>\n<p>I am working on an analysis of Vector like Quark T\u2019, where T\u2019 decays to the SM top and Higgs and Higgs further decays to two photons. So we use the framework of the Higgs to gamma gamma analysis called flashggFinalfit to fit diphoton invariant mass distributions for signal model and background model.</p>\n<p>The Tprime signal and the SM-Higgs background processes are modeled from MC simulation with a sum of Gaussian functions and the non-resonant backgrounds are modeled from data with the four falling functions.<br>\nTherefore the background model is the combination of the falling function for non-resonant background and the Gaussian function for the SM-Higgs. One example signal and background model plot can be seen here[1].</p>\n<p>The datacard can be seen here[2]</p>\n<p>In the process of object review of the analysis in the B2G group, it is recommended to perform a goodness of fit test.</p>\n<p>The command line we would like to run are presented in [3].<br>\nAs we are still blind, can we obtain a \u2018meaningful\u2019 goodness of fit? If yes, how should be modify the combine command line to remain blind?</p>\n<p>[1] <a href=\"https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/all_CMS_hgg_mass_Tprime600.pdf\" rel=\"noopener nofollow ugc\">https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/all_CMS_hgg_mass_Tprime600.pdf</a></p>\n<p>[2]Datacard:<br>\n<a href=\"https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.txt\" rel=\"noopener nofollow ugc\">https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.txt</a><br>\n/eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root</p>\n<p>[3]Goodness of fit test command</p>\n<p>combine -M GoodnessOfFit --algo=saturated -d Datacard_Tprime600_StatOnly.root -m 125 --freezeParameter MH</p>\n<p>combine -M GoodnessOfFit --algo=saturated -d Datacard_Tprime600_StatOnly.root -t 1000 -m 125 --freezeParameter MH --toysNoSystematics</p>\n<p>Thanks in advance for your help.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "bregnery",
+      "name": "Brendan Regnery",
+      "created_at": "2022-03-11T09:21:27.076Z",
+      "updated_at": "2022-03-11T09:21:27.076Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Prafulla,\nThe idea of the B2G goodness of fit test is to run the goodness of fit test on a validation (or measurement) region. This is a separate region from the signal region where one can measure nuisance parameters and test the health of the fit before fitting the signal region.\nA description of how to generate toys while blinded and using a measurement region is located here: https://cms-b2g.docs.cern.ch/combine/GenerateToys/\nThe outline of the B2G GoF test is here: https://cms-b2g.docs.cern.ch/combine/StatTests/\nThe main point is don\u2019t unblind the signal region, but check the health of the fit in orthogonal regions.\nI hope this helps.\nRegards,\nBrendan",
+      "cooked_html": "<p>Hi Prafulla,<br>\nThe idea of the B2G goodness of fit test is to run the goodness of fit test on a validation (or measurement) region. This is a separate region from the signal region where one can measure nuisance parameters and test the health of the fit before fitting the signal region.</p>\n<p>A description of how to generate toys while blinded and using a measurement region is located here: <a href=\"https://cms-b2g.docs.cern.ch/combine/GenerateToys/\" rel=\"noopener nofollow ugc\">https://cms-b2g.docs.cern.ch/combine/GenerateToys/</a></p>\n<p>The outline of the B2G GoF test is here: <a href=\"https://cms-b2g.docs.cern.ch/combine/StatTests/\" rel=\"noopener nofollow ugc\">https://cms-b2g.docs.cern.ch/combine/StatTests/</a></p>\n<p>The main point is don\u2019t unblind the signal region, but check the health of the fit in orthogonal regions.</p>\n<p>I hope this helps.</p>\n<p>Regards,</p>\n<p>Brendan</p>"
+    }
+  ]
+}

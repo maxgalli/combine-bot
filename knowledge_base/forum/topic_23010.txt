@@ -1,0 +1,132 @@
+TOPIC: rateParam for individual bins of templates
+URL: https://cms-talk.web.cern.ch/t/23010
+DATE: 2023-04-21T13:27:17.646Z
+SOLVED: no
+============================================================
+
+QUESTION (by hbecerri @ 2023-04-21T13:27:18.136Z):
+Dear Combine experts,
+I am wondering if, in a binned shape analysis, there is a way to define a rateParam in the datacard (or something similar) that doesn’t affect  overall rate of a particular process but only one bin of the template. For example, I want to define RateParam_LowVPt_2016_4 that only affects the normalization of the bin 4 in my V_Pt distribution for any process (signal or background)
+Regards,
+Hugo
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-04-21T13:38:13.311Z):
+Dear Hugo,
+I don’t believe this is possible as you describe. There are a number of ways that one could achieve the same effect through different means. However, I am struggling to think of situations in which that might be a useful thing to do (this might just be a limit of my imagination, though).
+Could you perhaps describe why you’d like to include such a feature in you model? Then it might be easier to describe how best to achieve your goal.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 3 (by hbecerri @ 2023-04-24T07:23:08.532Z):
+Dear Kyle,
+Thank you for your prompt reply. Please have a look at pages 27-28 of the slides attached, I hope this can help you to understand what we want to implement. The idea is to derive any correction to LO samples from data using a similar process to our signal. I am wondering how to implement the ri (corrections per bin) in the Datacard.
+ewkVjj.pdf (1.4 MB)
+Regards,
+Hugo
+----------------------------------------
+
+REPLY 4 (by kcormier @ 2023-04-24T13:45:34.891Z):
+Hi Hugo,
+Thanks for the additional info, this is more clear to me now. Sorry, I had initially misinterpreted what you meant; I thought you wanted a single bin to be controlled by a rate parameter which had no correlations to other bins/channels.
+But now, I think I understand that you are trying to derive a per-bin correction factor which you want to estimate from a set of control regions. So the idea is that based on how the processes scale in these control regions it will also scale the process(es) in your signal region(s). But in principle this scaling is kinematic dependent, so you want it to be derived per-bin, rather than simply per-process. Please correct me if that’s wrong.
+As I said, there is no way to specify in the datacard directly that a rate parameter affects only one bin of a distribution. However, there are a number of ways to achieve it. One way which is documented with an example taking you through the steps, including adding systematics etc, is using a RooParametricHist to implement this, you can see the example here [1]. When you’re using the RooParametricHist you are able to define parameters which scale individual bins, and then this can be saved in a workspace and passed to the combine datacard.
+Another option is to artificially define “processes” which only contribute to individual bins, e.g. Vjets_pt_30to50, Vjets_pt_50to70, etc… the histograms defining these “processes” would then only have entries in the corresponding bin, and be empty in all others, but together they would include the whole Vjets spectrum, for example. Then you can easily assign rate parameters to them in the datacard as you please.   But using the first method defined above may scale better and help keep the datacard more readable.
+I think that covers your use case, but let us know if something is missing or unclear.
+Cheers,
+Kyle
+[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#rooparametrichist-gamman-for-shapes
+----------------------------------------
+
+REPLY 5 (by hbecerri @ 2023-04-26T08:39:56.790Z):
+Hello Kyle,
+Thank you so much! I went through the documentation and it is exactly what I was looking for.
+Regards,
+Hugo
+----------------------------------------
+
+REPLY 6 (by hbecerri @ 2023-05-08T12:59:11.855Z):
+Kyle Cormier:
+
+RooParametricHist
+
+rate_bin .pdf (1016.0 KB)
+Dear Kyle,
+We have tried both methods mentioned above but we are having some difficulties. In both cases, combine has some issues with the rate parameters defined to scale the per-bin processes. Attached are some slides with the results and, we attach the datacards and the commands we run for the first method [1,2] and the 2nd method [3,4]
+Any feedback from your side will be of great help.
+Regards,
+Hugo
+[1] Combine_all.sh (1.5 KB)
+[2] vjj.root (58.4 KB)
+[3] vjj.txt (20.4 KB)
+[4] main.datacard (4.0 KB)
+[5] main.root (37.1 KB)
+[6] makefile.md (2.1 KB)
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2023-05-08T14:05:11.363Z):
+Dear Hugo,
+What this is telling you is that in performing the fit, the parameter values are coming up against boundaries of the parameter range, which can be a problem.
+This can happen for many reasons,  it can be as simple as a poor choice of parameter ranges, but there are many potential reasons.
+Taking a quick look at your first datacard (your [3], vjj.txt),  I see two potential issues.
+If I’ve understood correctly, you have two separate channels (gamma_2018_SR, and Z_2018_SR), each with 5 bins. Then you have a total of 15 freely floating rate parameters, one for each bin in each of the channels, and for each of the 5 bins another which links the processes in the two regions.
+This can cause problems because your system is underdetermined. If you have only 10 data points (5 + 5 bins) but 15 free parameters, then there are many degenerate solutions, and the mimimum of your function will span an area of the parameter space, which would explain the boundary warnings.
+My understanding of what you wanted to do is to have a single rate parameter which simultaneously controls the scaling of all process. If you also want another nuisance parameter controlling the individual process cross sections, you will need at least one of those two parameters to be constrained somehow. Otherwise there is a degeneracy in the function which cannot be resolved without some other constraint.
+Another potential issue I see is that the limits on the rate parameters you have set can be quite small (in some cases as small as a 3% change). Even if there is no issue with the degeneracy, if the best fit point does not constrain these values well, or lies outside of the chosen range, this will cause problems. So you may need to adjust the choice of range, depending on the model and the data.
+I haven’t had a chance to look at your other implementation yet to see if might have the same issues. But maybe this could be the source of your difficulty?
+Cheers,
+Kyle
+----------------------------------------
+
+REPLY 8 (by kcormier @ 2023-05-08T14:41:06.485Z):
+Hi Hugo,
+Sorry, I was just taking a look again and realize I misread your datacard. Only the rateparams connecting the two processes are per bin, the ones which are per-process are only one per channel. That was my mistake.
+Still, it might be worth checking the ranges you are setting on these parameters, are you setting them wide enough?
+Sorry for my earlier misreading.
+Kyle
+----------------------------------------
+
+REPLY 9 (by hbecerri @ 2023-05-08T15:05:23.107Z):
+Kyle Cormier:
+
+underdetermined
+
+Hello Kyle,
+Yes, I have been playing with the ranges
+r_1.pdf (30.0 KB)
+and also not setting any limits on the rateParams
+r_1.pdf (29.1 KB)
+but I always get the same error.
+Also, I forgot to mention that I have done the fit independently for the SR and CR and everything looks ok, so the problem comes only on the implementation on the bin-by-bin corrections.
+Our concern was also on the direction that we have so many freely floating parameters but in principle it should be fine as long as 2n>n+2 (#bins vs #parameters). (Increasing the binning has not been of any help)
+Regards,
+Hugo
+----------------------------------------
+
+REPLY 10 (by kcormier @ 2023-05-12T13:02:54.318Z):
+Dear Hugo,
+Sorry for the slow response.
+I think there is still a degeneracy in this setup. If n_freefloating > n_Data, then things are definitely a problem. but even when n_freefloating < n_Data, this doesn’t guarantee that there is no degeneracy.
+it depends on what the actual directions the free floating parameters pick out are.
+Here, I think you have a problem because there is still a degeneracy, in particular, the directions
+rate_bin1  + rate_bin2 + rate_bin3 + rate_bin4 + rate_bin5
+
+xsec_g1jet + xsec_dy_nlo
+
+are the same.
+So there is no way for this to be resolved by the fit, one can always compensate for the other. Even though n_params < n_data, there is a degeneracy.
+If one of the signal parameters happens to lie in the space spanned by the rateparams that will also cause issues. Or if one lies outside of the space spanned by the rateparams, but is mostly inside that space it will still be highly correlated and could cause issues.
+I think your particular signals may be fine in this case, but just something to note in case you still run into problems after fixing the issue with the degeneracy.
+A few general points, related to this that may be of help.
+
+It’s good to check FitDiagnostics or using MultiDimFit with the -grid option to scan some parameters to see how the fit is behaving when things are failing.
+
+From FitDiagnostics you can see things like if the fit is finding a positive definite covariance matrix, if not is is indicating a problem. (In this case it doesnt find a positive definite covariance matrix for example, and has to force it to be so)
+The scan can show you the shape of the minimum as a function of a parameter and you often see some pathologies. In this case if you scan the NLL as a function of, say, one of the rate parameters it will give very strange results, such as a mostly flat minimum due to the degeneracy. (Sometimes you can see it increase, due to e.g. limits on some parameters breaking the degeneracy). But if you fix one of the parameters to break the degeneracy you’ll start seeing a healthier NLL scan again.
+
+This is my personal opinion, so someone can jump in if I’m missing something. But in general, I think with unconstrained parameters you should question whether its truly nuconstrained or not. I find that that this is often a poor representation of what we want to be done, which may be something like implying a wide range of compatible values (where I’d suggest using a wide constraint). But often the combination of flat constraint + hitting boundaries is telling you that there is an issue. In my experience, hard cut-off constraints usually don’t represent the actual situation well, and can cause numerical issues.
+
+I hope that helps,
+Kyle
+----------------------------------------

@@ -1,0 +1,56 @@
+{
+  "topic_id": 36367,
+  "title": "MultiDimFit vs FitDiagnostics",
+  "url": "https://cms-talk.web.cern.ch/t/36367",
+  "category_id": 279,
+  "created_at": "2024-03-05T14:22:36.775Z",
+  "last_posted_at": "2024-03-06T12:30:13.813Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-05T14:22:36.950Z",
+      "updated_at": "2024-03-05T14:22:36.950Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI evaluate the Breight-Wigner width of the dimuon excess at 28 GeV in SR1, 2017 data\nwith command\ncombine -M MultiDimFit 2017UL_dimuon_SR1ptj20.txt --robustFit=1 -v 3 --rMin -200 --rMax 200\nI got\nwidth     = 5.12504e-11  +/-  0.423057  (limited)\nwhile with\ncombine -M FitDiagnostics 2017UL_dimuon_SR1ptj20.txt --robustFit=1 --rMin -200 --rMax 200 --redefineSignalPOIs width\nI got\nBest fit width: 5.26073e-06  -5.26073e-06/+1.10829  (68% CL)\nSo, what command (value) should I use for the paper ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I evaluate the Breight-Wigner width of the dimuon excess at 28 GeV in SR1, 2017 data</p>\n<p>with command</p>\n<p>combine -M MultiDimFit 2017UL_dimuon_SR1ptj20.txt --robustFit=1 -v 3 --rMin -200 --rMax 200</p>\n<p>I got</p>\n<p>width     = 5.12504e-11  +/-  0.423057  (limited)</p>\n<p>while with</p>\n<p>combine -M FitDiagnostics 2017UL_dimuon_SR1ptj20.txt --robustFit=1 --rMin -200 --rMax 200 --redefineSignalPOIs width</p>\n<p>I got</p>\n<p>Best fit width: 5.26073e-06  -5.26073e-06/+1.10829  (68% CL)</p>\n<p>So, what command (value) should I use for the paper ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-03-05T16:56:19.057Z",
+      "updated_at": "2024-03-05T16:56:19.057Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nI think the differences in the uncertainty you observe are not related to MultiDim vs. FitDiagnostics, but rather are caused by the --redefineSignalPOIs width option used in the FitDiagnostics command which triggers the MINOS error calculation for specified POIs, while in the MultiDimFit command you provided the uncertainty on width is estimated from covariance matrix.\nThe Minos error are more accurate, and you can also run minos for all parameters if you add --minos all option to MultiDimFit command. I would also check the covariance matrix quality considering the results are so different.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>I think the differences in the uncertainty you observe are not related to MultiDim vs. FitDiagnostics, but rather are caused by the <code>--redefineSignalPOIs width</code> option used in the FitDiagnostics command which triggers the MINOS error calculation for specified POIs, while in the MultiDimFit command you provided the uncertainty on width is estimated from covariance matrix.<br>\nThe Minos error are more accurate, and you can also run minos for all parameters if you add <code>--minos all</code> option to MultiDimFit command. I would also check the covariance matrix quality considering the results are so different.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-06T12:15:54.000Z",
+      "updated_at": "2024-03-06T12:16:34.036Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya,\nit tells me\n[anikiten@lxplus811 test]$ combine -M MultiDimFit 2017UL_dimuon_SR1ptj20.txt --robustFit=1 --minos all -v 3 --rMin -100 --rMax 100\nInvalid options: unrecognised option \u2018\u2013minos\u2019\nInvalid options: unrecognised option \u2018\u2013minos\u2019\nCheers, Sasha.\n\n\u00b7\u00b7\u00b7\n\nFrom: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch\nSent: Tuesday, March 5, 2024 17:57\nTo: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch\nSubject: [Common Analysis Tools/Statistical Interpretation Tools] MultiDimFit vs FitDiagnostics\n\nAliya Nigamova anigamovMarch 5\n\nDear Sasha,\nI think the differences in the uncertainty you observe are not related to MultiDim vs. FitDiagnostics, but rather are caused by the --redefineSignalPOIs width option used in the FitDiagnostics command which triggers the MINOS error calculation for specified POIs, while in the MultiDimFit command you provided the uncertainty on width is estimated from covariance matrix.\nThe Minos error are more accurate, and you can also run minos for all parameters if you add --minos all option to MultiDimFit command. I would also check the covariance matrix quality considering the results are so different.\nBest,\nAliya\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Hi Aliya,</p>\n<p>it tells me</p>\n<p>[anikiten@lxplus811 test]$ combine -M MultiDimFit 2017UL_dimuon_SR1ptj20.txt --robustFit=1 --minos all -v 3 --rMin -100 --rMax 100</p>\n<p>Invalid options: unrecognised option \u2018\u2013minos\u2019<br>\nInvalid options: unrecognised option \u2018\u2013minos\u2019</p>\n<p>Cheers, Sasha.</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<hr>\n<p><strong>From:</strong> Aliya Nigamova via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a><br>\n<strong>Sent:</strong> Tuesday, March 5, 2024 17:57<br>\n<strong>To:</strong> Alexandre Nikitenko <a href=\"mailto:Alexandre.Nikitenko@cern.ch\">Alexandre.Nikitenko@cern.ch</a><br>\n<strong>Subject:</strong> [Common Analysis Tools/Statistical Interpretation Tools] MultiDimFit vs FitDiagnostics</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img title=\"anigamov\" width=\"45\" height=\"45\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/b77776/45.png\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anigamov\">Aliya Nigamova</a> anigamov<br>March 5</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Sasha,</p>\n<p>I think the differences in the uncertainty you observe are not related to MultiDim vs. FitDiagnostics, but rather are caused by the <code>--redefineSignalPOIs width</code> option used in the FitDiagnostics command which triggers the MINOS error calculation for specified POIs, while in the MultiDimFit command you provided the uncertainty on width is estimated from covariance matrix.<br>\nThe Minos error are more accurate, and you can also run minos for all parameters if you add <code>--minos all</code> option to MultiDimFit command. I would also check the covariance matrix quality considering the results are so different.</p>\n<p>Best,<br>\nAliya</p>\n<p><a href=\"https://cms-talk.web.cern.ch/t/multidimfit-vs-fitdiagnostics/36367/2\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/f6ffde15b0ea234951b7e129697e443c33979a83ea0ebb51d4bf98bf4d623e47\">click here</a>.</p>\n<hr>\n</details>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-03-06T12:30:13.813Z",
+      "updated_at": "2024-03-06T12:30:13.813Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nApologies, my mistake, the --minos all is for the FitDiagnostics method.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>Apologies, my mistake, the <code>--minos all</code> is for the <code>FitDiagnostics</code> method.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

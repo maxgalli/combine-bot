@@ -1,0 +1,16 @@
+TOPIC: Process renaming?
+URL: https://cms-talk.web.cern.ch/t/2134
+DATE: 2021-08-03T09:13:14.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by Senne_Van_Putte @ 2021-08-03T09:13:14.000Z):
+*** Discussion title: Higgs Combination
+Dear experts,
+I was trying to combine two different analysis into one datacard.
+However it turns out two processes received slightly different names,
+while representing the same process: FAKE vs Fake and
+darkHiggs_<masspoint> vs DH_<masspoint>.
+Is there a way to rename the processes using combine?
+Cheers, Senne
+----------------------------------------

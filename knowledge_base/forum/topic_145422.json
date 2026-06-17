@@ -1,0 +1,23 @@
+{
+  "topic_id": 145422,
+  "title": "Change of the labels/Title size",
+  "url": "https://cms-talk.web.cern.ch/t/145422",
+  "category_id": 279,
+  "created_at": "2026-05-27T15:04:42.877Z",
+  "last_posted_at": "2026-05-27T15:04:43.171Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "alkaloge",
+      "name": "Alexis Kalogeropoulos",
+      "created_at": "2026-05-27T15:04:43.171Z",
+      "updated_at": "2026-05-27T15:04:43.171Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello\nIs there an easy way to adjust the size of the axis/labels so that units fit nicely in the canvas and tat we dont get the x10 cropped out like in my case? I know that there is a --left-margin option, but there is no --right-margin one.\nTIA\nScreenshot 2026-05-27 at 16.59.29948\u00d7152 30.9 KB",
+      "cooked_html": "<p>Hello</p>\n<p>Is there an easy way to adjust the size of the axis/labels so that units fit nicely in the canvas and tat we dont get the <code>x10</code> cropped out like in my case? I know that there is a <code>--left-margin</code> option, but there is no <code>--right-margin</code> one.</p>\n<p>TIA</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/8/89013b7f12d8d5ebf1275c6477ec22b948344f3c.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/89013b7f12d8d5ebf1275c6477ec22b948344f3c\" title=\"Screenshot 2026-05-27 at 16.59.29\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/89013b7f12d8d5ebf1275c6477ec22b948344f3c_2_690x110.jpeg\" alt=\"Screenshot 2026-05-27 at 16.59.29\" data-base62-sha1=\"jy03l5qrafLQell1tTGGNF6ZC4k\" width=\"690\" height=\"110\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/8/89013b7f12d8d5ebf1275c6477ec22b948344f3c_2_690x110.jpeg, https://cms-talk.web.cern.ch/uploads/default/original/2X/8/89013b7f12d8d5ebf1275c6477ec22b948344f3c.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/8/89013b7f12d8d5ebf1275c6477ec22b948344f3c.jpeg 2x\" data-dominant-color=\"E5E4E5\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot 2026-05-27 at 16.59.29</span><span class=\"informations\">948\u00d7152 30.9 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    }
+  ]
+}

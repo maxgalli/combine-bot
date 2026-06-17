@@ -1,0 +1,56 @@
+{
+  "topic_id": 4002,
+  "title": "Error while compiling Higgs combine (adding information)",
+  "url": "https://cms-talk.web.cern.ch/t/4002",
+  "category_id": 279,
+  "created_at": "2021-12-24T19:13:02.638Z",
+  "last_posted_at": "2022-01-03T14:49:52.187Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "prebello",
+      "name": "Patricia Rebello Teles",
+      "created_at": "2021-12-24T19:13:02.880Z",
+      "updated_at": "2023-02-07T10:55:48.565Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts\nI am trying to compile HiggsAnalysis/CombinedLimit on both 10_2_X and 8_1_0 acc http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation.\nNevertheless, it looks not working properly on both versions, as well as in standalone too.\nThe error below is for 10_2_X (both v8.1.0 and v8.2.0 tags)\n\nBuilding shared library tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so\nCopying tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so to productstore area:\nChecking EDM Class Version for src/HiggsAnalysis/CombinedLimit/src/classes_def.xml in libHiggsAnalysisCombinedLimit.so\nTraceback (most recent call last):\nFile \u201c/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/python3.8/site-packages/site.py\u201d, line 73, in\n__boot()\nFile \u201c/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/python3.8/site-packages/site.py\u201d, line 3, in __boot\nimport os\nImportError: No module named os\nSuggestion: You can run \u2018scram build updateclassversion\u2019 to generate src/HiggsAnalysis/CombinedLimit/src/classes_def.xml.generated with updated ClassVersion\ngmake: *** [config/SCRAM/GMake/Makefile.rules:1673: tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so] Error 1\ngmake: *** [There are compilation/build errors. Please see the detail log above.] Error 2\n\nEven running \u2018scram build updateclassversion\u2019, after cleaning the build, it does not work.\nI have used my installation (10_2_13) of Combine Tool at the end of September without any issue. Now it is also not working anymore.\nMay I kindly ask your help to fix it?\nRegards Patricia",
+      "cooked_html": "<p>Dear experts</p>\n<p>I am trying to compile HiggsAnalysis/CombinedLimit on both 10_2_X and 8_1_0 acc <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#setting-up-the-environment-and-installation</a>.</p>\n<p>Nevertheless, it looks not working properly on both versions, as well as in standalone too.</p>\n<p>The error below is for 10_2_X (both v8.1.0 and v8.2.0 tags)</p>\n<blockquote>\n<blockquote>\n<p>Building shared library tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so<br>\nCopying tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so to productstore area:<br>\nChecking EDM Class Version for src/HiggsAnalysis/CombinedLimit/src/classes_def.xml in libHiggsAnalysisCombinedLimit.so<br>\nTraceback (most recent call last):<br>\nFile \u201c/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/python3.8/site-packages/site.py\u201d, line 73, in <br>\n__boot()<br>\nFile \u201c/cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/lib/python3.8/site-packages/site.py\u201d, line 3, in __boot<br>\nimport os<br>\nImportError: No module named os<br>\nSuggestion: You can run \u2018scram build updateclassversion\u2019 to generate src/HiggsAnalysis/CombinedLimit/src/classes_def.xml.generated with updated ClassVersion<br>\ngmake: *** [config/SCRAM/GMake/Makefile.rules:1673: tmp/slc7_amd64_gcc700/src/HiggsAnalysis/CombinedLimit/src/HiggsAnalysisCombinedLimit/libHiggsAnalysisCombinedLimit.so] Error 1<br>\ngmake: *** [There are compilation/build errors. Please see the detail log above.] Error 2</p>\n</blockquote>\n</blockquote>\n<p>Even running \u2018scram build updateclassversion\u2019, after cleaning the build, it does not work.</p>\n<p>I have used my installation (10_2_13) of Combine Tool at the end of September without any issue. Now it is also not working anymore.</p>\n<p>May I kindly ask your help to fix it?</p>\n<p>Regards Patricia</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adavid",
+      "name": "Andre Tinoco",
+      "created_at": "2022-01-03T10:51:21.751Z",
+      "updated_at": "2022-01-03T10:51:21.751Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I cannot reproduce this on lxplus (CC7).\nSince the error message suggests to run 'scram build updateclassversion' and that does not help, it seems that your working area is clobbered in some way.\nCan you start from a clean cmsrel slate? E.g., combine and other analysis code need not be under the exact same working area.",
+      "cooked_html": "<p>I cannot reproduce this on <code>lxplus</code> (CC7).</p>\n<p>Since the error message suggests to <code>run 'scram build updateclassversion'</code> and that does not help, it seems that your working area is clobbered in some way.</p>\n<p>Can you start from a clean <code>cmsrel</code> slate? E.g., <code>combine</code> and other analysis code need not be under the exact same working area.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-01-03T11:03:32.522Z",
+      "updated_at": "2022-01-03T11:03:32.522Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "I think it is related to python3.\nx86_64-centos7-gcc9-opt/lib/python3.8\n10_2_X is not python3 ready (nor the combine tag, nor the release, IIRC).\nTry to set up a release from scratch.\n-Andrea",
+      "cooked_html": "<p>I think it is related to python3.<br>\n<code>x86_64-centos7-gcc9-opt/lib/python3.8</code><br>\n10_2_X is not python3 ready (nor the combine tag, nor the release, IIRC).<br>\nTry to set up a release from scratch.</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "prebello",
+      "name": "Patricia Rebello Teles",
+      "created_at": "2022-01-03T14:49:52.187Z",
+      "updated_at": "2022-01-03T14:49:52.187Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank you Andrea.\nIndeed,  my bashrc is setting up /cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/setup.sh pointing to python --version\nPython 3.8.6\nI will fix it properly.\nHappy new year to the team.\nRegards Pat",
+      "cooked_html": "<p>Thank you Andrea.<br>\nIndeed,  my bashrc is setting up /cvmfs/sft.cern.ch/lcg/views/LCG_100/x86_64-centos7-gcc9-opt/setup.sh pointing to python --version<br>\nPython 3.8.6<br>\nI will fix it properly.<br>\nHappy new year to the team.<br>\nRegards Pat</p>"
+    }
+  ]
+}

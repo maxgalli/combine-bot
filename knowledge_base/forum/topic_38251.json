@@ -1,0 +1,100 @@
+{
+  "topic_id": 38251,
+  "title": "Follow up question to Alyia about two years and three SR combination for dimuon excess 28 GeV",
+  "url": "https://cms-talk.web.cern.ch/t/38251",
+  "category_id": 279,
+  "created_at": "2024-04-02T15:20:42.933Z",
+  "last_posted_at": "2024-04-04T10:55:06.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-02T15:20:43.110Z",
+      "updated_at": "2024-04-02T15:20:43.110Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Alyia,\nI am nicely using command you have recommended to combine 2017 and 2018 (related by nuisance parameter) and three Search Regions:\ncombine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3\nIt works as I would expect.  But I have question:  why do I use\n\u2013freezeParameters r\nin this command ? What it supposed to do ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear Alyia,</p>\n<p>I am nicely using command you have recommended to combine 2017 and 2018 (related by nuisance parameter) and three Search Regions:</p>\n<p>combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3</p>\n<p>It works as I would expect.  But I have question:  why do I use</p>\n<p>\u2013freezeParameters r</p>\n<p>in this command ? What it supposed to do ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-04-02T15:29:33.803Z",
+      "updated_at": "2024-04-02T15:29:33.803Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nUnless you are using a specific physics model, which is not your case, by default combine will create a likelihood function defined as Bkg + r* Sig. So the \u201cr\u201d parameter (aka the signal strength) is present in the model you use, even if you redefine the POIs, and by default is freely floating. By freezing it with that command, you fix it at 1 so it has no effect.\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>Unless you are using a specific physics model, which is not your case, by default combine will create a likelihood function defined as Bkg + r* Sig. So the \u201cr\u201d parameter (aka the signal strength) is present in the model you use, even if you redefine the POIs, and by default is freely floating. By freezing it with that command, you fix it at 1 so it has no effect.</p>\n<p>Best regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-02T15:31:32.426Z",
+      "updated_at": "2024-04-02T15:31:32.426Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thanks, Giacomo !\nCheers, Sasha.",
+      "cooked_html": "<p>Thanks, Giacomo !<br>\nCheers, Sasha.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-03T07:35:54.262Z",
+      "updated_at": "2024-04-03T07:35:54.262Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nI got into problem with scanning of mu_sr1_2017.\nCommand:\ncombine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3\nworks fine and give me reasonable values of three signal strengths, mean and width:\nmean      = 27.4291      +/-  0.319384  (limited)\nmu_sr1_2017       = 38.0977      +/-  16.8499\nmu_sr2_2017       = 21.2139      +/-  11.1855\nmu_sr3_2017       = 48.2907      +/-  25.433\nwidth     = 2.35183      +/-  1.52821   (limited)\nbut when  I scan mu_sr1_2017 (with best fit fixed mass and width) and plot it with commands:\ncombine -M MultiDimFit combined.txt -P mu_sr1_2017 --setParameterRanges mu_sr1_2017=0.0,100.0 --algo grid --points 100 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4,width=2.4 --freezeParameters mean,width,r\npython plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI mu_sr1_2017\nit gives me nonsense scan (see attached plot)\nWhat I do wrong with scanning ?\nThank you, Sasha.\nscan.pdf (17.2 KB)",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>I got into problem with scanning of mu_sr1_2017.</p>\n<p>Command:</p>\n<p>combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3</p>\n<p>works fine and give me reasonable values of three signal strengths, mean and width:</p>\n<p>mean      = 27.4291      +/-  0.319384  (limited)<br>\nmu_sr1_2017       = 38.0977      +/-  16.8499<br>\nmu_sr2_2017       = 21.2139      +/-  11.1855<br>\nmu_sr3_2017       = 48.2907      +/-  25.433<br>\nwidth     = 2.35183      +/-  1.52821   (limited)</p>\n<p>but when  I scan mu_sr1_2017 (with best fit fixed mass and width) and plot it with commands:</p>\n<p>combine -M MultiDimFit combined.txt -P mu_sr1_2017 --setParameterRanges mu_sr1_2017=0.0,100.0 --algo grid --points 100 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4,width=2.4 --freezeParameters mean,width,r</p>\n<p>python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI mu_sr1_2017</p>\n<p>it gives me nonsense scan (see attached plot)</p>\n<p>What I do wrong with scanning ?</p>\n<p>Thank you, Sasha.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/i5wSEkJnz4CGvT1hW5VhmZI9prG.pdf\">scan.pdf</a> (17.2 KB)</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-04-03T08:44:48.000Z",
+      "updated_at": "2024-04-03T08:46:13.634Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nAre you getting any error messages when running the grid algorithm? I have the feeling in most of the points the algorithm is actually failing, hence the weird result.\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>Are you getting any error messages when running the grid algorithm? I have the feeling in most of the points the algorithm is actually failing, hence the weird result.</p>\n<p>Best regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-03T09:57:29.000Z",
+      "updated_at": "2024-04-03T10:00:49.724Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nno, I did not get any error messages. I was able to get it normal with\n\u2013floatOtherPOIs=0\ninstead of 1. I think is due \u201cr\u201d is fixed in this case I do not use \u201cr\u201d as\nPOI, but instead use mu_sr1_2017, \u2026\nCheers, Sasha.",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>no, I did not get any error messages. I was able to get it normal with</p>\n<p>\u2013floatOtherPOIs=0</p>\n<p>instead of 1. I think is due \u201cr\u201d is fixed in this case I do not use \u201cr\u201d as<br>\nPOI, but instead use mu_sr1_2017, \u2026</p>\n<p>Cheers, Sasha.</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-04-04T09:48:33.908Z",
+      "updated_at": "2024-04-04T09:48:33.908Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nif you also redefine POIs in the command for the likelihood scans (i.e. remove r from POIs), as shown below:\ncombine -M MultiDimFit combined.txt -P mu_sr1_2017 --setParameterRanges mu_sr1_2017=0.0,100.0 --algo grid --points 100 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4,width=2.4 --freezeParameters mean,width,r  --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017\n\nthe  --floatOtherPOIs=1 option should still produce reasonable results, as Giacomo already explained it is important to freeze r.  Btw, I still think that there is a better way to setup physics model for you case, as I explained in the earlier thread and quoted below.\n\nCombining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)\n\nAfter all of the cards are combined you can define the signal process scaling parameters with multiSignalModel:\ntext2workspace.py -d combined.txt -o ws_run2_3SRs.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose  --PO 'map=SR1_2017/sig:r_sr1_2017[100,0,500]'  --PO 'map=SR1_2018/sig:r_sr1_2018=expr;;r_sr1_2018(\"@0*@1\", r_sr1_2017, Rsr1_2018_2017[1,0,2])' --PO 'map=SR2_2017/sig:r_sr2_2017[100,0,500]'  --PO 'map=SR2_2018/sig:r_sr2_2018=expr;;r_sr2_2018(\"@0*@1\", r_sr2_2017, Rsr2_2018_2017[1,0,2])'  --PO 'map=SR3_2017/sig:r_sr3_2017[100,0,500]'  --PO 'map=SR3_2018/sig:r_sr3_2018=expr;;r_sr3_2018(\"@0*@1\", r_sr3_2017, Rsr3_2018_2017[1,0,2])'\n\nwhere Rsr3_2018_2017, Rsr2_2018_2017 and Rsr2_2018_2017 are constrained ratio parameters defined as param in the datacards for each region.\n\nBest,\nAliya",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>if you also redefine POIs in the command for the likelihood scans (i.e. remove <code>r</code> from POIs), as shown below:</p>\n<pre><code class=\"lang-auto\">combine -M MultiDimFit combined.txt -P mu_sr1_2017 --setParameterRanges mu_sr1_2017=0.0,100.0 --algo grid --points 100 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4,width=2.4 --freezeParameters mean,width,r  --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 \n</code></pre>\n<p>the  <code>--floatOtherPOIs=1</code> option should still produce reasonable results, as Giacomo already explained it is important to freeze <code>r</code>.  Btw, I still think that there is a better way to setup physics model for you case, as I explained in the earlier thread and quoted below.</p>\n<aside class=\"quote no-group\" data-username=\"anigamov\" data-post=\"2\" data-topic=\"36823\">\n<div class=\"title\">\n<div class=\"quote-controls\"></div>\n<img loading=\"lazy\" alt=\"\" width=\"24\" height=\"24\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/b77776/48.png\" class=\"avatar\"><a href=\"https://cms-talk.web.cern.ch/t/combining-2017-and-2018-data-in-three-search-regions-sr1-sr2-sr3/36823/2\">Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)</a></div>\n<blockquote>\n<p>After all of the cards are combined you can define the signal process scaling parameters with multiSignalModel:</p>\n<pre><code class=\"lang-auto\">text2workspace.py -d combined.txt -o ws_run2_3SRs.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose  --PO 'map=SR1_2017/sig:r_sr1_2017[100,0,500]'  --PO 'map=SR1_2018/sig:r_sr1_2018=expr;;r_sr1_2018(\"@0*@1\", r_sr1_2017, Rsr1_2018_2017[1,0,2])' --PO 'map=SR2_2017/sig:r_sr2_2017[100,0,500]'  --PO 'map=SR2_2018/sig:r_sr2_2018=expr;;r_sr2_2018(\"@0*@1\", r_sr2_2017, Rsr2_2018_2017[1,0,2])'  --PO 'map=SR3_2017/sig:r_sr3_2017[100,0,500]'  --PO 'map=SR3_2018/sig:r_sr3_2018=expr;;r_sr3_2018(\"@0*@1\", r_sr3_2017, Rsr3_2018_2017[1,0,2])'\n</code></pre>\n<p>where Rsr3_2018_2017, Rsr2_2018_2017 and Rsr2_2018_2017 are constrained ratio parameters defined as <code>param</code> in the datacards for each region.</p>\n</blockquote>\n</aside>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-04T10:55:06.000Z",
+      "updated_at": "2024-04-04T10:58:12.135Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Dear Alyia,\nthank you, it works !\nThe first way your proposed is \u201cshorter\u201d  and it works as I would expact.\nCheers, Sasha.",
+      "cooked_html": "<p>Dear Alyia,</p>\n<p>thank you, it works !</p>\n<p>The first way your proposed is \u201cshorter\u201d <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slightly_smiling_face.png?v=12\" title=\":slightly_smiling_face:\" class=\"emoji\" alt=\":slightly_smiling_face:\" loading=\"lazy\" width=\"20\" height=\"20\"> and it works as I would expact.</p>\n<p>Cheers, Sasha.</p>"
+    }
+  ]
+}

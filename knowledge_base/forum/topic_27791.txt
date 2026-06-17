@@ -1,0 +1,14 @@
+TOPIC: CMS Combine tutorial on September 27th
+URL: https://cms-talk.web.cern.ch/t/27791
+DATE: 2023-07-31T14:41:00.298Z
+SOLVED: no
+============================================================
+
+QUESTION (by anigamov @ 2023-07-31T14:41:00.716Z):
+Dear all,
+We are happy to announce a Combine tool tutorial on Wednesday September 27th.
+Based on the feedback from the last tutorial this time we would like to focus on unfolding procedures in general as well as the implementation in Combine.
+Please find the developing agenda at https://indico.cern.ch/event/1311191/, where you can already register for the event.
+All the best,
+Kyle and Aliya for the organisers
+----------------------------------------

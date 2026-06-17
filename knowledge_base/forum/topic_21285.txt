@@ -1,0 +1,28 @@
+TOPIC: Unbinned Shape Analysis using Combine tool
+URL: https://cms-talk.web.cern.ch/t/21285
+DATE: 2023-03-10T14:33:35.652Z
+SOLVED: no
+============================================================
+
+QUESTION (by sbaradia @ 2023-03-10T14:33:35.801Z):
+Dear Combine Experts,
+I am trying to do an Unbinned shape analysis using Combine. I have a very basic confusion. The modelling is done for the invariant mass distribution of final particles from  Higgs decay. The modeling for signal is done in the range 100-150 GeV (range shown as ‘B’ in the attached figure). The QCD background is modeled from the data in B:100-150 GeV  keeping the Signal region, 120-130 GeV  (range shown as ‘A’ in the attached figure) blinded. These prefits are done using RooFit. Now my query is, to estimate the expected upper limits, should the shapes and yields for the signal and data driven background be provided through datacard to the Combine tool for the entire (B:100-150 GeV) region or only the Signal Region (A:120-130 GeV)?
+Any comment/suggestion would be extremely helpful. Thanks.
+
+Screenshot from 2023-03-10 19-49-22855×719 56.3 KB
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-03-10T15:25:30.727Z):
+Dear Sweta,
+I think you should extract your limits using the full range to be able to float your background and properly constraint it. We have extended instruction on the parametric models available at [1], which also touches the unbinned fits. I hope that addresses you question, let mw know if something is unclear.
+Best,
+Aliya
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/tutorial2023/parametric_exercise/#part-1-parametric-model-building
+----------------------------------------
+
+REPLY 3 (by sbaradia @ 2023-03-14T08:21:44.280Z):
+Dear Aliya,
+Yes that answers my question. Thanks a lot.
+Regards,
+Sweta
+----------------------------------------

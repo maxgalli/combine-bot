@@ -1,0 +1,66 @@
+TOPIC: Penalty terms in the combine discrete profiling
+URL: https://cms-talk.web.cern.ch/t/33711
+DATE: 2024-01-26T12:23:06.659Z
+SOLVED: no
+============================================================
+
+QUESTION (by fanx @ 2024-01-26T12:23:06.812Z):
+Dear combine experts,
+Can anyone explain what penalty terms regarding the number of parameters are used in combine discrete profiling? and kindly point me to the code that implements them?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-01-29T15:04:47.957Z):
+Hi Xingchen,
+This is something that can be set on the RooMultiPdf object using the setCorrectionFactor(value) method. The default value is 0.5 (which corresponds to a penalty of 1 per parameter on 2*deltaNLL). You can change the value to something else if you need to.
+Best,
+Nick
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/src/RooMultiPdf.cxx#L81-L83
+
+void RooMultiPdf::setCorrectionFactor(double penal){
+cFactor=penal;
+}
+----------------------------------------
+
+REPLY 4 (by fanx @ 2024-01-30T17:28:20.915Z):
+Thank you!
+----------------------------------------
+
+REPLY 5 (by fanx @ 2024-01-30T17:38:38.395Z):
+I have a further question about the discrete profiling. So I am using the profiling with the Significance method. And fitting of some of my functions are very sensitive to the change of the initial values. I notice that after the discrete profiling decide which function is preferred, the initial values of that function is no longer what I set. And the fitting process in the significance calculation is based up that new set of initial values. This sometimes causes failure to the fitting.
+I know that the discrete profiling r scan must happen before the actual calculation of the significance, but I don’t know where the code is. And I want to make sure each fit in the scan is actually good.
+If you can provide some insight on this issue, I would appreciate it very much. If you think this is beyond this post, maybe I should open another post.
+----------------------------------------
+
+REPLY 6 (by anigamov @ 2024-01-31T10:50:25.441Z):
+Hi Xingchen,
+Could you please tell us which Combine version and CMSSW  are you using?
+In order to make sure that the significance results are ok it is always good to scan the likelihood with the -M MultiDimFit --algo grid method as described here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 8 (by fanx @ 2024-02-01T11:50:39.000Z):
+Hi Aliya,
+My combine version is v9.1.0, and CMSSW version is CMSSW_12_6_0_patch1. If I understand correctly, -M MultiDimFit --algo grid scans over the r, not necessarily gives the significance. Should I use -M Significance for this matter? and maybe use MultiDimFit as a crosscheck?
+Best
+Xingchen
+----------------------------------------
+
+REPLY 9 (by anigamov @ 2024-02-02T10:43:26.696Z):
+Hi Xingchen,
+I would suggest to try recommended CMSSW_11_3_4 (with ROOT v6.22) with Combine v9.1.0 and check if you still run into the same issues. CMSSW_12_6_0 has different ROOT version 6.24, and it is not guaranteed that everything works as expected. And yes, I suggested to run the -M MultiDimFit with --algo grid as a crosscheck.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 11 (by fanx @ 2024-02-05T09:52:34.062Z):
+Hi Aliya,
+Thank you for the suggestion, and I will try it out! But I doubt it is about the ROOT version, but more about the functions I put in the profile. They are just not easy to use. Do you know where the discrete profiling happens in these methods code-wise?
+Best
+Xingchen
+----------------------------------------

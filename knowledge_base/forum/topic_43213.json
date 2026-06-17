@@ -1,0 +1,56 @@
+{
+  "topic_id": 43213,
+  "title": "Two questions about toys with feldman-cousins method",
+  "url": "https://cms-talk.web.cern.ch/t/43213",
+  "category_id": 279,
+  "created_at": "2024-07-07T08:42:56.880Z",
+  "last_posted_at": "2024-07-10T14:29:09.282Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-07T08:42:57.390Z",
+      "updated_at": "2024-07-07T08:42:57.390Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am evaluating LEE due to the used ranges of mass (mean) and width with this command (one toy just to see print out):\ncombine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1 -s -1 --freezeParameters sigma,r --setParameterRanges mean=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1 -v3 > out.log\n1 st question:\nin log file (see attached below)  I see line\nModelConfig_POI:(r)\nwhile I used in above command  --freezeParameters sigma,r\nIs it OK or something is wrong ?\n2nd question\nI do not quite understand what is going after line\nFitting of the signal-plus-background hypothesis done in 0.129842 s\nit prints out few times list of initial values for bkg. parameters and signal mean and width and only after that it seems to print their values after fit.\nCan you check if print out looks reasonable for you.\nMy\ncombined.txt\nis on\n/afs/cern.ch/work/a/anikiten/public/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/test\nThank you, Sasha.\nout.log (47.2 KB)",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am evaluating LEE due to the used ranges of mass (mean) and width with this command (one toy just to see print out):</p>\n<p>combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1 -s -1 --freezeParameters sigma,r --setParameterRanges mean=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1 -v3 &gt; out.log</p>\n<p>1 st question:</p>\n<p>in log file (see attached below)  I see line</p>\n<p>ModelConfig_POI:(r)</p>\n<p>while I used in above command  --freezeParameters sigma,r</p>\n<p>Is it OK or something is wrong ?</p>\n<p>2nd question</p>\n<p>I do not quite understand what is going after line</p>\n<p>Fitting of the signal-plus-background hypothesis done in 0.129842 s</p>\n<p>it prints out few times list of initial values for bkg. parameters and signal mean and width and only after that it seems to print their values after fit.</p>\n<p>Can you check if print out looks reasonable for you.</p>\n<p>My</p>\n<p>combined.txt</p>\n<p>is on</p>\n<p>/afs/cern.ch/work/a/anikiten/public/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/test</p>\n<p>Thank you, Sasha.<br>\n<a class=\"attachment\" href=\"/uploads/short-url/jjKtNCgwfkGf1KKmqlAfyJl4Eie.log\">out.log</a> (47.2 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-07-09T11:47:11.683Z",
+      "updated_at": "2024-07-09T11:47:11.683Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Alexandre,\nTo answer the first question: when running Combine with -v 3  option it prints the workspace from text2workspace.py step which Combine runs when you start from .txt datacard file with default model with a single POI - r.  The parameters are redefined and frozen later with --redefineSignalPOI and --freezeParameters options respectively.\nI went through the log file, it seems to me like there are some issues due to the background function in SR2 2018 shapeBkg_bkg_ch2_SR2_2018 which is defined as RooPolynomial.\nI think in some earlier threads it was already discussed that it would be good to use pdfs which are always positive.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Alexandre,</p>\n<p>To answer the first question: when running <code>Combine</code> with <code>-v 3</code>  option it prints the workspace from <code>text2workspace.py</code> step which Combine runs when you start from <code>.txt</code> datacard file with default model with a single POI - r.  The parameters are redefined and frozen later with <code>--redefineSignalPOI</code> and <code>--freezeParameters</code> options respectively.</p>\n<p>I went through the log file, it seems to me like there are some issues due to the background function in SR2 2018 <code>shapeBkg_bkg_ch2_SR2_2018</code> which is defined as <code>RooPolynomial</code>.<br>\nI think in some earlier threads it was already discussed that it would be good to use pdfs which are always positive.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-09T11:52:06.741Z",
+      "updated_at": "2024-07-09T11:52:06.741Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thanks, Aliya !\nI will try to replace RooPolynomial to Chebychev which is by definition is positive and see what will happen.\nCheers, Sasha.",
+      "cooked_html": "<p>Thanks, Aliya !</p>\n<p>I will try to replace RooPolynomial to Chebychev which is by definition is positive and see what will happen.</p>\n<p>Cheers, Sasha.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-10T14:29:09.282Z",
+      "updated_at": "2024-07-10T14:29:09.282Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nI was wrong. Chebychev polynomial can also be negative\u2026\nDo you know what happen when pdf gets negative. Does Minuit try to find parameters with positive pdf and continue the minimization, does it stop and set Log(L) to some value ?  I guess machinery with toys and feldman-cousins should be sensitive to that \u2026\nThanks for all your help,\nSasha.",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>I was wrong. Chebychev polynomial can also be negative\u2026</p>\n<p>Do you know what happen when pdf gets negative. Does Minuit try to find parameters with positive pdf and continue the minimization, does it stop and set Log(L) to some value ?  I guess machinery with toys and feldman-cousins should be sensitive to that \u2026</p>\n<p>Thanks for all your help,<br>\nSasha.</p>"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+TOPIC: Fit is not performing well in some bins
+URL: https://cms-talk.web.cern.ch/t/13666
+DATE: 2022-08-05T12:20:39.337Z
+SOLVED: no
+============================================================
+
+QUESTION (by dekumar @ 2022-08-05T12:20:39.520Z):
+Dear Expert,
+There are four control regions (tope, topmu, zee, zmumu) in my analysis, and they are connected to the signal region through rateParam, which we can see from the screenshot:
+or  full datacard is here : /afs/cern.ch/user/d/dekumar/public/datacard/monoHbb_datacard_2017_THDMa_B_mA_600_ma_150_morebkg.txt
+
+Screenshot 2022-08-05 at 5.17.47 PM1230×610 66.6 KB
+
+I am performing fit using this command :
+combine -M FitDiagnostics -d $datacardws -n _${catg}_${year}_${mode}_${dirname}  --saveShapes --saveWithUncertainties --setParameters mask_sr=1  --minos all --X-rtd MINIMIZER_analytic --cminFallbackAlgo Minuit2,0:1.0
+
+From the post-fit plot, I couldn’t understand the fit performance in some of the bins (red rectangle in the plot). Data/mc agreement I expect  better in 12 and 22 bin for post-fit, but it is worse, which I couldn’t understand. Can you please let me know if this is expected or if there can be some problem that I should debug?
+
+Screenshot 2022-08-05 at 5.15.08 PM1920×937 120 KB
+
+Thanks a lot in advance,
+Deepak
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-08-05T13:57:53.159Z):
+Hi Deepak,
+So there’s no guarantee that the data/MC ratio for all bins should go closer to 1 in the fit. It is the overall log-likelihood that is minimized, not the contribution from each bin. We can see in your plot that the agreement in the most high stats regions is improved by reducing the overall normalisation of the backgrounds, which in likelihood terms is going to be preferable to shifting the normalisation upwards to improve the agreement in the bins you highlight. So in conclusion I don’t think there’s anything to worry about. (though there’s a potential typo in one of your autoMCStats lines: “0 10 1” → “10 0 1”).
+cheers,
+Andrew
+----------------------------------------

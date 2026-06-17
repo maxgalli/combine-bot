@@ -1,0 +1,104 @@
+TOPIC: Cannot get InitialFit to work for data_noSignal Impacts
+URL: https://cms-talk.web.cern.ch/t/141538
+DATE: 2026-01-30T11:58:15.319Z
+SOLVED: no
+============================================================
+
+QUESTION (by alkaloge @ 2026-01-30T11:58:15.705Z):
+Dear experts
+I am trying to get the impacts with real_data + no_signal from the analysis CRs. However, no matter what strategy/tollerance etc I have tried, the initial fit always fails. For instance I run
+combineTool.py -M Impacts -d input_Run2_3000_CR1B2B.root -n CR_t0_real --setParameters r=0 --freezeParameters r  --rMin -5 --rMax 5 --robustFit 1 --cminDefaultMinimizerTolerance 0.05 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1 -m 3000  -n CR_t0_real --doInitialFit --expectSignal 0 --saveWorkspace
+and then I tried different strategies, rMin/rMax, remove robustFit etc - all fail
+Could you please advise?
+The datacard and the input_Run2_3000_CR1B2B.root that I use can be found under /afs/cern.ch/user/a/alkaloge/public/Combine
+----------------------------------------
+
+REPLY 2 (by gortona @ 2026-01-30T12:12:15.000Z):
+Dear Alexis,
+Have you tried removing teh freezeParameters r option? As far as I can see, you are left without any POI in the fit with the command you are using
+Cheers,
+Giacomo
+
+On 30 Jan 2026, at 12:59, Alexis Kalogeropoulos noreply-cms-talk@cern.ch wrote:
+
+Alexis Kalogeropoulos alkalogeJanuary 30
+
+Dear experts
+I am trying to get the impacts with real_data + no_signal from the analysis CRs. However, no matter what strategy/tollerance etc I have tried, the initial fit always fails. For instance I run
+combineTool.py -M Impacts -d input_Run2_3000_CR1B2B.root -n CR_t0_real --setParameters r=0 --freezeParameters r --rMin -5 --rMax 5 --robustFit 1 --cminDefaultMinimizerTolerance 0.05 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1 -m 3000 -n CR_t0_real --doInitialFit --expectSignal 0 --saveWorkspace
+and then I tried different strategies, rMin/rMax, remove robustFit etc - all fail
+Could you please advise?
+The datacard and the input_Run2_3000_CR1B2B.root that I use can be found under /afs/[cern.ch/user/a/alkaloge/public/Combine](http://cern.ch/user/a/alkaloge/public/Combine)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by alkaloge @ 2026-01-30T12:17:59.461Z):
+yes, even
+combineTool.py -M Impacts -d input_Run2_3000_CR1B2B.root -n CR_t0_real --setParameters r=0   --rMin -5 --rMax 5 --robustFit 1 --cminDefaultMinimizerTolerance 0.05 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1 -m 3000  -n CR_t0_real --doInitialFit --expectSignal 0 --saveWorkspace
+(i.e. removing the  freezeParameters r as proposed)
+fails
+Thanks
+-a
+----------------------------------------
+
+REPLY 4 (by gortona @ 2026-02-02T12:18:15.000Z):
+Dear Alexis,
+Does the fit work in the 4 input datacards separately?
+Also, since the expected fit seems to be working nicely, do you have some plots showing the data/MC agreement in the 4 regions?
+Thank you,
+Best,
+Giacomo
+
+On 30 Jan 2026, at 13:19, Alexis Kalogeropoulos noreply-cms-talk@cern.ch wrote:
+
+Alexis Kalogeropoulos alkalogeJanuary 30
+
+yes, even
+combineTool.py -M Impacts -d input_Run2_3000_CR1B2B.root -n CR_t0_real --setParameters r=0 --rMin -5 --rMax 5 --robustFit 1 --cminDefaultMinimizerTolerance 0.05 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1 -m 3000 -n CR_t0_real --doInitialFit --expectSignal 0 --saveWorkspace
+(i.e. removing the freezeParameters r as proposed)
+fails
+Thanks
+-a
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaJanuary 30
+
+Dear Alexis,
+Have you tried removing teh freezeParameters r option? As far as I can see, you are left without any POI in the fit with the command you are using
+Cheers,
+Giacomo
+
+On 30 Jan 2026, at 12:59, Alexis Kalogeropoulos noreply-cms-talk@cern.ch wrote:
+
+Alexis Kalogeropoulos alkalogeJanuary 30
+
+Dear experts
+I am trying to get the impacts with real_data + no_signal from the analysis CRs. However, no matter what strategy/tollerance etc I have tried, the initial fit always fails. For instance I run
+combineTool.py -M Impacts -d input_Run2_3000_CR1B2B.root -n CR_t0_real --setParameters r=0 --freezeParameters r --rMin -5 --rMax 5 --robustFit 1 --cminDefaultMinimizerTolerance 0.05 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1 -m 3000 -n CR_t0_real --doInitialFit --expectSignal 0 --saveWorkspace
+and then I tried different strategies, rMin/rMax, remove robustFit etc - all fail
+Could you please advise?
+The datacard and the input_Run2_3000_CR1B2B.root that I use can be found under /afs/[[cern.ch/user/a/alkaloge/public/Combine](http://cern.ch/user/a/alkaloge/public/Combine)]([http://cern.ch/user/a/alkaloge/public/Combine](http://cern.ch/user/a/alkaloge/public/Combine))
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexis Kalogeropoulos alkalogeJanuary 30
+
+Dear experts
+I am trying to get the impacts with real_data + no_signal from the analysis CRs. However, no matter what strategy/tollerance etc I have tried, the initial fit always fails. For instance I run
+combineTool.py -M Impacts -d input_Run2_3000_CR1B2B.root -n CR_t0_real --setParameters r=0 --freezeParameters r --rMin -5 --rMax 5 --robustFit 1 --cminDefaultMinimizerTolerance 0.05 --X-rtd MINIMIZER_analytic --X-rtd FITTER_NEW_CROSSING_ALGO --cminDefaultMinimizerStrategy 1 -m 3000 -n CR_t0_real --doInitialFit --expectSignal 0 --saveWorkspace
+and then I tried different strategies, rMin/rMax, remove robustFit etc - all fail
+Could you please advise?
+The datacard and the input_Run2_3000_CR1B2B.root that I use can be found under /afs/[cern.ch/user/a/alkaloge/public/Combine](http://cern.ch/user/a/alkaloge/public/Combine)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

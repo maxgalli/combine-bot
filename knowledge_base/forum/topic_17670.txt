@@ -1,0 +1,39 @@
+TOPIC: Extract asymmetry using physics model
+URL: https://cms-talk.web.cern.ch/t/17670
+DATE: 2022-11-17T13:12:02.216Z
+SOLVED: no
+============================================================
+
+QUESTION (by ntrevisa @ 2022-11-17T13:12:02.383Z):
+Dear combine experts,
+I am trying to extract the charge asymmetry in the WH production.
+To do so, I am defining a physics model, and I would ask your help in understanding if what I am doing is correct. In particular, I often get that the uncertainty on the asymmetry is as large as the ‘parameter range’ I define in combine. Trying to understand what causes this behavior, I observed that the negative log likelihood quickly reaches a plateau and stops increasing its value when I perform a scan versus the asymmetry value.
+I tried to describe my approach and summarize the combine commands I use and the corresponding results in a set of slides:
+
+docs.google.com
+
+Fit_sanity_checks_in_WH_analysis
+
+Fit sanity checks in WH analysis Nicolò Trevisani KIT - Karlsruhe Institute of Technology 17/11/2022
+
+Please let me know if anything is unclear or if you have any suggestions or feedback.
+Best regards,
+Nicolò
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-11-21T17:01:45.407Z):
+Dear Nicolò,
+To answer the question on slide 9: yes, there is a substantial difference between what you show on slide 8 and slide 9: in slide 8, r_S and r_higgs are floating while on slide 9 they are fixed. On slide 8 you didn’t specify explicitly that r_S and r_higgs should float freely, but they do as they don’t have a constraint in the workspace. You would obtain the same result by using --redefineSignalPOIs r_higgs,r_S,r_A -P r_A --floatOtherPOIs 1 (and this would be the recommended way to ensure the other POIs are really floating)
+As to why the dNLL plateaus - to me it looks like for extreme values of the asymmetry, the WH cross section is taken almost down to 0 (you can save the value of r_S in the output tree with --trackParameters r_S). For r_S=0 you get deltaNLL ~0.25, and at this point you stop depending on r_A   - so I think what you are seeing is consistent.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by ntrevisa @ 2022-11-22T09:00:26.380Z):
+Dear Adinda,
+thank you for the helpful clarifications!
+I tried repeating the scan with the commands you suggested and I get - as expected - the same results.
+Also regarding the reason of the plateaus, I think you are right. In addition, we realized that by definition, the asymmetry is limited to (-1,1) so it makes sense that we don’t see any usual behavior of the likelihood beyond that range.
+Best regards,
+Nicolò
+----------------------------------------

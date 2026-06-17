@@ -1,0 +1,70 @@
+TOPIC: Use combine to get fit results for both signal and background
+URL: https://cms-talk.web.cern.ch/t/20288
+DATE: 2023-02-13T16:25:05.165Z
+SOLVED: no
+============================================================
+
+QUESTION (by astepenn @ 2023-02-13T16:25:05.593Z):
+Dear experts,
+I’m trying to run combine, so that it outputs normalizations for both signal and backgrounds as a result of a shape fit. Could you please give a piece of advice, which combine option I should use for that?
+kind regards,
+Anton
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-02-13T16:29:01.187Z):
+Hi Anton,
+It may be worth working through some of the exercises from the combine tutorial, in particular this part, where we discuss how to use FitDiagnostics to extract post-fit shapes of the signals and the backgrounds: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#c-post-fit-distributions.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by astepenn @ 2023-02-13T17:14:20.110Z):
+Hi Adinda,
+Thank you!
+rateParam does what we need, though it is still not printed  along with r-value for signal.
+kind regards,
+Anton
+----------------------------------------
+
+REPLY 4 (by vischia @ 2023-02-13T17:18:48.000Z):
+Hi Anton,
+if you want to let the background float but not interpret its normalization as a cross section measurement, then the rateParam is fine.
+If you want to do a simultaneous determination of the signal and background cross section, then you should look into the multisignal models, which in practice means you should declare two POIs, one scaling the signal and one scaling the background (e.g. instead of r you would get r_signal and r_background).
+Cheers,
+Pietro
+
+···
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 5 (by adewit @ 2023-02-13T17:29:32.905Z):
+Hi Anton,
+You asked how to output the normalization of the background after a fit: you can get this from the shapes (and consequently normalizations) saved when you run FitDiagnostics with --saveShapes. These will include the effects of all systematic uncertainties and so provide the post-fit signal and background rates. This is strictly different from adding a rateParam, which does not directly correspond to the total background rate after the fit in the presence of other systematic uncertainties. However, if you have a rateParam in your model and you want to see its value, you can use the option --trackParameters, you can search for it in this section: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#common-command-line-options
+Best,
+Adinda
+----------------------------------------
+
+REPLY 6 (by astepenn @ 2023-02-14T08:20:34.019Z):
+Hi Pietro,
+Thank you!
+I tried fitting processes from workspace, created by
+HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel
+
+The absolute values of the fit results are the same as with rateParam, but errors are different. I guess that’s the difference between the two methods approach to background normalization floating which you have mentioned.
+kind regards,
+Anton
+----------------------------------------
+
+REPLY 7 (by astepenn @ 2023-02-14T08:34:53.587Z):
+Hi Adinda,
+Thank you, --trackParameters helped.
+kind regards,
+Anton
+----------------------------------------

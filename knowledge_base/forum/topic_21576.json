@@ -1,0 +1,45 @@
+{
+  "topic_id": 21576,
+  "title": "Abnormal postfit uncertainty",
+  "url": "https://cms-talk.web.cern.ch/t/21576",
+  "category_id": 279,
+  "created_at": "2023-03-17T17:52:50.467Z",
+  "last_posted_at": "2023-03-17T23:17:56.640Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "kskovpen",
+      "name": "Kirill Skovpen",
+      "created_at": "2023-03-17T17:52:50.738Z",
+      "updated_at": "2023-03-17T17:52:50.738Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear All,\nWe have been trying to produce postfit plots using PostFitShapesFromWorkspace. While, in general, the results look sane, we have quite a number of cases where the postfit uncertainties that are produced by PostFitShapesFromWorkspace appear to be extremely large. The FitDiagnostic results look good and nothing problematic is spotted in the fitted parameters. By any chance, could you please have a look at this standalone example that reproduces the problem (see the standard output from the tool)?\nwget https://homepage.iihe.ac.be/~kskovpen/example.tar.gz\ntar -zxf example.tar.gz; cd example\n./run.sh\nWe would highly appreciate any prompt feedback.\nThanks,\nKirill",
+      "cooked_html": "<p>Dear All,</p>\n<p>We have been trying to produce postfit plots using PostFitShapesFromWorkspace. While, in general, the results look sane, we have quite a number of cases where the postfit uncertainties that are produced by PostFitShapesFromWorkspace appear to be extremely large. The FitDiagnostic results look good and nothing problematic is spotted in the fitted parameters. By any chance, could you please have a look at this standalone example that reproduces the problem (see the standard output from the tool)?</p>\n<p>wget <a href=\"https://homepage.iihe.ac.be/~kskovpen/example.tar.gz\" rel=\"noopener nofollow ugc\">https://homepage.iihe.ac.be/~kskovpen/example.tar.gz</a><br>\ntar -zxf example.tar.gz; cd example<br>\n./run.sh</p>\n<p>We would highly appreciate any prompt feedback.</p>\n<p>Thanks,</p>\n<p>Kirill</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-03-17T20:37:02.898Z",
+      "updated_at": "2023-03-17T20:37:02.898Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kirill,\nLooking at the output, it seems we can trace it to some pathological behaviour in specific processes, e.g.:\nroot [1] gDirectory->Get(\"ch1_ch1_y17_y17_bdt_DLee_sig_postfit/WZ\")->Print(\"range\")\nTH1.Print Name  = WZ, Entries= 7, Total sum= 2.38172\nfSumw[1]=0.550405, x=0.5, error=122975\nfSumw[2]=0.688442, x=1.5, error=0.688438\nfSumw[3]=0.840791, x=2.5, error=0.840787\nfSumw[4]=0.204158, x=3.5, error=0.204155\nfSumw[5]=0.092795, x=4.5, error=0.0927917\nfSumw[6]=0.00496271, x=5.5, error=0.00495937\nfSumw[7]=0.000166307, x=6.5, error=0.000163076\n\nI think this probably originates with a large number of shape uncertainties with a fully asymmetry effect on the normalisation (pdfShapeVar*) - at least for these problematic processes. Was this intentional? The down shape yield variation is the same as the nominal, but the up is fairly large (+17%), which means in the covariance matrix sampling there\u2019s quite a good chance of throwing a configuration where many of these parameters are positive, and the multiplicative effect accumulates to give huge differences.\nSo in short, I\u2019d check the input uncertainties carefully - it looks like there might be a problem in some of the up/down shapes for these pdfShapeVar* ones (and maybe some of the others).\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Kirill,</p>\n<p>Looking at the output, it seems we can trace it to some pathological behaviour in specific processes, e.g.:</p>\n<pre><code class=\"lang-auto\">root [1] gDirectory-&gt;Get(\"ch1_ch1_y17_y17_bdt_DLee_sig_postfit/WZ\")-&gt;Print(\"range\")\nTH1.Print Name  = WZ, Entries= 7, Total sum= 2.38172\n fSumw[1]=0.550405, x=0.5, error=122975\n fSumw[2]=0.688442, x=1.5, error=0.688438\n fSumw[3]=0.840791, x=2.5, error=0.840787\n fSumw[4]=0.204158, x=3.5, error=0.204155\n fSumw[5]=0.092795, x=4.5, error=0.0927917\n fSumw[6]=0.00496271, x=5.5, error=0.00495937\n fSumw[7]=0.000166307, x=6.5, error=0.000163076\n</code></pre>\n<p>I think this probably originates with a large number of shape uncertainties with a fully asymmetry effect on the normalisation (<code>pdfShapeVar*</code>) - at least for these problematic processes. Was this intentional? The down shape yield variation is the same as the nominal, but the up is fairly large (+17%), which means in the covariance matrix sampling there\u2019s quite a good chance of throwing a configuration where many of these parameters are positive, and the multiplicative effect accumulates to give huge differences.</p>\n<p>So in short, I\u2019d check the input uncertainties carefully - it looks like there might be a problem in some of the up/down shapes for these <code>pdfShapeVar*</code> ones (and maybe some of the others).</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "kskovpen",
+      "name": "Kirill Skovpen",
+      "created_at": "2023-03-17T23:17:56.640Z",
+      "updated_at": "2023-03-17T23:17:56.640Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nThank you very much for your quick reply and for spending your time looking into this.\nThis was also my suspicion. We have these fully asymmetric uncertainties, which are associated with pdf variations (i.e. instead of an envelope we go for individual variations included directly in the fit). We will try to see what is the best strategy here.\nThanks,\nKirill",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Thank you very much for your quick reply and for spending your time looking into this.</p>\n<p>This was also my suspicion. We have these fully asymmetric uncertainties, which are associated with pdf variations (i.e. instead of an envelope we go for individual variations included directly in the fit). We will try to see what is the best strategy here.</p>\n<p>Thanks,</p>\n<p>Kirill</p>"
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "topic_id": 33637,
+  "title": "Strange pre-fit rates, extracting rate modifier from lnN nuisances",
+  "url": "https://cms-talk.web.cern.ch/t/33637",
+  "category_id": 279,
+  "created_at": "2024-01-24T14:05:02.498Z",
+  "last_posted_at": "2024-01-25T10:15:34.152Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "sbein",
+      "name": "Samuel Louis Bein",
+      "created_at": "2024-01-24T14:05:02.581Z",
+      "updated_at": "2024-01-24T14:05:29.332Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to make use of some of the pre-fit/post-fit information obtained from running the FitDiagnostics routine with combine for a disappearing track analysis. I actually have two questions. First, I am wondering why the pre-fit yields and nuisance parameters of type lnN as reported by\nfile = ROOT.TFile.Open(\"fitDiagnosticsTest.root\")\nfit_result = file.Get(\"fit_b\")\npre_fit_values = prefit_result.floatParsInit()\nprint(pre_fit_values.at(i).getVal())\n\nare not 0 as I would expect, and in the rates in general do not correspond to the rates I dictated in the card. I\u2019ll note I am not using any control regions in the fit or setting any internal parameters in the combine command - there is just one big card with many signal regions and gmN-based statistical treatment. mChine900GeV_dm0p342GeV_DTRun2.txt (384.0 KB)\nSecond, since the prefit info alluded to above looks surprising, I\u2019m not sure if I can trust the post-fit nuisances/rates, but assuming I can, I\u2019d like to inquire about the proper way to extract the rate modifier from a lnN-type post-fit nuisance value. In my case, the lnN control overall uniform scale variations for each background - Do I simply need to exponentiate the post-fit nuisance parameter to obtain the factor by which i should scale the pre-fit yields, or  should I use a particular procedure to get this scaling factor?\nApologies if these questions have been asked before, but I was not able to track this information down in the advanced uses documentation or on Talk yet.\nMany thanks!\nps: the combine commands with the card as attached are here:\ncd CMSSW_10_2_13/src/\ncmsenv\ncombineCards.py  mChine900GeV_dm0p342GeV_DTRun2.txt  -S > new_higgsino_mChine900GeV_dm0p342GeV_DTRun2.txt\ntext2workspace.py new_higgsino_mChine900GeV_dm0p342GeV_DTRun2.txt -o workspace.root\ncombine -M FitDiagnostics workspace.root --saveNormalizations --saveShapes --saveWithUncertainties --setParameters r=1 -n WithGammas",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to make use of some of the pre-fit/post-fit information obtained from running the FitDiagnostics routine with combine for a disappearing track analysis. I actually have two questions. First, I am wondering why the pre-fit yields and nuisance parameters of type lnN as reported by</p>\n<pre><code class=\"lang-auto\">file = ROOT.TFile.Open(\"fitDiagnosticsTest.root\")\nfit_result = file.Get(\"fit_b\")\npre_fit_values = prefit_result.floatParsInit()\nprint(pre_fit_values.at(i).getVal())\n</code></pre>\n<p>are not 0 as I would expect, and in the rates in general do not correspond to the rates I dictated in the card. I\u2019ll note I am not using any control regions in the fit or setting any internal parameters in the combine command - there is just one big card with many signal regions and gmN-based statistical treatment. <a class=\"attachment\" href=\"/uploads/short-url/bKcZManqW22gNriBUXtgx07YcOu.txt\">mChine900GeV_dm0p342GeV_DTRun2.txt</a> (384.0 KB)</p>\n<p>Second, since the prefit info alluded to above looks surprising, I\u2019m not sure if I can trust the post-fit nuisances/rates, but assuming I can, I\u2019d like to inquire about the proper way to extract the rate modifier from a lnN-type post-fit nuisance value. In my case, the lnN control overall uniform scale variations for each background - Do I simply need to exponentiate the post-fit nuisance parameter to obtain the factor by which i should scale the pre-fit yields, or  should I use a particular procedure to get this scaling factor?</p>\n<p>Apologies if these questions have been asked before, but I was not able to track this information down in the advanced uses documentation or on Talk yet.</p>\n<p>Many thanks!</p>\n<p>ps: the combine commands with the card as attached are here:</p>\n<pre><code class=\"lang-auto\">cd CMSSW_10_2_13/src/\ncmsenv\ncombineCards.py  mChine900GeV_dm0p342GeV_DTRun2.txt  -S &gt; new_higgsino_mChine900GeV_dm0p342GeV_DTRun2.txt\ntext2workspace.py new_higgsino_mChine900GeV_dm0p342GeV_DTRun2.txt -o workspace.root\ncombine -M FitDiagnostics workspace.root --saveNormalizations --saveShapes --saveWithUncertainties --setParameters r=1 -n WithGammas\n</code></pre>"
+    },
+    {
+      "post_number": 2,
+      "username": "nmangane",
+      "name": "Nick Manganelli",
+      "created_at": "2024-01-24T14:23:46.351Z",
+      "updated_at": "2024-01-24T14:23:46.351Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sam,\nAnswering as another user. fit_b is the post-fit under the background-only conditions, I think you might need to look for nuisances_prefit or similar [1,2].\nBest,\nNick\n[1]\nhttp://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters\n[2]\n\ngithub.com\n\ncms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py\n\n#!/usr/bin/env python3\nfrom __future__ import absolute_import, print_function\n\nimport datetime\nimport re\nfrom optparse import OptionParser\nfrom sys import argv, exit, stderr, stdout\n\nfrom six.moves import range\n\nimport HiggsAnalysis.CombinedLimit.calculate_pulls as CP\nimport ROOT\n\n# tool to compare fitted nuisance parameters to prefit values.\n#\n# Also used to check for potential problems in RooFit workspaces to be used with combine\n# (see https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/HiggsPAGPreapprovalChecks)\n\n# import ROOT with a fix to get batch mode (http://root.cern.ch/phpBB3/viewtopic.php?t=3198)\nhasHelp = False\n\nThis file has been truncated. show original",
+      "cooked_html": "<p>Dear Sam,</p>\n<p>Answering as another user. <code>fit_b</code> is the post-fit under the background-only conditions, I think you might need to look for <code>nuisances_prefit</code> or similar [1,2].</p>\n<p>Best,<br>\nNick</p>\n<p>[1]<br>\n<a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters\" class=\"onebox\" target=\"_blank\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters</a><br>\n[2]</p><aside class=\"onebox githubblob\" data-onebox-src=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py\">\n  <header class=\"source\">\n\n      <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py\" target=\"_blank\" rel=\"noopener nofollow ugc\">github.com</a>\n  </header>\n\n  <article class=\"onebox-body\">\n    <h4><a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py\" target=\"_blank\" rel=\"noopener nofollow ugc\">cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py</a></h4>\n\n\n      <pre><code class=\"lang-py\">#!/usr/bin/env python3\nfrom __future__ import absolute_import, print_function\n\nimport datetime\nimport re\nfrom optparse import OptionParser\nfrom sys import argv, exit, stderr, stdout\n\nfrom six.moves import range\n\nimport HiggsAnalysis.CombinedLimit.calculate_pulls as CP\nimport ROOT\n\n# tool to compare fitted nuisance parameters to prefit values.\n#\n# Also used to check for potential problems in RooFit workspaces to be used with combine\n# (see https://twiki.cern.ch/twiki/bin/viewauth/CMS/HiggsWG/HiggsPAGPreapprovalChecks)\n\n# import ROOT with a fix to get batch mode (http://root.cern.ch/phpBB3/viewtopic.php?t=3198)\nhasHelp = False\n</code></pre>\n\n\n\n  This file has been truncated. <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py\" target=\"_blank\" rel=\"noopener nofollow ugc\">show original</a>\n\n  </article>\n\n  <div class=\"onebox-metadata\">\n    \n    \n  </div>\n\n  <div style=\"clear: both\"></div>\n</aside>\n"
+    },
+    {
+      "post_number": 3,
+      "username": "nmangane",
+      "name": "Nick Manganelli",
+      "created_at": "2024-01-24T17:07:36.974Z",
+      "updated_at": "2024-01-24T17:07:36.974Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Apologies, I misread the code block and didn\u2019t see the prefit coming from elsewhere.",
+      "cooked_html": "<p>Apologies, I misread the code block and didn\u2019t see the prefit coming from elsewhere.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2024-01-25T10:15:34.152Z",
+      "updated_at": "2024-01-25T10:15:34.152Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear @sbein,\nAs @nmangane mentioned the fit_b object corresponds to the post-fit results for background-only fit.\nBut both fit_b and fit_s contain the shifts wrt to pre-fit NP values, which are conventionally set to 0 for log-normal nuisance parameters, more details at [1] from Nick\u2019s message above.\nThe post-fit shapes and normalisation including the rates and shapes modifications from all NP are saved in the fitDiagnosticsTest.root file as described here and also in one of the tutorials here.\nBest,\nAliya",
+      "cooked_html": "<p>Dear <a class=\"mention\" href=\"/u/sbein\">@sbein</a>,</p>\n<p>As <a class=\"mention\" href=\"/u/nmangane\">@nmangane</a> mentioned the <code>fit_b</code> object corresponds to the post-fit results for background-only fit.<br>\nBut both <code>fit_b</code> and <code>fit_s</code> contain the shifts wrt to pre-fit NP values, which are conventionally set to 0 for log-normal nuisance parameters, more details at [1] from Nick\u2019s message above.</p>\n<p>The post-fit shapes and normalisation including the rates and shapes modifications from all NP are saved in the <code>fitDiagnosticsTest.root</code> file as described <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#plotting\" rel=\"noopener nofollow ugc\">here</a> and also in one of the tutorials <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/#c-post-fit-distributions\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>Best,<br>\nAliya</p>"
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+TOPIC: “Nuisance parameter pulls” tests
+URL: https://cms-talk.web.cern.ch/t/29995
+DATE: 2023-09-27T15:02:38.771Z
+SOLVED: no
+============================================================
+
+QUESTION (by acarvalh @ 2023-09-27T15:02:38.956Z):
+Dear experts
+I am working in B2G-23-002, the partial combination of X > HH analyses.
+In the statistical reviews in B2G there is one required test called “Nuisance parameter pulls” [1]
+That is based on a script called “diffNuisances.py”, which seems to be deprecated in combine 9 (or at least moved somewhere we cannot find)
+It is possible to use this script as described in the above-mentioned TWIKI in combine 8 (for definitiveness, we are using the 102x-comb2021 tag). To produce results for large combinations or complex analyses, (that may have more than 2000 nuisances as B2G-23-002) the script is not user-friendly if we want, for example, to parse the results based on the size of the pull, or try to apply some order.
+What would be your recommendation regarding the continuation of requiring this test and/or integrating it and maintaining it in combine9?
+In principle, all the information provided by this test can be looked at in the impact plots…
+Cheers
+Xanda
+[1] See “B2G Requested Statistical Tests” https://twiki.cern.ch/twiki/bin/view/CMS/B2GStatisticsRecommendations#statistical_health_checks
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-09-28T09:59:22.015Z):
+Hi Xanda,
+the diffNuisances.py script is still in v9 of combine, see here (for v9.1.0) [1]
+I think part of the difficulty is perhaps that /test/ is not an often used subdirectory and it is not parth of the path, so it won’t be found from the command line if you just use diffNuisances.py
+In fact, there is an open PR which should address this issue (along with some other updates to diffNuisances) [2]/
+which we have been a slow to merge; that’s our fault. We will work it into the next version of combine.
+Maybe we should also add some documentation for this into the main combine documentation, which the twiki could then link to (which will make it more likely that the B2G instructions dont go out of date or become obsolete).
+Further developments of this script for making it more user friendly and flexible for additional use cases are also more than welcome. We’d be very happy to have contributions to that effect, please talk to us (@anigamov and I) if you’d like to work on it; just to coordinate. e.g. developments should probably be made on top of the version in the PR linked above to avoid conflicts.
+We can also help with some developments of the script, but the primary limitation in updates and developments is the person power for doing them so if interested parties help contribute that’s the best way to ensure it is done.
+Best,
+Kyle
+[1] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py
+[2] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/827/files#diff-1b6eb30a3f539bd4763c5b5cc905b59aabedf158c25c6083b9c47bc902a5dc83
+----------------------------------------
+
+REPLY 3 (by nckw @ 2023-09-28T10:16:28.976Z):
+Just to add, the diffNuisances.py script has a “--sortBy” option (https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/v9.1.0/test/diffNuisances.py#L130-L137) which allows you to sort the results by approximate impact or correlation - this option could be extended for other sorting options easily enough,
+Nick
+----------------------------------------
+
+REPLY 4 (by acarvalh @ 2023-10-02T07:26:30.761Z):
+Thank you Kyle and Nick
+Thank you for the information, I see that since the branch I last found it the script has evolved quite a lot.
+I will use it from the PR and feedback on the proper channel if any problems/suggestions.
+
+Maybe we should also add some documentation for this into the main combined documentation, which the twiki could then link to (which will make it more likely that the B2G instructions dont go out of date or become obsolete).
+
+That is a good idea. I will point this thread to the statistics contacts in B2G.
+cheers
+Xanda
+----------------------------------------
+
+REPLY 5 (by hyeonseo @ 2025-02-28T02:46:47.557Z):
+Dear Combine experts,
+I apologize for reviving this topic, but has there been an integration of diffNuisances.py into combine proper? I am on Combine v10.0.2 and I don’t see diffNuisances.py available in my list of commands on my terminal.
+Best,
+Hyeon-Seo
+----------------------------------------
+
+REPLY 6 (by pkeicher @ 2025-02-28T11:15:04.622Z):
+Hi Hyeon-Seo,
+I’m not sure why diffNuisances.py isn’t available in the PATH anymore, but you should be able to find it in ${CMSSW_BASE}/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py. Hope this helps for the time being!
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 7 (by ineuteli @ 2025-02-28T11:22:09.596Z):
+Hi Hyeon-Seo,
+It is in Combine as HiggsAnalysis/CombinedLimit/test/diffNuisances.py. As Kyle pointed out above, it does not appear in the list of commands because it’s in test/ instead of in scripts/. CMSSW only picks up scripts in $CMSSW_BASE/src/<Package>/<Module>/script. When you compile CMSSW with scram b, the python script is not converted to a command. This is documented in https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideBuildFile#CmsswSrcCodeDir.
+I typically do something like
+python3 $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root -g pulls.root --pullDef diffPullAsym
+
+I guess you could promote it to a command yourself. For example, in BASH:
+alias diffNuisances.py="python3 $CMSSW_BASE/src/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnostics.root"
+
+although I would advocate of moving it to scripts/ in Combine itself by merging Kyle’s PR #827.
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 8 (by hyeonseo @ 2025-03-03T16:09:43.049Z):
+Dear @pkeicher @ineuteli
+Thank you very much for your quick responses and informative replies. I didn’t know you could use the rest of the HiggsAnalysis functions by using the $CMSSW_BASE path.
+I was trying bunch of other paths but that, but it makes a lot of sense in retrospect. Now things are working as expected!
+Thank you,
+Hyeon-Seo
+----------------------------------------

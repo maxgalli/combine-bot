@@ -1,0 +1,30 @@
+TOPIC: Generate pseudo-data with all nuisances equal exactly postfit values
+URL: https://cms-talk.web.cern.ch/t/26580
+DATE: 2023-07-10T10:22:12.525Z
+SOLVED: no
+============================================================
+
+QUESTION (by chreisse @ 2023-07-10T10:22:12.756Z):
+Dear combine experts,
+We run a closure test generating a toy with model A and fit this toy with model B. For the test, we would like to set all parameters in the toy to the exact postfit values obtained from an initial fit to data.
+So far, we
+
+performed the inital fit and saved the fit result to a snapshot
+load the snapshot in the method GenerateOnly with --bypassFrequentistFit and several additional combinations of the options -t -1 and -t 1, --toysFreq or --toysNoSystematics
+
+In the output of the GenerateOnly method, we check the parameter in the toy name_In and see that for all options, the nuisances are either randomized or set to the prefit values.
+Is there a way to generate pseudo-data with all parameters equal exactly postfit values?
+Thanks for your help, and sorry if we missed that the question has been answered somewhere else already,
+Christina Reissel
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2023-07-11T08:26:09.758Z):
+Dear Christina,
+I think the usual recommended commands for Asimov toys should still work, i.e.  -M GenerateOnly  -t -1  --toysFrequentist. For clarity let me briefly describe how the constraint terms are defined. If we consider the gaussian constraint term for a NP x it is implemented as RooGaussian(x, x_In, sigma), where x_In is a global observable which is frozen at 0. With higher verbosity level,  e.g. -v 9 you should be able to find the printout of all NPs and global observables starting with the following line:
+INFO: (function: asimovDatasetWithFit) AsimovUtils.cc: 69 -- Parameters after fit for asimov dataset
+
+With an asimov toy you should find all of the NP values (x) very close to the post-fit values saved in the workspace snapshot, so I think constraint terms in the asimov toy are compatible with those from the post-fit model.
+Best,
+Aliya
+P.S. It was already noted by Adinda in the Combine github issue that the toy generation seems to be not very well documented we’ll try to improve it soon.
+----------------------------------------

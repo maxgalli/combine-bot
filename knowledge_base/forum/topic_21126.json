@@ -1,0 +1,34 @@
+{
+  "topic_id": 21126,
+  "title": "Restrict range of nuisance parameter parametrizing an efficiency",
+  "url": "https://cms-talk.web.cern.ch/t/21126",
+  "category_id": 279,
+  "created_at": "2023-03-07T07:41:31.968Z",
+  "last_posted_at": "2023-03-07T09:06:57.777Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "swieland",
+      "name": "Sebastian Wieland",
+      "created_at": "2023-03-07T07:41:32.517Z",
+      "updated_at": "2023-03-07T07:41:32.517Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nIn our hadronic mono-top analysis, we are deploying top tagging techniques on AK15 jets to enhance in the signal.\nBasically, we require the leading AK15 to be top-tagged.\nThe corresponding tagging and mistagging efficiencies in data are derived in an auxiliary measurement.\nFor the application in the analysis, we chose to directly reweight the efficiency in MC to the ones observed in data.\nConsequently, we incorporate a nuisance parameter, parametrizing the uncertainty on the efficiency due to the limited precision of the auxiliary measurement.\nWhen running the fit, we observe pulls on this top tag nuisance parameter such that the \u201cpost-fit efficiency\u201d would be larger than 1.\nOur first naive approach was to restrict the range of this nuisance parameter via\n--setParameterRanges TopTag_2018=-1,1\n\nCombine also states that the range is set accordingly:\nSet Range of Parameter TopTag_2018 To : (-1,1)\n\nHowever, the post-fit value of this parameter remains larger than one.\nI assume the --setParameterRanges command only works for freely-floating parameters, not nuisances.\nIs there a way to tell combine to restrict the allowed range of nuisance parameters?\nCheers and thanks in advance for the help;\nSebastian",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>In our hadronic mono-top analysis, we are deploying top tagging techniques on AK15 jets to enhance in the signal.<br>\nBasically, we require the leading AK15 to be top-tagged.<br>\nThe corresponding tagging and mistagging efficiencies in data are derived in an auxiliary measurement.<br>\nFor the application in the analysis, we chose to directly reweight the efficiency in MC to the ones observed in data.<br>\nConsequently, we incorporate a nuisance parameter, parametrizing the uncertainty on the efficiency due to the limited precision of the auxiliary measurement.<br>\nWhen running the fit, we observe pulls on this top tag nuisance parameter such that the \u201cpost-fit efficiency\u201d would be larger than 1.</p>\n<p>Our first naive approach was to restrict the range of this nuisance parameter via</p>\n<pre><code class=\"lang-auto\">--setParameterRanges TopTag_2018=-1,1\n</code></pre>\n<p>Combine also states that the range is set accordingly:</p>\n<pre><code class=\"lang-auto\">Set Range of Parameter TopTag_2018 To : (-1,1)\n</code></pre>\n<p>However, the post-fit value of this parameter remains larger than one.<br>\nI assume the <code>--setParameterRanges</code> command only works for freely-floating parameters, not nuisances.</p>\n<p>Is there a way to tell combine to restrict the allowed range of nuisance parameters?</p>\n<p>Cheers and thanks in advance for the help;<br>\nSebastian</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-03-07T09:06:57.777Z",
+      "updated_at": "2023-03-07T09:06:57.777Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sebastian,\nIf you\u2019re using FitDiagnostics or MultiDimFit, there is an optimisation that removes the bounds on constrained nuisance parameters - this might be the issue. You can try adding --X-rtd OPTIMIZE_BOUNDS=0 to disable this.\nAs an aside, there are some potential issues with enforcing boundaries on parameters in this way, e.g. the usual asymptotic approximation of the profile likelihood test stat. distribution may not hold. Minuit might also have more difficulty calculating an accurate covariance matrix. And if the pull on the parameter is substantially larger than one, it could indicate some other missing source of systematic uncertainty in the model.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Sebastian,</p>\n<p>If you\u2019re using FitDiagnostics or MultiDimFit, there is an optimisation that removes the bounds on constrained nuisance parameters - this might be the issue. You can try adding <code>--X-rtd OPTIMIZE_BOUNDS=0</code> to disable this.</p>\n<p>As an aside, there are some potential issues with enforcing boundaries on parameters in this way, e.g. the usual asymptotic approximation of the profile likelihood test stat. distribution may not hold. Minuit might also have more difficulty calculating an accurate covariance matrix. And if the pull on the parameter is substantially larger than one, it could indicate some other missing source of systematic uncertainty in the model.</p>\n<p>cheers,<br>\nAndrew</p>"
+    }
+  ]
+}

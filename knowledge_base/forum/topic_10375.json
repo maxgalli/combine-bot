@@ -1,0 +1,67 @@
+{
+  "topic_id": 10375,
+  "title": "Using extArg in ABCD method",
+  "url": "https://cms-talk.web.cern.ch/t/10375",
+  "category_id": 279,
+  "created_at": "2022-05-12T12:42:43.962Z",
+  "last_posted_at": "2022-05-13T14:34:29.706Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "kakwok",
+      "name": "Ka Hei Martin Kwok",
+      "created_at": "2022-05-12T12:42:44.156Z",
+      "updated_at": "2023-02-07T10:57:35.271Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have a simple datacard implementing the ABCD method [see attached txt].\nTo avoid the parameters getting too big, I re-scaled the yields using the following formula:\nNA  rateParam       chA     bkg      (@0*(1+1/sqrt(@0))**@1)       NA_val,NA_x\nwhere NA_val is a constant set by the line:\nNA_val      extArg          12.0882352941   [const]\nHowever, when I compute the Asymptotic limit with\ncombine -M AsymptoticLimits card.txt --freezeParameters=norm -t -1  -v 3\nI see the value of NA_val (and others) are set to 1, not respecting the constant.\nIs this the expected behaviour?\nThanks,\nMartin\ncard.txt (1.5 KB)",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I have a simple datacard implementing the ABCD method [see attached txt].<br>\nTo avoid the parameters getting too big, I re-scaled the yields using the following formula:</p>\n<p>NA  rateParam       chA     bkg      (<span class=\"mention\">@0</span>*(1+1/sqrt(<span class=\"mention\">@0</span>))**<span class=\"mention\">@1</span>)       NA_val,NA_x</p>\n<p>where NA_val is a constant set by the line:<br>\nNA_val      extArg          12.0882352941   [const]</p>\n<p>However, when I compute the Asymptotic limit with<br>\ncombine -M AsymptoticLimits card.txt --freezeParameters=norm -t -1  -v 3</p>\n<p>I see the value of NA_val (and others) are set to 1, not respecting the constant.<br>\nIs this the expected behaviour?</p>\n<p>Thanks,<br>\nMartin</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/hy0Mj57pJ8x9JcqFebWTqA3nOa6.txt\">card.txt</a> (1.5 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-05-12T16:57:44.403Z",
+      "updated_at": "2022-05-12T16:57:44.403Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Martin,\nI can\u2019t reproduce this problem - I see NA_val is always the value that you set it to in the datacard. Can you share the log where you are seeing this parameter being set to 1? Maybe we can figure out from there what is going on.\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Martin,</p>\n<p>I can\u2019t reproduce this problem - I see NA_val is always the value that you set it to in the datacard. Can you share the log where you are seeing this parameter being set to 1? Maybe we can figure out from there what is going on.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "kakwok",
+      "name": "Ka Hei Martin Kwok",
+      "created_at": "2022-05-12T17:57:01.939Z",
+      "updated_at": "2022-05-12T17:57:01.939Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nSure. I\u2019m attaching two logs here:\ncard_log.txt: produced from using [const] in the NA_val\ncard_log_OK.txt: produced from using [min,max] syntax of NA_val\nYou can see from the card_log_OK.txt that the parameters are set to the desired value.\nCheers,\nMartin\ncard_log_OK.txt (79.6 KB)\ncard_log.txt (80.3 KB)",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Sure. I\u2019m attaching two logs here:<br>\ncard_log.txt: produced from using [const] in the NA_val<br>\ncard_log_OK.txt: produced from using [min,max] syntax of NA_val</p>\n<p>You can see from the card_log_OK.txt that the parameters are set to the desired value.</p>\n<p>Cheers,<br>\nMartin</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/ekcOK7KttH8Ef6dfuTraMom1894.txt\">card_log_OK.txt</a> (79.6 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/cBube5yyFboO2zOH6rpkaid4AJ2.txt\">card_log.txt</a> (80.3 KB)</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-05-13T11:03:39.296Z",
+      "updated_at": "2022-05-13T11:03:39.296Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Martin,\nOk, thanks - can you also say which combine version you are using? If it\u2019s older than v8.2.0, can you update to that version and check if that fixes the issue?\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Martin,</p>\n<p>Ok, thanks - can you also say which combine version you are using? If it\u2019s older than v8.2.0, can you update to that version and check if that fixes the issue?</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "kakwok",
+      "name": "Ka Hei Martin Kwok",
+      "created_at": "2022-05-13T14:34:29.706Z",
+      "updated_at": "2022-05-13T14:34:29.706Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nIndeed, I\u2019m using v8.1.0. I\u2019ll update and check again.\nThanks,\nMartin",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Indeed, I\u2019m using v8.1.0. I\u2019ll update and check again.</p>\n<p>Thanks,<br>\nMartin</p>"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+{
+  "topic_id": 22974,
+  "title": "Expected significances using HybridNew",
+  "url": "https://cms-talk.web.cern.ch/t/22974",
+  "category_id": 279,
+  "created_at": "2023-04-20T19:20:25.843Z",
+  "last_posted_at": "2023-05-25T12:53:03.544Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "scooper",
+      "name": "Seth Cooper",
+      "created_at": "2023-04-20T19:20:26.347Z",
+      "updated_at": "2023-04-20T19:20:26.347Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI\u2019ve been trying to compute expected significances using HybridNew, but I keep getting -inf.\nFirst, I looked at the asymptotic significance, which comes out to about 1.4 in this case:\ncombine -M Significance datacard.root -t -1 --expectSignal=1\nHowever, the expected background and signal yields are very small, so I wanted to do this with toys instead.\nI tried to follow the documentation here:\n\nGeneration step:\ncombine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1\n\nCompute median:\ncombine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --toysFile=higgsCombineTest.HybridNew.mH120.466818793.root --expectedFromGrid=0.5\nNote that the documentation says to use --grid, but this gives an exception:\nCaught exception Cannot use readHypoTestResult: option toysFile not specified, or input file empty\nSo I assume --toysFile is the correct option to use.\nBut I always get:\n\nSignificance: -inf  -nan/+-nan\nNull p-value: 1 +/- 0\nDone in 0.01 min (cpu), 0.01 min (real)\n\nIt seems not to matter if I run step (1) many times (I tried 9 times) and hadd the results.\nWhat am I doing wrong?\nThanks very much,\nSeth",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I\u2019ve been trying to compute expected significances using HybridNew, but I keep getting <code>-inf</code>.</p>\n<p>First, I looked at the asymptotic significance, which comes out to about 1.4 in this case:<br>\n<code>combine -M Significance datacard.root -t -1 --expectSignal=1</code></p>\n<p>However, the expected background and signal yields are very small, so I wanted to do this with toys instead.<br>\nI tried to follow the documentation <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys\" rel=\"noopener nofollow ugc\">here</a>:</p>\n<ol>\n<li>Generation step:<br>\n<code>combine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1</code>\n</li>\n<li>Compute median:<br>\n<code>combine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --toysFile=higgsCombineTest.HybridNew.mH120.466818793.root --expectedFromGrid=0.5</code><br>\nNote that the documentation says to use <code>--grid</code>, but this gives an exception:<br>\n<code>Caught exception Cannot use readHypoTestResult: option toysFile not specified, or input file empty</code><br>\nSo I assume <code>--toysFile</code> is the correct option to use.<br>\nBut I always get:</li>\n</ol>\n<pre><code class=\"lang-auto\">Significance: -inf  -nan/+-nan\nNull p-value: 1 +/- 0\nDone in 0.01 min (cpu), 0.01 min (real)\n</code></pre>\n<p>It seems not to matter if I run step (1) many times (I tried 9 times) and <code>hadd</code> the results.<br>\nWhat am I doing wrong?</p>\n<p>Thanks very much,<br>\nSeth</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-04-21T17:25:15.819Z",
+      "updated_at": "2023-04-21T17:25:15.819Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Seth,\nI think you\u2019re right that you should use --toysFile rather than --grid. I don\u2019t see anything obviously wrong with your commands, so there\u2019s likely something going wrong in one of the fits. It\u2019s not really possible to say what based on the result that you get.\nDid you run any other fits on this model yet, to see if you spot any problems there?\nOther than that, we\u2019ll be better able to help you if you can share your input workspace and the file with the toys with which you observe the issue.\nIn the meantime others may have other suggestions too.\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Seth,</p>\n<p>I think you\u2019re right that you should use --toysFile rather than --grid. I don\u2019t see anything obviously wrong with your commands, so there\u2019s likely something going wrong in one of the fits. It\u2019s not really possible to say what based on the result that you get.</p>\n<p>Did you run any other fits on this model yet, to see if you spot any problems there?</p>\n<p>Other than that, we\u2019ll be better able to help you if you can share your input workspace and the file with the toys with which you observe the issue.</p>\n<p>In the meantime others may have other suggestions too.</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "scooper",
+      "name": "Seth Cooper",
+      "created_at": "2023-04-25T14:13:52.710Z",
+      "updated_at": "2023-04-25T14:13:52.710Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nThank you for the reply.\nActually, what I would really want is the pre-fit or a priori significance, so I assume I should be using pre-fit Asimov toys again in place of the data:\ncombine -M GenerateOnly datacard.root -t -1 -s -1 --saveToys -n .asimov\n\nThen I suppose I have to feed in the -D option for each subsequent command:\ncombine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1 -D higgsCombine.asimov.GenerateOnly.mH120.-928789165.root:toys/toy_asimov\n\nand finally:\ncombine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --expectedFromGrid=0.5 -D higgsCombine.asimov.GenerateOnly.mH120.-928789165.root:toys/toy_asimov --toysFile=higgsCombineTest.HybridNew.mH120.855973917.root\n\nBut I get the same -inf result for the significance.\nIn case it\u2019s relevant here, I did run MultiDimFit on the datacard/workspace, and it seems to have converged AOK.\nI attach the datacard and a toys file here.\nCheers,\nSeth\ndatacard.cfg (379 Bytes)\nhiggsCombineTest.HybridNew.mH120.855973917.root (1.0 MB)",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Thank you for the reply.</p>\n<p>Actually, what I would really want is the pre-fit or a priori significance, so I assume I should be using pre-fit Asimov toys again in place of the data:</p>\n<pre><code class=\"lang-auto\">combine -M GenerateOnly datacard.root -t -1 -s -1 --saveToys -n .asimov\n</code></pre>\n<p>Then I suppose I have to feed in the <code>-D</code> option for each subsequent command:</p>\n<pre><code class=\"lang-auto\">combine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1 -D higgsCombine.asimov.GenerateOnly.mH120.-928789165.root:toys/toy_asimov\n</code></pre>\n<p>and finally:</p>\n<pre><code class=\"lang-auto\">combine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --expectedFromGrid=0.5 -D higgsCombine.asimov.GenerateOnly.mH120.-928789165.root:toys/toy_asimov --toysFile=higgsCombineTest.HybridNew.mH120.855973917.root\n</code></pre>\n<p>But I get the same -inf result for the significance.<br>\nIn case it\u2019s relevant here, I did run <code>MultiDimFit</code> on the datacard/workspace, and it seems to have converged AOK.</p>\n<p>I attach the datacard and a toys file here.</p>\n<p>Cheers,<br>\nSeth<br>\n<a class=\"attachment\" href=\"/uploads/short-url/vfwvzxahF9rG8QVR0qKqIyWMWRA.cfg\">datacard.cfg</a> (379 Bytes)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/2TS053LxayeF2QAUDTo2N4CKwtV.root\">higgsCombineTest.HybridNew.mH120.855973917.root</a> (1.0 MB)</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-05-02T21:04:04.679Z",
+      "updated_at": "2023-05-02T21:04:04.679Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Seth,\nApologies for the slow response - the issue indeed seems to be related to the fact that you were calculating the post-fit expected significance, and given you have set the observation to 0 in the datacard, the significance is also more or less 0. To me it looks you then end up with -inf as a result of some numerical instabilities.\nWhen you calculate the pre-fit expected significance, what you\u2019re doing is almost right, but to generate the asimov dataset remember to add --expectSignal 1 (or some other nonzero signal strength). Otherwise the issue remains since the background expectation is so small that N in the asmov dataset is ~0.  In addition, you don\u2019t need -s -1 for the asimov dataset generation (in this case the seed doesn\u2019t do anything, so it also doesn\u2019t do any harm, but the file containing the asimov dataset will have a friendlier name without it)\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Seth,</p>\n<p>Apologies for the slow response - the issue indeed seems to be related to the fact that you were calculating the post-fit expected significance, and given you have set the observation to 0 in the datacard, the significance is also more or less 0. To me it looks you then end up with -inf as a result of some numerical instabilities.</p>\n<p>When you calculate the pre-fit expected significance, what you\u2019re doing is almost right, but to generate the asimov dataset remember to add --expectSignal 1 (or some other nonzero signal strength). Otherwise the issue remains since the background expectation is so small that N in the asmov dataset is ~0.  In addition, you don\u2019t need -s -1 for the asimov dataset generation (in this case the seed doesn\u2019t do anything, so it also doesn\u2019t do any harm, but the file containing the asimov dataset will have a friendlier name without it)</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "scooper",
+      "name": "Seth Cooper",
+      "created_at": "2023-05-03T07:17:05.452Z",
+      "updated_at": "2023-05-03T07:17:05.452Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nThanks a lot!\nSo I simply added --expectSignal 1 to the GenerateOnly step.  Now, when I run the HybridNew toy generation like so:\ncombine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1 -D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov\n\nit outputs a reasonable significance of about 1.8.\nHowever, in the instructions here, it says to run another step afterwards, which I\u2019ve done like so:\ncombine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --expectedFromGrid=0.5 -D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov --toysFile=higgsCombineTest.HybridNew.mH120.587227248.root\n\nwhere the toysFile comes from the result of the previous command. But this outputs -inf for the significance.  Perhaps something is going wrong when reading the result from the toysFile.  On the other hand, do I actually need this last step, or is that only useful to obtain the result after combining multiple toys files into one?  Is the result reported at the end of the toy generation step the median expected significance?\nCheers,\nSeth",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Thanks a lot!</p>\n<p>So I simply added <code>--expectSignal 1</code> to the GenerateOnly step.  Now, when I run the HybridNew toy generation like so:</p>\n<pre><code class=\"lang-auto\">combine -M HybridNew datacard.root --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100000 -i 1 -s -1 --expectSignal 1 -D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov\n</code></pre>\n<p>it outputs a reasonable significance of about 1.8.<br>\nHowever, in the instructions <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys\" rel=\"noopener nofollow ugc\">here</a>, it says to run another step afterwards, which I\u2019ve done like so:</p>\n<pre><code class=\"lang-auto\">combine -M HybridNew datacard.root --LHCmode LHC-significance --readHybridResult --expectedFromGrid=0.5 -D higgsCombine.asimov.GenerateOnly.mH120.123456.root:toys/toy_asimov --toysFile=higgsCombineTest.HybridNew.mH120.587227248.root\n</code></pre>\n<p>where the toysFile comes from the result of the previous command. But this outputs -inf for the significance.  Perhaps something is going wrong when reading the result from the toysFile.  On the other hand, do I actually need this last step, or is that only useful to obtain the result after combining multiple toys files into one?  Is the result reported at the end of the toy generation step the median expected significance?</p>\n<p>Cheers,<br>\nSeth</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-05-04T17:51:56.760Z",
+      "updated_at": "2023-05-04T17:51:56.760Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Seth,\nJust to confirm I observe the same issue - I had expected these two steps to come out more or less the same, so I\u2019d need to look into what is happening here a little more.\nI\u2019ll try to get back to you in the next few days, in the meantime if others have a suggestion that would of course also be welcome!\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Seth,</p>\n<p>Just to confirm I observe the same issue - I had expected these two steps to come out more or less the same, so I\u2019d need to look into what is happening here a little more.</p>\n<p>I\u2019ll try to get back to you in the next few days, in the meantime if others have a suggestion that would of course also be welcome!</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "scooper",
+      "name": "Seth Cooper",
+      "created_at": "2023-05-22T09:56:34.137Z",
+      "updated_at": "2023-05-22T09:56:34.137Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi @adewit ,\nWould you happen to have any news about this?  It would be nice to know at least whether the significance as reported by the second step (toy generation) is indeed the median expected.  If so, then that is sufficient for me for now.\nThanks very much,\nSeth",
+      "cooked_html": "<p>Hi <a class=\"mention\" href=\"/u/adewit\">@adewit</a> ,</p>\n<p>Would you happen to have any news about this?  It would be nice to know at least whether the significance as reported by the second step (toy generation) is indeed the median expected.  If so, then that is sufficient for me for now.</p>\n<p>Thanks very much,<br>\nSeth</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-05-22T16:31:24.507Z",
+      "updated_at": "2023-05-22T16:31:24.507Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Seth,\nI didn\u2019t have a chance to look into it further in the end, and don\u2019t know when I will. I was hoping somebody else would have a suggestion in the meantime!\nBest,\nAdinda",
+      "cooked_html": "<p>Hi Seth,</p>\n<p>I didn\u2019t have a chance to look into it further in the end, and don\u2019t know when I will. I was hoping somebody else would have a suggestion in the meantime!</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-05-25T12:53:03.544Z",
+      "updated_at": "2023-05-25T12:53:03.544Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Seth,\nI\u2019m sorry for a delayed reply, quite a few of us looked at this issue, let me try to summarise what we\u2019ve found so far.\nThe disagreement between the two values can be understood if we look at the test statistics distribution (attached to this post), you can see the distribution is very discrete and the majority (>50%) of entries are 0, hence the median test statistics value = 0, which results in the p-value for 0.5 quantile at 1. This plot also shows that the asimov \u201cobserved\u201d significance does not correspond to the median expected significance from the toys. It might be possible that with a larger sample of toys one would be able to populate this distribution better and get a better agreement between the asimov and expected values, but this has to be tested.\nSomeone else might want to comment further. Let me just say that we\u2019ll get back to you with better recommendations, after some studies with more toys. But for optimisation studies it should be fine to use Asimov or asymptotic values as long as you are consistent.\nBest,\nAliya\nplot_HybridTestStat.pdf (16.7 KB)",
+      "cooked_html": "<p>Hi Seth,<br>\nI\u2019m sorry for a delayed reply, quite a few of us looked at this issue, let me try to summarise what we\u2019ve found so far.<br>\nThe disagreement between the two values can be understood if we look at the test statistics distribution (attached to this post), you can see the distribution is very discrete and the majority (&gt;50%) of entries are 0, hence the median test statistics value = 0, which results in the p-value for 0.5 quantile at 1. This plot also shows that the asimov \u201cobserved\u201d significance does not correspond to the median expected significance from the toys. It might be possible that with a larger sample of toys one would be able to populate this distribution better and get a better agreement between the asimov and expected values, but this has to be tested.<br>\nSomeone else might want to comment further. Let me just say that we\u2019ll get back to you with better recommendations, after some studies with more toys. But for optimisation studies it should be fine to use Asimov or asymptotic values as long as you are consistent.<br>\nBest,<br>\nAliya</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/lyY06mTNUw46EVd6CuKWCucohm1.pdf\">plot_HybridTestStat.pdf</a> (16.7 KB)</p>"
+    }
+  ]
+}

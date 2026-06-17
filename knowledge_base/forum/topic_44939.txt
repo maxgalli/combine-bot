@@ -1,0 +1,48 @@
+TOPIC: Understanding MultiDimFit result for a particular rateParam as POI
+URL: https://cms-talk.web.cern.ch/t/44939
+DATE: 2024-08-02T13:33:33.141Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmajor @ 2024-08-02T13:33:33.328Z):
+Dear Experts,
+I have this blind datacard that I was examining with grid scans and noticed that a rateParam is way off of the value I would expect it to be at.
+The parameter in question:
+CMS_THIS_Kfactor	rateParam	sb_*	QCD	1.204	[0.867,1.541]
+CMS_THIS_Kfactor	param	1.204	0.168
+
+The difference is also seen when I perform a MultiDimFit with the POI redefined as this parameter. Even better, the result is outside of the limits I set.
+combine -M MultiDimFit -d g2000chi700.noSysLim.extABCDLL.csv --redefineSignalPOIs CMS_THIS_Kfactor --robustFit 1 -t -1 --setParameters r=0
+[...]
+--- MultiDimFit ---
+best fit parameter values:
+CMS_THIS_Kfactor :    +1.744
+Done in 0.00 min (cpu), 0.00 min (real)
+
+The funny thing is, that the parameter is sitting near the proper value when the POI is r.
+combine -M MultiDimFit -d g2000chi700.noSysLim.extABCDLL.csv --robustFit 1 -t -1 --expectSignal 0 -v3
+[...]
+CMS_THIS_Kfactor	  = 1.20787	 +/-  0.165663	(limited)
+[...]
+
+How should one interpret this result? Is there some test I could do / output I should look at to see what is going on?
+Sincerely,
+Peter
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-08-02T13:44:24.915Z):
+Hi Peter,
+I think this is consistent with the documentation. Please read:
+Documentation
+
+Note that constraint terms for the nuisances are dropped after promotion to a POI using --redefineSignalPOI. To produce a likelihood scan for a nuisance parameter, using MultiDimFit with --algo grid, you should instead use the --parameters (-P) option, which will not cause the loss of the constraint term when scanning.
+
+-Andrea
+----------------------------------------
+
+REPLY 3 (by pmajor @ 2024-08-02T13:57:36.745Z):
+Hi Andrea,
+thank you for the heads up. I should have looked more carefully at the documentation.
+Sincerely,
+Peter
+----------------------------------------

@@ -1,0 +1,59 @@
+TOPIC: Distributions of the toys outputs
+URL: https://cms-talk.web.cern.ch/t/133813
+DATE: 2025-10-08T08:57:48.728Z
+SOLVED: no
+============================================================
+
+QUESTION (by atarabin @ 2025-10-08T08:57:49.075Z):
+Dear experts,
+I would like to have your feedback on a behaviour that I see in my toys that I do not fully understand. I am working with a (simplified) datacard to measure cross sections in the H(GammaGamma) channel in bins of transverse momentum of the Higgs. Datacard and workspace (after compilation with t2w) can be found here: /afs/cern.ch/work/a/atarabin/public/powheg_dc
+I am generating and fitting toys with the following commands:
+combine Datacard_PTH_2023.root
+-M GenerateOnly
+-m 125
+--cminDefaultMinimizerStrategy=0
+--saveWorkspace
+--X-rtd MINIMIZER_skipDiscreteIterations
+--setParameters MH=125,r_PTH_0p0_15p0=1,r_PTH_15p0_30p0=1,r_PTH_30p0_45p0=1,r_PTH_45p0_80p0=1,r_PTH_80p0_120p0=1,r_PTH_120p0_200p0=1,r_PTH_200p0_350p0=1,r_PTH_350p0_10000p0=1
+-t 1
+--saveToys
+--seed $seed
+
+combine Datacard_PTH_2023.root
+--cminDefaultMinimizerStrategy=0
+--saveWorkspace
+--X-rtd MINIMIZER_skipDiscreteIterations
+--setParameters MH=125,r_PTH_0p0_15p0=1,r_PTH_15p0_30p0=1,r_PTH_30p0_45p0=1,r_PTH_45p0_80p0=1,r_PTH_80p0_120p0=1,r_PTH_120p0_200p0=1,r_PTH_200p0_350p0=1,r_PTH_350p0_10000p0=1
+--setParameterRanges r_PTH_350p0_10000p0=-30,30
+--saveFitResult
+--floatOtherPOIs 1
+--freezeParameters MH,${pdfindex},allConstrainedNuisances
+-D higgsCombineTest.GenerateOnly.mH125.${seed}.root:toys/toy_1
+-M MultiDimFit
+-m 125
+
+I am removing the discrete profiling and freezing systematic uncertainties to remove possible sources of bias. Of the total toys I generated, I have 23,253 succeeding fits (fraction of failing fits is 13.36%).
+The distributions of my POIs is dumped in the slides in attachment. For 'r_PTH_15p0_30p0, r_PTH_30p0_45p0, r_PTH_45p0_80p0, r_PTH_120p0_200p0, and r_PTH_200p0_350p0, the distributions look good: a distribution around 1.
+I am a bit perplexed by the first r_PTH_0p0_15p0 and last r_PTH_350p0_10000p0 bin.
+
+r_PTH_0p0_15p0 The distribution is shifted below of ~7%. Any wise suggestion on how to identify the origin of the bias?
+r_PTH_200p0_350p0 The distribution is very skewed and with a long left tail (it is cut at -30 because the parameter range is up to -30). I believe this is somewhat expected since this is the last PTH bin, where the statistics is very low. Looking at the entire distribution, the median, which should be a more robust estimator that the mean in these cases, is ~ 1. If we zoom in, it is a bit trickier, it looks that the actual peak is more around ~1.4. I would expect in any case a distribution peaking at one, no matter the statistics. I am a bit perplexed whether this bin is behaving healthy or not.
+
+When running the Asimov fit, all the bin close perfectly to one.
+Any inputs/opinions on these results will be very much appreciated.
+Cheers,
+Alessandro
+toys.pdf (557.1 KB) (The grey line is at 1 as a reference)
+----------------------------------------
+
+REPLY 2 (by atarabin @ 2025-10-08T09:12:10.360Z):
+PS. Typo, the second bullet refers to r_PTH_350p0_10000p0
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2025-10-15T16:15:36.969Z):
+Dear Alessandro,
+I would try investigate what happens with other parameters in your model in these toys.
+To start with you can try to identify a set of the most (anti)-correlated parameters, save them in the toys with `–saveSpecifiedNuis=par1,par2,…` (see docs) and plot in a similar way, and see about the next steps from what you find.
+Hope it helps,
+Aliya
+----------------------------------------

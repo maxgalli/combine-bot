@@ -1,0 +1,35 @@
+TOPIC: Regarding goodness of fit test while blinded
+URL: https://cms-talk.web.cern.ch/t/7917
+DATE: 2022-03-08T18:11:21.274Z
+SOLVED: no
+============================================================
+
+QUESTION (by prsaha @ 2022-03-08T18:11:21.587Z):
+Hello Combine experts,
+I am working on an analysis of Vector like Quark T’, where T’ decays to the SM top and Higgs and Higgs further decays to two photons. So we use the framework of the Higgs to gamma gamma analysis called flashggFinalfit to fit diphoton invariant mass distributions for signal model and background model.
+The Tprime signal and the SM-Higgs background processes are modeled from MC simulation with a sum of Gaussian functions and the non-resonant backgrounds are modeled from data with the four falling functions.
+Therefore the background model is the combination of the falling function for non-resonant background and the Gaussian function for the SM-Higgs. One example signal and background model plot can be seen here[1].
+The datacard can be seen here[2]
+In the process of object review of the analysis in the B2G group, it is recommended to perform a goodness of fit test.
+The command line we would like to run are presented in [3].
+As we are still blind, can we obtain a ‘meaningful’ goodness of fit? If yes, how should be modify the combine command line to remain blind?
+[1] https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/all_CMS_hgg_mass_Tprime600.pdf
+[2]Datacard:
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.txt
+/eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root
+[3]Goodness of fit test command
+combine -M GoodnessOfFit --algo=saturated -d Datacard_Tprime600_StatOnly.root -m 125 --freezeParameter MH
+combine -M GoodnessOfFit --algo=saturated -d Datacard_Tprime600_StatOnly.root -t 1000 -m 125 --freezeParameter MH --toysNoSystematics
+Thanks in advance for your help.
+----------------------------------------
+
+REPLY 2 (by bregnery @ 2022-03-11T09:21:27.076Z):
+Hi Prafulla,
+The idea of the B2G goodness of fit test is to run the goodness of fit test on a validation (or measurement) region. This is a separate region from the signal region where one can measure nuisance parameters and test the health of the fit before fitting the signal region.
+A description of how to generate toys while blinded and using a measurement region is located here: https://cms-b2g.docs.cern.ch/combine/GenerateToys/
+The outline of the B2G GoF test is here: https://cms-b2g.docs.cern.ch/combine/StatTests/
+The main point is don’t unblind the signal region, but check the health of the fit in orthogonal regions.
+I hope this helps.
+Regards,
+Brendan
+----------------------------------------

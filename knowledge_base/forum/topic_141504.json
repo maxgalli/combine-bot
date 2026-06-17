@@ -1,0 +1,56 @@
+{
+  "topic_id": 141504,
+  "title": "Signal Strength Modifier Ranges",
+  "url": "https://cms-talk.web.cern.ch/t/141504",
+  "category_id": 279,
+  "created_at": "2026-01-29T13:06:57.405Z",
+  "last_posted_at": "2026-01-29T14:13:50.155Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "nbower1",
+      "name": "Steffi Bower",
+      "created_at": "2026-01-29T13:06:57.753Z",
+      "updated_at": "2026-02-03T15:57:17.204Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi!\nA small question. I think I\u2019ve resolved it but I want to make sure I\u2019m handling and understanding it correctly.\nI have a simplified counting experiment with large singal rates which causes the limit to fail for higher r values, returning the error\n...\nmessage      : getLogVal() top-level p.d.f evaluates to zero\n...\nLimits are still returned in this case but I\u2019m not sure how to interpret them. When I limit r, combine doesn\u2019t return errors.\nMy current approach is to set rMax to the highest possible value where limits are returned without errors. Is there anything else I should consider?",
+      "cooked_html": "<p>Hi!</p>\n<p>A small question. I think I\u2019ve resolved it but I want to make sure I\u2019m handling and understanding it correctly.</p>\n<p>I have a simplified counting experiment with large singal rates which causes the limit to fail for higher r values, returning the error</p>\n<p><code>...</code></p>\n<p><code>message      : getLogVal() top-level p.d.f evaluates to zero</code></p>\n<p><code>...</code></p>\n<p>Limits are still returned in this case but I\u2019m not sure how to interpret them. When I limit r, combine doesn\u2019t return errors.</p>\n<p>My current approach is to set rMax to the highest possible value where limits are returned without errors. Is there anything else I should consider?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2026-01-29T13:44:37.928Z",
+      "updated_at": "2026-01-29T13:44:37.928Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Steffi,\nIt is a bit strange to get the error you quote in the case of very large r. I would expect it for large negative values r, but not for positive values. In any case, I don\u2019t think you should trust the limits you get after that error.\nCan you please send us more details on your setup (signal and background yields, the range of the signal strength you are testing, the command you are using  and any other relevant detail) and/or the datacard you are using?\nThank you,\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Steffi,</p>\n<p>It is a bit strange to get the error you quote in the case of very large r. I would expect it for large negative values r, but not for positive values. In any case, I don\u2019t think you should trust the limits you get after that error.<br>\nCan you please send us more details on your setup (signal and background yields, the range of the signal strength you are testing, the command you are using  and any other relevant detail) and/or the datacard you are using?</p>\n<p>Thank you,<br>\nBest regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2026-01-29T13:53:36.154Z",
+      "updated_at": "2026-01-29T13:53:36.154Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Steffi, Giacomo,\nIf it\u2019s a counting experiment, it could be the same issue as described in this post [*]. Can you try converting your counting datacard to a \u201cfake\u201d shape datacard as described here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#combination-of-multiple-datacards , and see if that fixes your issue?\nBest,\nAdinda\n[*] https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1085/1/1/1/1/1.html",
+      "cooked_html": "<p>Dear Steffi, Giacomo,</p>\n<p>If it\u2019s a counting experiment, it could be the same issue as described in this post <code>[*]</code>. Can you try converting your counting datacard to a \u201cfake\u201d shape datacard as described here: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#combination-of-multiple-datacards\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#combination-of-multiple-datacards</a> , and see if that fixes your issue?</p>\n<p>Best,<br>\nAdinda</p>\n<p><code>[*]</code> <a href=\"https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1085/1/1/1/1/1.html\" rel=\"noopener nofollow ugc\">https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1085/1/1/1/1/1.html</a></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "nbower1",
+      "name": "Steffi Bower",
+      "created_at": "2026-01-29T14:13:50.155Z",
+      "updated_at": "2026-01-29T14:13:50.155Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda and Giacomo,\nThanks for your prompt responses. Yes, indeed converting the datacard to a fake shape resolves the issue. Thank you both so much,\nSteffi",
+      "cooked_html": "<p>Hi Adinda and Giacomo,</p>\n<p>Thanks for your prompt responses. Yes, indeed converting the datacard to a fake shape resolves the issue. Thank you both so much,</p>\n<p>Steffi</p>"
+    }
+  ]
+}

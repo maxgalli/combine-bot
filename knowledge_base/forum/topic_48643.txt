@@ -1,0 +1,37 @@
+TOPIC: Bin-per-bin parametrisation in combine
+URL: https://cms-talk.web.cern.ch/t/48643
+DATE: 2024-09-11T11:34:13.705Z
+SOLVED: no
+============================================================
+
+QUESTION (by lmarkovi @ 2024-09-11T11:34:13.942Z):
+Dear Combine experts,
+In triple Higgs self -coupling analysis i have a certain operator O_6 introduced (and it’s Wilson coefficient c_6) into Lagrangian. I tried and was successful in building a parameterisation of the yield, which is a polynomial function.
+But now, i need to build a parameterisation of m_4l (four lepton invariant mass) which is bin-dependent, i.e. parameterisation should be done bin by bin in the whole range of the m_4l. Here, as my knowledge on combine is limited, I’m faced with a difficulty of understanding how to approach the problem from the technical point of view.
+I was hoping i can get some advice, maybe there’s an example of similar parameterisation which might be useful for me?
+Cheers,
+Lazar
+----------------------------------------
+
+REPLY 2 (by pkeicher @ 2024-09-12T08:38:45.736Z):
+Hi @lmarkovi ,
+You can build fully-parametrized histograms as RooParametricHist objects. There is currently one example in the documentation for this procedure [1] (there will be another one in the future, though this is still WIP). Maybe this will give you a good place to start. Note that there are a couple of things that you need to keep in mind when using this procedure, but this is all explained in the reference.
+Let us know if you need more help with the implementation!
+Cheers,
+Philip
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=parametric#rooparametrichist-gamman-for-shapes
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2024-09-12T08:53:52.855Z):
+Hi Lazar, Philip,
+Let me just add, that one could also try using multi-process interference model -P HiggsAnalysis.CombinedLimit.InterferenceModels:interferenceModel as described in the docs here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 4 (by lmarkovi @ 2024-09-16T08:10:16.157Z):
+Hi Philip, Aliya,
+Thank you for the information, i will make sure to check it out.
+Cheers,
+Lazar
+----------------------------------------

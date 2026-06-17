@@ -1,0 +1,34 @@
+{
+  "topic_id": 8461,
+  "title": "How to include statistical uncertainty in the combine fit",
+  "url": "https://cms-talk.web.cern.ch/t/8461",
+  "category_id": 279,
+  "created_at": "2022-03-21T19:06:25.267Z",
+  "last_posted_at": "2022-03-21T20:07:02.764Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "kpal",
+      "name": "Kuldeep Kumar Pal",
+      "created_at": "2022-03-21T19:06:25.495Z",
+      "updated_at": "2023-02-07T11:03:25.674Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Experts,\nI am working on the FTR analysis of Vector Like Quark T\u2019, where T\u2019 decays to tH,tZ,bW which further decays; leading to single lepton + MET + jets final state.\nI am doing the DELPHES based analysis.\nThe goal of the analysis is to obtain the asymptotic upper limit at different mass points.\nAttached is the datacard[1] for the analysis.\nThe workspace can be accessed at [2].\nIn the datacard, T-prime process is being used for the signal and for background, I am using top, qcd and ewk processes.\nAll the signal and background processes are Monte-Carlo generated and further processed through DELPHES framework.\nDuring the analysis review process, the ARC has asked question regarding treatment of statistical uncertainty in the fit.\nDo combine take into account the statistical uncertainty by default, if not, it would be great if you suggest the prescription to include them in the datacard and also to show it\u2019s impact in the impact plot.\n[1] https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.txt\n[2] https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.root\nThanks in Advance.",
+      "cooked_html": "<p>Hello Experts,<br>\nI am working on the FTR analysis of Vector Like Quark T\u2019, where T\u2019 decays to tH,tZ,bW which further decays; leading to single lepton + MET + jets final state.<br>\nI am doing the DELPHES based analysis.<br>\nThe goal of the analysis is to obtain the asymptotic upper limit at different mass points.</p>\n<p>Attached is the datacard[1] for the analysis.<br>\nThe workspace can be accessed at [2].<br>\nIn the datacard, T-prime process is being used for the signal and for background, I am using top, qcd and ewk processes.<br>\nAll the signal and background processes are Monte-Carlo generated and further processed through DELPHES framework.</p>\n<p>During the analysis review process, the ARC has asked question regarding treatment of statistical uncertainty in the fit.<br>\nDo combine take into account the statistical uncertainty by default, if not, it would be great if you suggest the prescription to include them in the datacard and also to show it\u2019s impact in the impact plot.</p>\n<p>[1] <a href=\"https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.txt\" rel=\"noopener nofollow ugc\">https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.txt</a><br>\n[2] <a href=\"https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.root\" rel=\"noopener nofollow ugc\">https://kpal.web.cern.ch/container/realistic-counting-experiment_M1000.root</a></p>\n<p>Thanks in Advance.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2022-03-21T20:07:02.764Z",
+      "updated_at": "2022-03-21T20:07:02.764Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Kuldeep,\nFrom a quick look at your analysis review hypernews I assume that the question is about treating the statistical uncertainties in the MC templates correctly in the fit, is that right?\nYou can include these by adding\n* autoMCStats 0 at the end of your datacard (so below the es line). When the workspace is created, nuisance parameters for each bin will be added, based on the TH1 bin errors in your input histograms. The names of the parameters the form prop_[channelname]_bin[binnumber] and, once they are in the workspace, if you calculate the impacts on that workspace these parameters will also appear in the impact plot\nYou can find more detail about the addition of MC statistical uncertainties in the Combine documentation [*].\nHope this helps,\nAdinda\n[*] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/",
+      "cooked_html": "<p>Dear Kuldeep,</p>\n<p>From a quick look at your analysis review hypernews I assume that the question is about treating the statistical uncertainties in the MC templates correctly in the fit, is that right?</p>\n<p>You can include these by adding<br>\n<code>* autoMCStats 0</code> at the end of your datacard (so below the <code>es</code> line). When the workspace is created, nuisance parameters for each bin will be added, based on the TH1 bin errors in your input histograms. The names of the parameters the form <code>prop_[channelname]_bin[binnumber]</code> and, once they are in the workspace, if you calculate the impacts on that workspace these parameters will also appear in the impact plot</p>\n<p>You can find more detail about the addition of MC statistical uncertainties in the Combine documentation [*].</p>\n<p>Hope this helps,<br>\nAdinda</p>\n<p>[*] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/bin-wise-stats/</a></p>"
+    }
+  ]
+}

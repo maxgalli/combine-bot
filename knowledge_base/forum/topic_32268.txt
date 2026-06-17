@@ -1,0 +1,288 @@
+TOPIC: Segmentation violation in Combine Harvester
+URL: https://cms-talk.web.cern.ch/t/32268
+DATE: 2023-11-30T15:44:17.245Z
+SOLVED: no
+============================================================
+
+QUESTION (by mhuwiler @ 2023-11-30T15:44:17.382Z):
+Dear Experts,
+I am trying to produce a datacard using Combine Harvester. Upon extracting the shapes (ExtractShapes), the program crashes with a segmentation violation:
+*** Break *** segmentation violation
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+
+Thread 2 (Thread 0x7f9e1664e700 (LWP 12333)):
+#0  0x00007f9e39101b3b in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007f9e39101bcf in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007f9e39101c6b in sem_wait
+
+GLIBC_2.2.5 () from /lib64/libpthread.so.0
+#3  0x00007f9e39446278 in PyThread_acquire_lock (lock=lock
+entry=0x65550d0, waitflag=waitflag
+entry=1) at Python/thread_pthread.h:324
+#4  0x00007f9e39404516 in PyEval_RestoreThread (tstate=tstate
+entry=0xe804370) at Python/ceval.c:359
+#5  0x00007f9e2ce01cee in floatsleep (secs=<optimized out>) at /data/cmsbld/jenkins/workspace/auto-builds/CMSSW_11_1_0_pre6-slc7_amd64_gcc900/build/CMSSW_11_1_0_pre6-build/BUILD/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/python-2.7.15/Modules/timemodule.c:1057
+#6  time_sleep (self=<optimized out>, args=<optimized out>) at /data/cmsbld/jenkins/workspace/auto-builds/CMSSW_11_1_0_pre6-slc7_amd64_gcc900/build/CMSSW_11_1_0_pre6-build/BUILD/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/python-2.7.15/Modules/timemodule.c:206
+#7  0x00007f9e3940d1d7 in call_function (oparg=<optimized out>, pp_stack=0x7f9e1664d5b8) at Python/ceval.c:4372
+#8  PyEval_EvalFrameEx (f=f
+entry=0x7f9e1df6f3c0, throwflag=throwflag
+entry=0) at Python/ceval.c:3009
+#9  0x00007f9e3940f098 in PyEval_EvalCodeEx (co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=args
+entry=0x7f9e1e3761e8, argcount=<optimized out>, kws=kws
+entry=0x7f9e396e7068, kwcount=0, defs=0x0, defcount=0, closure=0x0) at Python/ceval.c:3604
+#10 0x00007f9e3938d61f in function_call (func=0x7f9e1df6d5f0, arg=0x7f9e1e3761d0, kw=0x7f9e1df66c58) at Objects/funcobject.c:523
+#11 0x00007f9e39361c33 in PyObject_Call (func=func
+entry=0x7f9e1df6d5f0, arg=arg
+entry=0x7f9e1e3761d0, kw=kw
+entry=0x7f9e1df66c58) at Objects/abstract.c:2547
+#12 0x00007f9e39406216 in ext_do_call (nk=<optimized out>, na=<optimized out>, flags=<optimized out>, pp_stack=0x7f9e1664d840, func=0x7f9e1df6d5f0) at Python/ceval.c:4686
+#13 PyEval_EvalFrameEx (f=f
+entry=0x7f9e1df6bb00, throwflag=throwflag
+entry=0) at Python/ceval.c:3048
+#14 0x00007f9e3940c98f in fast_function (nk=<optimized out>, na=<optimized out>, n=1, pp_stack=0x7f9e1664d948, func=0x7f9e1e07dc08) at Python/ceval.c:4457
+#15 call_function (oparg=<optimized out>, pp_stack=0x7f9e1664d948) at Python/ceval.c:4392
+#16 PyEval_EvalFrameEx (f=f
+entry=0x7f9e0c000910, throwflag=throwflag
+entry=0) at Python/ceval.c:3009
+#17 0x00007f9e3940c98f in fast_function (nk=<optimized out>, na=<optimized out>, n=1, pp_stack=0x7f9e1664da58, func=0x7f9e1e07dd70) at Python/ceval.c:4457
+#18 call_function (oparg=<optimized out>, pp_stack=0x7f9e1664da58) at Python/ceval.c:4392
+#19 PyEval_EvalFrameEx (f=f
+entry=0x7f9e1df71050, throwflag=throwflag
+entry=0) at Python/ceval.c:3009
+#20 0x00007f9e3940f098 in PyEval_EvalCodeEx (co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=args
+entry=0x7f9e1e005ea8, argcount=<optimized out>, kws=kws
+entry=0x0, kwcount=0, defs=0x0, defcount=0, closure=0x0) at Python/ceval.c:3604
+#21 0x00007f9e3938d55b in function_call (func=0x7f9e1e07dc80, arg=0x7f9e1e005e90, kw=0x0) at Objects/funcobject.c:523
+#22 0x00007f9e39361c33 in PyObject_Call (func=func
+entry=0x7f9e1e07dc80, arg=arg
+entry=0x7f9e1e005e90, kw=kw
+entry=0x0) at Objects/abstract.c:2547
+#23 0x00007f9e3937046c in instancemethod_call (func=0x7f9e1e07dc80, arg=0x7f9e1e005e90, kw=0x0) at Objects/classobject.c:2600
+#24 0x00007f9e39361c33 in PyObject_Call (func=func
+entry=0x7f9e39693140, arg=arg
+entry=0x7f9e396e7050, kw=0x0) at Objects/abstract.c:2547
+#25 0x00007f9e39404bb8 in PyEval_CallObjectWithKeywords (func=0x7f9e39693140, arg=0x7f9e396e7050, kw=<optimized out>) at Python/ceval.c:4241
+#26 0x00007f9e3944abd4 in t_bootstrap (boot_raw=0xe804210) at ./Modules/threadmodule.c:620
+#27 0x00007f9e390fbea5 in start_thread () from /lib64/libpthread.so.0
+#28 0x00007f9e3871bb0d in clone () from /lib64/libc.so.6
+
+Thread 1 (Thread 0x7f9e39727740 (LWP 12060)):
+#0  0x00007f9e386e2659 in waitpid () from /lib64/libc.so.6
+#1  0x00007f9e3865ff62 in do_system () from /lib64/libc.so.6
+#2  0x00007f9e38660311 in system () from /lib64/libc.so.6
+#3  0x00007f9e31e3e535 in TUnixSystem::StackTrace() () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libCore.so
+#4  0x00007f9e39587252 in (anonymous namespace)::TExceptionHandlerImp::HandleException(int) () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libcppyy_backend2_7.so
+#5  0x00007f9e31e3b581 in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libCore.so
+#6  <signal handler called>
+#7  0x00007f9e1c8d4a3a in RooLinkedList::find(char const*) const () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libRooFitCore.so
+#8  0x00007f9e1d5fe739 in ch::CombineHarvester::LoadShapes(ch::Observation*, std::vector<ch::HistMapping, std::allocator<ch::HistMapping> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#9  0x00007f9e1d60e246 in ch::CombineHarvester::ExtractShapes(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#10 0x00007f9e15b00050 in ?? ()
+#11 0x000000000e0aaa20 in ?? ()
+#12 0x000000000fc9ec68 in ?? ()
+#13 0x0000000000000000 in ?? ()
+===========================================================
+
+The lines below might hint at the cause of the crash.
+You may get help by asking at the ROOT forum https://root.cern.ch/forum
+Only if you are really convinced it is a bug in ROOT then please submit a
+report at https://root.cern.ch/bugs Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#7  0x00007f9e1c8d4a3a in RooLinkedList::find(char const*) const () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libRooFitCore.so
+#8  0x00007f9e1d5fe739 in ch::CombineHarvester::LoadShapes(ch::Observation*, std::vector<ch::HistMapping, std::allocator<ch::HistMapping> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#9  0x00007f9e1d60e246 in ch::CombineHarvester::ExtractShapes(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#10 0x00007f9e15b00050 in ?? ()
+#11 0x000000000e0aaa20 in ?? ()
+#12 0x000000000fc9ec68 in ?? ()
+#13 0x0000000000000000 in ?? ()
+===========================================================
+
+Traceback (most recent call last):
+File "ReproducerHarvester.py", line 53, in <module>
+'w:$PROCESS', 'w:$PROCESS_$BIN_$SYSTEMATIC') #, '$BIN/$SYSTEMATIC' 'w:$PROCESS_$BIN_$SYSTEMATIC'
+cppyy.ll.SegmentationViolation: void ch::CombineHarvester::ExtractShapes(const string& file, const string& rule, const string& syst_rule) =>
+SegmentationViolation: segfault in C++; program state was reset
+
+Without any hint of what is going wrong. I attached a minimal reproducer to the post. Any insights on what is going wrong?
+Best,
+Marc
+----------------------------------------
+
+REPLY 2 (by mhuwiler @ 2023-11-30T15:49:42.226Z):
+The minimal reproducer can be found here: /eos/home-m/mhuwiler/public/public/reproducerCombineHarvester
+(for some reason it did not work on the previous post)
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2023-12-01T09:10:26.155Z):
+Hi Marc,
+I think there’s a permissions problem with your directory on eos, I’m unable to access it.
+I guess the crash will be straightforward to debug, seems like something is failing in extracting the observed data  from the input workspace. In principle the code is supposed to throw with a helpful error message if this happens, so just need to figure out why not in this case.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 4 (by mhuwiler @ 2023-12-13T15:35:06.000Z):
+Dear Andrew,
+Thanks a lot for your quick reply, and I am sorry for the delay getting back to you (was sick most of last week, then swamped with catching up).
+I checked and it is publicly shared, here is the link to access the files: https://cernbox.cern.ch/s/ZBcZINZ2KsDkJAT
+(not sure why it is not setting correct permissions on lxplus)
+Thanks again for your help!
+Cheers,
+Marc
+
+···
+On 01.12.23 10:12, Andrew Gilbert via CMS talk wrote:
+
+Andrew Gilbert agilbert SMP convenerDecember 1
+
+Hi Marc,
+I think there’s a permissions problem with your directory on eos, I’m unable to access it.
+I guess the crash will be straightforward to debug, seems like something is failing in extracting the observed data from the input workspace. In principle the code is supposed to throw with a helpful error message if this happens, so just need to figure out why not in this case.
+cheers,
+Andrew
+
+Visit Topic or reply to this email to respond.
+
+In Reply To
+
+Marc Huwiler mhuwilerNovember 30
+
+The minimal reproducer can be found here: /eos/home-m/mhuwiler/public/public/reproducerCombineHarvester (for some reason it did not work on the previous post)
+Previous Replies
+
+Marc Huwiler mhuwilerNovember 30
+
+The minimal reproducer can be found here: /eos/home-m/mhuwiler/public/public/reproducerCombineHarvester
+(for some reason it did not work on the previous post)
+
+Marc Huwiler mhuwilerNovember 30
+
+Dear Experts,
+I am trying to produce a datacard using Combine Harvester. Upon extracting the shapes (ExtractShapes), the program crashes with a segmentation violation:
+*** Break *** segmentation violation
+
+===========================================================
+There was a crash.
+This is the entire stack trace of all threads:
+===========================================================
+
+Thread 2 (Thread 0x7f9e1664e700 (LWP 12333)):
+#0  0x00007f9e39101b3b in do_futex_wait.constprop () from /lib64/libpthread.so.0
+#1  0x00007f9e39101bcf in __new_sem_wait_slow.constprop.0 () from /lib64/libpthread.so.0
+#2  0x00007f9e39101c6b in sem_wait
+
+GLIBC_2.2.5 () from /lib64/libpthread.so.0
+#3  0x00007f9e39446278 in PyThread_acquire_lock (lock=lock
+entry=0x65550d0, waitflag=waitflag
+entry=1) at Python/thread_pthread.h:324
+#4  0x00007f9e39404516 in PyEval_RestoreThread (tstate=tstate
+entry=0xe804370) at Python/ceval.c:359
+#5  0x00007f9e2ce01cee in floatsleep (secs=<optimized out>) at /data/cmsbld/jenkins/workspace/auto-builds/CMSSW_11_1_0_pre6-slc7_amd64_gcc900/build/CMSSW_11_1_0_pre6-build/BUILD/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/python-2.7.15/Modules/timemodule.c:1057
+#6  time_sleep (self=<optimized out>, args=<optimized out>) at /data/cmsbld/jenkins/workspace/auto-builds/CMSSW_11_1_0_pre6-slc7_amd64_gcc900/build/CMSSW_11_1_0_pre6-build/BUILD/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/python-2.7.15/Modules/timemodule.c:206
+#7  0x00007f9e3940d1d7 in call_function (oparg=<optimized out>, pp_stack=0x7f9e1664d5b8) at Python/ceval.c:4372
+#8  PyEval_EvalFrameEx (f=f
+entry=0x7f9e1df6f3c0, throwflag=throwflag
+entry=0) at Python/ceval.c:3009
+#9  0x00007f9e3940f098 in PyEval_EvalCodeEx (co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=args
+entry=0x7f9e1e3761e8, argcount=<optimized out>, kws=kws
+entry=0x7f9e396e7068, kwcount=0, defs=0x0, defcount=0, closure=0x0) at Python/ceval.c:3604
+#10 0x00007f9e3938d61f in function_call (func=0x7f9e1df6d5f0, arg=0x7f9e1e3761d0, kw=0x7f9e1df66c58) at Objects/funcobject.c:523
+#11 0x00007f9e39361c33 in PyObject_Call (func=func
+entry=0x7f9e1df6d5f0, arg=arg
+entry=0x7f9e1e3761d0, kw=kw
+entry=0x7f9e1df66c58) at Objects/abstract.c:2547
+#12 0x00007f9e39406216 in ext_do_call (nk=<optimized out>, na=<optimized out>, flags=<optimized out>, pp_stack=0x7f9e1664d840, func=0x7f9e1df6d5f0) at Python/ceval.c:4686
+#13 PyEval_EvalFrameEx (f=f
+entry=0x7f9e1df6bb00, throwflag=throwflag
+entry=0) at Python/ceval.c:3048
+#14 0x00007f9e3940c98f in fast_function (nk=<optimized out>, na=<optimized out>, n=1, pp_stack=0x7f9e1664d948, func=0x7f9e1e07dc08) at Python/ceval.c:4457
+#15 call_function (oparg=<optimized out>, pp_stack=0x7f9e1664d948) at Python/ceval.c:4392
+#16 PyEval_EvalFrameEx (f=f
+entry=0x7f9e0c000910, throwflag=throwflag
+entry=0) at Python/ceval.c:3009
+#17 0x00007f9e3940c98f in fast_function (nk=<optimized out>, na=<optimized out>, n=1, pp_stack=0x7f9e1664da58, func=0x7f9e1e07dd70) at Python/ceval.c:4457
+#18 call_function (oparg=<optimized out>, pp_stack=0x7f9e1664da58) at Python/ceval.c:4392
+#19 PyEval_EvalFrameEx (f=f
+entry=0x7f9e1df71050, throwflag=throwflag
+entry=0) at Python/ceval.c:3009
+#20 0x00007f9e3940f098 in PyEval_EvalCodeEx (co=<optimized out>, globals=<optimized out>, locals=locals
+entry=0x0, args=args
+entry=0x7f9e1e005ea8, argcount=<optimized out>, kws=kws
+entry=0x0, kwcount=0, defs=0x0, defcount=0, closure=0x0) at Python/ceval.c:3604
+#21 0x00007f9e3938d55b in function_call (func=0x7f9e1e07dc80, arg=0x7f9e1e005e90, kw=0x0) at Objects/funcobject.c:523
+#22 0x00007f9e39361c33 in PyObject_Call (func=func
+entry=0x7f9e1e07dc80, arg=arg
+entry=0x7f9e1e005e90, kw=kw
+entry=0x0) at Objects/abstract.c:2547
+#23 0x00007f9e3937046c in instancemethod_call (func=0x7f9e1e07dc80, arg=0x7f9e1e005e90, kw=0x0) at Objects/classobject.c:2600
+#24 0x00007f9e39361c33 in PyObject_Call (func=func
+entry=0x7f9e39693140, arg=arg
+entry=0x7f9e396e7050, kw=0x0) at Objects/abstract.c:2547
+#25 0x00007f9e39404bb8 in PyEval_CallObjectWithKeywords (func=0x7f9e39693140, arg=0x7f9e396e7050, kw=<optimized out>) at Python/ceval.c:4241
+#26 0x00007f9e3944abd4 in t_bootstrap (boot_raw=0xe804210) at ./Modules/threadmodule.c:620
+#27 0x00007f9e390fbea5 in start_thread () from /lib64/libpthread.so.0
+#28 0x00007f9e3871bb0d in clone () from /lib64/libc.so.6
+
+Thread 1 (Thread 0x7f9e39727740 (LWP 12060)):
+#0  0x00007f9e386e2659 in waitpid () from /lib64/libc.so.6
+#1  0x00007f9e3865ff62 in do_system () from /lib64/libc.so.6
+#2  0x00007f9e38660311 in system () from /lib64/libc.so.6
+#3  0x00007f9e31e3e535 in TUnixSystem::StackTrace() () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libCore.so
+#4  0x00007f9e39587252 in (anonymous namespace)::TExceptionHandlerImp::HandleException(int) () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libcppyy_backend2_7.so
+#5  0x00007f9e31e3b581 in TUnixSystem::DispatchSignals(ESignals) () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libCore.so
+#6  <signal handler called>
+#7  0x00007f9e1c8d4a3a in RooLinkedList::find(char const*) const () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libRooFitCore.so
+#8  0x00007f9e1d5fe739 in ch::CombineHarvester::LoadShapes(ch::Observation*, std::vector<ch::HistMapping, std::allocator<ch::HistMapping> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#9  0x00007f9e1d60e246 in ch::CombineHarvester::ExtractShapes(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#10 0x00007f9e15b00050 in ?? ()
+#11 0x000000000e0aaa20 in ?? ()
+#12 0x000000000fc9ec68 in ?? ()
+#13 0x0000000000000000 in ?? ()
+===========================================================
+
+The lines below might hint at the cause of the crash.
+You may get help by asking at the ROOT forum [https://root.cern.ch/forum](https://root.cern.ch/forum)
+Only if you are really convinced it is a bug in ROOT then please submit a
+report at [https://root.cern.ch/bugs](https://root.cern.ch/bugs) Please post the ENTIRE stack trace
+from above as an attachment in addition to anything else
+that might help us fixing this issue.
+===========================================================
+#7  0x00007f9e1c8d4a3a in RooLinkedList::find(char const*) const () from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/cms/cmssw/CMSSW_11_3_4/external/slc7_amd64_gcc900/lib/libRooFitCore.so
+#8  0x00007f9e1d5fe739 in ch::CombineHarvester::LoadShapes(ch::Observation*, std::vector<ch::HistMapping, std::allocator<ch::HistMapping> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#9  0x00007f9e1d60e246 in ch::CombineHarvester::ExtractShapes(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) () from /work/mhuwiler/software/Analysis/combine/CMSSW_11_3_4/lib/slc7_amd64_gcc900/libCombineHarvesterCombineTools.so
+#10 0x00007f9e15b00050 in ?? ()
+#11 0x000000000e0aaa20 in ?? ()
+#12 0x000000000fc9ec68 in ?? ()
+#13 0x0000000000000000 in ?? ()
+===========================================================
+
+Traceback (most recent call last):
+File "ReproducerHarvester.py", line 53, in <module>
+'w:$PROCESS', 'w:$PROCESS_$BIN_$SYSTEMATIC') #, '$BIN/$SYSTEMATIC' 'w:$PROCESS_$BIN_$SYSTEMATIC'
+cppyy.ll.SegmentationViolation: void ch::CombineHarvester::ExtractShapes(const string& file, const string& rule, const string& syst_rule) =>
+SegmentationViolation: segfault in C++; program state was reset
+
+Without any hint of what is going wrong. I attached a minimal reproducer to the post. Any insights on what is going wrong?
+Best,
+Marc
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by mhuwiler @ 2024-03-06T12:31:51.335Z):
+Dear Andrew,
+Is there any update on the matter?
+Cheers,
+Marc
+----------------------------------------

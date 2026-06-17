@@ -1,0 +1,23 @@
+{
+  "topic_id": 2147,
+  "title": "Re: Limits from Simplified Likelihood",
+  "url": "https://cms-talk.web.cern.ch/t/2147",
+  "category_id": 279,
+  "created_at": "2021-08-12T18:09:32.000Z",
+  "last_posted_at": "2021-08-12T18:09:32.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2021-08-12T18:09:32.000Z",
+      "updated_at": "2023-02-07T10:55:39.674Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Maxi,\nOk thanks\nYes indeed I would start with that recommended check on the likelihood scan (of course you can compare that with what you get with the full model in combine)\nBest,\nNick",
+      "cooked_html": "<p>Hi Maxi,</p>\n<p>Ok thanks</p>\n<p>Yes indeed I would start with that recommended check on the likelihood scan (of course you can compare that with what you get with the full model in combine)</p>\n<p>Best,</p>\n<p>Nick</p>"
+    }
+  ]
+}

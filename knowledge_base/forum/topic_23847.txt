@@ -1,0 +1,51 @@
+TOPIC: Combine 2D PDF with the signal region masking problem
+URL: https://cms-talk.web.cern.ch/t/23847
+DATE: 2023-05-09T13:32:38.007Z
+SOLVED: no
+============================================================
+
+QUESTION (by hyunyong @ 2023-05-09T13:32:38.312Z):
+Dear experts,
+We have an issue with the Combine tool of the background shape PDF.
+The 2D background PDF has been masked with
+RooRealVar m1_above_Upsilon("m1_above_Upsilon", "m_{#mu#mu_{1}}", m_SR3_min, m_SR3_max, "GeV");
+RooRealVar m2_above_Upsilon("m2_above_Upsilon", "m_{#mu#mu_{2}}", m_SR3_min, m_SR3_max, "GeV");
+
+TString dia3Cut = "((fabs(m1_above_Upsilon-m2_above_Upsilon) < (-0.10354734 + 0.05387914*(0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon))) * ((0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon) < 14.990))";
+dia3Cut += " + ((fabs(m1_above_Upsilon-m2_above_Upsilon) < (-0.03586463 + 0.04936395*(0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon))) * ((0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon) > 14.990) * ((0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon) < 24.98))";
+dia3Cut += " + ((fabs(m1_above_Upsilon-m2_above_Upsilon) < (0.15727837 + 0.04163205*(0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon))) * ((0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon) > 24.98) * ((0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon) < 34.97))";
+dia3Cut += " + ((fabs(m1_above_Upsilon-m2_above_Upsilon) < (-2.00192851 + 0.1033766*(0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon))) * ((0.5*m1_above_Upsilon + 0.5*m2_above_Upsilon) > 34.97))";
+RooGenericPdf dia3( "dia3", "generic PDF for diaginal region at SR3", dia3Cut, RooArgSet(m1_above_Upsilon, m2_above_Upsilon));
+
+TFile* KDE_file = new TFile(KDEF);
+TF1* kde1 = (TF1*)KDE_file->Get("m1TF");
+TF1* kde2 = (TF1*)KDE_file->Get("m2TF");
+KDE_file->Close();
+RooTFnPdfBinding HighMassFit_m1("HighMassFit_m1", "m1 fit function for estimated BKG at SR3", kde1, RooArgSet(m1_above_Upsilon));
+RooTFnPdfBinding HighMassFit_m2("HighMassFit_m2", "m2 fit function for estimated BKG at SR3", kde1, RooArgSet(m2_above_Upsilon));
+w_H2A4Mu->import(HighMassFit_m1);
+w_H2A4Mu->import(HighMassFit_m2);
+w_H2A4Mu->factory("PROD::HighMassBKG_tmp(HighMassFit_m1, HighMassFit_m2)");
+w_H2A4Mu->factory("PROD::HighMassBKG(HighMassBKG_tmp, dia3)");
+
+We made the 2D PDF with the signal region masking like above.
+In the workspace, the PDF looks fine but when I run Combine I got several warning messages.
+[#0] WARNING:NumericIntegration -- RooAdaptiveIntegratorND::dtor([signal3_tmp_X_dia3]_Int[m2_above_Upsilon]_Norm[m1_above_Upsilon,m2_above_Upsilon]_denominator) WARNING: Number of suppressed warningings about integral evaluations where target precision was not reached is 1
+[#0] WARNING:NumericIntegration -- RooAdaptiveIntegratorND::dtor([signal3_tmp_X_dia3]_Norm[m1_above_Upsilon,m2_above_Upsilon]_denominator) WARNING: Number of suppressed warningings about integral evaluations where target precision was not reached is 1
+[#0] WARNING:NumericIntegration -- RooAdaptiveIntegratorND::dtor([HighMassBKG_tmp_X_dia3]_Int[m2_above_Upsilon]_Norm[m1_above_Upsilon,m2_above_Upsilon]_denominator) WARNING: Number of suppressed warningings about integral evaluations where target precision was not reached is 1
+
+Also, the results of the fit diagnostics show some discontinued fit results and it seems the results are not reliable.
+So, I would like to know if there is some general way to use a 2D PDF background shape with the signal region masking.
+You can see the analysis CADI: https://cms.cern.ch/iCMS/analysisadmin/cadilines?line=HIG-21-004&tp=an&id=2419&ancode=HIG-21-004
+and pre-approval talk: https://indico.cern.ch/event/1233755/#23-pre-approval-of-hig-21-004
+also, you can get the workspace: https://cernbox.cern.ch/s/W5CmkApVIdaCbaQ
+Cheers,
+Hyunyong Kim
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-05-10T08:56:48.132Z):
+Hi Hyunyong,
+Just to understand, does the fit work ok in plain RooFit, outside of combine?
+cheers,
+Andrew
+----------------------------------------

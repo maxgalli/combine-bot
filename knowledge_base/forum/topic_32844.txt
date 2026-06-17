@@ -1,0 +1,44 @@
+TOPIC: Too large error with HybridNew
+URL: https://cms-talk.web.cern.ch/t/32844
+DATE: 2023-12-19T04:24:26.738Z
+SOLVED: no
+============================================================
+
+QUESTION (by jihunk @ 2023-12-19T04:24:27.432Z):
+Dear experts,
+I’m currently estimating the expected limits with the HybridNew method.
+While running the command below, however, I’ve found too large error in some cases, e.g. with
+combine -M HybridNew --LHCmode LHC-limits card_2017_MuMu_M100.txt -n 2017_MuMu_M100 --saveHybridResult --expectedFromGrid 0.500 -T 1000
+I get
+-- Hybrid New --
+Limit: r < 0.078125 +/- 0.078125 @ 95% CL
+Done in 1.05 min (cpu), 1.05 min (real)
+
+which obviously doesn’t seem to be correct (limit value = error).
+Furthermore, when I try other quantiles with the same method, for instance, 0.025, or 0.16, I still get the exactly same limit value and the error of 0.078125 (which are not consistent with the results from the Asymptotic method at all).
+Could you let me know where to start to diagnose & solve the issue?
+I attach the input histogram [1] and the datacard [2] to be reproduced.
+Best regards,
+Jihun.
+[1] M100_MuMu_card_input.root (7.7 KB)
+[2] card_2017_MuMu_M100.txt (1.0 KB)
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2023-12-19T09:39:01.855Z):
+Dear Jihun,
+What you are seeing is most likely an artifact of the fact that your limit is small in units of r. Both HybridNew and AsymptoticLimits approximate the exact calculation of the limit in an iterative procedure and stop after some desired accuracy is reached.
+The desired accuracy that you run with can be controlled via the command line options --rAbsAcc and --rRelAcc, which set the accuracy on r at which the algorithm stops.
+The asymptotic method uses and analytic approximation of the test statistic distribution, which saves a lot of computational time, and therefore the default value of these parameters is fairly small (0.005 relative accuracy and 0.0005 absolute accuracy). On the other hand, the HybridNew method estimates the test statistic distribution using toy experiments, which is much more computationally expensive, therefore the default values of these parameters are much larger to avoid spending a lot of extra computation time on precision that may not be helpful, the defaults are 0.05 relative accuracy and 0.1 absolute accuracy.
+So typically, if your limit is below 0.078125,  the algorithm will start at higher values, work its way down, get to this number and then stop because it is below the required absolute accuracy of the limit.
+You can adjust this behaviour with the command line options above. Sometimes it is also useful to simply scale r such that the limit is ~1.
+I hope that helps,
+Kyle
+----------------------------------------
+
+REPLY 3 (by jihunk @ 2023-12-20T18:26:24.385Z):
+Hi Kyle,
+Thanks a lot!
+That solved the issue.
+Best,
+Jihun.
+----------------------------------------

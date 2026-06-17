@@ -1,0 +1,23 @@
+{
+  "topic_id": 2134,
+  "title": "Process renaming?",
+  "url": "https://cms-talk.web.cern.ch/t/2134",
+  "category_id": 279,
+  "created_at": "2021-08-03T09:13:14.000Z",
+  "last_posted_at": "2021-08-03T09:13:14.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Senne_Van_Putte",
+      "name": "Senne Van Putte",
+      "created_at": "2021-08-03T09:13:14.000Z",
+      "updated_at": "2023-02-07T10:55:37.600Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "*** Discussion title: Higgs Combination\nDear experts,\nI was trying to combine two different analysis into one datacard.\nHowever it turns out two processes received slightly different names,\nwhile representing the same process: FAKE vs Fake and\ndarkHiggs_<masspoint> vs DH_<masspoint>.\nIs there a way to rename the processes using combine?\nCheers, Senne",
+      "cooked_html": "<p>*** Discussion title: Higgs Combination</p>\n<p>Dear experts,</p>\n<p>I was trying to combine two different analysis into one datacard.<br>\nHowever it turns out two processes received slightly different names,<br>\nwhile representing the same process: FAKE vs Fake and<br>\ndarkHiggs_&lt;masspoint&gt; vs DH_&lt;masspoint&gt;.</p>\n<p>Is there a way to rename the processes using combine?</p>\n<p>Cheers, Senne</p>"
+    }
+  ]
+}

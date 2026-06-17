@@ -1,0 +1,45 @@
+{
+  "topic_id": 26127,
+  "title": "Set a fit parameter at datacard level",
+  "url": "https://cms-talk.web.cern.ch/t/26127",
+  "category_id": 279,
+  "created_at": "2023-06-28T22:20:06.401Z",
+  "last_posted_at": "2023-06-29T15:42:40.867Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2023-06-28T22:20:06.969Z",
+      "updated_at": "2023-06-28T22:20:06.969Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts\nFor B2G-23-005 we are combining several datacards for several analyses trying to use a fitting procedure as agnostic as possible.\nWe have hundreds of datacards per analysis and a couple of different parameters per analysis to consider, they are always frozen for a given datacard.txt.\nIs it possible to instead of setting a given parameter in the command line for limit computation as eg --freezeParameters MH,MX,MY --setParameters MX={mx},MY={my}` to add a couple of lines in the datacard.txt that would set its value and freeze it?\nSearching in the documentation I could arrive to the following attempt\n==================================\nMY                          param    ${my}    ${my}\nnuisance edit freeze MY\n===================================\n\nThis does not work\u2026\nthank you\nXanda",
+      "cooked_html": "<p>Dear experts</p>\n<p>For B2G-23-005 we are combining several datacards for several analyses trying to use a fitting procedure as agnostic as possible.</p>\n<p>We have hundreds of datacards per analysis and a couple of different parameters per analysis to consider, they are always frozen for a given datacard.txt.</p>\n<p>Is it possible to instead of setting a given parameter in the command line for limit computation as eg <code>--freezeParameters </code>MH,MX,MY --setParameters MX=<span class=\"math\">{mx},MY=</span>{my}` to add a couple of lines in the datacard.txt that would set its value and freeze it?</p>\n<p>Searching in the documentation I could arrive to the following attempt</p>\n<pre><code class=\"lang-auto\">==================================\nMY                          param    ${my}    ${my}\nnuisance edit freeze MY\n===================================\n</code></pre>\n<p>This does not work\u2026</p>\n<p>thank you<br>\nXanda</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-06-29T15:23:26.472Z",
+      "updated_at": "2023-06-29T15:23:42.651Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Xanda,\nCould you give some more details on what isn\u2019t working? What you\u2019re trying to run, what kind of failure you\u2019re seeing. Maybe a minimal working example of the bug?\nIf I try to use this directive on a simple datacard from one of the tutorials with a recent combine version, it seems to work fine for me.\nCheers,\nKyle",
+      "cooked_html": "<p>Dear Xanda,</p>\n<p>Could you give some more details on what isn\u2019t working? What you\u2019re trying to run, what kind of failure you\u2019re seeing. Maybe a minimal working example of the bug?</p>\n<p>If I try to use this directive on a simple datacard from one of the tutorials with a recent combine version, it seems to work fine for me.</p>\n<p>Cheers,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "acarvalh",
+      "name": "Alexandra Carvalho Antunes De Oliveira",
+      "created_at": "2023-06-29T15:42:40.867Z",
+      "updated_at": "2023-06-29T15:42:40.867Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle\n\u201cNot working\u201d means \u201cnot making any effect\u201d\nWith a Datacard example, in this analysis if you see the README one needs to set at the command line the value of the parameter MY [1].\nThis is the only one among 8 (and counting) input analyses in which this is necessary, so I wanted to hardcode in the txt\nTo make it easier to test on an example the input and modified datacards for B2G-23-005  are visible by the CMS-physics list as guests [2]\nThat is not a critical feature to ask you to spend time on testing, we can always bookkeep parameters in an increasing command line. I just wanted to know if this is possible using combine, and if it is we can search harder in documentation.\nthank you\nXanda\n[1] https://gitlab.cern.ch/cms-analysis/hig/HIG-22-012/datacards/-/tree/master/Resonant#resonant == the setting of MY only makes a difference in the \u201cY->\u2026\u201d cases\n[2] /eos/home-e/ejourdhu/HH_fullRun2_resonant_fits/datacards_run2_resonant_hh_hy/ggtt/hig-22-012/Resonant/NMSSM_Y_gg_High_Mass",
+      "cooked_html": "<p>Hi Kyle</p>\n<p>\u201cNot working\u201d means \u201cnot making any effect\u201d</p>\n<p>With a Datacard example, in this analysis if you see the README one needs to set at the command line the value of the parameter MY [1].</p>\n<p>This is the only one among 8 (and counting) input analyses in which this is necessary, so I wanted to hardcode in the txt</p>\n<p>To make it easier to test on an example the input and modified datacards for B2G-23-005  are visible by the CMS-physics list as guests [2]</p>\n<p>That is not a critical feature to ask you to spend time on testing, we can always bookkeep parameters in an increasing command line. I just wanted to know if this is possible using combine, and if it is we can search harder in documentation.</p>\n<p>thank you<br>\nXanda</p>\n<p>[1] <a href=\"https://gitlab.cern.ch/cms-analysis/hig/HIG-22-012/datacards/-/tree/master/Resonant#resonant\" rel=\"noopener nofollow ugc\">https://gitlab.cern.ch/cms-analysis/hig/HIG-22-012/datacards/-/tree/master/Resonant#resonant</a> == the setting of MY only makes a difference in the \u201cY-&gt;\u2026\u201d cases</p>\n<p>[2] /eos/home-e/ejourdhu/HH_fullRun2_resonant_fits/datacards_run2_resonant_hh_hy/ggtt/hig-22-012/Resonant/NMSSM_Y_gg_High_Mass</p>"
+    }
+  ]
+}

@@ -1,0 +1,58 @@
+TOPIC: Combine impact plot
+URL: https://cms-talk.web.cern.ch/t/31551
+DATE: 2023-11-12T14:58:01.087Z
+SOLVED: no
+============================================================
+
+QUESTION (by rhaberle @ 2023-11-12T14:58:01.528Z):
+Dear experts,
+I’m trying to produce the nuisance parameter impact plot for our analysis, starting from .txt datacards that were given to me. I followed the recipee found here [1], and obtained the json files. When using the plotImpacts macro, I get the following error :
+ele["impact_hi"] = ele[POI][2] - ele[POI][1] KeyError: 'r'
+I have compared my json files with another one that produced the plot correctly, and they look similar. Do you have any idea of why I get this error ?
+Kind regards,
+Raphael
+[1]
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/
+Under Nuisance parameter impacts
+----------------------------------------
+
+REPLY 2 (by gortona @ 2023-11-13T08:44:08.907Z):
+Dear Raphael,
+A bit of a shot in the dark here from my side, but how is it called the POI that you use in your model? If the name is different from the default (‘r’), you should specify it with the --redefineSignalPOIs option in all the steps used to produce the limits.
+If this is not the reason, maybe you can provide the card, json, and commands you used for the experts to have a look?
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by rhaberle @ 2023-11-13T10:11:47.054Z):
+Dear Giacomo,
+Thank you for the answer. The POI is indeed called ‘r’ but I will try to redefine it anyways (perhaps it can solve the issue), thanks !
+You can find here [1] the datacard, workspace and json file produced. The commands I ran are the following :
+
+text2workspace.py datacards_SR3_UnB_v4/Gluino1800_2018.txt
+combineTool.py -M Impacts -d Gluino1800_2018.root -t -1 --expectSignal 1 --rMin 0 --doInitialFit --allPars -m 1 -n t1
+combineTool.py -M Impacts -d Gluino1800_2018.root -o impacts_t1.json -t -1 --expectSignal 1 --rMin 0 --doFits -m 1 -n t1
+plotImpacts.py -i impacts_t1.json -o impacts_t1
+
+[1] /afs/cern.ch/user/r/rhaberle/public/POI
+Best regards,
+Raphael
+----------------------------------------
+
+REPLY 4 (by adewit @ 2023-11-13T10:32:40.991Z):
+Hi Raphael,
+You can’t combine the steps where the fits run and where the json is created, ie your step 3 should be split in two:
+
+combineTool.py -M Impacts -d Gluino1800_2018.root  -t -1 --expectSignal 1 --rMin 0 --doFits -m 1 -n t1
+combineTool.py -M Impacts -d Gluino1800_2018.root -m 1 -n t1 -o impacts_t1.json
+
+Hope this helps,
+Adinda
+----------------------------------------
+
+REPLY 5 (by rhaberle @ 2023-11-13T14:31:39.894Z):
+Hi Adinda,
+Thanks a lot for the answer, this has solved the issue !
+My regards,
+Raphael
+----------------------------------------

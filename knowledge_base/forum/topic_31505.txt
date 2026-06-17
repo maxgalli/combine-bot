@@ -1,0 +1,14 @@
+TOPIC: Do you use pyhf? We need your input!
+URL: https://cms-talk.web.cern.ch/t/31505
+DATE: 2023-11-10T07:31:36.532Z
+SOLVED: no
+============================================================
+
+QUESTION (by kskovpen @ 2023-11-10T07:31:36.717Z):
+Dear CMS users,
+We are collecting information on various use-cases of the pyhf statistical tool in our collaboration, which will be summarized during the upcoming pyhf workshop at CERN, Dec 4-8: https://indico.cern.ch/event/1294577/overview.
+If you use pyhf at any step of your analysis workflow, could you please get in touch with me?
+We would highly appreciate any prompt feedback.
+Thanks,
+Kirill (also for Clemens and Giulio)
+----------------------------------------

@@ -1,0 +1,69 @@
+TOPIC: Question about --cminDefaultMinimizerTolerance
+URL: https://cms-talk.web.cern.ch/t/44296
+DATE: 2024-07-25T11:30:48.945Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-07-25T11:30:49.110Z):
+Dear experts,
+I run MultiDimFit -algo fixed
+ôn my toy events with background only and do unbinned fit of m_mumu
+in the range of 12-70 GeV in 6 search regions (SR).
+for some events I have got a very large DeltaNLL corresponding to a very low p-value and corresponding to a significance much larger than 5.0.  When  I look at  m_mumu distributions in every SRs I got from toys, I do not see any bumps there … When I added option
+–cminDefaultMinimizerTolerance
+all these events have gone.  So, what exactly this parameter means in my case and why did it help ?
+Thank you, Sasha.
+----------------------------------------
+
+REPLY 2 (by anikiten @ 2024-07-25T11:32:04.796Z):
+sorry,
+when I added option
+–cminDefaultMinimizerTolerance 0.5
+I saw that default is 0.1
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 3 (by kcormier @ 2024-07-29T08:41:06.078Z):
+Hi Sasha,
+The --cminDefaultMinimizerTolerance sets how close the minimizer needs to think it is to the true minimum in order to consider that a fit has succeeded. The minimizer estimates an “estimated distance to minimum” (EDM) and requires this to be below a certain threshold in order to consider a fit succesful. Exactly what role this is playing in your fit is not clear to me without more information.
+When you say “a significance much larger than 5.0”, is that, e.g. 7? Or is it e.g. 30k? In some cases, such as for negative pdf values the program may perform a fast exit and return a very large NLL. I’m not sure if this is whats happening your case. If the values are very large, I suspect its more likely that this is due to some mode of fit failure than any information about the “true” deltaNLL.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2024-07-29T09:36:25.442Z):
+Hi Kyle,
+thank you for your answer and hint about effect of negative pdf.
+I do have DeltaNLL = 2996 or 1517, which I guess due to fast exit,
+as you said.  I have also DeltaNLL = 25.5, significance = 6.7. In that case
+fit gives be very large number of signal events (80 in SR1 and 84 in SR3),
+but looking at dimuon mass distribution I do not see any bumps in my mass range of 25-30 GeV…  When I change --cminDefaultMinimizerTolerance from 0.1 to 0.2 it gives be small Delta NLL less than 0.2 and reasonably small number of the signal events.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 5 (by kcormier @ 2024-07-29T09:49:55.412Z):
+Hi Sasha,
+As a first step, I would suggest you look at the postfit predictions for those fits. That should give you a sense pretty quickly which of those fits is actually describing the data more accurately and which has issues and what the fit is actually finding.
+Depending on the frequency of the large DeltaNLL and the unstable behaviour of the significance though, it could be that the changes when you change the tolerance are a symptom of a larger instability in the fit or fit model rather than the real issue itself.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2024-07-29T09:56:01.882Z):
+Hi Kyle,
+saying “postfit predictions” do you mean the best fit parameters of my model, like number of signal events, mass, width, which I get in printout after fit is finished ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 7 (by kcormier @ 2024-07-29T10:02:15.300Z):
+Hi Sasha,
+I was rather referring to the pdfs postfit, and comparing them to data to see what the description of the data looks like compared to the pdf.
+Best,
+Kyle
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2024-07-29T10:20:28.205Z):
+Hi Kyle,
+I got it.  I do see that signal model does not fit data at all since it gives a very large number of events, while my toy data distribution (no signal injected, only bkg.) of dimuon mass does not have any such bump in a signal region. I did not check yet how background model looks like after fit.  Could be EDM an indicator that fit is not stable.  For example in “good” toys it is about of 1.e-5  at the end, while in events with large DeltaNLL it is for example order of 1.e-3 or even larger.
+Cheers, Sasha.
+----------------------------------------

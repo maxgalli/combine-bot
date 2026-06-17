@@ -1,0 +1,38 @@
+TOPIC: Combine pull plot: pulls vs fit
+URL: https://cms-talk.web.cern.ch/t/31239
+DATE: 2023-11-02T17:20:32.927Z
+SOLVED: no
+============================================================
+
+QUESTION (by astepenn @ 2023-11-02T17:20:33.350Z):
+Dear experts,
+I’m trying to interpret the plot made by combine with various uncertainties summary, described here [1]. The first column after list of uncertainties sources contains pulls and fits across each source. What is the difference between those two? Pulls are supposed to be the optimal value for parameters in the fit, but then what do the fit points stand for?
+kind regards,
+Anton
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters-and-pulls
+Screenshot 2023-11-02 at 6.14.24 PM1664×672 91.4 KB
+----------------------------------------
+
+REPLY 2 (by vischia @ 2023-11-02T17:46:31.000Z):
+Hi Anton,
+they correspond to the two formulas in the x axis legend (the black and the blue). One is the significance of the difference between prefit and postfit (thetahat - theta_input)/sigma_input, the other is the pull (or “the actual pull”, depending on how you feel about what should be correctly called “pull”) calculated propagating the two uncertainties on thetahat and theta_input assuming 100% correlation (hence the minus sign, see section 2.2. of https://hep-physics.rockefeller.edu/~luc/technical_reports/cdf5776_pulls.pdf ).
+Cheers,
+Pietro
+
+···
+Please note that, regardless of when I sent this email, I don’t expect you to answer me outside of the regular working hours of your local time zone.
+Dr. Pietro Vischia
+Ramón y Cajal Senior Researcher, Universidad de Oviedo
+https://vischia.github.io
+mobile: +34 666 986 616
+office: +34 985 106 252
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 3 (by astepenn @ 2023-11-16T16:21:45.040Z):
+Hi Pietro,
+Thank you!
+kind regards,
+Anton
+----------------------------------------

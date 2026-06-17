@@ -1,0 +1,66 @@
+TOPIC: How to use combine with DATA only
+URL: https://cms-talk.web.cern.ch/t/19142
+DATE: 2023-01-12T12:05:28.267Z
+SOLVED: no
+============================================================
+
+QUESTION (by santocch @ 2023-01-12T12:05:28.732Z):
+Hello,
+I’m new to combine and I have a very naive question because looking at the documentation and tutorials I was not able to find any suggestion on what I’d like to do.
+Suppose I have a DATA distribution of some variable and I divide the full set of events in 2 subset using a cut (it could be a kinematic cut but also, for example, 2 subset taken in 2 different time periods). I’d like to test if there is a significative deviation among the 2 subset and quote a significance if a deviation is found in the null hypothesis (i.e. I expect no deviation). My first tentative was to use combine and a shape analysis using a very simple datacard (See below) and the command “combine -M Significance myCard.txt”.
+myCard.txt is something like this:
+imax 1
+jmax 1
+kmax *
+
+shapes * * myFile.root $PROCESS
+
+bin test1
+observation 100000
+
+bin               test1         test1
+process        Signal     dataBKGD
+process           0          1
+rate                -1         -1
+
+myFile.root contains 2 TH1D histos: data_obs with the “data” sample (the first subset) and dataBKGD is the secondo histo (the second subset…).
+My questions are:
+
+Is it possible to run such a card to test the null hypothesis WITHOUT the signal shape? (I don’t know what to expect… I just want to check if the 2 distributions are equal or not but combine crash if I dont add a Signal histo). If yes… how?
+If the answer to the previous question is NO… and I add a Signal histo to myFile.root  with some kind of “signal”… using the command “combine -M Significance myCard.txt” is the correct way to test the NULL hypothesis?
+Are nuisance related just to simulated events? Assuming I don’t have any evident systematic correction to implement on DATA (all the nuisance I saw on several datacard used in CMS are related to simulation) is combine taking care correctly of the statistical error or do I have to use the autoMCStats instruction in myCard.txt?
+
+So to conclude, my major point is how to use combine with data only shapes (no simulation in my exercise) and I’m not sure what is the correct approach.
+Thanks for helping
+Attilio
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-01-12T12:53:30.179Z):
+Hi Attilio,
+I think for this kind of test combine might not be the best/easiest tool for the job. If you have two templates, and no systematic uncertainties, then ROOT’s built-in two sample Chi2 (1) or Kolmogorov-Smirnov (2) should be able to give you a compatibility p-value.
+To do something similar with combine you could try:
+
+treating the dataBKGD as a sole signal process, and run text2workspace.py with --X-allow-no-background
+
+You’ll need autoMCStats to incorporatate the stat uncertainties into the model
+The Significance mode of combine assumes you have some kind of signal strength parameter, and does the specific test documented here (3), so I don’t think it’s what you want in this case.
+Instead I think you want the GoodnessOfFit mode, documented here (4), adding --fixedSignalStrength=1, since you’re not interested in varying the model normalisation. In the end, I expect this will behave very similarly to the built-in ROOT tests above.
+
+Hope this helps.
+cheers,
+Andrew
+(1)
+https://root.cern.ch/doc/master/classTH1.html#ab7d63c7c177ccbf879b5dc31f2311b27
+(2)
+https://root.cern.ch/doc/master/classTH1.html#aeadcf087afe6ba203bcde124cfabbee4
+(3)
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#asymptotic-significances
+(4)
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests
+----------------------------------------
+
+REPLY 3 (by santocch @ 2023-01-12T13:03:42.133Z):
+Thanks a lot for the quick suggestion… let me try what you suggest and if I need more help I’ll write again.
+Best
+Attilio
+----------------------------------------

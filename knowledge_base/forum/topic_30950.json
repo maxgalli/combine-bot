@@ -1,0 +1,122 @@
+{
+  "topic_id": 30950,
+  "title": "multSignalModel",
+  "url": "https://cms-talk.web.cern.ch/t/30950",
+  "category_id": 279,
+  "created_at": "2023-10-25T14:54:01.834Z",
+  "last_posted_at": "2023-10-27T13:27:56.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2023-10-25T14:54:02.149Z",
+      "updated_at": "2023-10-25T14:54:02.149Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI have a question about multiSignalModel option.\nI do combined fit in SR1 and SR2. Signal model is the same BW + Gaussian in both SRs\nRooRealVar mean(\u201cmean\u201d,\u201cBW mean\u201d,28.4,25.0,30.0);\nRooRealVar width(\u201cwidth\u201d,\u201cBW width\u201d,1.8,0.0,5.0); // change 5->2\nRooRealVar sigma(\u201csigma\u201d,\u201cdimuon resolution\u201d,0.45,0.45,0.45);\nRooVoigtian sig(\u201csig\u201d, \u201csignal\u201d, dimuonmass2, mean, width, sigma);\nRooRealVar nsig(\u201cnsig\u201d,\u201csignal normalization\u201d,100.,0.0,300.0);\nafter combining cards I run\ntext2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root\ncombine -M MultiDimFit --algo fixed --setParameters r_sig1=0,r_sig2=0 SR1andSR2.root -v 3\nIn the first iteration with signal + bkg fit I got what I expected, but in the second iteration with bkg. only\nfit does not converge with error\nInfo in MnHesse: 2nd derivative zero for Parameter  : name = mean\nInfo: MnHesse fails and will return diagonal matrix\nVariableMetric: After Hessian   - FCN =  -0.341538491259 Edm =  2.00656e-06 NCalls =    368\nVariableMetric: Iteration #  11 - FCN =  -0.341538491259 Edm =  2.00656e-06 NCalls =    368\nInfo in Minuit2Minimizer::Minimize : Minimization did NOT converge, Hesse is not valid\nMinuit2Minimizer : Invalid Minimum - status = 2\nSo, my question is. It looks like in the second iteration with  zero r_sig1 and r_sig2 fit still try the signal parameter \u201cmean\u201d and does not converge.  Why it is trying to vary \u201cmean\u201d is signal strength is set to zero ?  Should I also somehow set \u201cmean\u201d and \u201cwidth\u201d to zero ?\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I have a question about multiSignalModel option.</p>\n<p>I do combined fit in SR1 and SR2. Signal model is the same BW + Gaussian in both SRs</p>\n<p>RooRealVar mean(\u201cmean\u201d,\u201cBW mean\u201d,28.4,25.0,30.0);<br>\nRooRealVar width(\u201cwidth\u201d,\u201cBW width\u201d,1.8,0.0,5.0); // change 5-&gt;2<br>\nRooRealVar sigma(\u201csigma\u201d,\u201cdimuon resolution\u201d,0.45,0.45,0.45);<br>\nRooVoigtian sig(\u201csig\u201d, \u201csignal\u201d, dimuonmass2, mean, width, sigma);<br>\nRooRealVar nsig(\u201cnsig\u201d,\u201csignal normalization\u201d,100.,0.0,300.0);</p>\n<p>after combining cards I run</p>\n<p>text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root</p>\n<p>combine -M MultiDimFit --algo fixed --setParameters r_sig1=0,r_sig2=0 SR1andSR2.root -v 3</p>\n<p>In the first iteration with signal + bkg fit I got what I expected, but in the second iteration with bkg. only<br>\nfit does not converge with error</p>\n<p>Info in MnHesse: 2nd derivative zero for Parameter  : name = mean<br>\nInfo: MnHesse fails and will return diagonal matrix<br>\nVariableMetric: After Hessian   - FCN =  -0.341538491259 Edm =  2.00656e-06 NCalls =    368<br>\nVariableMetric: Iteration #  11 - FCN =  -0.341538491259 Edm =  2.00656e-06 NCalls =    368<br>\nInfo in Minuit2Minimizer::Minimize : Minimization did NOT converge, Hesse is not valid<br>\nMinuit2Minimizer : Invalid Minimum - status = 2</p>\n<p>So, my question is. It looks like in the second iteration with  zero r_sig1 and r_sig2 fit still try the signal parameter \u201cmean\u201d and does not converge.  Why it is trying to vary \u201cmean\u201d is signal strength is set to zero ?  Should I also somehow set \u201cmean\u201d and \u201cwidth\u201d to zero ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-10-26T09:26:09.814Z",
+      "updated_at": "2023-10-26T09:26:09.814Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nYou should add the --freezeParameters mean,width option so Combine does not complain when you evaluate the likelihood with signal fixed to 0.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>You should add the <code>--freezeParameters mean,width</code> option so <code>Combine</code> does not complain when you evaluate the likelihood with signal fixed to 0.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-10-26T09:44:06.163Z",
+      "updated_at": "2023-10-26T09:44:58.799Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nI thought about it a bit more and this  --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width would be better (and you can remove --setParameters r_sig1=0,r_sig2=0). Because --freezeParameters mean,width actually affects the best-fit point.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>I thought about it a bit more and this <code> --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width</code> would be better (and you can remove <code>--setParameters r_sig1=0,r_sig2=0</code>). Because <code>--freezeParameters mean,width</code> actually affects the best-fit point.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2023-10-26T09:57:29.455Z",
+      "updated_at": "2023-10-26T09:57:29.455Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya,\nit works !\ncombine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width SR1andSR2.root -v 3\nThank you so much, I am very happy that we got it running !\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Aliya,</p>\n<p>it works !</p>\n<p>combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width SR1andSR2.root -v 3</p>\n<p>Thank you so much, I am very happy that we got it running !</p>\n<p>Cheers, Sasha.</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2023-10-27T09:27:01.938Z",
+      "updated_at": "2023-10-27T09:27:01.938Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya,\nin the first iteration of MultiDimFit I would like to fix mass and width to some values and vary only two signal strengths in SR1 and SR2\nHow should I modify command\ntext2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root\nThanks, Sasha.",
+      "cooked_html": "<p>Hi Aliya,</p>\n<p>in the first iteration of MultiDimFit I would like to fix mass and width to some values and vary only two signal strengths in SR1 and SR2</p>\n<p>How should I modify command</p>\n<p>text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-10-27T09:38:40.954Z",
+      "updated_at": "2023-10-27T09:38:40.954Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\ntext2Workspace command stays the same, you just need to set and freeze the parameters in the MultiDimFit:\ncombine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --setParameters mean=mean_val,width=width_val --freezeParameters mean,width SR1andSR2.root -v 3\nCheers,\nAliya",
+      "cooked_html": "<p>Hi Sasha,<br>\ntext2Workspace command stays the same, you just need to set and freeze the parameters in the MultiDimFit:<br>\n<code>combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --setParameters mean=mean_val,width=width_val --freezeParameters mean,width SR1andSR2.root -v 3</code></p>\n<p>Cheers,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2023-10-27T09:43:56.000Z",
+      "updated_at": "2023-10-27T09:46:58.713Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nTo do that, you can add --setParameters mean=XXX,sigmaYYY ``--freezeParameters mean,sigma to your combine command (not the text2workspace one).\nCheers,\nGiacomo\n\nOn 27 Oct 2023, at 11:28, Alexandre Nikitenko via CMS talk <noreply@cms-talk.web.cern.ch> wrote:\n\nAlexandre Nikitenko anikitenOctober 27\n\nHi Aliya,\nin the first iteration of MultiDimFit I would like to fix mass and width to some values and vary only two signal strengths in SR1 and SR2\nHow should I modify command\ntext2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root\nThanks, Sasha.\n\nVisit Topic or reply to this email to respond.\n\nPrevious Replies\n\nAlexandre Nikitenko anikitenOctober 26\n\nHi Aliya,\nit works !\ncombine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width SR1andSR2.root -v 3\nThank you so much, I am very happy that we got it running !\nCheers, Sasha.\n\nAliya Nigamova anigamovOctober 26\n\nHi Sasha,\nI thought about it a bit more and this --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,widthwould be better (and you can remove --setParameters r_sig1=0,r_sig2=0). Because --freezeParameters mean,width actually affects the best-fit point.\nBest,\nAliya\n\nAliya Nigamova anigamovOctober 26\n\nDear Sasha,\nYou should add the --freezeParameters mean,width option so Combine does not complain when you evaluate the likelihood with signal fixed to 0.\nBest,\nAliya\n\nAlexandre Nikitenko anikitenOctober 25\n\nDear experts,\nI have a question about multiSignalModel option.\nI do combined fit in SR1 and SR2. Signal model is the same BW + Gaussian in both SRs\nRooRealVar mean(\u201cmean\u201d,\u201cBW mean\u201d,28.4,25.0,30.0);\nRooRealVar width(\u201cwidth\u201d,\u201cBW width\u201d,1.8,0.0,5.0); // change 5->2\nRooRealVar sigma(\u201csigma\u201d,\u201cdimuon resolution\u201d,0.45,0.45,0.45);\nRooVoigtian sig(\u201csig\u201d, \u201csignal\u201d, dimuonmass2, mean, width, sigma);\nRooRealVar nsig(\u201cnsig\u201d,\u201csignal normalization\u201d,100.,0.0,300.0);\nafter combining cards I run\ntext2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root\ncombine -M MultiDimFit --algo fixed --setParameters r_sig1=0,r_sig2=0 SR1andSR2.root -v 3\nIn the first iteration with signal + bkg fit I got what I expected, but in the second iteration with bkg. only\nfit does not converge with error\nInfo in MnHesse: 2nd derivative zero for Parameter : name = mean\nInfo: MnHesse fails and will return diagonal matrix\nVariableMetric: After Hessian - FCN = -0.341538491259 Edm = 2.00656e-06 NCalls = 368\nVariableMetric: Iteration # 11 - FCN = -0.341538491259 Edm = 2.00656e-06 NCalls = 368\nInfo in Minuit2Minimizer::Minimize : Minimization did NOT converge, Hesse is not valid\nMinuit2Minimizer : Invalid Minimum - status = 2\nSo, my question is. It looks like in the second iteration with zero r_sig1 and r_sig2 fit still try the signal parameter \u201cmean\u201d and does not converge. Why it is trying to vary \u201cmean\u201d is signal strength is set to zero ? Should I also somehow set \u201cmean\u201d and \u201cwidth\u201d to zero ?\nThanks, Sasha.\n\nVisit Topic or reply to this email to respond.\nYou are receiving this because you enabled mailing list mode.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>To do that, you can add <code>--setParameters mean=XXX,sigmaYYY ``--freezeParameters mean,sigma </code>to your combine command (not the text2workspace one).</p>\n<p>Cheers,<br>\nGiacomo</p>\n<blockquote>\n<p>On 27 Oct 2023, at 11:28, Alexandre Nikitenko via CMS talk &lt;<a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a>&gt; wrote:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/e99b99/45.png\" title=\"anikiten\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anikiten\">Alexandre Nikitenko</a> anikiten<br>October 27</th>\n</tr>\n</thead>\n</table>\n</div><p>Hi Aliya,</p>\n<p>in the first iteration of MultiDimFit I would like to fix mass and width to some values and vary only two signal strengths in SR1 and SR2</p>\n<p>How should I modify command</p>\n<p>text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root</p>\n<p>Thanks, Sasha.</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/multsignalmodel/30950/5\">Visit Topic</a> or reply to this email to respond.</p>\n<hr>\n<h4>Previous Replies</h4>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/e99b99/45.png\" title=\"anikiten\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anikiten\">Alexandre Nikitenko</a> anikiten<br>October 26</th>\n</tr>\n</thead>\n</table>\n</div><p>Hi Aliya,</p>\n<p>it works !</p>\n<p>combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width SR1andSR2.root -v 3</p>\n<p>Thank you so much, I am very happy that we got it running !</p>\n<p>Cheers, Sasha.</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/b77776/45.png\" title=\"anigamov\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anigamov\">Aliya Nigamova</a> anigamov<br>October 26</th>\n</tr>\n</thead>\n</table>\n</div><p>Hi Sasha,</p>\n<p>I thought about it a bit more and this <code>--fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width</code>would be better (and you can remove <code>--setParameters r_sig1=0,r_sig2=0</code>). Because <code>--freezeParameters mean,width</code> actually affects the best-fit point.</p>\n<p>Best,<br>\nAliya</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/b77776/45.png\" title=\"anigamov\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anigamov\">Aliya Nigamova</a> anigamov<br>October 26</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear Sasha,</p>\n<p>You should add the <code>--freezeParameters mean,width</code> option so <code>Combine</code> does not complain when you evaluate the likelihood with signal fixed to 0.</p>\n<p>Best,<br>\nAliya</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/e99b99/45.png\" title=\"anikiten\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anikiten\">Alexandre Nikitenko</a> anikiten<br>October 25</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear experts,</p>\n<p>I have a question about multiSignalModel option.</p>\n<p>I do combined fit in SR1 and SR2. Signal model is the same BW + Gaussian in both SRs</p>\n<p>RooRealVar mean(\u201cmean\u201d,\u201cBW mean\u201d,28.4,25.0,30.0);<br>\nRooRealVar width(\u201cwidth\u201d,\u201cBW width\u201d,1.8,0.0,5.0); // change 5-&gt;2<br>\nRooRealVar sigma(\u201csigma\u201d,\u201cdimuon resolution\u201d,0.45,0.45,0.45);<br>\nRooVoigtian sig(\u201csig\u201d, \u201csignal\u201d, dimuonmass2, mean, width, sigma);<br>\nRooRealVar nsig(\u201cnsig\u201d,\u201csignal normalization\u201d,100.,0.0,300.0);</p>\n<p>after combining cards I run</p>\n<p>text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2/sig:r_sig2[1,0,200]\u2019 SR1andSR2.txt -o SR1andSR2.root</p>\n<p>combine -M MultiDimFit --algo fixed --setParameters r_sig1=0,r_sig2=0 SR1andSR2.root -v 3</p>\n<p>In the first iteration with signal + bkg fit I got what I expected, but in the second iteration with bkg. only<br>\nfit does not converge with error</p>\n<p>Info in MnHesse: 2nd derivative zero for Parameter : name = mean<br>\nInfo: MnHesse fails and will return diagonal matrix<br>\nVariableMetric: After Hessian - FCN = -0.341538491259 Edm = 2.00656e-06 NCalls = 368<br>\nVariableMetric: Iteration # 11 - FCN = -0.341538491259 Edm = 2.00656e-06 NCalls = 368<br>\nInfo in Minuit2Minimizer::Minimize : Minimization did NOT converge, Hesse is not valid<br>\nMinuit2Minimizer : Invalid Minimum - status = 2</p>\n<p>So, my question is. It looks like in the second iteration with zero r_sig1 and r_sig2 fit still try the signal parameter \u201cmean\u201d and does not converge. Why it is trying to vary \u201cmean\u201d is signal strength is set to zero ? Should I also somehow set \u201cmean\u201d and \u201cwidth\u201d to zero ?</p>\n<p>Thanks, Sasha.</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/multsignalmodel/30950/5\">Visit Topic</a> or reply to this email to respond.</p>\n<p>You are receiving this because you enabled mailing list mode.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/e5593807802e279e11b7b7d2e64195ca19f8a1d08b2ed0b46347b89896e58cfe\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 8,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2023-10-27T10:18:46.710Z",
+      "updated_at": "2023-10-27T10:18:46.710Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya, Giacomo,\nsomething does not work as expected\u2026\nso far with floating mean and width I used command\ncombine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width SR1andSR2.root -v 3\non advice of Aliya I set mean=25,width=0 in order to avoid to vary these parameters in the second fit iteration with zero signal.\nnow I want to fix in the first iteration  mean = 27.2 and width 1.8.\nHow command should looks now ?  Please, write en explicit line.\nThanks, Sasha.",
+      "cooked_html": "<p>Hi Aliya, Giacomo,</p>\n<p>something does not work as expected\u2026</p>\n<p>so far with floating mean and width I used command</p>\n<p>combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0,mean=25,width=0 --redefineSignalPOIs r_sig1,r_sig2,mean,width SR1andSR2.root -v 3</p>\n<p>on advice of Aliya I set mean=25,width=0 in order to avoid to vary these parameters in the second fit iteration with zero signal.</p>\n<p>now I want to fix in the first iteration  mean = 27.2 and width 1.8.</p>\n<p>How command should looks now ?  Please, write en explicit line.</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-10-27T13:01:41.693Z",
+      "updated_at": "2023-10-27T13:01:41.693Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha, if I understood you correctly and you want to run the best-fit with the width and peak parameters fixed  the following should work:\ncombine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --setParameters mean=27.2,width=1.8 --freezeParameters mean,width SR1andSR2.root -v 3\nBest,\nAliya",
+      "cooked_html": "<p>Hi Sasha, if I understood you correctly and you want to run the best-fit with the width and peak parameters fixed  the following should work:</p>\n<p>combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --setParameters mean=27.2,width=1.8 --freezeParameters mean,width SR1andSR2.root -v 3</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 10,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2023-10-27T13:27:56.000Z",
+      "updated_at": "2023-10-27T13:33:31.752Z",
+      "reply_to_post_number": 9,
+      "is_accepted_answer": false,
+      "text": "Thanks, Aliya, it works as expected !\nCheers, Sasha.\n\n\u00b7\u00b7\u00b7\n\nFrom: Aliya Nigamova via CMS talk noreply@cms-talk.web.cern.ch\nSent: Friday, October 27, 2023 15:02\nTo: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch\nSubject: [Common Analysis Tools/Statistical Interpretation Tools] multSignalModel\n\nAliya Nigamova anigamovOctober 27\n\nHi Sasha, if I understood you correctly and you want to run the best-fit with the width and peak parameters fixed the following should work:\ncombine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --setParameters mean=27.2,width=1.8 --freezeParameters mean,width SR1andSR2.root -v 3\nBest,\nAliya\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Thanks, Aliya, it works as expected !<br>\nCheers, Sasha.</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<hr>\n<p><strong>From:</strong> Aliya Nigamova via CMS talk <a href=\"mailto:noreply@cms-talk.web.cern.ch\">noreply@cms-talk.web.cern.ch</a><br>\n<strong>Sent:</strong> Friday, October 27, 2023 15:02<br>\n<strong>To:</strong> Alexandre Nikitenko <a href=\"mailto:Alexandre.Nikitenko@cern.ch\">Alexandre.Nikitenko@cern.ch</a><br>\n<strong>Subject:</strong> [Common Analysis Tools/Statistical Interpretation Tools] multSignalModel</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img title=\"anigamov\" width=\"45\" height=\"45\" src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/b77776/45.png\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/anigamov\">Aliya Nigamova</a> anigamov<br>October 27</th>\n</tr>\n</thead>\n</table>\n</div><p>Hi Sasha, if I understood you correctly and you want to run the best-fit with the width and peak parameters fixed the following should work:</p>\n<p>combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --setParameters mean=27.2,width=1.8 --freezeParameters mean,width SR1andSR2.root -v 3</p>\n<p>Best,<br>\nAliya</p>\n<p><a href=\"https://cms-talk.web.cern.ch/t/multsignalmodel/30950/9\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/dace8affa42b48fb29b9397e49393ee370cd3d80a536b83b75a21b547cba0932\">click here</a>.</p>\n<hr>\n</details>"
+    }
+  ]
+}

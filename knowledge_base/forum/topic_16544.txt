@@ -1,0 +1,216 @@
+TOPIC: Question about upper limits
+URL: https://cms-talk.web.cern.ch/t/16544
+DATE: 2022-10-20T16:16:51.745Z
+SOLVED: no
+============================================================
+
+QUESTION (by lguzzi @ 2022-10-20T16:16:51.968Z):
+Dear combine experts,
+I am working on the search for \tau\to3\mu events in Run2 data. In a nutshel, we look for an accumulation of events around the tau mass (1.78 GeV) in the signal candidates invariant mass distribution. The analysis goal is to set an upper limit on the \tau\to3\mu branching fraction, and we do this using combine.
+After unblinding the data, I see a possible inconsistency in my results in one category of the analysis (called A18):
+
+expected UL 90%CL -2sigma: 0.909
+
+expected UL 90%CL -1sigma: 0.970
+
+expected UL 90%CL central: 1.198
+
+expected UL 90%CL +1sigma: 1.790
+
+expected UL 90%CL +2sigma: 2.708
+
+observed: 1.488
+
+signal strength significance: 3 sigmas
+
+Given the three-sigma significance of the signal strength, should I expect the observed upper limit to be somewhere above the two-sigma expected value? I also tried running with CLsplusb (above is CLs)
+
+expected UL 90%CL -1sigma: 0.197
+
+expected UL 90%CL central: 0.989
+
+expected UL 90%CL +1sigma: 1.653
+
+observed: 1.019
+
+so that the situation is unchanged. I will desribe the datacard preparation process, so that you can help me spot any mistake.
+The datacard [1] is prepared as follows:
+
+fit the blinded distribution (i.e. the signal sidebands, see for example [2]) with the background exponential pdf (bkg) and save the result in the combine workspace (t3m_shapes)
+
+the signal shape (sig) is a gaussian, whose prefit values are fit from a \tau\to3\mu  MC
+
+the expected background rate is obtained from the background prefit as a parameter of the fit (that is, the above mentioned sideband fit is an extended fit and the number of events is a parameter of the fit. NOTE: the bkg pdf saved in the workspace is not extended)
+
+the expected signal rate is obtained from a \tau\to3\mu  MC, normalized to its cross section and luminosity
+
+some MC normalization systematics are included as lnN-constrained nuisance parameters
+
+the signal width is a gaussian-constained parameter (param)
+
+the background slope is a free paramter (flatParam)
+
+the background normalization is a free parameter (rateParam)
+
+the data fed to combine (‘data_obs’) is the distribution of the invariant mass of the signal candidates. In case of expected upper limits, this distribution is instead an Asimov sample generated from the background prefit pdf.
+
+observation is set to the total number of events observed after the unblinding. In case of expected upper limits, it is set to -1
+
+The prefit is shown here [2], the postfit is shown here [3]. Impacts, pulls and likelihood scans are here [4] (this also shows the parameters form the other categories, you can filter either “A18” or any other parameter of the datacard).
+To compute upper limits, I run
+
+>> text2workspace.py datacard.txt -m 1.777 -o datacard.root -D data_obs
+
+>> combine -M HybridNew --testStat=LHC --fitNuisances=X --frequentist datacard.root -T 10000 --expectedFromGrid 0.5 -C 0.9 --plot='limit_combined_hybridnew_{CL}.pdf' --rMin 0 --rMax 10 --setParameterRanges {PAR}"
+
+where {PAR} is a list of paramters ranges needed to help the fits converge [5] (where sigma_A18 is the signal width, a0_A18 is the background slope and bkgNorm_A18 is the bakcground normalization), and X is either 0 (expected) or 1 (observed) (but I believe this has no effect on --testStat=LHC, infact we use an Asimov for the expected limits)
+The significance is computed with
+
+combine -M HybridNew -d datacard.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 10000 --setParameterRanges {PAR}
+
+Do you see something wrong in this procedure?
+thank you,
+best,
+Luca
+[1] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/files/
+[2] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/files/blind/pdf/mass_A18_100bins.pdf
+[3] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/files/unblinded/pdf/Wtau3mu_A18_cand_refit_tau_mass_fit_s.png
+[4] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/nuisances/
+[5] sigma_A18=0.001,0.1:a0_A18=-100,100:bkgNorm_A18=0,10000
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-10-21T08:14:01.000Z):
+Hi Luca,
+Although, the bands and the significance represent different quantities,
+yes, you should see some tensions as well.
+I am not able to replicate your numbers, at the moment:
+For example I get the following observed limits:
+Hybrid limit (observed 90%CL)
+Limit: r < 4.65853 +/- 0.117535 @ 90% CL
+– Hybrid New –
+Limit: r < 5.38617 +/- 0.0440412 @ 95% CL
+which agree with the asymptotic one:
+– AsymptoticLimits ( CLs ) –
+Observed Limit: r < 5.2618
+Expected 2.5%: r < 0.8213
+Expected 16.0%: r < 1.1698
+Expected 50.0%: r < 1.8125
+Expected 84.0%: r < 2.9107
+Expected 97.5%: r < 4.5362
+(in the asymptotic you see that observed is above the 2s expected. I didn’t yet run the expected w/ toys.).
+-Andrea
+On Thu, Oct 20, 2022 at 6:18 PM Luca Guzzi via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Luca Guzzi lguzziOctober 20
+
+Dear combine experts,
+I am working on the search for \tau\to3\mu events in Run2 data. In a nutshel, we look for an accumulation of events around the tau mass (1.78 GeV) in the signal candidates invariant mass distribution. The analysis goal is to set an upper limit on the \tau\to3\mu branching fraction, and we do this using combine.
+After unblinding the data, I see a possible inconsistency in my results in one category of the analysis (called A18):
+
+expected UL 90%CL -2sigma: 0.909
+
+expected UL 90%CL -1sigma: 0.970
+
+expected UL 90%CL central: 1.198
+
+expected UL 90%CL +1sigma: 1.790
+
+expected UL 90%CL +2sigma: 2.708
+
+observed: 1.488
+
+signal strength significance: 3 sigmas
+
+Given the three-sigma significance of the signal strength, should I expect the observed upper limit to be somewhere above the two-sigma expected value? I also tried running with CLsplusb (above is CLs)
+
+expected UL 90%CL -1sigma: 0.197
+
+expected UL 90%CL central: 0.989
+
+expected UL 90%CL +1sigma: 1.653
+
+observed: 1.019
+
+so that the situation is unchanged. I will desribe the datacard preparation process, so that you can help me spot any mistake.
+The datacard [1] is prepared as follows:
+
+fit the blinded distribution (i.e. the signal sidebands, see for example [2]) with the background exponential pdf (bkg) and save the result in the combine workspace (t3m_shapes)
+
+the signal shape (sig) is a gaussian, whose prefit values are fit from a \tau\to3\mu MC
+
+the expected background rate is obtained from the background prefit as a parameter of the fit (that is, the above mentioned sideband fit is an extended fit and the number of events is a parameter of the fit. NOTE: the bkg pdf saved in the workspace is not extended)
+
+the expected signal rate is obtained from a \tau\to3\mu MC, normalized to its cross section and luminosity
+
+some MC normalization systematics are included as lnN-constrained nuisance parameters
+
+the signal width is a gaussian-constained parameter (param)
+
+the background slope is a free paramter (flatParam)
+
+the background normalization is a free parameter (rateParam)
+
+the data fed to combine (‘data_obs’) is the distribution of the invariant mass of the signal candidates. In case of expected upper limits, this distribution is instead an Asimov sample generated from the background prefit pdf.
+
+observation is set to the total number of events observed after the unblinding. In case of expected upper limits, it is set to -1
+
+The prefit is shown here [2], the postfit is shown here [3]. Impacts, pulls and likelihood scans are here [4] (this also shows the parameters form the other categories, you can filter either “A18” or any other parameter of the datacard).
+To compute upper limits, I run
+
+>> text2workspace.py datacard.txt -m 1.777 -o datacard.root -D data_obs
+
+>> combine -M HybridNew --testStat=LHC --fitNuisances=X --frequentist datacard.root -T 10000 --expectedFromGrid 0.5 -C 0.9 --plot='limit_combined_hybridnew_{CL}.pdf' --rMin 0 --rMax 10 --setParameterRanges {PAR}"
+
+where {PAR} is a list of paramters ranges needed to help the fits converge [5] (where sigma_A18 is the signal width, a0_A18 is the background slope and bkgNorm_A18 is the bakcground normalization), and X is either 0 (expected) or 1 (observed) (but I believe this has no effect on --testStat=LHC, infact we use an Asimov for the expected limits)
+The significance is computed with
+
+combine -M HybridNew -d datacard.txt --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 10000 --setParameterRanges {PAR}
+
+Do you see something wrong in this procedure?
+thank you,
+best,
+Luca
+[1] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/files/
+[2] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/files/blind/pdf/mass_A18_100bins.pdf
+[3] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/combine/files/unblinded/pdf/Wtau3mu_A18_cand_refit_tau_mass_fit_s.png
+[4] https://lguzzi.web.cern.ch/lguzzi/Tau3Mu/2017_2018/nuisances/
+[5] sigma_A18=0.001,0.1:a0_A18=-100,100:bkgNorm_A18=0,10000
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by lguzzi @ 2022-10-21T09:36:23.060Z):
+Hi Andrea,
+thank you for your test, can you please post the exact command you run to compute the observed limit?
+cheers,
+Luca
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-10-21T09:51:19.000Z):
+Asymptotic (95%)
+combine -M AsymptoticLimits datacard.root
+
+Hybrid (95%) observed
+combine datacard.root -M HybridNew --LHCmode LHC-limits -T 1000 --setParameterRanges sigma_A18=0.001,0.1:a0_A18=-100,100:bkgNorm_A18=0,10000
+
+-A
+On Fri, Oct 21, 2022 at 11:38 AM Luca Guzzi via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Luca Guzzi lguzziOctober 21
+
+Hi Andrea,
+thank you for your test, can you please post the exact command you run to compute the observed limit?
+cheers,
+Luca
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by lguzzi @ 2022-10-21T10:04:06.900Z):
+Hi Andrea,
+thank you again for the help, I found the problem: I was running observed lmits with --expectedFromGrid 0.5 , which of course makes no sense. Apologies for the time wasted
+best,
+Luca
+----------------------------------------

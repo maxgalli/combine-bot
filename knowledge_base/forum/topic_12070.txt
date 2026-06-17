@@ -1,0 +1,72 @@
+TOPIC: P-value or significance for `ChannelCompatibilityCheck` fits
+URL: https://cms-talk.web.cern.ch/t/12070
+DATE: 2022-06-23T17:08:46.540Z
+SOLVED: no
+============================================================
+
+QUESTION (by ineuteli @ 2022-06-23T17:08:46.846Z):
+Dear Combine Tool experts,
+I would like to compute the p-value or significance directly for the combined fit and for each individual fit performed by combine -M ChannelCompatibilityCheck, without redoing it separately for each channel.
+With --saveFitResult, the ChannelCompatibilityCheck output already contains two RooFitResult objects, from which one can grab the signal strengths. Is there a way to use these results or perhaps a workspace snapshot to directly compute the corresponding p-value?
+Otherwise, could I privately edit the combine tool source code, and add some lines to ChannelCompatibilityCheck::runSpecific that compute the NLL for the B-only fit and compares it to the NLL for each channel fit to obtain the significance as sqrt(2*q0)?
+Or perhaps, I copy something like this routine in Significance::runSignificance for combine -M Significance:
+ProfiledLikelihoodTestStatOpt testStat(*mc_s->GetObservables(), *mc_s->GetPdf(), mc_s->GetNuisanceParameters(),
+nullParamValues, *mc_s->GetParametersOfInterest(), ...);
+Double_t q0 = testStat.Evaluate(data, nullParamValues);
+limit = (q0 > 0 ? sqrt(2*q0) : (uncapped_ ? -sqrt(-2*q0) : 0));
+
+and evaluate it for each channel fit.
+Thanks,
+Izaak
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-06-27T11:44:08.543Z):
+Hi Izaak,
+The easiest way to proceed is to probably do the mapping of POIs to channels via a physics model, instead of relying on the ChannelCompatibilityCheck mode. This way, you could use any of the standard methods (Significance, MultiDimFit) to extract the information you need. The MultiSignalModel could be a straightforward way to do this: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/#multisignalmodel-ready-made-model-for-multiple-signal-processes
+Would this work in your case?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by ineuteli @ 2022-06-27T12:15:18.249Z):
+Hi @agilbert,
+Yes, that would work, but in the end, I added these lines to my local ChannelCompatibilityCheck::runSpecific:
+
+github.com
+
+IzaakWN/HiggsAnalysis-CombinedLimit/blob/b159936853c0d5e4f3c81cc5978725d87a7a0126/src/ChannelCompatibilityCheck.cc#L128-L154
+
+if(doPval_){ // compute significance & p-value
+r->setVal(0); // B-only
+r->setConstant(true);
+std::auto_ptr<RooFitResult> result_nominal_bonly(doFit(*sim, data, minosOneVar, constCmdArg, runMinos_)); // let's run Hesse if we want to run Minos
+if (dynamic_cast<cacheutils::CachingSimNLL*>(nll.get())) {
+static_cast<cacheutils::CachingSimNLL*>(nll.get())->clearConstantZeroPoint();
+}
+double nll_nominal0 = nll->getVal();
+double z = sqrt(2*(nll_nominal0-nll_nominal)); // significance
+pvals_["_ChannelCompatibilityCheck_nominal"] = RooStats::SignificanceToPValue(z); // p-value
+r->setConstant(false);
+Combine::addBranch("pval", &pvals_["_ChannelCompatibilityCheck_nominal"], "pval/D");
+for (std::map<std::string,std::string>::const_iterator it = rs.begin(), ed = rs.end(); it != ed; ++it) {
+RooRealVar *ri = dynamic_cast<RooRealVar*>(w->var(it->second.c_str()));
+ri->setVal(0); // B-only
+ri->setConstant(true);
+std::auto_ptr<RooFitResult> result_bonly(doFit(*newsim, data, minosVars, constCmdArg, runMinos_)); // let's run Hesse if we want to run Minos
+if (dynamic_cast<cacheutils::CachingSimNLL*>(nll.get())) {
+static_cast<cacheutils::CachingSimNLL*>(nll.get())->clearConstantZeroPoint();
+}
+
+This file has been truncated. show original
+
+which redoes the fit for the B-only model per channel. For each individual channel it fixes the corresponding POI to zero, while leaving the others floating. For my purposes, it’s a bit more convenient to do it in one go with one single output file. Hopefully this is indeed the correct way of doing it?
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-06-27T12:19:21.307Z):
+Hi Izaak,
+It looks like it should work, but we can’t generally endorse changes like this without seeing some validation (e.g. using the approaches outlined previously).
+cheers,
+Andrew
+----------------------------------------

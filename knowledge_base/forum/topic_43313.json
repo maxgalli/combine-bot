@@ -1,0 +1,34 @@
+{
+  "topic_id": 43313,
+  "title": "LEE due to mass range [25-30] GeV in dimuon excess analysis SUS-23-011",
+  "url": "https://cms-talk.web.cern.ch/t/43313",
+  "category_id": 279,
+  "created_at": "2024-07-08T17:56:02.157Z",
+  "last_posted_at": "2024-07-08T18:01:59.377Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-08T17:56:02.647Z",
+      "updated_at": "2024-07-08T17:56:02.647Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nwith feldman-cousins method and 300M toys we confirmed a local significance of 4.7 (p-value = 1.3e-6) evaluated with analytical formulae by Vitelles with 3 independent signal strengths (for 6 search regions).\nHowever, when we run feldman-cousins for evaluation global significance due to only the mass range [25-30] GeV (we fixed width to the best fit value of 3.2 GeV) we got definitely wrong p-value =",
+      "cooked_html": "<p>Dear experts,</p>\n<p>with feldman-cousins method and 300M toys we confirmed a local significance of 4.7 (p-value = 1.3e-6) evaluated with analytical formulae by Vitelles with 3 independent signal strengths (for 6 search regions).</p>\n<p>However, when we run feldman-cousins for evaluation global significance due to only the mass range [25-30] GeV (we fixed width to the best fit value of 3.2 GeV) we got definitely wrong p-value =</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-07-08T18:01:59.377Z",
+      "updated_at": "2024-07-08T18:01:59.377Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "\u2026 continue,\nwrong p-value = 0.0145 +/- 0.0011954 , corresponding to  significance 2.2.\nI think it is wrong since in Higgs discovery paper with a local significance 5.0,\nthe global significance in the mass range of 115-130 GeV (15 GeV range) of\n4.6.    The local significances are similar 5.0 vs 4.7 and our mass range is 5 GeV which is 3 times smaller.  We can\u2019t get global significance of 2.2 I think.  In Higgs analysis they had 5 channels and each channel had several event categories.\nSo, we think feldman-cousins give a wrong number for LEE in our case.\nAny comment are very welcome. In the meantime we will build our machinery to evaluate LEE.\nWe run command:\ncombine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 10000 -s -1 --setParameters width=3.2 --freezeParameters width,sigma,r --setParameterRanges mean=25.0,30.0:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1\nCheers, Sasha.",
+      "cooked_html": "<p>\u2026 continue,</p>\n<p>wrong p-value = 0.0145 +/- 0.0011954 , corresponding to  significance 2.2.</p>\n<p>I think it is wrong since in Higgs discovery paper with a local significance 5.0,<br>\nthe global significance in the mass range of 115-130 GeV (15 GeV range) of<br>\n4.6.    The local significances are similar 5.0 vs 4.7 and our mass range is 5 GeV which is 3 times smaller.  We can\u2019t get global significance of 2.2 I think.  In Higgs analysis they had 5 channels and each channel had several event categories.</p>\n<p>So, we think feldman-cousins give a wrong number for LEE in our case.</p>\n<p>Any comment are very welcome. In the meantime we will build our machinery to evaluate LEE.</p>\n<p>We run command:</p>\n<p>combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 10000 -s -1 --setParameters width=3.2 --freezeParameters width,sigma,r --setParameterRanges mean=25.0,30.0:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1</p>\n<p>Cheers, Sasha.</p>"
+    }
+  ]
+}

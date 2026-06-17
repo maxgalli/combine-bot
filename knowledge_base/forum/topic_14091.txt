@@ -1,0 +1,28 @@
+TOPIC: Permanently freeze scale parameters?
+URL: https://cms-talk.web.cern.ch/t/14091
+DATE: 2022-08-19T11:51:49.852Z
+SOLVED: no
+============================================================
+
+QUESTION (by vwachira @ 2022-08-19T11:51:50.034Z):
+Dear combine experts,
+I am working on a combination of four top quark search results, and it turns out that I would need to adjust the luminosity of each analysis to match the most recent measurements. One way that I can think of is to define a new scale parameter that would apply to every process in every combine bin within the datacard, something like this:
+scale_lumi2016 rateParam * * <SOME_VALUE>
+Since this is a scaling parameter to fix integrated luminosity, it should not be free-floating at all, and I want it to be frozen within the workspace file created via text2workspace.py. I don’t want to pass an option --freezeParameters scale_lumi2016 every time I use combine because I may forget to add one sometimes.
+So my question is, is there a way to bake in a scaling parameter and force it to be always frozen, without me having to use --freezeParameters option every time I run combine?
+Regards,
+Vichayanun
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-08-19T12:00:33.464Z):
+Hi,
+lumiscale rateParam * * 1.
+nuisance edit freeze lumiscale
+
+-Andrea
+----------------------------------------
+
+REPLY 3 (by vwachira @ 2022-08-19T12:05:52.965Z):
+Thanks! I’ll try this one.
+-Vichayanun
+----------------------------------------

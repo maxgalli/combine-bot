@@ -1,0 +1,85 @@
+TOPIC: Uncertainties when gmN = 0
+URL: https://cms-talk.web.cern.ch/t/10079
+DATE: 2022-05-04T19:07:50.602Z
+SOLVED: no
+============================================================
+
+QUESTION (by vhegde @ 2022-05-04T19:07:50.829Z):
+Dear experts,
+In our SUSY search we estimate top backgrounds using 1 lepton CR which is modeled using gmN parameter in the datacard.
+Top prediction = N_data_1l * TF, where TF is the transfer factor obtained from MC and it is about 0.5.
+We also have another CR which is also included in the datacards. A simplified datacard is shown here [1].
+To get the predictions we mask the SR and run the fit using these commands [2]. Then, in the fitDiagnostics.root file we look at “top” histogram in shapes_fit_b → ch1_ch1_SR_WHT_8. The prediction we get is 5.90312e-08 with an uncertainty 0.000189. The prediction seems reasonable but we don’t understand the uncertainty. I would have expected an uncertainty close to 1.8 * TF = 1.8 * 0.5 = 0.9. We are using 1.8 based on the twiki https://twiki.cern.ch/twiki/bin/view/CMS/PoissonErrorBars .
+Just for the sake of testing, if I change gmN 0 to gmN 1 and change the rate in SR to 0.5 instead of 1e-6, I get prediction of 0.5 with an uncertainty 0.469. This seems reasonable to us, although we don’t understand why this is saved as TH1 instead of TGraphAssymmetric errors.
+Could you please explain how the gmN uncertainties are reported when the data yield is 0? Are we missing some info or recipe here?
+Thanks in advance,
+Vinay
+[1]
+imax 2 number of bins
+jmax * number of processes minus 1
+kmax * number of nuisance parameters
+----------------------------------------------------------------------------------------------------------------------------------
+bin          ch1_SR_WHT_8    ch1_CR_antiT_WHT_8
+observation  1               8
+----------------------------------------------------------------------------------------------------------------------------------
+bin                                 ch1_SR_WHT_8     ch1_SR_WHT_8     ch1_SR_WHT_8  ch1_CR_antiT_WHT_8  ch1_CR_antiT_WHT_8  ch1_CR_antiT_WHT_8
+process                             sig              top              nonres        sig                 top                 nonres
+process                             0                1                2                0                  1                    2
+rate                                3.69682          1e-6             0.78231       0.262264        1.22191         6.82084
+----------------------------------------------------------------------------------------------------------------------------------
+Top_WHT_SR8             gmN  0      -                0.5              -         -           -               -
+stNonres_WHT_SR8        lnN         -                -                1.28096       -           -           -
+stSig_WHT_SR8           lnN         1.01847          -                -             -           -           -
+stTop_WHT_SR5           lnN         -                1.23459          -             -           -           -
+Top_WHT_0l_antiT8       gmN  3      -                -            -         -           0.407303        -
+stNonres_WHT_0l_antiT8  lnN         -                -            -         -           -           1.07021
+stSig_WHT_0l_antiT8     lnN         -                -                -         1.06735         -           -
+stTop_WHT_0l_antiT5     lnN         -                -            -         -           1.12201     -
+
+[2]
+combineCards.py card.txt -S > shapecard.txt
+text2workspace.py shapecard.txt --channel-masks
+combine shapecard.root -M FitDiagnostics --saveShapes --saveWithUncertainties --setParameters rgx{mask_.*SR_WHT_.*}=1 --minos all --cminDefaultMinimizerStrategy 0
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-05-04T19:38:51.014Z):
+Hi Vinay,
+a gamma uncertainty with observed 0 events is equivalent to a CR with 0 events.
+In combine this is implemented with a Poisson constraint with fixed counts to 0.
+L = L_SR(  … + TF * lambda … +… ) * Poisson (0 | lambda).
+The likelihood of this type has the unfortunate problematic of not having a local minima, but having it at the boundary. I.e.:
+-2logL ~   … 2*lambda    ( with lambda >0)
+as you can see, you cannot define an hessian matrix there, since you are at the boundary or if you insist and slightly move the derivative (and the hessian) in lambda are still 0 (the other part of the likelihood shouldn’t be able to constrain it).
+Combine usually evaluates the profile likelihood for results (e.g. -M MultiDimFit) or resample the hessian (covariance) matrix to derive the postfit uncertainties, iirc.
+For this case it would be better to use toys (e.g. -M HybridNew) which are the ones that should give you back the right confidence region.
+Notice that you are essentially forced in this case to use strategy 0, otherwise the fit will complain.
+(because the parameters are at the boundary and there are null derivatives of the hessian)
+For postfit shapes, I think one needs to run and resample toys directly, though I think this procedure is not implemented in FitDiagnostics, but often analysis do this.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 3 (by hatake @ 2022-05-13T22:05:14.594Z):
+Hi Andrea,
+Thank you for your response on this.
+So, we understand that there is no straightforward way to get a meaningful uncertainty for this category of background in these bins with 0 CR event from fitDiagnostics for the reason you described. Therefore, for plotting and making tables for background estimation, in this case we are planning to quote TF*[0 -0 +1.8] based on https://twiki.cern.ch/twiki/bin/view/CMS/PoissonErrorBars. This uncertainty is not meant to be used as inputs to computing limits. This seems improvement over quoting basically 0±0 for this specific. Does this sound reasonable?
+Ken
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-05-16T12:53:51.552Z):
+Hi,
+yes, you are correct. For making tables and plots, your suggestion seems fine, as the Garwood range represents the frequentist confidence interval for the Poisson expectations w/ 0 event counts.
+Quoting 0+/-0 is not correct as this is actually an artifact of the hessian estimation.
+For limits computation, it is always better to check the limits also with the Hybrid toys.
+There still may be some difference in how we run hybrid toys and a full frequentist construction.
+Cheers,
+-Andrea
+----------------------------------------
+
+REPLY 5 (by hatake @ 2022-05-17T10:19:30.576Z):
+Hi Andrea,
+Thank you for your response. Sounds good.
+As for limits, we agree. We checked the Asymptotic vs Hybrid toys for a few points, and they agreed within 5%, so I think this is good.
+Thank you,
+Ken
+----------------------------------------

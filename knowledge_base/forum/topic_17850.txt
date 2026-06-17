@@ -1,0 +1,77 @@
+TOPIC: High uncertainty on r in pull-impacts
+URL: https://cms-talk.web.cern.ch/t/17850
+DATE: 2022-11-22T14:33:47.950Z
+SOLVED: no
+============================================================
+
+QUESTION (by snandan @ 2022-11-22T14:33:48.106Z):
+Dear experts,
+I am trying to run pull and impacts where I see large one sided uncertainty on r. I tried many options in CH like robustFit, robust Hese, changing r range, maxFailedSteps but nothing worked. I put my datcards here
+/afs/cern.ch/user/s/snandan/public/pull_800_spin2/ and also attached the pul-impacts plot herewith
+pulls_impacts__poi_r__params_r1.0_r_gghh1.0_r_qqhh1.0_kl1.0_kt1.0_CV1.0_C2V1.0__mcstats.pdf (38.0 KB)
+The command which I ran usually is something like this
+combine --method MultiDimFit datcard_file --verbose 1
+–mass 125.0 --seed 0 --snapshotName MultiDimFit --redefineSignalPOIs r --setParameterRanges r=-10000,10000
+–robustFit 1 --maxFailedSteps 10
+–setParameters r=1.0 --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4
+–X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo singles --saveFitResult
+It would be nice if someone tells what is going wrong and how to solve it.
+Thanks and Regards,
+Saswati
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-11-24T10:42:18.195Z):
+It seems that the initial fit was unable to find the correct crossing.
+Maybe you can set an adequate range on r and retry?
+-Andrea
+----------------------------------------
+
+REPLY 3 (by snandan @ 2022-11-24T11:01:50.749Z):
+Dear experts,
+I tried to understand the reason in more detail. So in my case I have 6 regions, I looked at pulls and impacts for one region separately and I see same thing there also. I have attached plot herewith.
+pull_HH_resolved_2b.pdf (29.6 KB)
+For this I used --robustHesse 1 option and I see some error like this
+Running Minos for POI
+Error in <ROOT::Math::Fitter::CalculateMinosErrors>: Minos error calculation failed for all parameters
+>> Found 106 floating parameters
+>> The following parameters are protected in the event of negative eigenvalues: r
+>> Verifying eigenvalues are all positive (iteration 0)
+>> All eigenvalues are positive
+>> Inverting Hessian...
+>> Matrix inverted
+
+--- MultiDimFit ---
+Parameter impacts:
+Parameter          :   Best-fit               r
+CMS_bbwwsl_tt_norm :   -0.000  +0.000/+0.031  +0.000/+0.008
+
+So I thought there is some problem in CMS_bbwwsl_tt_norm. So I did a scan of this parameter using the command
+combine datacard -M MultiDimFit --algo grid --points 100
+--setParameterRanges CMS_bbwwsl_tt_norm=-7,7 -m 125
+-P CMS_bbwwsl_tt_norm
+-t -1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --cminDefaultMinimizerStrategy=1
+
+and the plot is attached also.
+scan.pdf (14.6 KB)
+I don’t see any problem in this scan or I am missing something? Same thing happened for other region also. It would be nice if someone tells what is wrong that uncertainty on r is so large.
+Thanks and Regards,
+Saswati
+----------------------------------------
+
+REPLY 4 (by snandan @ 2022-11-24T11:02:55.811Z):
+Hi Andrea,
+Sorry I missed your email, just after sending my last email, I saw you email. Extremely sorry.
+Thanks,
+Saswati
+----------------------------------------
+
+REPLY 5 (by snandan @ 2022-11-24T12:21:51.239Z):
+Hi @amarini
+I tried different range of r like 100,200,500,600,10000,100000 but every time the result is same and I get some error for CMS_bbwwsl_tt_norm which I mentioned in my last email. I am pasting the commands which I run here
+combine workspace.root --verbose 1 --mass 125.0 --seed 0 --toys -1 --redefineSignalPOIs r --setParameterRanges r=-200,200 --robustHesse 1 --maxFailedSteps 10 --setParameters r=1.0, --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4 --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo singles --saveFitResult
+
+combine workspace.root --verbose 1 --mass 125.0 --seed 2 --toys -1 --redefineSignalPOIs r --setParameterRanges r=-200,200 --robustHesse 1 --maxFailedSteps 10 --setParameters r=1.0 --saveNLL --cminDefaultMinimizerType Minuit2 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance 0.1 --cminFallbackAlgo Minuit2,0:0.2 --cminFallbackAlgo Minuit2,0:0.4
+--X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --algo impact --parameters BR_htt --floatOtherPOIs 1 --saveInactivePOI 1
+
+The last command is run for all systematics, only the -parameters and --seed are changed. Can you please tell whether these commands are okay and what else I should check?
+----------------------------------------

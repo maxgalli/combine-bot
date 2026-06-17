@@ -1,0 +1,23 @@
+{
+  "topic_id": 141928,
+  "title": "Next Combine tutorial",
+  "url": "https://cms-talk.web.cern.ch/t/141928",
+  "category_id": 279,
+  "created_at": "2026-02-11T16:22:17.484Z",
+  "last_posted_at": "2026-02-11T16:22:17.833Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "gallim",
+      "name": "Massimiliano Galli",
+      "created_at": "2026-02-11T16:22:17.833Z",
+      "updated_at": "2026-02-11T16:22:47.744Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nWe are happy to announce that the next Combine tutorial will take place on Thursday February 19th and Friday February 20th, during the 7th CAT hackathon. The registration page can be found here.\nThe first day of the tutorial will cover basic topics, whereas the second day will introduce more advanced examples of analysis flows with Combine.\nBest,\nGiacomo and Massimiliano for the organisers",
+      "cooked_html": "<p>Dear all,</p>\n<p>We are happy to announce that the next Combine tutorial will take place on Thursday February 19th and Friday February 20th, during the 7th CAT hackathon. The registration page can be found <a href=\"https://indico.cern.ch/event/1623559/overview\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>The first day of the tutorial will cover basic topics, whereas the second day will introduce more advanced examples of analysis flows with Combine.</p>\n<p>Best,</p>\n<p>Giacomo and Massimiliano for the organisers</p>"
+    }
+  ]
+}

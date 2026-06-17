@@ -1,0 +1,23 @@
+{
+  "topic_id": 10590,
+  "title": "\"*\" and \"!\" meanings while doing a s+b fit in combine",
+  "url": "https://cms-talk.web.cern.ch/t/10590",
+  "category_id": 279,
+  "created_at": "2022-05-18T15:16:45.635Z",
+  "last_posted_at": "2022-05-18T15:16:45.896Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "runiyal",
+      "name": "Rishabh Uniyal",
+      "created_at": "2022-05-18T15:16:45.896Z",
+      "updated_at": "2023-02-07T10:57:35.465Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Experts,\nI am currently running a b-only and s+b only fit for my analysis, however I am observing \u201c!\u201d and \u201c*\u201d in the output of the pulls\ncombine -M FitDiagnostics workspace_ttbare.root  -t -1 --expectSignal 1  --cminDefaultMinimizerStrategy 0 --forceRecreateNLL\npython \u2026/\u2026/\u2026/\u2026/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnosticsTest.root --all\nname                                              b-only fit            s+b fit         rho  approx impact\npileup2018                                       -0.00, 0.61     * +0.00, 0.67*     +0.40      +3.750\ntrig_e2018                                       +0.00, 0.99        +0.00, 0.99       +0.04      +0.510\nid_e2018                                         +0.00, 0.79     * -0.00, 0.79*     -0.04      -0.477\nlumi2018                                         +0.00, 0.68     * +0.00, 0.68*     +0.02      +0.170\nreco_e2018                                       +0.00, 0.96        -0.00, 0.96       +0.01      +0.080\nI looked up the https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/94a7b09745906d7c7eb4bc3b5e60d5a65c741e79/test/diffNuisances.py#L44\nand seems like \u201c*\u201d represent the severe val and sigma changes based on a threshold\nand like wise for \u201c!\u201d\nMy questions is: how do I interpret these symbols as to find out what\u2019s wrong in my fitting strategy\nthank you\nRishabh",
+      "cooked_html": "<p>Hi Experts,</p>\n<p>I am currently running a b-only and s+b only fit for my analysis, however I am observing \u201c!\u201d and \u201c*\u201d in the output of the pulls</p>\n<p>combine -M FitDiagnostics workspace_ttbare.root  -t -1 --expectSignal 1  --cminDefaultMinimizerStrategy 0 --forceRecreateNLL</p>\n<p>python \u2026/\u2026/\u2026/\u2026/HiggsAnalysis/CombinedLimit/test/diffNuisances.py fitDiagnosticsTest.root --all</p>\n<p>name                                              b-only fit            s+b fit         rho  approx impact<br>\npileup2018                                       -0.00, 0.61     * +0.00, 0.67*     <em>+0.40</em>      +3.750<br>\ntrig_e2018                                       +0.00, 0.99        +0.00, 0.99       +0.04      +0.510<br>\nid_e2018                                         +0.00, 0.79     * -0.00, 0.79*     <em>-0.04</em>      -0.477<br>\nlumi2018                                         +0.00, 0.68     * +0.00, 0.68*     <em>+0.02</em>      +0.170<br>\nreco_e2018                                       +0.00, 0.96        -0.00, 0.96       +0.01      +0.080</p>\n<p>I looked up the <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/94a7b09745906d7c7eb4bc3b5e60d5a65c741e79/test/diffNuisances.py#L44\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/94a7b09745906d7c7eb4bc3b5e60d5a65c741e79/test/diffNuisances.py#L44</a></p>\n<p>and seems like \u201c*\u201d represent the severe val and sigma changes based on a threshold<br>\nand like wise for \u201c!\u201d</p>\n<p>My questions is: how do I interpret these symbols as to find out what\u2019s wrong in my fitting strategy</p>\n<p>thank you<br>\nRishabh</p>"
+    }
+  ]
+}

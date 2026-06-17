@@ -1,0 +1,49 @@
+TOPIC: GOF with two bumps in combination of analyses
+URL: https://cms-talk.web.cern.ch/t/33139
+DATE: 2024-01-09T12:08:10.648Z
+SOLVED: no
+============================================================
+
+QUESTION (by acarvalh @ 2024-01-09T12:08:10.844Z):
+Dear experts
+In the context of B2G-23-005 (combination of X → HH/HY searches), we are finding a mass region where there is a double peak structure in the GOF.
+In this analysis, we have performed statistical tests only for a couple of mX choices the X → HH case, as the X → HY case incorporates a subset of the analyses that make the X → HH case. The mX cases in which we tested the GOF were 280 GeV, 500 GeV, and 1 TeV. The only place where we found the double peak issue is in the 500 GeV case.
+The slides attached show some tests we had made to understand the issue.
+In special we find that:
+1 - The effect is seen in the mass range mX = 450 GeV - 550 GeV, where the HH multilepton (HIG-21-002) and bbWW (HIG-21-005) analyses are competitive (slide 3). In the HH multilepton case alone there is a hint of a double-peak structure
+2 - That is exactly an effect of the interplay between these two analyses (slide 4), but
+3 - no outstanding effect is seen in the pulls (slide 5).
+4 - The upper limit result with toys agrees with the asymptotic one.
+It is not feasible to perform all the fits in the HibridNew method (considering the two scenarios we have more than 100 mass points)
+We would like to consult with you if the present results are satisfactory, or if any additional test on the robustness of the Assimptotic limit result can be done
+cheers
+Xanda, Chu, and Rainer for the B2G-23-005 team
+B2G-23-005_stats_follow_up_500_double_peak.pdf (2.9 MB)
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-01-09T12:48:11.652Z):
+Dear Xanda,
+First, I would suggest to produce a likelihood scan for the signal strength for the combined bbWW and multi-lepton datacard, it could be that there is a double minima in the likelihood and the uncertainties are not accurate.
+Then to investigate further one could compare the impacts produced with bbWW and multi-lepton separately and with combined datacard, perhaps a difference in pulls would point to the origin of the observed tension.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by acarvalh @ 2024-01-11T13:13:57.498Z):
+Dear Aliya
+Thank you for the suggestion.
+We performed the likelihood scan, which is attached.
+No double minima are observed, would you still recommend further investigation?
+cheers
+Xanda, Chu, Rainer
+image1392×824 128 KB
+----------------------------------------
+
+REPLY 4 (by acarvalh @ 2024-01-12T20:54:29.786Z):
+Hi Aliya
+We performed further investigations and ended up finding a silly mistake in the fitting procedure: we were mistakenly injecting 100 times the expected signal strength into the fit
+Once that mistake was corrected we found a one-bump GOF with ~ 30-60 % p-value to all tested mass points
+We are sorry for bothering you, thank you for your support
+cheers
+Xanda, Chu, Rainer, for B2G-23-005/002 team
+----------------------------------------

@@ -1,0 +1,32 @@
+TOPIC: One sided impact of Systematics on POI
+URL: https://cms-talk.web.cern.ch/t/7918
+DATE: 2022-03-08T18:13:41.165Z
+SOLVED: no
+============================================================
+
+QUESTION (by prsaha @ 2022-03-08T18:13:41.537Z):
+Hello Combine experts,
+I am working on an analysis of Vector like Quark T’, where T’ decays to the SM top and Higgs and Higgs further decays to two photons. So we use the framework of the Higgs to gamma gamma analysis called flashggFinalfit to fit diphoton invariant mass distributions for signal model and background model.
+Our goal is to obtain the asymptotic upper limit at different mass points. To understand the clear effect of each systematic inclusion we tried to run the combine tool recommended impact study using the following command in [2].
+There, for some systematics we see a one sided impact[3] in the parameter of interest.
+Here is my query: Do we really need to worry about the one sided impact in POI or is there any way out to get rid of this one sided impact?
+[1]Datacard:
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.txt
+/eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root
+[2]Combine commands used to produce impact:
+combineTool.py -M Impacts -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root -m 125 --doInitialFit --robustFit 1 -t -1 --setParameters r=1 --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 --freezeParameter MH
+combineTool.py -M Impacts -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root -m 125 --doFits --robustFit 1 -t -1 --setParameters r=1 --cminDefaultMinimizerStrategy 0 --rMin -10 --rMax 10 --freezeParameter MH
+combineTool.py -M Impacts -d /eos/user/p/prsaha/www/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/Datacard_Tprime600_Syst.root -m 125 -o impacts.json
+plotImpacts.py -i impacts.json -o impacts
+
+[3]Obtained impact plot:
+https://prsaha.web.cern.ch/prsaha/Tprime_analysis/Finalfit_Lite_output/Combine_TroubleShoot/impacts.pdf
+Thanks in advance for your help!
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-03-10T17:27:20.492Z):
+Dear Prafulla,
+One-sided impacts do not necessarily have to be a problem, but you should try to understand if it is expected from your model or not. For example, if CMS_hgg_nuisance_FNUFEB_13TeVscaleCorr has the effect of decreasing the signal normalization, whether you move this parameter up or down by 1 standard deviation, then you would expect to see a one-sided impact like the one you see here.
+Best,
+Adinda
+----------------------------------------

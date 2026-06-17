@@ -1,0 +1,122 @@
+{
+  "topic_id": 38830,
+  "title": "Plot Nuisance parameters",
+  "url": "https://cms-talk.web.cern.ch/t/38830",
+  "category_id": 279,
+  "created_at": "2024-04-09T16:14:47.835Z",
+  "last_posted_at": "2024-04-11T10:06:15.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-09T16:14:47.952Z",
+      "updated_at": "2024-04-09T16:14:47.952Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI would like to have a plot with nuisance parameters as they got after the fit.\nIn my old notes which do not work with the present version I have commands:\ncombine -M MaxLikelihoodFit combined.txt --plots --saveShapes --saveWithUncertainties --saveNormalizations\nit produced mlfit.root. Get nuisance parameters with command:\npython diffNuisances.py mlfit.root -g outputfile.root\nIn outputfile.root there are plots of the fitted values of the nuisance parameters and their post-fit uncertainties as well as a plot showing directly a comparison of the post-fit to pre-fit nuisance uncertainties.\nI can\u2019t find in the present description of combine how it all looks like now.\nCan you help, please.\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I would like to have a plot with nuisance parameters as they got after the fit.<br>\nIn my old notes which do not work with the present version I have commands:</p>\n<p>combine -M MaxLikelihoodFit combined.txt --plots --saveShapes --saveWithUncertainties --saveNormalizations</p>\n<p>it produced mlfit.root. Get nuisance parameters with command:</p>\n<p>python diffNuisances.py mlfit.root -g outputfile.root</p>\n<p>In outputfile.root there are plots of the fitted values of the nuisance parameters and their post-fit uncertainties as well as a plot showing directly a comparison of the post-fit to pre-fit nuisance uncertainties.</p>\n<p>I can\u2019t find in the present description of combine how it all looks like now.<br>\nCan you help, please.</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-04-09T19:29:09.023Z",
+      "updated_at": "2024-04-09T19:29:09.023Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nMaybe have a look at the documentation: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#pre-and-post-fit-nuisance-parameters ?\nInstead of doing the comparison from the FitDiagnostics result with diffNuisances, you could also consider producing the impacts, described here, which probably give you the information you want, but also more: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#nuisance-parameter-impacts\nAdinda",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>Maybe have a look at the documentation: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#pre-and-post-fit-nuisance-parameters\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#pre-and-post-fit-nuisance-parameters</a> ?</p>\n<p>Instead of doing the comparison from the FitDiagnostics result with diffNuisances, you could also consider producing the impacts, described here, which probably give you the information you want, but also more: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#nuisance-parameter-impacts\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#nuisance-parameter-impacts</a></p>\n<p>Adinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-10T12:02:45.772Z",
+      "updated_at": "2024-04-10T12:02:45.772Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Adinda,\nThanks !\nI used first\ncombine -M FitDiagnostics -d combined.txt --robustFit=1 --rMin 0 --rMax 120 --redefineSignalPOIs width --setParameters mean=27.2 --freezeParameters mean,r\nwhich gives me what I wanted\n\u2014 FitDiagnostics \u2014\nBest fit width: 3.24332  -1.64329/+4.78415  (68% CL)\nand then I use\npython diffNuisances.py higgsCombineTest.FitDiagnostics.mH120.root --abs --all -g outputfile.root\nwhich gives me an error:\nSingularity> python diffNuisances.py higgsCombineTest.FitDiagnostics.mH120.root --abs --all -g outputfile.root\nTraceback (most recent call last):\nFile \u201cdiffNuisances.py\u201d, line 181, in\nraise RuntimeError(\u201cFile %s does not contain the output of the signal fit \u2018fit_s\u2019\u201d % args[0])\nRuntimeError: File higgsCombineTest.FitDiagnostics.mH120.root does not contain the output of the signal fit \u2018fit_s\u2019\nSingularity>\nCheers, Sasha.",
+      "cooked_html": "<p>Hi Adinda,</p>\n<p>Thanks !</p>\n<p>I used first</p>\n<p>combine -M FitDiagnostics -d combined.txt --robustFit=1 --rMin 0 --rMax 120 --redefineSignalPOIs width --setParameters mean=27.2 --freezeParameters mean,r</p>\n<p>which gives me what I wanted</p>\n<p>\u2014 FitDiagnostics \u2014<br>\nBest fit width: 3.24332  -1.64329/+4.78415  (68% CL)</p>\n<p>and then I use</p>\n<p>python diffNuisances.py higgsCombineTest.FitDiagnostics.mH120.root --abs --all -g outputfile.root</p>\n<p>which gives me an error:</p>\n<p>Singularity&gt; python diffNuisances.py higgsCombineTest.FitDiagnostics.mH120.root --abs --all -g outputfile.root<br>\nTraceback (most recent call last):<br>\nFile \u201cdiffNuisances.py\u201d, line 181, in <br>\nraise RuntimeError(\u201cFile %s does not contain the output of the signal fit \u2018fit_s\u2019\u201d % args[0])<br>\nRuntimeError: File higgsCombineTest.FitDiagnostics.mH120.root does not contain the output of the signal fit \u2018fit_s\u2019<br>\nSingularity&gt;</p>\n<p>Cheers, Sasha.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-04-10T12:09:28.545Z",
+      "updated_at": "2024-04-10T12:09:28.545Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nAs written in the documentation sent by Adinda, the diffNuisances script runs on a different file. By default, it should be called fitDiagnostics.root, you can check which files were produced by combine to be sure about the filename.\n\nIt is possible to compare pre-fit and post-fit nuisance parameter values with the script diffNuisances.py. Taking as input a fitDiagnostics.root\n\nCheers,\nGiacomo",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>As written in the documentation sent by Adinda, the diffNuisances script runs on a different file. By default, it should be called fitDiagnostics.root, you can check which files were produced by combine to be sure about the filename.</p>\n<blockquote>\n<p>It is possible to compare pre-fit and post-fit nuisance parameter values with the script <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/main/test/diffNuisances.py\" rel=\"noopener nofollow ugc\">diffNuisances.py</a>. Taking as input a <code>fitDiagnostics.root</code></p>\n</blockquote>\n<p>Cheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-10T12:20:45.000Z",
+      "updated_at": "2024-04-10T12:21:09.918Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nah, yes , my command\ncombine -M FitDiagnostics -d combined.txt --robustFit=1 --rMin 0 --rMax 120 --redefineSignalPOIs width --setParameters mean=27.2 --freezeParameters mean,r\nproduces me also this file\nfitDiagnosticsTest.root\nbut when I run on it\npython diffNuisances.py fitDiagnosticsTest.root --abs --all -g outputfile.root\nit gives me now error:\n\npython diffNuisances.py fitDiagnosticsTest.root --abs --all -g outputfile.root\nTraceback (most recent call last):\nFile \u201cdiffNuisances.py\u201d, line 235, in\nerror_poi = fpf_s.find(options.poi).getError()\nAttributeError: \u2018RooAbsArg\u2019 object has no attribute \u2018getError\u2019\n\nThanks, Sasha.",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>ah, yes , my command</p>\n<p>combine -M FitDiagnostics -d combined.txt --robustFit=1 --rMin 0 --rMax 120 --redefineSignalPOIs width --setParameters mean=27.2 --freezeParameters mean,r</p>\n<p>produces me also this file</p>\n<p>fitDiagnosticsTest.root</p>\n<p>but when I run on it</p>\n<p>python diffNuisances.py fitDiagnosticsTest.root --abs --all -g outputfile.root</p>\n<p>it gives me now error:</p>\n<blockquote>\n<p>python diffNuisances.py fitDiagnosticsTest.root --abs --all -g outputfile.root<br>\nTraceback (most recent call last):<br>\nFile \u201cdiffNuisances.py\u201d, line 235, in <br>\nerror_poi = fpf_s.find(options.poi).getError()<br>\nAttributeError: \u2018RooAbsArg\u2019 object has no attribute \u2018getError\u2019</p>\n</blockquote>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-04-10T12:26:06.595Z",
+      "updated_at": "2024-04-10T12:26:06.595Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nCan you try adding the option -p width to the diffNuisances command? Otherwise, the script will assume the POI is called r.\nCheers,\nGiacomo",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>Can you try adding the option<code> -p width</code> to the diffNuisances command? Otherwise, the script will assume the POI is called <code>r</code>.</p>\n<p>Cheers,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-10T12:30:55.213Z",
+      "updated_at": "2024-04-10T12:30:55.213Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "ah, it works !  Thank you very much Giacomo.\nCheers, Sasha.",
+      "cooked_html": "<p>ah, it works !  Thank you very much Giacomo.<br>\nCheers, Sasha.</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-11T08:30:09.119Z",
+      "updated_at": "2024-04-11T08:30:09.119Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Giacomo,\nI got a strange plot (attached) of nuisance parameters  which I have in my datacards as:\nRsr1_2018_2017  param  1.53 0.04\nRsr2_2018_2017  param  1.52 0.11\nRsr3_2018_2017  param  1.50 0.04\nThe minus errors of pre-fit on the plot go to zero \u2026\nI attached also printout of command:\npython diffNuisances.py -p width fitDiagnosticsTest.root --abs --all -g outputfile.root\nwhere minus errors and the same as plus ones,\nnuisance.pdf (14.5 KB)\nout.txt (6.0 KB)\nIs it a problem with plotting or my mistake ?\nThanks, Sasha.",
+      "cooked_html": "<p>Hi Giacomo,</p>\n<p>I got a strange plot (attached) of nuisance parameters  which I have in my datacards as:</p>\n<p>Rsr1_2018_2017  param  1.53 0.04<br>\nRsr2_2018_2017  param  1.52 0.11<br>\nRsr3_2018_2017  param  1.50 0.04</p>\n<p>The minus errors of pre-fit on the plot go to zero \u2026</p>\n<p>I attached also printout of command:</p>\n<p>python diffNuisances.py -p width fitDiagnosticsTest.root --abs --all -g outputfile.root</p>\n<p>where minus errors and the same as plus ones,<br>\n<a class=\"attachment\" href=\"/uploads/short-url/1s1HmBDsN1AnFBOXDD0ClgOI8vX.pdf\">nuisance.pdf</a> (14.5 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/kYW9p7cDPwIh7JR1Vh9sdZRMjH4.txt\">out.txt</a> (6.0 KB)<br>\nIs it a problem with plotting or my mistake ?</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2024-04-11T09:36:52.857Z",
+      "updated_at": "2024-04-11T09:36:52.857Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Sasha,\nThis is just a plotting issue. I don\u2019t remember the exact reason for it, but it happens on the parameters declared as \u201cparam\u201d with a mean value different from 0 in the datacard. I don\u2019t think you need to worry about it.\nBest regards,\nGiacomo",
+      "cooked_html": "<p>Dear Sasha,</p>\n<p>This is just a plotting issue. I don\u2019t remember the exact reason for it, but it happens on the parameters declared as \u201cparam\u201d with a mean value different from 0 in the datacard. I don\u2019t think you need to worry about it.</p>\n<p>Best regards,<br>\nGiacomo</p>"
+    },
+    {
+      "post_number": 10,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-04-11T10:06:15.000Z",
+      "updated_at": "2024-04-11T10:10:36.864Z",
+      "reply_to_post_number": 9,
+      "is_accepted_answer": false,
+      "text": "thanks, Giacomo !\nCheers, Sasha.",
+      "cooked_html": "<p>thanks, Giacomo !<br>\nCheers, Sasha.</p>"
+    }
+  ]
+}

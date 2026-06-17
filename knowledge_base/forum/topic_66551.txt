@@ -1,0 +1,25 @@
+TOPIC: Method to Ignore "RuntimeError: Found x systematics, expected y" error message
+URL: https://cms-talk.web.cern.ch/t/66551
+DATE: 2024-11-21T18:52:06.524Z
+SOLVED: yes (reply 2)
+============================================================
+
+QUESTION (by hyeonseo @ 2024-11-21T18:52:06.648Z):
+Dear Combine experts,
+I am trying to generate a workspace from my datacard, and I am manually removing certain Nuisance parameter lines to see what different it would make in my significance calculation. However, when I remove the said nuisance parameter and do text2workspace.py {datacard_name}.txt it gives me this error:
+File "/depot/cms/private/users/yun79/hmm/copperheadV1clean/DmitryMaster_JECoff_GeofitFixed_Nov01/stage3_datacards/score_pytorch_jun27/CMSSW_10_2_13/python/HiggsAnalysis/CombinedLimit/DatacardParser.py", line 357, in parseCard
+raise RuntimeError, "Found %d systematics, expected %d" % (len(ret.systs), nuisances)
+RuntimeError: Found 39 systematics, expected 40
+
+I appreciate that combine automatically found some issues with mistmatching number of NPs, but it there a way that I could tell combine to ignore it? Thank you!
+----------------------------------------
+
+REPLY 2 [ACCEPTED ANSWER] (by amarini @ 2024-11-21T19:51:36.069Z):
+kmax *
+quoting from the doc
+The value * can be specified for imax, which tells Combine to determine the number of observables from the rest of the datacard. In order to better catch mistakes, it is recommended to explicitly specify the value.
+
+This declaration is followed by a specification of the number of background sources to be considered, jmax, and the number of independent sources of systematic uncertainty, kmax:
+
+-A
+----------------------------------------

@@ -1,0 +1,104 @@
+TOPIC: AN-20-098 HiggsCombine non-zero signal strengt warning question
+URL: https://cms-talk.web.cern.ch/t/10237
+DATE: 2022-05-09T17:28:52.688Z
+SOLVED: no
+============================================================
+
+QUESTION (by asparker @ 2022-05-09T17:28:52.851Z):
+Hello experts,
+We are in the process of getting a CADI line and hopefully presenting AN-20-098 at ICHEP this year, in order to do that we request your feedback on our combine workflow which is documented here [1] (Those are the 20 bin data cards I described)
+We had some trouble getting our run 2 limit to converge, it seemed to be that the limit derived from a histogram with 20 bins would converge while one with less bins, e.g. 15 would not converge, when we were using the command:
+combine --run blind -M AsymptoticLimits -d  ws_vecu_emul_emul_run2_10bin_TTandST.root  -n setrto1-run2 --expectSignal 1
+then we switched to :
+combine --run blind -M AsymptoticLimits -d  ws_vecu_emul_emul_run2_10bin_TTandST.root  -n setrto1-run2 --minosAlg new
+as this command allowed us to have limits that converged regardless of binning scheme.
+Now however we still see this warning:
+AsymptoticLimits.cc: 423 – Best fit of asimov dataset is at r = 0.000100 (0.010000 times rMax), while it should be at zero
+This means that when fitting a background-only Asimov dataset, a non-zero signal strength is found, which should not be the case. The combine documentation says that this warning should not be ignored and that you should make sure everything is consistent in your setup.
+So could you let us know what to do to try to resolve this non-zero signal strength issue?
+Best,
+Ashley, Jack and Louise
+[1] https://gitlab.cern.ch/asparker/Datacards/-/blob/AN-20-098/AN-20-098/README.md
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-05-10T11:49:59.398Z):
+Hi all,
+It seems I’m not able to access the link in [1] - maybe it’s a permissions thing?
+In any case, if the limit computation is failing with the default settings, or with different selections of bins, this suggests there might be some deeper issue that is worth investigating. Can you share the input workspace so that we can reproduce the problem?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by jingyan @ 2022-05-10T12:02:59.658Z):
+Hi Andrew,
+Thank you for helping us. Please find the workspace file at [1] (with run-II dataset). It fails to converge when running combine command [2].
+My other question is (in case you know the answer):
+do you know why the default algo “stepping” in Asymptotic limit is overwritten here [3]? The “stepping” algo seems to work well for us.
+[1] /afs/cern.ch/user/j/jingyan/public/Ashley/AN_v5/AN_v5_20bin_NewXS/ws_vecu_emul_emul_run2_10bin_TTandST.root
+[2]
+combine --run blind -M AsymptoticLimits -d  ws_vecu_emul_emul_run2_10bin_TTandST.root  -n setrto1-run2-May2-10bin
+[3]https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/AsymptoticLimits.cc#L444
+----------------------------------------
+
+REPLY 4 (by asparker @ 2022-05-10T12:08:29.651Z):
+Hi Andrew,
+Thank you for your comments. I changed the visibility of the directory to Internal, I think you should be able to see it now. The link is the README of the folder containing all of our data cards and workspaces, that links to another README where I have all of the commands we used to set our limits.
+Best,
+Ashley
+----------------------------------------
+
+REPLY 5 (by agilbert @ 2022-05-10T12:46:46.190Z):
+Hi Ashley, Jack,
+Seems the link is still not working for me. Perhaps you could copy the whole directory to a public afs directory. In the meantime, I ran
+combine --run blind -M AsymptoticLimits -d /afs/cern.ch/user/j/jingyan/public/Ashley/AN_v5/AN_v5_20bin_NewXS/ws_vecu_emul_emul_run2_10bin_TTandST.root -n setrto1-run2-May2-10bin
+as suggested by Jack, but this runs ok - I don’t see any error:
+<<< Combine >>>
+>>> random number generator seed is 123456
+Will use a-priori expected background instead of a-posteriori one.
+>>> method used is AsymptoticLimits
+SimNLL created with 6 channels, 0 generic constraints, 218 fast gaussian constraints, 0 fast poisson constraints, 0 fast group constraints,
+
+-- AsymptoticLimits ( CLs ) --
+Expected  2.5%: r < 0.0004
+Expected 16.0%: r < 0.0006
+Expected 50.0%: r < 0.0015
+Expected 84.0%: r < 0.0018
+Expected 97.5%: r < 0.0022
+
+This is with combine tag v8.2.0.
+About the part that overrides the default algo - this is a rather old part of the code - I don’t know the exact reason for it. Ideally, if everything is well behaved, both should give an equivalent result, though one approach might get there a bit faster.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 6 (by asparker @ 2022-05-10T12:51:32.969Z):
+Hi Andrew,
+Apologies, there is a version of it on github here:
+
+GitHub
+
+GitHub - UBParker/HiggsCombineDataCardsForAN-20-098
+
+Contribute to UBParker/HiggsCombineDataCardsForAN-20-098 development by creating an account on GitHub.
+
+The issue with convergence is only seen with the other binnings, e.g. try the 15 bin data cards from my github.
+----------------------------------------
+
+REPLY 7 (by agilbert @ 2022-05-10T13:21:21.237Z):
+Ok, so I ran
+combine --run blind -M AsymptoticLimits -d 15bin/ws_vecu_emul_emul_run2_10bin_TTandST.root -n test
+and indeed see that it only gets the median expected, not all the quantiles. Actually it looks like the cause of this is related to the default --rAbsAcc value, which is the absolute threshold on the accuracy to terminate the search for the limit. Since the default (0.0005) is of similar order to the 2.5% expected quantile, it seems the search truncates too early (though I appreciate combine is not at all informative on this). Should be fixable by running with --rAbsAcc 0 to only use the relative accuracy criterion, not the absolute. Can you confirm if this fixes things?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 8 (by jingyan @ 2022-05-10T13:28:09.266Z):
+Sorry, Andrew, I pointed you to the wrong file. Could you try it on another file under the same directory?
+combine --run blind -M AsymptoticLimits -d  ws_vecu_emul_emul_2018_2018_10bin_TTandST.root  -n setrto1-18-May2-10bin
+----------------------------------------
+
+REPLY 9 (by jingyan @ 2022-05-10T13:48:04.114Z):
+Hi Andrew,
+The “–rAbsAcc 0” command does fix things! Thank you very much!
+Jack
+----------------------------------------

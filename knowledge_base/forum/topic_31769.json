@@ -1,0 +1,67 @@
+{
+  "topic_id": 31769,
+  "title": "HS3 discussion at the HSF Data Analysis WG meeting Monday, Nov 27 at 16:00 CET",
+  "url": "https://cms-talk.web.cern.ch/t/31769",
+  "category_id": 279,
+  "created_at": "2023-11-17T09:52:18.048Z",
+  "last_posted_at": "2023-11-17T16:30:46.425Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2023-11-17T09:52:18.389Z",
+      "updated_at": "2023-11-17T09:52:18.389Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nPlease see below the announcement of the next HSF meeting where the HEP Statistics Serialization Standard will be discussed.\nBest,\nAliya\n\nDear Data Analysis friends,\nThe next HSF Data Analysis WG meeting is dedicated to the topic of the HEP Statistics Serialization Standard (HS3).\nIt takes place on Monday, Nov 27 at 16:00 CET\nhttps://indico.cern.ch/event/1348309\nwith Zoom connection details provided on the agenda.\nThe HS3 project defines a standard for representing statistical models in a form that is both human- and machine-readable. Check out the GitHub repository [1] for more details! A common serialization format allows for the interoperability of statistical tools and helps streamline the publishing of statistical models.\nWe would like to use this meeting to showcase the ongoing work to the DAWG community and also invite feedback about HS3.\nWe are looking forward to seeing you there,\nNicole, Nick, Alex\n[1] https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard",
+      "cooked_html": "<p>Dear all,</p>\n<p>Please see below the announcement of the next HSF meeting where the HEP Statistics Serialization Standard will be discussed.</p>\n<p>Best,<br>\nAliya</p>\n<blockquote>\n<p>Dear Data Analysis friends,</p>\n<p>The next HSF Data Analysis WG meeting is dedicated to the topic of the HEP Statistics Serialization Standard (HS3).</p>\n<p>It takes place on Monday, Nov 27 at 16:00 CET</p>\n<p><a href=\"https://indico.cern.ch/event/1348309\" rel=\"noopener nofollow ugc\">https://indico.cern.ch/event/1348309</a></p>\n<p>with Zoom connection details provided on the agenda.</p>\n<p>The HS3 project defines a standard for representing statistical models in a form that is both human- and machine-readable. Check out the GitHub repository [1] for more details! A common serialization format allows for the interoperability of statistical tools and helps streamline the publishing of statistical models.</p>\n<p>We would like to use this meeting to showcase the ongoing work to the DAWG community and also invite feedback about HS3.</p>\n<p>We are looking forward to seeing you there,</p>\n<p>Nicole, Nick, Alex</p>\n<p>[1] <a href=\"https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard\" rel=\"noopener nofollow ugc\">https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard</a></p>\n</blockquote>"
+    },
+    {
+      "post_number": 2,
+      "username": "mpierini",
+      "name": "Maurizio Pierini",
+      "created_at": "2023-11-17T13:31:09.857Z",
+      "updated_at": "2023-11-17T13:31:09.857Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello\nI have to say that I find the choice of venue for such a discussion quite peculiar.\nQuestion: are we engaged in the discussion more than what we were 8 months ago?\nWe would like to avoid that a decision is imposed on us, as we already discussed in the past.\nAlso, the discussion should be on the content, not just on the form. I don\u2019t know how many statistics\nexperts go to HSF meetings\nCheers\nMaurizio",
+      "cooked_html": "<p>Hello</p>\n<p>I have to say that I find the choice of venue for such a discussion quite peculiar.<br>\nQuestion: are we engaged in the discussion more than what we were 8 months ago?<br>\nWe would like to avoid that a decision is imposed on us, as we already discussed in the past.<br>\nAlso, the discussion should be on the content, not just on the form. I don\u2019t know how many statistics<br>\nexperts go to HSF meetings</p>\n<p>Cheers</p>\n<p>Maurizio</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "ncsmith",
+      "name": "Nick Smith",
+      "created_at": "2023-11-17T16:18:45.602Z",
+      "updated_at": "2023-11-17T16:18:45.602Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Maurizio,\nThe main intention here is to allow people from non-LHC experiments who follow HSF meetings to become aware of this development work. Indeed HS3 is still well away from finalization, and more input from a broader community is very welcome. @kskovpen may have details as to how CMS is engaged.\nI agree that statistics experts should be involved, but the fact that many statistical tool developers are already engaged is very promising and probably a good starting point.\nThanks,\n~Nick",
+      "cooked_html": "<p>Hi Maurizio,</p>\n<p>The main intention here is to allow people from non-LHC experiments who follow HSF meetings to become aware of this development work. Indeed HS3 is still well away from finalization, and more input from a broader community is very welcome. <a class=\"mention\" href=\"/u/kskovpen\">@kskovpen</a> may have details as to how CMS is engaged.</p>\n<p>I agree that statistics experts should be involved, but the fact that many <em>statistical tool</em> developers are already engaged is very promising and probably a good starting point.</p>\n<p>Thanks,<br>\n~Nick</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-11-17T16:20:40.457Z",
+      "updated_at": "2023-11-17T16:21:11.622Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Maurizio,\nThe choice of the forum was made by those leading the HS3 effort as they are trying to make more people aware of the effort.\nWe have not had much more engagement with HS3 than what was done in the spring and early summer with a few meetings/discussions. The only activity really is having set up a contact person for HS3 within CMS, and he\u2019s had a first e-mail exchange with Carsten (leading the HS3 effort) where carsten provided some basic info about the status of the effort.\nBut a major reason for our lack of involvement is the general lack of movement or discussion. As far as we know this is the first real meeting or discussion on the issue since the summer. At that point they decided that meetings were not as effective as they\u2019d like and wanted to move the discussion more onto github [1]. There is some activity there, though not much.\nPerhaps @ncsmith can comment if I\u2019ve missed something, as I know he has been somewhat active in the discussions. He already did.\nI also don\u2019t know how many statisticians are likely to attend.\nBest,\nKyle\n[1] https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard/discussions",
+      "cooked_html": "<p>Hi Maurizio,</p>\n<p>The choice of the forum was made by those leading the HS3 effort as they are trying to make more people aware of the effort.</p>\n<p>We have not had much more engagement with HS3 than what was done in the spring and early summer with a few meetings/discussions. The only activity really is having set up a contact person for HS3 within CMS, and he\u2019s had a first e-mail exchange with Carsten (leading the HS3 effort) where carsten provided some basic info about the status of the effort.</p>\n<p>But a major reason for our lack of involvement is the general lack of movement or discussion. As far as we know this is the first real meeting or discussion on the issue since the summer. At that point they decided that meetings were not as effective as they\u2019d like and wanted to move the discussion more onto github [1]. There is some activity there, though not much.</p>\n<p><s>Perhaps <a class=\"mention\" href=\"/u/ncsmith\">@ncsmith</a> can comment if I\u2019ve missed something, as I know he has been somewhat active in the discussions.</s> He already did.</p>\n<p>I also don\u2019t know how many statisticians are likely to attend.</p>\n<p>Best,<br>\nKyle</p>\n<p>[1] <a href=\"https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard/discussions\" rel=\"noopener nofollow ugc\">https://github.com/hep-statistics-serialization-standard/hep-statistics-serialization-standard/discussions</a></p>"
+    },
+    {
+      "post_number": 5,
+      "username": "kskovpen",
+      "name": "Kirill Skovpen",
+      "created_at": "2023-11-17T16:30:46.425Z",
+      "updated_at": "2023-11-17T16:30:46.425Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Maurizio,\nJust to confirm what Nick and Kyle mentioned in this thread.\nOn the CMS side, I am serving as a contact person for the HS3 communications. There were no meetings organized so far - we expect to have the first discussion to take place on Nov 27 in order to clarify the strategy on harmonizing statistical model formats and define possible action items.\nThanks,\nKirill",
+      "cooked_html": "<p>Hi Maurizio,</p>\n<p>Just to confirm what Nick and Kyle mentioned in this thread.</p>\n<p>On the CMS side, I am serving as a contact person for the HS3 communications. There were no meetings organized so far - we expect to have the first discussion to take place on Nov 27 in order to clarify the strategy on harmonizing statistical model formats and define possible action items.</p>\n<p>Thanks,</p>\n<p>Kirill</p>"
+    }
+  ]
+}

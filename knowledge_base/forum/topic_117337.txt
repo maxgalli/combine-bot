@@ -1,0 +1,25 @@
+TOPIC: Larger post-fit uncertainties cause missing pulls
+URL: https://cms-talk.web.cern.ch/t/117337
+DATE: 2025-03-05T15:49:31.651Z
+SOLVED: no
+============================================================
+
+QUESTION (by milee @ 2025-03-05T15:49:31.884Z):
+Dear experts,
+Recently we look into the unblind impact plot and observed some pulls are missing in the impact plot. As suggesting in the post[1], these nuisance has larger post-fit uncertainty which leads invalid pull definition. Following the recommendation, we have looked the likelihood scan for these nuisances. It does show larger post-fit uncertainties observed compared to the pre-fit, while no suspicious shape of the scan. We noticed that nuisance with invalid pulls are the ones with large uncertainties (above 50%), and we have a small signal for our analysis (HIG-24-009). Do you have any suggestion on how to understand these nuisance or it is an genuine effect?
+likelihood.pdf (132.7 KB)
+Here’s an example command we use to obtain the likelihood scan of the problematic nuisance.
+combine -M MultiDimFit -n CMS_HIG24009_FS_hc --algo grid --redefineSignalPOIs r \
+-P CMS_HIG24009_FS_hc --setParameterRanges r=-1000.00,1000.00:CMS_HIG24009_FS_hc=-2,2 \
+--cminDefaultMinimizerStrategy 0 --robustFit 1 --X-rtd MINIMIZER_MaxCalls=99999999 \
+--cminDefaultMinimizerTolerance 0.1 -m 125 -d cards/datacards/input/hc_emu_all_13TeV.root \
+--setParameters r=1,rgx{CMS_SF_*.*}=1,CMS_HIG24009_FS_hc=0 \
+--floatOtherPOIs 1 --saveInactivePOI 1
+
+The results can be reproduced from this workspace[2].
+Thank you very much for your help!
+Best regards,
+Ming-Yan
+[1] Combine: warning the pull could not be computed
+[2] https://gitlab.cern.ch/cms-analysis/hig/hig-24-009/datacards/-/blob/master/input/hc_emu_all_13TeV.root?ref_type=heads
+----------------------------------------

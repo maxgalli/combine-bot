@@ -1,0 +1,43 @@
+TOPIC: Discrete profiling for signal?
+URL: https://cms-talk.web.cern.ch/t/10825
+DATE: 2022-05-24T11:01:32.674Z
+SOLVED: no
+============================================================
+
+QUESTION (by kaho @ 2022-05-24T11:01:32.948Z):
+Hi combine experts,
+From what I understood, the discrete profiling method is usually used for modeling background. But in the case where I want to understand how an alternative signal parametric model would affect my systematics, is it possible to use the discrete profile method for signal modeling?
+If not, are there any suggestions on how to incorporate uncertainties from choosing a particular signal model by providing combine with an alternative signal model? (for example to understand the uncertainties introduced by choosing a crystal ball function while using sum of gaussians fit equally well)
+Thanks,
+Ka Wa
+----------------------------------------
+
+REPLY 2 (by kaho @ 2022-07-06T10:38:38.705Z):
+Reviving this thread to see if anyone has any insight. Thanks.
+----------------------------------------
+
+REPLY 3 (by amarini @ 2022-07-06T10:44:35.348Z):
+Hi,
+In general, it has  been verified that these kind of uncertainties for signal are tiny or negligible <1%.
+You can start by studying a bias, i.e. constructing toys with one model and fitting them with others.
+There may be cases where this is not the case, like if you have a large signal – eg a Z boson.
+-Andrea
+----------------------------------------
+
+REPLY 4 (by nckw @ 2022-07-06T10:46:34.000Z):
+Hi,
+That’s a very interesting question - I don’t think anyone has studied this before. In principle it will also work for the signal components, however usually the method requires several different suitable functions (while in your case I assume you only have two models that you want to compare)?
+I would in cases with very small signals, you will be dominated by the statistical uncertainty and (less so) systematics on the overall rate so I would think the “shape” of the signal here would be very subdominant. One way to directly check would be to construct a datacard/model using one parameterisation and generate an Asimov toy with some signal injected, then fit it using the second parameterisation and check if you see a substantial difference from the fitted signal (it should fit to the same “r" of course that is used to generate the Asimov).
+Basically my thinking is that if it turns out the effect is small, I would not be concerned to account for it with something like the discrete profiling,
+Best,
+Nick
+
+On 6 Jul 2022, at 11:39, Ka Wa Ho via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Ka Wa Ho kahoJuly 6
+
+Reviving this thread to see if anyone has any insight. Thanks.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

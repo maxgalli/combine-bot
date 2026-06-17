@@ -1,0 +1,29 @@
+TOPIC: Combinimg two bumps in 2017 and 2018 data in one Search Region
+URL: https://cms-talk.web.cern.ch/t/30701
+DATE: 2023-10-18T08:15:04.299Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2023-10-18T08:15:04.528Z):
+Dear experts,
+I am preparing for unblining dimuon excess data in 2017 and 2018 UL and checking tool what I used for the previous publication when I combined 8 TeV data. At that time I used combined tool in CMSSW_7_1_5 with instuctions from Nick Wardle. Now I am using the same instructions and got it to
+problem. I use commands
+combineCards.py SR1_2017=2017UL_dimuon_SR1ptj20.txt SR1_2018=2018UL_dimuon_SR1ptj20.txt > SR1_2017+2018.txt
+text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO ‘map=SR1_2017/sig:r_sig1[1,0,100]’ --PO ‘map=SR1_2018/sig:r_sig2[1,0,100]’ SR1_2017+2018.txt -o SR1_2017+2018.root
+and the according to instruction I calculating the difference between the log likelihood value at the best fit point and the value from the fit with zero signal (deltaNLL) with a command
+combine -M MultiDimFit --algo fixed --setPhysicsModelParameters r_sig1=0,r_sig2=0 SR1_2017+2018.root -v 3
+and here I got into the message
+Invalid options: unrecognised option ‘–setPhysicsModelParameters’
+I cant find from combined --help what should I use instead with new combined version.  I spend 20 min looking at combine user guide and can’t find either.  Please, advice since it is a “dark forest” for me and unblinding is coming soon.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-10-18T09:04:44.245Z):
+Hi Sasha,
+I think this message was supposed to go to the statistical interpretation tools forum (subforum of Common Analysis Tools): https://cms-talk.web.cern.ch/c/physics/cat/cat-stats/279 - in future it would be better to follow up there.
+First: presumably you are not still using CMSSW_7_1_5? The latest recommended Combine version runs in CMSSW_11.
+The option --setPhysicsModelParameters was renamed to ‘setParameters’ several years ago. The common command line options are detailed here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#common-command-line-options
+By the way, a lot of tutorial material was produced over the last years, it might be helpful to have a look at some of it: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/ ( and https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/, one of the sets of exercises used in the tutorials).
+Best,
+Adinda
+----------------------------------------

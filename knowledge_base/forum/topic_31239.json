@@ -1,0 +1,45 @@
+{
+  "topic_id": 31239,
+  "title": "Combine pull plot: pulls vs fit",
+  "url": "https://cms-talk.web.cern.ch/t/31239",
+  "category_id": 279,
+  "created_at": "2023-11-02T17:20:32.927Z",
+  "last_posted_at": "2023-11-16T16:21:45.040Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2023-11-02T17:20:33.350Z",
+      "updated_at": "2023-11-02T17:20:33.350Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to interpret the plot made by combine with various uncertainties summary, described here [1]. The first column after list of uncertainties sources contains pulls and fits across each source. What is the difference between those two? Pulls are supposed to be the optimal value for parameters in the fit, but then what do the fit points stand for?\nkind regards,\nAnton\n[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters-and-pulls\nScreenshot 2023-11-02 at 6.14.24 PM1664\u00d7672 91.4 KB",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to interpret the plot made by combine with various uncertainties summary, described here [1]. The first column after list of uncertainties sources contains pulls and fits across each source. What is the difference between those two? Pulls are supposed to be the optimal value for parameters in the fit, but then what do the fit points stand for?</p>\n<p>kind regards,<br>\nAnton</p>\n<p>[1] <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters-and-pulls\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters-and-pulls</a></p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/a/aaefa4c4f5d408305659282d8dd7d8c4888c0108.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/aaefa4c4f5d408305659282d8dd7d8c4888c0108\" title=\"Screenshot 2023-11-02 at 6.14.24 PM\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/a/aaefa4c4f5d408305659282d8dd7d8c4888c0108_2_690x278.jpeg\" alt=\"Screenshot 2023-11-02 at 6.14.24 PM\" data-base62-sha1=\"ooaBs6ISkSKvSaCCFCvD85VPyru\" width=\"690\" height=\"278\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/a/aaefa4c4f5d408305659282d8dd7d8c4888c0108_2_690x278.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/a/aaefa4c4f5d408305659282d8dd7d8c4888c0108_2_1035x417.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/a/aaefa4c4f5d408305659282d8dd7d8c4888c0108_2_1380x556.jpeg 2x\" data-dominant-color=\"E5E3E4\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot 2023-11-02 at 6.14.24 PM</span><span class=\"informations\">1664\u00d7672 91.4 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "vischia",
+      "name": "Pietro Vischia",
+      "created_at": "2023-11-02T17:46:31.000Z",
+      "updated_at": "2023-11-02T17:51:10.587Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi Anton,\nthey correspond to the two formulas in the x axis legend (the black and the blue). One is the significance of the difference between prefit and postfit (thetahat - theta_input)/sigma_input, the other is the pull (or \u201cthe actual pull\u201d, depending on how you feel about what should be correctly called \u201cpull\u201d) calculated propagating the two uncertainties on thetahat and theta_input assuming 100% correlation (hence the minus sign, see section 2.2. of https://hep-physics.rockefeller.edu/~luc/technical_reports/cdf5776_pulls.pdf ).\nCheers,\nPietro\n\n\u00b7\u00b7\u00b7\nPlease note that, regardless of when I sent this email, I don\u2019t expect you to answer me outside of the regular working hours of your local time zone.\nDr. Pietro Vischia\nRam\u00f3n y Cajal Senior Researcher, Universidad de Oviedo\nhttps://vischia.github.io\nmobile: +34 666 986 616\noffice: +34 985 106 252\nmail: pietro.vischia@cern.ch pietro.vischia@gmail.com\nskype: rambling_hadron",
+      "cooked_html": "<p>Hi Anton,</p>\n<p>they correspond to the two formulas in the x axis legend (the black and the blue). One is the significance of the difference between prefit and postfit (thetahat - theta_input)/sigma_input, the other is the pull (or \u201cthe actual pull\u201d, depending on how you feel about what should be correctly called \u201cpull\u201d) calculated propagating the two uncertainties on thetahat and theta_input assuming 100% correlation (hence the minus sign, see section 2.2. of <a href=\"https://hep-physics.rockefeller.edu/~luc/technical_reports/cdf5776_pulls.pdf\" rel=\"noopener nofollow ugc\">https://hep-physics.rockefeller.edu/~luc/technical_reports/cdf5776_pulls.pdf</a> ).</p>\n<p>Cheers,</p>\n<p>Pietro</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p><em>Please note that, regardless of when I sent this email, I don\u2019t expect you to answer me outside of the regular working hours of your local time zone.</em></p>\n<p>Dr. Pietro Vischia</p>\n<p>Ram\u00f3n y Cajal Senior Researcher, Universidad de Oviedo</p>\n<p><a href=\"https://vischia.github.io\" rel=\"noopener nofollow ugc\">https://vischia.github.io</a><br>\nmobile: +34 666 986 616<br>\noffice: +34 985 106 252<br>\nmail: <a href=\"mailto:pietro.vischia@cern.ch\">pietro.vischia@cern.ch</a> <a href=\"mailto:pietro.vischia@gmail.com\">pietro.vischia@gmail.com</a><br>\nskype: rambling_hadron</p>\n</details>"
+    },
+    {
+      "post_number": 3,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2023-11-16T16:21:45.040Z",
+      "updated_at": "2023-11-16T16:21:45.040Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Pietro,\nThank you!\nkind regards,\nAnton",
+      "cooked_html": "<p>Hi Pietro,</p>\n<p>Thank you!</p>\n<p>kind regards,<br>\nAnton</p>"
+    }
+  ]
+}

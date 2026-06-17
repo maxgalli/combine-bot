@@ -1,0 +1,88 @@
+TOPIC: Follow up question to Alyia about two years and three SR combination for dimuon excess 28 GeV
+URL: https://cms-talk.web.cern.ch/t/38251
+DATE: 2024-04-02T15:20:42.933Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-04-02T15:20:43.110Z):
+Dear Alyia,
+I am nicely using command you have recommended to combine 2017 and 2018 (related by nuisance parameter) and three Search Regions:
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3
+It works as I would expect.  But I have question:  why do I use
+–freezeParameters r
+in this command ? What it supposed to do ?
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-04-02T15:29:33.803Z):
+Dear Sasha,
+Unless you are using a specific physics model, which is not your case, by default combine will create a likelihood function defined as Bkg + r* Sig. So the “r” parameter (aka the signal strength) is present in the model you use, even if you redefine the POIs, and by default is freely floating. By freezing it with that command, you fix it at 1 so it has no effect.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-04-02T15:31:32.426Z):
+Thanks, Giacomo !
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2024-04-03T07:35:54.262Z):
+Hi Giacomo,
+I got into problem with scanning of mu_sr1_2017.
+Command:
+combine -M MultiDimFit -d combined.txt --freezeParameters r --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 -v 3
+works fine and give me reasonable values of three signal strengths, mean and width:
+mean      = 27.4291      +/-  0.319384  (limited)
+mu_sr1_2017       = 38.0977      +/-  16.8499
+mu_sr2_2017       = 21.2139      +/-  11.1855
+mu_sr3_2017       = 48.2907      +/-  25.433
+width     = 2.35183      +/-  1.52821   (limited)
+but when  I scan mu_sr1_2017 (with best fit fixed mass and width) and plot it with commands:
+combine -M MultiDimFit combined.txt -P mu_sr1_2017 --setParameterRanges mu_sr1_2017=0.0,100.0 --algo grid --points 100 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4,width=2.4 --freezeParameters mean,width,r
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI mu_sr1_2017
+it gives me nonsense scan (see attached plot)
+What I do wrong with scanning ?
+Thank you, Sasha.
+scan.pdf (17.2 KB)
+----------------------------------------
+
+REPLY 5 (by gortona @ 2024-04-03T08:44:48.000Z):
+Dear Sasha,
+Are you getting any error messages when running the grid algorithm? I have the feeling in most of the points the algorithm is actually failing, hence the weird result.
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2024-04-03T09:57:29.000Z):
+Dear Giacomo,
+no, I did not get any error messages. I was able to get it normal with
+–floatOtherPOIs=0
+instead of 1. I think is due “r” is fixed in this case I do not use “r” as
+POI, but instead use mu_sr1_2017, …
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 7 (by anigamov @ 2024-04-04T09:48:33.908Z):
+Dear Sasha,
+if you also redefine POIs in the command for the likelihood scans (i.e. remove r from POIs), as shown below:
+combine -M MultiDimFit combined.txt -P mu_sr1_2017 --setParameterRanges mu_sr1_2017=0.0,100.0 --algo grid --points 100 --floatOtherPOIs=1 --saveInactivePOI 1 --setParameters mean=27.4,width=2.4 --freezeParameters mean,width,r  --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017
+
+the  --floatOtherPOIs=1 option should still produce reasonable results, as Giacomo already explained it is important to freeze r.  Btw, I still think that there is a better way to setup physics model for you case, as I explained in the earlier thread and quoted below.
+
+Combining 2017 and 2018 data in three Search Regions (SR1, SR2, SR3)
+
+After all of the cards are combined you can define the signal process scaling parameters with multiSignalModel:
+text2workspace.py -d combined.txt -o ws_run2_3SRs.root  -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose  --PO 'map=SR1_2017/sig:r_sr1_2017[100,0,500]'  --PO 'map=SR1_2018/sig:r_sr1_2018=expr;;r_sr1_2018("@0*@1", r_sr1_2017, Rsr1_2018_2017[1,0,2])' --PO 'map=SR2_2017/sig:r_sr2_2017[100,0,500]'  --PO 'map=SR2_2018/sig:r_sr2_2018=expr;;r_sr2_2018("@0*@1", r_sr2_2017, Rsr2_2018_2017[1,0,2])'  --PO 'map=SR3_2017/sig:r_sr3_2017[100,0,500]'  --PO 'map=SR3_2018/sig:r_sr3_2018=expr;;r_sr3_2018("@0*@1", r_sr3_2017, Rsr3_2018_2017[1,0,2])'
+
+where Rsr3_2018_2017, Rsr2_2018_2017 and Rsr2_2018_2017 are constrained ratio parameters defined as param in the datacards for each region.
+
+Best,
+Aliya
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2024-04-04T10:55:06.000Z):
+Dear Alyia,
+thank you, it works !
+The first way your proposed is “shorter”  and it works as I would expact.
+Cheers, Sasha.
+----------------------------------------

@@ -1,0 +1,23 @@
+{
+  "topic_id": 26558,
+  "title": "High Energy Physics Statistics Serialization Standard discussion at CAT meeting this Wednesday at 14:00",
+  "url": "https://cms-talk.web.cern.ch/t/26558",
+  "category_id": 279,
+  "created_at": "2023-07-10T07:59:15.360Z",
+  "last_posted_at": "2023-07-10T07:59:16.046Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "clange",
+      "name": "Clemens Lange",
+      "created_at": "2023-07-10T07:59:16.046Z",
+      "updated_at": "2023-07-10T07:59:16.046Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello everyone,\nThere\u2019ll be a presentation on the development of a High Energy Physics Statistics Serialization Standard at the CAT meeting this week, 12th July at 14:00 CERN time. For more details see the meeting announcement.\nBest regards,\nGiulio and Clemens",
+      "cooked_html": "<p>Hello everyone,</p>\n<p>There\u2019ll be a presentation on the development of a High Energy Physics Statistics Serialization Standard at the <a href=\"https://indico.cern.ch/event/1299105/\">CAT meeting</a> this week, 12th July at 14:00 CERN time. For more details see the <a href=\"https://cms-talk.web.cern.ch/t/off-week-cat-meeting-12-july-14-high-energy-physics-statistics-serialization-standard/26555\">meeting announcement</a>.</p>\n<p>Best regards,<br>\nGiulio and Clemens</p>"
+    }
+  ]
+}

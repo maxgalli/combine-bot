@@ -1,0 +1,69 @@
+TOPIC: Shifted values of SignalPOIs between syst+stat and stat only fits
+URL: https://cms-talk.web.cern.ch/t/141488
+DATE: 2026-01-28T16:02:19.386Z
+SOLVED: no
+============================================================
+
+QUESTION (by gmelachr @ 2026-01-28T16:02:19.635Z):
+Dear experts,
+for the BPH-24-005 analysis, I am trying to do a simultaneous fit using COMBINE. The purpose is to use the formula N(rare) = dB/dq2 x N(J/ψ) x (αxε(rare) / αxε(J/ψ)) x  Deltaq / BR(J/ψ→μμ) in order to measure the factor dB/dq2. To do this, I define N(rare) and N(J/ψ) (which are the normalizations of the signal processes in the two datasets) as rateParam in the datacard. Moreover, in the datacard, the expected yields for all the processes are set to 1 since the yields are calculated directly from the data. The Deltaq and BR factors are treated as constants. The αxε factors are measured from the MC. Since the yields are calculated from the data, and there are not expected yields in the datacard, the "r” parameter is frozen and in order to take into account the systematic uncertainties, I have replaced the αxε factor with a RooFormulaVar of the form αxε → αxε(1+sum(nuisance * delta(a*e)). I have built the workspace, the fit is converging and I am trying to break down the uncertainty to statistical and systematic, but the values of the POI are different for the stat+syst and stat only fits.
+The commands that I used are:
+combine -M MultiDimFit mumuLambda_11_rare_Jpsi.txt --freezeParameters r -n .bestfit.with_syst --saveWorkspace --redefineSignalPOIs dBdq2_mumuLambda_q1,dBdq2_mumuLambda_q2,dBdq2_mumuLambda_q3,dBdq2_mumuLambda_q4,dBdq2_mumuLambda_q5,dBdq2_mumuLambda_q6,dBdq2_mumuLambda_q7,dBdq2_mumuLambda_q8,dBdq2_mumuLambda_q9,dBdq2_mumuLambda_q10,dBdq2_mumuLambda_q11
+and
+combine -M MultiDimFit higgsCombine.bestfit.with_syst.MultiDimFit.mH120.root --freezeParameters r,allConstrainedNuisances -n .scan.with_syst.statonly_correct --snapshotName MultiDimFit --saveWorkspace
+I have also attached the datacard mumuLambda_11_rare_Jpsi.txt (10.2 KB) and the stat+syst and stat only workspaces in this txt file workspaces.txt (44.5 KB)
+Could you please help me understand why are the values of SignalPOIs shifted between the two fits?
+Thank you,
+Giorgos
+----------------------------------------
+
+REPLY 2 (by gmelachr @ 2026-01-30T14:50:15.177Z):
+Dear Experts,
+I tried to investigate the situation and I have some news but it is not clear yet what is happening.
+First of all, when I said that the value of Signal POI is shifted I was referring to the values that are stored in the “clean” and in the “MultiDimFit” snapshots in the rootfile after breaking down the uncertainties from syst+stat to stat only. See for example the following figure, where the top value is from the clean snapshot and the bottom value is from the MultiDimFit snapshot after the stat only fit
+image545×412 147 KB
+The two values are different. I tried to plot the maximum likelihood and then I realized that the values on the plot were the same.
+image690×563 7.84 KB
+So, I tried to investigate more and I went back to the parametric tutorial codes. I found that after breaking the uncertainties from syst+stat to stat only, the r-values in the two snapshots are different (similar to my case)
+image294×272 19.3 KB
+but the plot is fine:
+image681×562 7.63 KB
+Then, accidentally, I forgot to add the --breakdown syst,stat option in the plotting command and I saw the following plot despite the fact that the breaking of the uncertainties has been done based on the correct snapshots:
+image681×562 7.84 KB
+To be honest, having read the tutorial many times, I never understood that the option --breakdown syst,stat in the plot command was responsible to print the same values on the plot. I thought that repeating the fit using the MultiDimFit snapshot from the syst+stat fit and freezing the nuisances from this snapshot was the reason that the value of the POI is not shifted. I also tried to plot the likelihoods where the breaking down of the stat+syst to stat only uncertainty is not done using the correct snapshot and I saw that when the option --breakdown syst,stat is added, the r values are not shifted:
+image681×562 7.53 KB
+I was expecting that the values in the two snapshots should be the same and only the two uncertainties to be different, so that the two uncertainties can be subtracted in quadrature. But in both cases (my analysis and tutorial) the values are different and the plots are fine if the option  --breakdown syst,stat is added in the command. But above all, the values of the POIs are the same even if the breaking down of the stat+syst uncertainty to stat only has not been done properly - (in the second and forth likelihood scans the r-values are the same but the uncertainties are not the same). Could you please verify that I am not lost completely and adding the option the option --breakdown syst,stat to the plotting command even if the stat only fit is not using the MultiDimFit snapshot from the syst+stat fit makes the r values be in agreement and that the r-values in the snapshots should be indeed be different?
+I tag @anigamov @kcormier and @nckw since you had helped me a lot with the Combine setup for this analysis.
+If needed, we can have a zoom call either today, or during one of the following days.
+Best regards,
+Giorgos
+----------------------------------------
+
+REPLY 3 (by gmelachr @ 2026-02-02T11:34:20.579Z):
+Dear experts,
+I investigated a bit more.  First of all, when we use the option --breakdown, the code is indeed printing on the plot the same POI value with respect to the case where the uncertainty is the total one and it is not broken down into stat+syst.
+total uncertainty: link
+breakdown of uncertainties link
+==> In both cases the val_nom[0] is used.
+while when we don’t break the uncertainty, the code is printing the POI value (other[“val”][0]) from the second scan link.
+A posteriori, I understand that the POI values should be different in the two workspaces when we break the uncertainty from syst+stat to stat only, since we have two different functions that are minimized; in the first case, the nuisances are allowed to move while in the second case they are frozen.Therefore in principle the minimum will be in a different point. But for some reason, since when I read the tutorial for the very first time, I mistakenly assumed that we end up, and we should end up, with the same central values for the POIs when we break the uncertainty because we are using the MultiDimFit snapshot from the best fit where the nuisances are allowed to move.
+Since, I guess I am not the only one who made these assumptions and got confused with this, I would propose to modifyi a bit the texts of the tutorial document, in order to protect people from reaching the same arbitrary conclusion about the snapshot and the values that are printed on the scans?
+Best,
+Giorgos
+----------------------------------------
+
+REPLY 4 (by anigamov @ 2026-02-04T09:25:03.145Z):
+Hi Georgios,
+This effect you are observing is totally expected and explained in the parametric tutorial which I think you’ve been following.
+That is why we usually use the snapshot functionality to save the best-fit model where all of the uncertainties are profiled as also explained in the general breakdown instructions.
+Let us know if these instructions are confusing.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 5 (by gmelachr @ 2026-02-12T19:26:56.574Z):
+Dear Aliya,
+I would say that a reference with the link you provided in the parametric tutorial would be useful.
+Best,
+Giorgos
+----------------------------------------

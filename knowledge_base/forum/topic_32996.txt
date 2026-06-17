@@ -1,0 +1,28 @@
+TOPIC: Query on defining control region histo in datacard
+URL: https://cms-talk.web.cern.ch/t/32996
+DATE: 2024-01-04T05:04:20.170Z
+SOLVED: no
+============================================================
+
+QUESTION (by achhetri @ 2024-01-04T05:04:20.542Z):
+Dear Combine Experts,
+First of all, a very happy new year to all.
+Second, we are defining a separate control region(CR) for top background scaling top events in signal region(SR), via a transfer factor(TF). TF is defined as ratio, = ( Data__{CR} - MC__{rest\_bkg})/MC__{top\_CR} .
+Currently, we are computing expected limits via combine tool, using shape distributions, keeping everything blinded. The input datacard has SR histograms, including top background.
+Do we include CR histograms in datacard, even though top background in SR is already corrected using TF?
+Please let us know of your views.
+Cheers,
+Arjun
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-01-08T08:23:52.500Z):
+Hi Arjun, and happy new year,
+If I’ve understood correctly, you’re currently calculating the TF explicitly before running the SR fit, then you apply the TF as a fixed value directly in the SR fit – and you’re wondering if you should be including the CR directly in the datacard and fit?
+This can be done both ways, either using the TF as an external input to the fit, or using the CR as part of the fit. There are some advantages to including the CR as part of the fit directly, generally it is a more accurate statistical model which automatically handles the statistical uncertainties in the CR correctly, it makes handling correlations between relevant nuisance parameters easy, and you can use a lot of the features of the software for inspecting and debugging the fit in case of issues (e.g. you can run channel compatibility checks to see how well a single scaling parameter between CR and SR is working).
+That being said, for some situations, a precalculated TF can also be fine. You should then assess the relevance of statistical and systematic uncertainties on the TF and how to apply those.
+If you use the CR as part of the fit, then typically the way to do it is to introduce a single unconstrained rate parameter [1] which scales the yields of the top process in both the CR and SR. This way, the normalization of the top process is freely floating a priori, but constrained by the data in the CR as well as SR.
+Let us know if you have any more questions.
+Best,
+Kyle
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#rate-parameters
+----------------------------------------

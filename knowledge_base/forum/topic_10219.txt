@@ -1,0 +1,100 @@
+TOPIC: Incorporate sPlots in combine template fit
+URL: https://cms-talk.web.cern.ch/t/10219
+DATE: 2022-05-09T12:52:24.258Z
+SOLVED: no
+============================================================
+
+QUESTION (by manzoni @ 2022-05-09T12:52:24.446Z):
+Dear Experts,
+I have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.
+
+is there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?
+
+does combine allow to fit weighed data?
+
+Let me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.
+Thanks,
+Riccardo
+
+q2696×672 8.08 KB
+
+mass696×672 9.13 KB
+----------------------------------------
+
+REPLY 2 (by vischia @ 2022-05-09T13:03:11.000Z):
+sPlot is evil
+El lun., 9 may. 2022 14:54, Riccardo Manzoni via CMS talk <noreply@cms-talk.web.cern.ch> escribió:
+
+Riccardo Manzoni manzoniMay 9
+
+Dear Experts,
+I have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.
+
+is there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?
+
+does combine allow to fit weighed data?
+
+Let me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.
+Thanks,
+Riccardo
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by manzoni @ 2022-05-09T13:10:32.446Z):
+“the end justify the means”
+Jokes apart, I’m am also more than curious to know if there are better ideas to achieve the same goal.
+Cheers,
+Riccardo
+----------------------------------------
+
+REPLY 4 (by vischia @ 2022-05-09T14:21:20.000Z):
+yes, it’s always a compromise between need and ideality.
+Jokes aside, the most tricky part is checking for independence rather than only uncorrelatedness, and the issue with uncertainties.
+We had a workshop on this a couple years ago https://indico.cern.ch/event/909987/ , and I seem to remember also another in-depth workshop where a modification to splot was proposed but I need to find the link.
+Cheers,
+Pietro
+
+···
+Dr. Pietro Vischia
+FNRS Fellow
+http://cp3.irmp.ucl.ac.be/Members/pvischia
+mobile: 0034 666 986 616 (ES)
+office: +32 10 473205
+mail: pietro.vischia@cern.ch pietro.vischia@gmail.com
+skype: rambling_hadron
+----------------------------------------
+
+REPLY 5 (by manzoni @ 2022-05-09T14:56:52.261Z):
+this one?
+https://indico.cern.ch/event/940874/timetable/#5-using-sweights-to-disentangl
+----------------------------------------
+
+REPLY 6 (by malcles @ 2022-05-09T15:19:37.000Z):
+Hi Riccardo,
+You can do a 2D fit directly in fact (as done in HH-> bb gamma gamma analysis for example), you do not need sPlot.
+sPlot would rather be doing a 1D fit with invariant mass only to estimate the q2 distribution of signal or background. You are not supposed to use the variable you want to infer with sweights
+as a discriminating variable in the fit in sPlots.
+Cheers,
+Julie
+
+On 9 May 2022, at 14:55, Riccardo Manzoni via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Riccardo Manzoni manzoniMay 9
+
+Dear Experts,
+I have the following problem: the observable that I want to fit to measure a given signal, in red, is q2 (plot attached). There is a large contamination from some combinatorial background, in grey, which however can be singled out using the invariant mass of a known resonance (the other plot attached) and sPlots.
+
+is there a way to incorporate sPlots and corresponding sWeights in a multidimensional fit, q2 and invariant mass, within combine?
+
+does combine allow to fit weighed data?
+
+Let me clarify that, for the time being, and I have not made any concrete attempts yet, just interested to know if the idea might work, in principle, and if there are examples that I can follow.
+Thanks,
+Riccardo
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

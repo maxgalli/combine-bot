@@ -1,0 +1,44 @@
+TOPIC: Cannot compute CLs in HybridNew method
+URL: https://cms-talk.web.cern.ch/t/10813
+DATE: 2022-05-24T07:58:51.683Z
+SOLVED: no
+============================================================
+
+QUESTION (by prsaha @ 2022-05-24T07:58:51.893Z):
+Hello Andrew and Experts,
+Thanks for your support.
+We are having an issue in HybridNew method with the datacard [1]. Since we are dealing with a low stat. category[2] and we are calculating the Asymptotic upper limit. During the ARC review of B2G-21-007, having concerns on the validity of the Asymptotic method on these statistics, we have been asked to check the upper limit with the full CLs(HybridNew) method .
+I used the following combine command[3] to calculate it. For other mass points I could get the result which is close to the Asymptotic method. But for the 600GeV mass point the fit couldn’t converge and terminates with the error message[4]
+It would be very helpful if you suggest some way to get rid of the issue.
+Best
+Prafulla
+[1] /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root
+[2] https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/UL/result_v2/SplusBModels_muFit_unblind/all_CMS_hgg_mass_Tprime600.pdf
+[3]Combine command:
+combine /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root -M HybridNew -m 125 --freezeParameter MH --saveWorkspace --cminDefaultMinimizerStrategy 0 --LHCmode LHC-limits --saveToys --saveHybridResult --clsAcc 0.5 -T 20
+[4]
+Error: Cannot compute CLs because CLb = 0. Returning CLs = -1
+Cannot set higher limit: at r = 1280 still get CLs = -1
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-06-03T10:03:48.754Z):
+Hi Prafulla,
+Sorry for the slow reply on this. I didn’t have a chance to look at this in detail yet, but there might be a couple of things you could try:
+
+The argument to -T (number of toys per batch) is a little low, I’d suggest setting this to something O(1000), at least for debugging.
+Possible the scan for the limit is terminating early because of the absolute accuracy requirement (this is often a problem if the absolute value of the limit is very small) - you could try setting --rAbsAcc 0
+
+It’s probably not a good idea to set such a large --clsAcc value either - could you try leaving this as the default - or if the runtime is really too prohibitive then only increase by a small factor
+
+If none of these address the problem I’ll try to look in more detail.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by prsaha @ 2022-06-07T18:52:38.914Z):
+Hello Andrew,
+Thank you so much for your reply.
+Now it worked with the option setting --rAbsAcc 0
+Best
+Prafulla
+----------------------------------------

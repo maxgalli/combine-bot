@@ -1,0 +1,308 @@
+TOPIC: Behavior of the stat. uncertainty for the grand 2016/17/18 combination
+URL: https://cms-talk.web.cern.ch/t/35696
+DATE: 2024-02-24T17:23:39.733Z
+SOLVED: no
+============================================================
+
+QUESTION (by ytakahas @ 2024-02-24T17:23:39.892Z):
+Hi expert,
+I would like to ask a naive question regarding the 2016/17/18 combination.
+To begin with, here are the likelihood parabolas I have for each year.
+2016:
+parabola_comb_2016696×572 8.76 KB
+2017:
+parabola_comb_2017696×572 8.84 KB
+2018:
+parabola_comb_2018696×572 8.73 KB
+And this is the combination result:
+parabola_comb_all696×572 8.62 KB
+What is strange is that the stat. uncertainty for the grand combination seems not obey the 1/sigma_total^2 = Sum ( 1/sigma^2_i ) rule: I see 0.06 instead of expected number (from this rule) 0.04. I made sure several times that I grouped all nuisance parameters into “Syst” category. Can this happen in some cases?
+I put my datacards and the ROOT files here:
+2016:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2016.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2016.root
+2017:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2017.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2017.root
+2018:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2018.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2018.root
+combine:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_all.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_all.root
+The command I used to get the parabola:
+/afs/cern.ch/user/y/ytakahas/public/forComb/do_parabola.sh
+Thanks for your help,
+Best,
+Yuta
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-02-25T20:50:25.820Z):
+Hi Yuta,
+can you elaborate on how the combined datacard has been obtained?
+If I look in the channels the datacards repeat the ‘taulep’ channels.
+Also, remove the fastScan option, unless what you want to do is:
+--fastScan                            Do a fast scan, evaluating the
+likelihood without profiling it.
+
+image2848×1484 374 KB
+-A
+----------------------------------------
+
+REPLY 3 (by ytakahas @ 2024-02-25T22:12:39.657Z):
+Hi Andrea,
+We are doing R(J/psi) = B(Bc → J/psi tau (->3pi) nu) / B(Bc → J/psi tau (->lep) nu) measurement. Here, the denominator comes from 2018-only measurement whereas the numerator have 2016, 2017 and 2018 (as well as its combination). That is why, leptonic channel is repeated. Is this problematic?
+Here is the original datacards:
+hadronic:
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_tauhad_2016.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_tauhad_2017.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_tauhad_2018.txt
+leptonic:
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_taulep_2018.txt
+Here is a script to make (2016 had + 2018 lep), (2017 had + 2018 lep), (2018 had + 2018 lep), as well as grand combination (2016/17/18 had + 2018 lep).
+/afs/cern.ch/user/y/ytakahas/public/forComb/make.sh
+Thanks for your advice,
+Best,
+Yuta
+----------------------------------------
+
+REPLY 4 (by amarini @ 2024-02-26T08:29:37.633Z):
+Hi Yuta,
+Going back to your original question,
+if you are measuring
+(n2016 / d), n2017/d, and n2018 / d
+and their combination (w/ a likelihood function)
+nall / d
+and the statistical uncertainty on d is non-negligible,
+then the uncertainties on the combination won’t be the straight propagation to the measurement (i.e., (1./s1^2 +…)^-1/2 ), but will need to account for the common component from the denominator.
+Note that we are discussion about the statistical component, and in particular the one that you let float in the fit;  the potential usefulness to add the other years in the denominator, provided that they are available, will need to account for the full uncertainties on the numerators (which may already be already much larger than the current denominator ones).
+-A
+----------------------------------------
+
+REPLY 5 (by ytakahas @ 2024-02-26T09:52:59.932Z):
+Hi Andrea
+Yes right but The statistical uncertainty of the denominator is 0.17 which is much larger than that of the numerator. So I think the effect is negligible. Isn’t it the case?
+Thanks
+Yuta
+----------------------------------------
+
+REPLY 6 (by amarini @ 2024-02-26T16:09:26.544Z):
+Hi Yuta,
+I don’t understand how you derive the 0.17. It should be stat. only, if you want to compare with the other results (see below, → 0.074).
+One additional note from my side, which I misunderstood in my previous emails, is that imho you should also include in the stat. uncertainty scans the stat. uncertainty of the denominator  (i.e., the nuisance that you called bc, if I understood correctly your dc), otherwise the lepton channels will have a constraint power on the ratio, which is counterintuitive and potentially misinformative (see below the quantitative numbers).
+If I use the datacard stat. only as defined by you and I derive with the ChannelCompatibilityCheck the channel by channel constraint power,
+the uncertainty that you posted from the full scans is approximately the one that you get with the naive formulas.
+
+e2016 = np.array([0.9741,0.4562,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418]
+… )
+
+e2017 = np.array([0.5202,0.2179,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418])
+
+e2018 = np.array([0.3277,0.1276,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418,])
+
+eall = np.array([0.9741,0.4562,0.5202,0.2179,0.3277,0.1276,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418,])
+
+elep = np.array([0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418,])
+
+The naive propagation to the 2016 datacard is:
+
+np.sqrt(1./np.sum(1./e2016**2))
+0.0737079458117509
+
+To the 2017 datacard:
+
+np.sqrt(1./np.sum(1./e2017**2))
+0.07019264979897864
+
+To the 2018 datacard:
+
+np.sqrt(1./np.sum(1./e2018**2))
+0.06338047644642886
+
+To the full combination:
+
+np.sqrt(1./np.sum(1./eall**2))
+0.05980926693038028
+
+To the datacard with the leptonic channels only:
+
+np.sqrt(1./np.sum(1./elep**2))
+0.07490978614928825
+
+And if you don’t include the leptonic channels, the naive propagation will result in:
+
+o2016 = np.array([0.9741,0.4562,])
+o2017 = np.array([0.5202,0.2179,])
+o2018 = np.array([0.3277,0.1276,])
+
+np.sqrt(1./np.sum(1./o20162))
+0.41313706738818634
+np.sqrt(1./np.sum(1./o20172))
+0.2009803638693212
+np.sqrt(1./np.sum(1./o2018**2))
+0.1189040379639592
+
+-A
+----------------------------------------
+
+REPLY 7 (by ytakahas @ 2024-02-26T21:53:05.000Z):
+Hi Andrea
+Many thanks for you reply.
+I’m a bit puzzled why you get 0.074 for the leptonic stat uncertainty even if the actual result has 0.17 (https://cds.cern.ch/record/2868988/files/Figure_002.pdf). Also pre unblinding result has 0.1 in their AN Fig 89 (https://cms.cern.ch/iCMS/jsp/openfile.jsp?tp=draft&files=AN2020_223_v20.pdf). Do you have any idea? … I probably better ask leptonic analysis team though.
+Related to bc parameter, it indeed determines the Bc related BG normalization and is predominantly constrained by the leptonic channel. So, indeed this should be included in the stat uncertainty.
+Best
+Yuta
+Outlook for iOS から送信
+
+···
+
+差出人: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+送信日時: Monday, February 26, 2024 11:11:30 AM
+宛先: Yuta Takahashi Yuta.Takahashi@cern.ch
+件名: [Common Analysis Tools/Statistical Interpretation Tools] Behavior of the stat. uncertainty for the grand 2016/17/18 combination
+
+Andrea Carlo Marini amariniFebruary 26
+
+Hi Yuta,
+I don’t understand how you derive the 0.17. It should be stat. only, if you want to compare with the other results (see below, → 0.074).
+One additional note from my side, which I misunderstood in my previous emails, is that imho you should also include in the stat. uncertainty scans the stat. uncertainty of the denominator (i.e., the nuisance that you called bc, if I understood correctly your dc), otherwise the lepton channels will have a constraint power on the ratio, which is counterintuitive and potentially misinformative (see below the quantitative numbers).
+If I use the datacard stat. only as defined by you and I derive with the ChannelCompatibilityCheck the channel by channel constraint power,
+the uncertainty that you posted from the full scans is approximately the one that you get with the naive formulas.
+
+e2016 = np.array([0.9741,0.4562,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418]
+… )
+
+e2017 = np.array([0.5202,0.2179,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418])
+
+e2018 = np.array([0.3277,0.1276,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418,])
+
+eall = np.array([0.9741,0.4562,0.5202,0.2179,0.3277,0.1276,0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418,])
+
+elep = np.array([0.2386,5.1068,9.0477,1.2778,0.1549,0.6936,0.1493,0.5468,0.1246,0.5281,7.4418,])
+
+The naive propagation to the 2016 datacard is:
+
+np.sqrt(1./np.sum(1./e2016**2))
+0.0737079458117509
+
+To the 2017 datacard:
+
+np.sqrt(1./np.sum(1./e2017**2))
+0.07019264979897864
+
+To the 2018 datacard:
+
+np.sqrt(1./np.sum(1./e2018**2))
+0.06338047644642886
+
+To the full combination:
+
+np.sqrt(1./np.sum(1./eall**2))
+0.05980926693038028
+
+To the datacard with the leptonic channels only:
+
+np.sqrt(1./np.sum(1./elep**2))
+0.07490978614928825
+
+And if you don’t include the leptonic channels, the naive propagation will result in:
+
+o2016 = np.array([0.9741,0.4562,])
+o2017 = np.array([0.5202,0.2179,])
+o2018 = np.array([0.3277,0.1276,])
+
+np.sqrt(1./np.sum(1./o20162))
+0.41313706738818634
+np.sqrt(1./np.sum(1./o20172))
+0.2009803638693212
+np.sqrt(1./np.sum(1./o2018**2))
+0.1189040379639592
+
+-A
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Yuta Takahashi ytakahasFebruary 26
+
+Hi Andrea
+Yes right but The statistical uncertainty of the denominator is 0.17 which is much larger than that of the numerator. So I think the effect is negligible. Isn’t it the case?
+Thanks
+Yuta
+
+Andrea Carlo Marini amariniFebruary 26
+
+Hi Yuta,
+Going back to your original question,
+if you are measuring
+(n2016 / d), n2017/d, and n2018 / d
+and their combination (w/ a likelihood function)
+nall / d
+and the statistical uncertainty on d is non-negligible,
+then the uncertainties on the combination won’t be the straight propagation to the measurement (i.e., (1./s1^2 +…)^-1/2 ), but will need to account for the common component from the denominator.
+Note that we are discussion about the statistical component, and in particular the one that you let float in the fit; the potential usefulness to add the other years in the denominator, provided that they are available, will need to account for the full uncertainties on the numerators (which may already be already much larger than the current denominator ones).
+-A
+
+Yuta Takahashi ytakahasFebruary 25
+
+Hi Andrea,
+We are doing R(J/psi) = B(Bc → J/psi tau (->3pi) nu) / B(Bc → J/psi tau (->lep) nu) measurement. Here, the denominator comes from 2018-only measurement whereas the numerator have 2016, 2017 and 2018 (as well as its combination). That is why, leptonic channel is repeated. Is this problematic?
+Here is the original datacards:
+hadronic:
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_tauhad_2016.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_tauhad_2017.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_tauhad_2018.txt
+leptonic:
+/afs/cern.ch/user/y/ytakahas/public/forComb/datacard_taulep_2018.txt
+Here is a script to make (2016 had + 2018 lep), (2017 had + 2018 lep), (2018 had + 2018 lep), as well as grand combination (2016/17/18 had + 2018 lep).
+/afs/cern.ch/user/y/ytakahas/public/forComb/make.sh
+Thanks for your advice,
+Best,
+Yuta
+
+Andrea Carlo Marini amariniFebruary 25
+
+Hi Yuta,
+can you elaborate on how the combined datacard has been obtained?
+If I look in the channels the datacards repeat the ‘taulep’ channels.
+Also, remove the fastScan option, unless what you want to do is:
+--fastScan                            Do a fast scan, evaluating the
+likelihood without profiling it.
+
+-A
+
+Yuta Takahashi ytakahasFebruary 24
+
+Hi expert,
+I would like to ask a naive question regarding the 2016/17/18 combination.
+To begin with, here are the likelihood parabolas I have for each year.
+2016:
+
+2017:
+
+2018:
+
+And this is the combination result:
+
+What is strange is that the stat. uncertainty for the grand combination seems not obey the 1/sigma_total^2 = Sum ( 1/sigma^2_i ) rule: I see 0.06 instead of expected number (from this rule) 0.04. I made sure several times that I grouped all nuisance parameters into “Syst” category. Can this happen in some cases?
+I put my datacards and the ROOT files here:
+2016:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2016.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2016.root
+2017:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2017.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2017.root
+2018:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2018.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_2018.root
+combine:
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_all.txt
+/afs/cern.ch/user/y/ytakahas/public/forComb/combine_all.root
+The command I used to get the parabola:
+/afs/cern.ch/user/y/ytakahas/public/forComb/do_parabola.sh
+Thanks for your help,
+Best,
+Yuta
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------

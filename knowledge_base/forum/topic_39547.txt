@@ -1,0 +1,40 @@
+TOPIC: Copied topic: Fit shapes using –saveshapes not being saved using Higgs Combine tool
+URL: https://cms-talk.web.cern.ch/t/39547
+DATE: 2024-04-22T08:13:08.067Z
+SOLVED: no
+============================================================
+
+QUESTION (by mikumar @ 2024-04-16T22:29:09.562Z):
+Dear experts,
+I am running Higgs combine for parametric fits using binned histograms. Removing the lognormal constraint “cons_top_sig” (along with setting kmax to 0) defined in the data card does not save the profit shapes in the fitDiagnostic file created by the Higgs Combine. Is it expected? If it is anticipated, Which option should I use to save the profit shapes? I need these prefit shapes to analyse the fit behaviour by plotting the prefit distribution and postfit distribution together.
+Please find the test Datacard and test workspace where I have diffident the parametric shapes for the signal and backgrounds at the link below.
+https://cernbox.cern.ch/s/xmbPORr788z4Fm5
+I am using the combine with the following command;
+text2workspace.py datacard_top_shape_comb_para.txt -o workspace_top_Mass_1725_shape_comb_para.root
+combine -M FitDiagnostics workspace_top_Mass_1725_shape_comb_para.root -n _M1725  --redefineSignalPOIs r,sigmaG,mean  --setParameters mean=5.1,r=1,sigmaG=0.15  --X-rtd ADDNLL_CBNLL=0  --trackParameters r,mean,sigmaG --trackErrors r,mean,sigmaG  --plots  --saveShapes --saveWithUncertainties --saveWorkspace
+Thank you very much in advance for your help and support.
+Thanks and regards,
+Mintu Kumar
+----------------------------------------
+
+REPLY 2 (by kcormier @ 2024-04-22T08:13:08.218Z):
+Hi Mintu @mikumar , I have not looked at the substance of your post yet, but I am sharing this to the cat-stats category from Fit shapes using --saveshapes not bing shaved using Higgs Combine tool, since I think this is where it more properly belongs (original below).
+Dear experts,
+I am running Higgs combine for parametric fits using binned histograms. Removing the lognormal constraint “cons_top_sig” (along with setting kmax to 0) defined in the data card does not save the profit shapes in the fitDiagnostic file created by the Higgs Combine. Is it expected? If it is anticipated, Which option should I use to save the profit shapes? I need these prefit shapes to analyse the fit behaviour by plotting the prefit distribution and postfit distribution together.
+Please find the test Datacard and test workspace where I have diffident the parametric shapes for the signal and backgrounds at the link below.
+https://cernbox.cern.ch/s/xmbPORr788z4Fm5
+I am using the combine with the following command;
+text2workspace.py datacard_top_shape_comb_para.txt -o workspace_top_Mass_1725_shape_comb_para.root
+combine -M FitDiagnostics workspace_top_Mass_1725_shape_comb_para.root -n _M1725 --redefineSignalPOIs r,sigmaG,mean --setParameters mean=5.1,r=1,sigmaG=0.15 --X-rtd ADDNLL_CBNLL=0 --trackParameters r,mean,sigmaG --trackErrors r,mean,sigmaG --plots --saveShapes --saveWithUncertainties --saveWorkspace
+Thank you very much in advance for your help and support.
+Thanks and regards,
+Mintu Kumar
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2024-04-22T10:11:29.251Z):
+Hi Mintu,
+My guess, if there are no constrained nuisance parameters declared at all, is that L183 here returns a null pointer, and then the condition on L185 fails, and we never enter the function which saves the plot (getNormalizations on L193).
+It might be good to check if this is the case, and if so, one workaround could be to remove the conditions here and here - i.e. always write the nuisance parameter and global observable argsets into the ModelConfig, even if empty.
+cheers,
+Andrew
+----------------------------------------

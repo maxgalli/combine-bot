@@ -1,0 +1,40 @@
+TOPIC: Different limits using MultiDimFit with two signals (Impact plots)
+URL: https://cms-talk.web.cern.ch/t/43056
+DATE: 2024-07-03T13:05:16.234Z
+SOLVED: no
+============================================================
+
+QUESTION (by sblancof @ 2024-07-03T13:05:16.422Z):
+Dear combine experts,
+We perform an analysis with two signal strengths. In the blind stage, we want to compute the expected (blind) 2-D limits, the impact of the nuisance parameters, and the expected significance.
+First, we have performed a 2-D likelihood scan over the r_LL and r_TT parameter space. From it, we got the 68% confidence level contour asking for -2DeltaNLL = 2.3 (As indicated for two parameters). We got the result:
+r_LL = 1.00+0.52-0.48
+r_TT = 1.00+0.52-0.45
+Then, we have produced the impact plots using MultiDimFit:
+combineTool.py -M Impacts -d datacard_combined.root -m 125 -t -1 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy=0 --setParameters r_LL=1,r_TT=1 --redefineSignalPOIs r_LL,r_TT --doFits
+combineTool.py -M Impacts -d datacard_combined.root -m 125 -t -1 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerStrategy=0 --setParameters r_LL=1,r_TT=1 --redefineSignalPOIs r_LL,r_TT -o impacts.json
+
+plotImpacts.py -i impacts.json -o impacts --POI r_LL
+plotImpacts.py -i impacts.json -o impacts --POI r_TT
+
+And we obtain the following values:
+r_LL = 1.00+0.34-0.32
+r_TT = 1.00+0.34-0.31
+Which perfectly match with the 68% uncertainties when we compute the contour using -2DeltaNLL = 1.0 (expected for one parameter fit) instead of 2.3:
+r_LL = 1.00+0.335-0.318
+r_TT = 1.00+0.339-0.305
+We want to apologize first if we are missing any obvious parameter or method. We would like to ask for advice and know if there is any way in which we can compute the Impact plots using the correct limits. Finally, given that we faced this issue with the impacts, we are wondering if anyone can confirm that we compute the significance using the correct method (And not getting results with a one parameter configuration). We are using the following syntax:
+combine -M Significance datacard_combined.root  -t -1 -m 125 --setParameters r_LL=1,r_TT=1 --redefineSignalPOIs r_LL
+combine -M Significance datacard_combined.root  -t -1 -m 125 --setParameters r_LL=1,r_TT=1 --redefineSignalPOIs r_TT
+
+Thank you in advance,
+Sergio
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-07-08T13:58:08.536Z):
+Dear Sergio,
+I think it is perfectly fine that your CI estimates from 2D scans are different from results obtained with -M Impacts. When you run the -M MultiDimFit --algo singles  or -M Impacts the CI for each nuisance parameters are estimated by treating other POIs as unconstrained nuisance parameters, i.e. they are profiled. More. details about different ways to estimate CI in Combine here.
+If you would like to have a connection to the 2D likelihood scan -  the r_LL  interval from the -M Impacts method corresponds to the  r_LL interval  from the 2D scan when r_TT is fixed at the best-fit value.  I hope it helps, and let me know if something is not clear.
+Best,
+Aliya
+----------------------------------------

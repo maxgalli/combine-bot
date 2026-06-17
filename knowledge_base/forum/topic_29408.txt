@@ -1,0 +1,164 @@
+TOPIC: Trouble calculating expected limits with HybridNew
+URL: https://cms-talk.web.cern.ch/t/29408
+DATE: 2023-09-11T23:54:52.922Z
+SOLVED: no
+============================================================
+
+QUESTION (by fjensen @ 2023-09-11T23:54:53.294Z):
+Hello,
+I am running into issue when trying to use HybridNew to calculate the expected limits for the EXO-22-007 analysis.
+To help figure out the issue I made simplified datacards for the analysis which removes some additional control regions and most all nuisance parameters. Here I attach a diagram of the datacard structure:
+datacards.pdf (53.3 KB)
+Calculating the limits using AsymptoticLimits seems to work well. If I issue the command:
+combine -M AsymptoticLimits datacard.txt --run blind
+I get the following results:
+UpperLimit.AsymptoticLimits.nocrlumionly.pdf (16.1 KB)
+To calculate the limits using HybridNew I execute the following command:
+combine -M HybridNew datacard.txt --LHCmode LHC-limits --expectedFromGrid=${1}
+where expectedFromGrid takes a value (0.025, 0.16, 0.5, 0.84, 0.975)
+and get the following plot:
+UpperLimit.HybridNew.nocrlumionly_defaulttol.pdf (16.1 KB)
+where you can see the bands have been “squeezed”. The stdout file has many lines with the following:
+“Info in : Minuit2Minimizer::Minimize : Minimization did NOT converge, Edm is above max”
+To help with the fit I tried decreasing the tolerance parameters by a factor of 2:
+combine -M HybridNew %s --LHCmode LHC-limits --expectedFromGrid=${1} --clsAcc=0.0025 --rAbsAcc=0.05 --rRelAcc=0.025
+and receive the following limit distribution:
+UpperLimit.HybridNew.nocrlumionly_halftol.pdf (16.1 KB)
+which is a little better. (The lower yellow point for the 5000 GeV mass is set to zero because the job took over 2 days and was therefore killed at the FNAL LPC.)
+I have tried decreasing the tolerances by a factor of 10 but the memory and time requirements to run such a job become prohibitively large (e.g. 2-day limit for jobs at FNAL LPC) and I wonder if there is a) a better way to do things or b) something else is wrong. Does anyone have any suggestions or comments?
+Thank you,
+~Frank
+----------------------------------------
+
+REPLY 2 (by adewit @ 2023-09-13T18:24:32.585Z):
+Dear Frank,
+It’s a bit hard for us to give detailed help without having access to the logs, but it does indeed sound like something in the fit is not going quite right. I’ll try to give some general guidance You can indeed play with the tolerances - note in this case you should be using the --cminDefaultMinimizerTolerance option to set it. The default is 0.1, so to tighten you can e.g. go to 0.01, or to loosen you can go to 1 (but generally good to be careful with loosening this).
+The settings you have been changing modify the accuracy of the limit calculation, so it’s not surprising that reducing these values (=increasing the precision) leads to a longer calculation time. However, I suspect this won’t have solved the issue with the error message from Minuit. If this persists, it may be worth trying just a single maximum-likelihood fit (e.g. with FitDiagnostics or MultiDimFit) on an asimov dataset for one of the problematic points, just to check that this behaves as expected (if not, this should probably be the first place to investigate).
+With regards to the long job runtimes, you may want to build up a grid of test statistic distributions and calculate the limit afterwards, rather than doing everything in a single job. Some instructions can be found here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#complex-models.
+Hope this helps,
+Adinda
+----------------------------------------
+
+REPLY 3 (by fjensen @ 2023-09-19T17:43:30.526Z):
+Thanks Adinda,
+Both FitDiagnostics and MultiDimFit seem to work well when running on an Asimov dataset. I run the following commands:
+combine --datacard %s --method FitDiagnostics --mass %d --saveShapes --saveWithUncertainties --toys -1
+combine --datacard %s --method MultiDimFit --mass %d --saveFitResult --toys -1
+If you were see see that Minuit error and/or see a limit plot like the ones in the previous post, and both FitDiagnostics and MultiDimFit run fine on an Asimov dataset, what would be your next course of action?
+Thank you very much,
+~Frank
+----------------------------------------
+
+REPLY 4 (by adewit @ 2023-09-27T15:41:26.477Z):
+Dear Frank,
+Sorry, it seems that I missed your previous e-mail. Did you already try to build a grid of test statistic distributions to see if this helps with the limit calculation?
+If a fit with MultiDimFit/FitDiagnostics (with the nominal parameters) works well, you’ll probably want to investigate the specific toys that are giving you problems in more detail. That is: at what value of r is the minimization apparently problematic? What are the values of the other parameters, and are there any other warnings in the logs when you increase the verbosity (-v 3)?
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by fjensen @ 2023-10-16T19:42:41.397Z):
+Thank you very much Adinda.
+I am finally getting around to trying to using the --singlePoint method.
+
+For a fixed value of  --expectedFromGrid I run the following commands with various values of --singlePoint, where I use the values of r returned from AsymptoticLimits to define a good range:
+combine --datacard %s --method HybridNew --LHCmode LHC-limits --mass %d --expectedFromGrid=%d --saveGrid --seed %d --singlePoint %f --saveToys --saveHybridResult
+I hadd the resulting root files together which are of the form:
+higgsCombineTest.HybridNew.mH%d.quant%f.0.root
+Then try to calculate the limit for a given quantile with this command:
+combine --datacard %s --method HybridNew --LHCmode LHC-limits --readHybridResults --grid=higgsCombineTest.HybridNew.mH%d.quant0.%s.root --expectedFromGrid %f
+but receive the following error:
+Caught exception The grid must contain at least 2 points.
+
+The limit TTree inside the root file I specify with --grid contains the same number of entries as the number of --singlePoints I specify so I know the initial combine commands and hadd operations are working right.
+And as for the warnings you ask about. there are many of the form:
+INFO: (function: minimize) CascadeMinimizer.cc: 480 -- After fit, some parameters are found at the boundary (within ~1sigma)
+But these are only present  when I do not specify --singlePoint, so they (likely) are for values of r which we are not interested in. The parameters which are of concern have to do with the “jet->tauh” yields in our control regions which we use for our background estimation. These control regions consist of the observed data, various processes from SM MC, and the “jet” process which is linked to the rateParam, which nominally should be “observed - SM MC”.
+~Frank
+----------------------------------------
+
+REPLY 6 (by nckw @ 2023-10-16T19:51:40.811Z):
+Hi Frank,
+I’m not certain this will fix things but can you also try adding the --mass option with the right value when you read the grid (your second combine command)?
+Best
+Nick
+----------------------------------------
+
+REPLY 7 (by fjensen @ 2023-10-16T20:52:50.850Z):
+Hi Nick,
+Adding the --mass option results in:
+Warning in <TFile::Init>: file higgsCombineTest.HybridNew.mH175.quant0.025.root probably not closed, trying to recover Info in <TFile::Recover>: higgsCombineTest.HybridNew.mH175.quant0.025.root, recovered key TDirectoryFile:toys at address 292 Warning in <TFile::Init>: successfully recovered 1 keys Caught exception The grid must contain at least 2 points.
+So perhaps this is pointing towards something… Now that I include that option I am seeing all sorts of strange results such as a) the limits tree has zero entries where before it was non-zero b) the toys directory being populated where before it was not c)  etc etc
+Seems like it is now something on my end with the hadd or filesystem or something, so I will play around for the time being and report back.
+thanks for the lead!
+~Frank
+----------------------------------------
+
+REPLY 8 (by fjensen @ 2023-10-17T19:51:32.159Z):
+It seems that the code never enters the while loop in the readGrid function:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/9f66bd845452f96c3b692c2b599da823f699ae73/src/HybridNew.cc#L1516
+
+}
+}
+return ret.release();
+}
+
+void HybridNew::readGrid(TDirectory *toyDir, double rMin, double rMax) {
+if (rValues_.getSize() != 1) throw std::runtime_error("Running limits with grid only works in one dimension for the moment");
+clearGrid();
+
+TIter next(toyDir->GetListOfKeys()); TKey *k; const char *poiName = rValues_.first()->GetName();
+while ((k = (TKey *) next()) != 0) {
+TString name(k->GetName());
+if (name.Index("HypoTestResult_mh") == 0) {
+if (name.Index(TString::Format("HypoTestResult_mh%g_%s",mass_,poiName)) != 0 || name.Index("_", name.Index("_")+1) == -1) continue;
+name.ReplaceAll(TString::Format("HypoTestResult_mh%g_%s",mass_,poiName),"");  // remove the prefix
+if (name.Index("_") == -1) continue;                                          // check if it has the _<uniqueId> postfix
+name.Remove(name.Index("_"),name.Length());                                   // remove it before calling atof
+} else if (name.Index("HypoTestResult_") == 0) {
+// let's put a warning here, since results of this form were supported in the past
+std::cout << "HybridNew::readGrid: HypoTestResult with non-conformant name " << name << " will be skipped" << std::endl;
+if (verbose) Logger::instance().log(std::string(Form("HybridNew.cc: %d -- HypoTestResult with non-conformant name %s found when reading grid, it will be skipped",__LINE__,k->GetName())),Logger::kLogLevelDebug,__func__);
+
+despite the input root file having TKey objects of the form:
+TKey Name = toy_asimov, Title = data_obs, Cycle = 1
+TKey Name = HypoTestResult_mh175_r0.074167_1128199972, Title = HypoTestCalculator_result, Cycle = 1
+----------------------------------------
+
+REPLY 9 (by fjensen @ 2023-10-17T21:10:28.706Z):
+Because the file becomes corrupt when it is trying to be opened:
+
+github.com
+
+cms-analysis/HiggsAnalysis-CombinedLimit/blob/9f66bd845452f96c3b692c2b599da823f699ae73/src/HybridNew.cc#L373
+
+limitErr = 0.5*(rMax - rMin);
+bool done = false;
+
+TF1 expoFit("expoFit","[0]*exp([1]*(x-[2]))", rMin, rMax);
+
+if (readHybridResults_) {
+if (verbose > 0) std::cout << "Search for upper limit using pre-computed grid of p-values" << std::endl;
+
+if (!gridFile_.empty()) {
+if (grid_.empty()) {
+std::unique_ptr<TFile> gridFile(TFile::Open(gridFile_.c_str()));
+if (gridFile.get() == 0) throw std::runtime_error(("Can't open grid file "+gridFile_).c_str());
+TDirectory *toyDir = gridFile->GetDirectory("toys");
+if (!toyDir) throw std::logic_error("Cannot use readHypoTestResult: empty toy dir in input file empty");
+readGrid(toyDir, rMinSet_ ? rMin : -99e99, rMaxSet_ ? rMax :+99e99);
+}
+if (grid_.size() <= 1) throw std::logic_error("The grid must contain at least 2 points.");
+if (noUpdateGrid_) {
+if (testStat_ == "LHCFC" && rule_ == "FC" && (saveGrid_ || lowerLimit_)) {
+std::cout << "Will have to re-run points for which the test statistics was set to zero" << std::endl;
+updateGridDataFC(w, mc_s, mc_b, data, !fullGrid_, clsTarget);
+
+where it returns this error during running:
+Warning in <TFile::Init>: file higgsCombineTest.HybridNew.mH175.quant0.025.root probably not closed, trying to recover
+Info in <TFile::Recover>: higgsCombineTest.HybridNew.mH175.quant0.025.root, recovered key TDirectoryFile:toys at address
+Warning in <TFile::Init>: successfully recovered 1 keys
+----------------------------------------

@@ -1,0 +1,45 @@
+{
+  "topic_id": 16270,
+  "title": "Understanding the memory pattern as a function of toys",
+  "url": "https://cms-talk.web.cern.ch/t/16270",
+  "category_id": 279,
+  "created_at": "2022-10-14T09:22:36.696Z",
+  "last_posted_at": "2022-10-14T09:27:04.450Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-10-14T09:22:36.807Z",
+      "updated_at": "2023-02-07T10:52:59.604Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi experts,\nIn making the tests that led to my question in the other thread, I find an unexpected memory usage pattern that increases as the number of requested toys increase. The test is done with the command [1]. The resulting maximum memory usage is [2]. In other areas such a pattern is indicative of memory leaks, and I wonder if this may not be the case here as well.\nCheers,\nAfiq\n[1]\n/usr/bin/time -f '%Uuser %Ssystem %Eelapsed %PCPU (%Xtext+%Ddata %Mmax)k' combineTool.py -v -1 -M MultiDimFit -d workspace_twin-g.root -m 400 -n _pnt_g1_0.0_g2_0.0_toys_0 --algo fixed --fixedPointPOIs 'g1=0.0,g2=0.0' --setParameters 'g1=0.0,g2=0.0'  --cminPreScan --cminDefaultMinimizerAlgo Migrad --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,Simplex,0 -s -1 --toysFrequentist -t 10 --X-rtd MINIMIZER_analytic\n\n[2]\nntoy max_memory\n5 660860max\n10 678128max\n20 952588max\n40 1348592max\n80 2137032max\n160 3637392max",
+      "cooked_html": "<p>Hi experts,</p>\n<p>In making the tests that led to my question in the other thread, I find an unexpected memory usage pattern that increases as the number of requested toys increase. The test is done with the command [1]. The resulting maximum memory usage is [2]. In other areas such a pattern is indicative of memory leaks, and I wonder if this may not be the case here as well.</p>\n<p>Cheers,<br>\nAfiq</p>\n<p>[1]</p>\n<pre><code class=\"lang-auto\">/usr/bin/time -f '%Uuser %Ssystem %Eelapsed %PCPU (%Xtext+%Ddata %Mmax)k' combineTool.py -v -1 -M MultiDimFit -d workspace_twin-g.root -m 400 -n _pnt_g1_0.0_g2_0.0_toys_0 --algo fixed --fixedPointPOIs 'g1=0.0,g2=0.0' --setParameters 'g1=0.0,g2=0.0'  --cminPreScan --cminDefaultMinimizerAlgo Migrad --cminDefaultMinimizerStrategy 0 --cminFallbackAlgo Minuit2,Simplex,0 -s -1 --toysFrequentist -t 10 --X-rtd MINIMIZER_analytic\n</code></pre>\n<p>[2]<br>\nntoy max_memory<br>\n5 660860max<br>\n10 678128max<br>\n20 952588max<br>\n40 1348592max<br>\n80 2137032max<br>\n160 3637392max</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-10-14T09:25:18.277Z",
+      "updated_at": "2022-10-14T09:25:18.277Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Afiq,\nI think it\u2019s been seen before. May be on the RooFit side instead of ours, but worth checking again. Can you make a github issue (https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues) to fully document and add links to your inputs so we can reproduce.\nthanks,\nAndrew",
+      "cooked_html": "<p>Hi Afiq,</p>\n<p>I think it\u2019s been seen before. May be on the RooFit side instead of ours, but worth checking again. Can you make a github issue (<a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues\" rel=\"noopener nofollow ugc\">https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues</a>) to fully document and add links to your inputs so we can reproduce.</p>\n<p>thanks,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "afiqaize",
+      "name": "Afiq Aizuddin Anuar",
+      "created_at": "2022-10-14T09:27:04.450Z",
+      "updated_at": "2022-10-14T09:27:04.450Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nAlright, will do.\nCheers,\nAfiq",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>Alright, will do.</p>\n<p>Cheers,<br>\nAfiq</p>"
+    }
+  ]
+}

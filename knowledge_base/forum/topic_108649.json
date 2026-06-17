@@ -1,0 +1,45 @@
+{
+  "topic_id": 108649,
+  "title": "Signal Injection Test Bias",
+  "url": "https://cms-talk.web.cern.ch/t/108649",
+  "category_id": 279,
+  "created_at": "2025-02-04T06:31:29.185Z",
+  "last_posted_at": "2025-02-07T16:36:49.330Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "shin",
+      "name": "Jihoon Shin",
+      "created_at": "2025-02-04T06:31:29.463Z",
+      "updated_at": "2025-02-04T06:31:29.463Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine Experts,\nMy analysis runs shape method of Combine Tools.\nI am working on signal injection test where I inject various signal strength corresponding to \u00b12\u03c3,  \u00b11\u03c3, and median limit in blinded limit calculation.\nI run MultiDimFit with following options:\n\u2013toysFile toy.root\n\u2013toysFrequentist\n-t 50\n\u2013expectSignal ??? (change accordingly)\n\u2013cminDefaultMinimizerStrategy 1\n\u2013robustFit 1\n\u2013rMin -15 --rMax 15\n\u2013algo singles\nWhen I draw the pull distribution (rtruth-rfit)/\u03c3fit, I constantly get bias towards negative mean in -2\u03c3, -1\u03c3, and median signal strength injection, where the bias moves towards 0 as the injected signal strength increases.\nFor example I get mean of toy runs like, -0.79, -0.54, -0.2, -0.06, 0.01 for -2\u03c3, -1\u03c3, median, +1\u03c3, +2\u03c3 respectively.\nI have tried different options like narrowing down the r range to [-2,2], and changed --cminDefaultMinimizerStrategy 0 and --robustFit 0 to expedite the fitting process, as I have many nuisance parameters. Making both changes did not make much difference.\nI want to ask for an advice on how to alleviate this bias.\nIf there truly is a bias, what should I do to remove the bias? Change the binning of the input?\nThank you.\nSincerely,\nJihoon Shin",
+      "cooked_html": "<p>Dear Combine Experts,</p>\n<p>My analysis runs shape method of Combine Tools.</p>\n<p>I am working on signal injection test where I inject various signal strength corresponding to \u00b12\u03c3,  \u00b11\u03c3, and median limit in blinded limit calculation.</p>\n<p>I run MultiDimFit with following options:<br>\n\u2013toysFile toy.root<br>\n\u2013toysFrequentist<br>\n-t 50<br>\n\u2013expectSignal ??? (change accordingly)<br>\n\u2013cminDefaultMinimizerStrategy 1<br>\n\u2013robustFit 1<br>\n\u2013rMin -15 --rMax 15<br>\n\u2013algo singles</p>\n<p>When I draw the pull distribution (r<sub>truth</sub>-r<sub>fit</sub>)/\u03c3<sub>fit</sub>, I constantly get bias towards negative mean in -2\u03c3, -1\u03c3, and median signal strength injection, where the bias moves towards 0 as the injected signal strength increases.<br>\nFor example I get mean of toy runs like, -0.79, -0.54, -0.2, -0.06, 0.01 for -2\u03c3, -1\u03c3, median, +1\u03c3, +2\u03c3 respectively.</p>\n<p>I have tried different options like narrowing down the r range to [-2,2], and changed --cminDefaultMinimizerStrategy 0 and --robustFit 0 to expedite the fitting process, as I have many nuisance parameters. Making both changes did not make much difference.</p>\n<p>I want to ask for an advice on how to alleviate this bias.<br>\nIf there truly is a bias, what should I do to remove the bias? Change the binning of the input?</p>\n<p>Thank you.</p>\n<p>Sincerely,<br>\nJihoon Shin</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-02-07T16:22:14.815Z",
+      "updated_at": "2025-02-07T16:22:14.815Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Jihoon,\nIt is hard to say what is wrong without looking at the model. But I would start with making sure that the fit converges properly. Do you get warnings that parameters hit the predefined boundaries? Perhaps some of the nuisance parameters are pulled?\nIn principle running some of the usual validation workflows [1, 2] should help to identify general issues that can be potentially causing biased signal extraction.\nIn the meantime, if you share the datacards one of us will try to have a look.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Jihoon,</p>\n<p>It is hard to say what is wrong without looking at the model. But I would start with making sure that the fit converges properly. Do you get warnings that parameters hit the predefined boundaries? Perhaps some of the nuisance parameters are pulled?<br>\nIn principle running some of the usual validation workflows [<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/validation/\" rel=\"noopener nofollow ugc\">1</a>, <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part5/longexercise/?h=impa#b-nuisance-parameter-impacts\" rel=\"noopener nofollow ugc\">2</a>] should help to identify general issues that can be potentially causing biased signal extraction.<br>\nIn the meantime, if you share the datacards one of us will try to have a look.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2025-02-07T16:36:49.330Z",
+      "updated_at": "2025-02-07T16:36:49.330Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Jihoon,\nyou are not running fully blind, but on the postfit asimov. If the data are not meaningful (yet) in the dc, the results may be hard to interpret.\nmaybe try first on the prefit asimov dataset? (i.e., remove --toysFrequentist)\n-Andrea",
+      "cooked_html": "<p>Hi Jihoon,</p>\n<p>you are not running fully blind, but on the postfit asimov. If the data are not meaningful (yet) in the dc, the results may be hard to interpret.<br>\nmaybe try first on the prefit asimov dataset? (i.e., remove --toysFrequentist)</p>\n<p>-Andrea</p>"
+    }
+  ]
+}

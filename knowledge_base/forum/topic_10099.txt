@@ -1,0 +1,77 @@
+TOPIC: Blinding datacards by inserting Asimov rate for observed rates
+URL: https://cms-talk.web.cern.ch/t/10099
+DATE: 2022-05-05T10:37:53.770Z
+SOLVED: no
+============================================================
+
+QUESTION (by pmajor @ 2022-05-05T10:37:53.946Z):
+Dear Experts,
+I have a counting experiment datacard where only a fraction of the bins should be blinded (since the rest are used for ABCD background estimations.) For this end, I have been experimenting with filling the sum of the backgrounds into the observable fields in some highly simplified cards. This seems to work well for lnN constraints even if the uncertainty is huge:
+imax 1
+jmax 1
+kmax 2
+------------
+bin bin1
+observation 0.1
+------------
+bin             bin1 bin1
+process         sig  bkg
+process          0     1
+rate           1.0  0.1
+------------
+sig_stat lnN    1.1    -
+bkg_stat lnN    -    3.9
+
+combine -M AsymptoticLimits --run blind -d ./simple_dc.txt
+combine -M AsymptoticLimits --run expected -d ./simple_dc.txt
+
+give the same results.
+On the other hand, I have some issues with gmN style constraints:
+imax 1
+jmax 1
+kmax 2
+------------
+bin bin1
+observation 0.1
+------------
+bin             bin1 bin1
+process         sig  bkg
+process          0     1
+rate           1.0  0.1
+------------
+sig_stat lnN    1.1    -
+bkg_stat gmN 2    -    0.05
+
+for which the expected and blind results are quite different with
+Expected 50.0%: r < 2.2656
+Expected 50.0%: r < 2.4219
+respectively.
+What am I doing wrong?
+Thanks in advance for your help.
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-05-06T09:09:24.205Z):
+Hi Peter,
+I don’t think you’re doing anything wrong, you’re rather seeing this feature [*] - that is, when you run --blind, N for bkg_stat gets set to 2+1=3 rather than 2 for generating the asimov dataset.
+Running the blinded version and adding --setParameters bkg_stat=2 you will get the same answer as running with --run expected.
+Best,
+Adinda
+[*] https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/issues/161
+----------------------------------------
+
+REPLY 3 (by pmajor @ 2022-05-06T11:38:23.770Z):
+Hi Adinda,
+thank you, I did not know about this feature. It is a strange choice, as it introduces an unexpected feature exactly when N is low i.e. when the difference between gmN and lnN is significant in the first place. (Indeed setting bkg_stat=2 “fixes” it.)
+Maybe the bottom line is that when I have bins with such a low number of hits (in my real DC I have a lot of those, unfortunately) I should not be using AsymptoticLimits anyways, correct?
+Is HybridNew the method to turn to for limit setting in this case?
+To obtain blind expected limits with HybridNew toy data generation is unavoidable, right?
+Cheers,
+Peter
+----------------------------------------
+
+REPLY 4 (by adewit @ 2022-05-09T13:00:11.504Z):
+Hi Peter,
+In general yes, in the case of such low numbers of events you’re not really in the asymptotic regime, so for the final results you will probably want to set limits with toys (using the HybridNew method). This always involves toys, as you say. If you’re doing optimization studies, AsymptoticLimits might still be appropriate, but you will probably want to check how close this is to the toy-based results.
+Best,
+Adinda
+----------------------------------------

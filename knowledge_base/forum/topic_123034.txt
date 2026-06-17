@@ -1,0 +1,2058 @@
+TOPIC: S+B and B fit in MultiDimFit
+URL: https://cms-talk.web.cern.ch/t/123034
+DATE: 2025-04-10T09:13:11.041Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2025-04-10T09:13:11.164Z):
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B  and second, fit B.  I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-04-10T10:09:40.000Z):
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2025-04-10T10:51:46.000Z):
+Thanks, Giacomo !
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, April 10, 2025 12:12
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] S+B and B fit in MultiDimFit
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2025-04-10T11:32:20.581Z):
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does.  Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters:  initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 5 (by gortona @ 2025-04-10T12:30:14.000Z):
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 6 (by anikiten @ 2025-04-10T12:59:10.694Z):
+Giacomo Ortona:
+
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total.  3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 7 (by gortona @ 2025-04-10T13:36:40.000Z):
+Hi Sasha,
+Let me try to be a bit clearer, because I feel there might be a misunderstanding about my usage of multiple minima.
+When you run, you will find the global minimum of the likelihood function with the first fit, where all POIs are floating.
+Then, in the second run you will fix the POI to a given value and find the local minimum for this profiled likelihood, which will be different from the global one. If the profiled function is well behaved, you will always find the same local minimum regardless of the initial values for the parameters.
+The issue I was mentioning before when speaking of multiple minima arises only if you have multiple minima in the profiled likelihood function for a given POI. Is that what happens in your case?
+One way to test this could be to run at r=0 with your initial values and with those found at the global minimum and check that you actually obtain different results (beyond numerical differences).
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 8 (by anikiten @ 2025-04-10T13:58:14.846Z):
+Hi Giacomo,
+yes, I have multiple minima in the profiled likelihood function for a given POI, r=0.  When I run r=0 with initial parameters from first fit (not my initial parameters)  I found different NLL (by 0.62) compared with the case of r=0 with my initial parameters.  So, I got into local minimum instead of global one for my B only fit (r=0).
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 9 (by gortona @ 2025-04-10T20:22:50.000Z):
+Hi Sasha,
+If that’s your case then I think your way out is to save a snapshot for the best fit point and then when you call the MultidimFim —algo=fixed you can load the snapshot and add the —skipInitialFit option. This will skip the fit for the best fit point altogether so the initial parameter values should not be touched.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:59, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+yes, I have multiple minima in the profiled likelihood function for a given POI, r=0. When I run r=0 with initial parameters from first fit (not my initial parameters) I found different NLL (by 0.62) compared with the case of r=0 with my initial parameters. So, I got into local minimum instead of global one for my B only fit (r=0).
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+Let me try to be a bit clearer, because I feel there might be a misunderstanding about my usage of multiple minima.
+When you run, you will find the global minimum of the likelihood function with the first fit, where all POIs are floating.
+Then, in the second run you will fix the POI to a given value and find the local minimum for this profiled likelihood, which will be different from the global one. If the profiled function is well behaved, you will always find the same local minimum regardless of the initial values for the parameters.
+The issue I was mentioning before when speaking of multiple minima arises only if you have multiple minima in the profiled likelihood function for a given POI. Is that what happens in your case?
+One way to test this could be to run at r=0 with your initial values and with those found at the global minimum and check that you actually obtain different results (beyond numerical differences).
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 10 (by anikiten @ 2025-04-11T10:23:31.000Z):
+Hi Giacomo,
+Thanks for advice. But I am not so familar with combine…
+What is “snapshot” in that context? How I can load it ?
+May be you can point me to instructions in CAT or give some
+example.
+I use command
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3
+And it print me out best fit parameters from 1st and 2nd iteration. That’s it.
+Cheers, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Thursday, April 10, 2025 22:24
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] S+B and B fit in MultiDimFit
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+If that’s your case then I think your way out is to save a snapshot for the best fit point and then when you call the MultidimFim —algo=fixed you can load the snapshot and add the —skipInitialFit option. This will skip the fit for the best fit point altogether so the initial parameter values should not be touched.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:59, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+yes, I have multiple minima in the profiled likelihood function for a given POI, r=0. When I run r=0 with initial parameters from first fit (not my initial parameters) I found different NLL (by 0.62) compared with the case of r=0 with my initial parameters. So, I got into local minimum instead of global one for my B only fit (r=0).
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+Let me try to be a bit clearer, because I feel there might be a misunderstanding about my usage of multiple minima.
+When you run, you will find the global minimum of the likelihood function with the first fit, where all POIs are floating.
+Then, in the second run you will fix the POI to a given value and find the local minimum for this profiled likelihood, which will be different from the global one. If the profiled function is well behaved, you will always find the same local minimum regardless of the initial values for the parameters.
+The issue I was mentioning before when speaking of multiple minima arises only if you have multiple minima in the profiled likelihood function for a given POI. Is that what happens in your case?
+One way to test this could be to run at r=0 with your initial values and with those found at the global minimum and check that you actually obtain different results (beyond numerical differences).
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 11 (by pkeicher @ 2025-04-11T10:35:14.610Z):
+Hi Sasha,
+Maybe this will help you: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/?h=snapshot#loading-snapshots
+Cheers,
+Philip
+----------------------------------------
+
+REPLY 12 (by gortona @ 2025-04-11T10:32:30.000Z):
+Dear Sasha,
+You can find instructions on how to save, load and use snapshots in the combine documentation:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#using-best-fit-snapshots
+The skipInitialFit option which you should use is described here:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/?h=skipinitial#useful-options-for-likelihood-scans
+and here there are some more details about loading a snapshot:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#loading-snapshots
+I hope it helps,
+Cheers,
+Giacomo
+
+On 11 Apr 2025, at 12:27, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 11
+
+Hi Giacomo,
+Thanks for advice. But I am not so familar with combine…
+What is “snapshot” in that context? How I can load it ?
+May be you can point me to instructions in CAT or give some
+example.
+I use command
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3
+And it print me out best fit parameters from 1st and 2nd iteration. That’s it.
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+If that’s your case then I think your way out is to save a snapshot for the best fit point and then when you call the MultidimFim —algo=fixed you can load the snapshot and add the —skipInitialFit option. This will skip the fit for the best fit point altogether so the initial parameter values should not be touched.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:59, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+yes, I have multiple minima in the profiled likelihood function for a given POI, r=0. When I run r=0 with initial parameters from first fit (not my initial parameters) I found different NLL (by 0.62) compared with the case of r=0 with my initial parameters. So, I got into local minimum instead of global one for my B only fit (r=0).
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+Let me try to be a bit clearer, because I feel there might be a misunderstanding about my usage of multiple minima.
+When you run, you will find the global minimum of the likelihood function with the first fit, where all POIs are floating.
+Then, in the second run you will fix the POI to a given value and find the local minimum for this profiled likelihood, which will be different from the global one. If the profiled function is well behaved, you will always find the same local minimum regardless of the initial values for the parameters.
+The issue I was mentioning before when speaking of multiple minima arises only if you have multiple minima in the profiled likelihood function for a given POI. Is that what happens in your case?
+One way to test this could be to run at r=0 with your initial values and with those found at the global minimum and check that you actually obtain different results (beyond numerical differences).
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+yes, I have multiple minima in the profiled likelihood function for a given POI, r=0. When I run r=0 with initial parameters from first fit (not my initial parameters) I found different NLL (by 0.62) compared with the case of r=0 with my initial parameters. So, I got into local minimum instead of global one for my B only fit (r=0).
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+Let me try to be a bit clearer, because I feel there might be a misunderstanding about my usage of multiple minima.
+When you run, you will find the global minimum of the likelihood function with the first fit, where all POIs are floating.
+Then, in the second run you will fix the POI to a given value and find the local minimum for this profiled likelihood, which will be different from the global one. If the profiled function is well behaved, you will always find the same local minimum regardless of the initial values for the parameters.
+The issue I was mentioning before when speaking of multiple minima arises only if you have multiple minima in the profiled likelihood function for a given POI. Is that what happens in your case?
+One way to test this could be to run at r=0 with your initial values and with those found at the global minimum and check that you actually obtain different results (beyond numerical differences).
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 13 (by anikiten @ 2025-04-20T09:34:46.000Z):
+Dear Giacomo,
+Many thanks for these instructions. May be I am wrong,
+but seems they are not appropriate for what I would
+like to do. Let me explain it:
+I would like that in command
+combine -M MultiDimFit 2017UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0,mean=25,width=0 --redefineSignalPOIs r,mean,width --robustFit=1 -v 3 --rMin 0 --rMax 100
+both, the first (S+B fit) and the second (B only fit) iterations take my initial parameters for background function from my
+/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test/2017UL_RooFitWorkspaceSR1.root
+It does for the first iteration, but not for the second one.
+My 2017UL_dimuon_SR1.txt is at the same dir above.
+Can we change the order of fits ? First one will be second one.
+Thank you, Sasha.
+
+···
+
+From: Giacomo Ortona via CMS talk noreply-cms-talk@cern.ch
+Sent: Friday, April 11, 2025 12:37
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] S+B and B fit in MultiDimFit
+
+Giacomo Ortona gortonaApril 11
+
+Dear Sasha,
+You can find instructions on how to save, load and use snapshots in the combine documentation:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#using-best-fit-snapshots
+The skipInitialFit option which you should use is described here:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/?h=skipinitial#useful-options-for-likelihood-scans
+and here there are some more details about loading a snapshot:
+https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#loading-snapshots
+I hope it helps,
+Cheers,
+Giacomo
+
+On 11 Apr 2025, at 12:27, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 11
+
+Hi Giacomo,
+Thanks for advice. But I am not so familar with combine…
+What is “snapshot” in that context? How I can load it ?
+May be you can point me to instructions in CAT or give some
+example.
+I use command
+combine -M MultiDimFit -d combined.txt --redefineSignalPOIs mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 --algo fixed --fixedPointPOIs mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --setParameters mean=27.3,width=3.2 --freezeParameters mean,width,r -v3
+And it print me out best fit parameters from 1st and 2nd iteration. That’s it.
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+If that’s your case then I think your way out is to save a snapshot for the best fit point and then when you call the MultidimFim —algo=fixed you can load the snapshot and add the —skipInitialFit option. This will skip the fit for the best fit point altogether so the initial parameter values should not be touched.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:59, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+yes, I have multiple minima in the profiled likelihood function for a given POI, r=0. When I run r=0 with initial parameters from first fit (not my initial parameters) I found different NLL (by 0.62) compared with the case of r=0 with my initial parameters. So, I got into local minimum instead of global one for my B only fit (r=0).
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+Let me try to be a bit clearer, because I feel there might be a misunderstanding about my usage of multiple minima.
+When you run, you will find the global minimum of the likelihood function with the first fit, where all POIs are floating.
+Then, in the second run you will fix the POI to a given value and find the local minimum for this profiled likelihood, which will be different from the global one. If the profiled function is well behaved, you will always find the same local minimum regardless of the initial values for the parameters.
+The issue I was mentioning before when speaking of multiple minima arises only if you have multiple minima in the profiled likelihood function for a given POI. Is that what happens in your case?
+One way to test this could be to run at r=0 with your initial values and with those found at the global minimum and check that you actually obtain different results (beyond numerical differences).
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+yes, I have multiple minima in the profiled likelihood function for a given POI, r=0. When I run r=0 with initial parameters from first fit (not my initial parameters) I found different NLL (by 0.62) compared with the case of r=0 with my initial parameters. So, I got into local minimum instead of global one for my B only fit (r=0).
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Hi Sasha,
+Let me try to be a bit clearer, because I feel there might be a misunderstanding about my usage of multiple minima.
+When you run, you will find the global minimum of the likelihood function with the first fit, where all POIs are floating.
+Then, in the second run you will fix the POI to a given value and find the local minimum for this profiled likelihood, which will be different from the global one. If the profiled function is well behaved, you will always find the same local minimum regardless of the initial values for the parameters.
+The issue I was mentioning before when speaking of multiple minima arises only if you have multiple minima in the profiled likelihood function for a given POI. Is that what happens in your case?
+One way to test this could be to run at r=0 with your initial values and with those found at the global minimum and check that you actually obtain different results (beyond numerical differences).
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 15:00, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Giacomo Ortona:
+very complex models with multiple minima
+
+Hi Giacomo,
+we do have quite complex models with multiple minima for B (6 search regions described by 20 parameters in total. 3 x 3 for 2017 and 3+3+4 for 2018). We scanned bkg. parameters to find an initial values which lead to global minimum. But in our case after S+B fit the initial parameters are different from ours and we got to (very close to global) local minimum.
+Cheers, Sasha.
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+I’m not sure I agree that there is a dependency.
+When running the second fit you in any case perform a fit of all the parameters to the data (or pseudodata). Barren small numerical sensitivity differences or very complex models with multiple minima, the initial values of the parameters should not affect the post-fit values you get. Therefore the order you run the fits it doesn’t actually matter.
+And even in the extreme case I was mentioning before, you most likely are interested in the minima closer to your best fit evaluation, so using that set as initial value it’s actually beneficial.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 13:33, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Hi Giacomo,
+I think it may be a good idea when second fit (B only) starts from the same input parameters given by user as the first fit does. Otherwise we have dependence between 1st and 2nd fits in terms of the background parameters: initial values for the 2nd fit are defined not by used, but by the 1st fit.
+Would it be possible to have a such modification in combine ?
+Cheers, Sasha.
+Visit Topic or reply to this email to respond.
+Previous Replies
+
+Alexandre Nikitenko anikitenApril 10
+
+Thanks, Giacomo !
+Cheers, Sasha.
+··· (click for more details)
+
+Giacomo Ortona gortonaApril 10
+
+Dear Sasha,
+When using the fixed algorithm of MultiDimFit, it will indeed perform two fits, but they are not S+B and B. The first one will determine the best fit floating the POIs, and the second one will fix the POI to the values chosen by the user. It appears like being B in your setup since you have chosen the r=0 point.
+I’m not 100% sure but I think the starting values for the parameters in the second fit are the final values of the first fit. In any case it should not be much relevant since all the parameters are fitted again under the new POI assumption so it should only be affecting the computing time.
+To my knowledge there isn’t any command in combine allowing to change the order in which the fits are performed, but I don’t think it should make any difference.
+Cheers,
+Giacomo
+
+On 10 Apr 2025, at 11:14, Alexandre Nikitenko via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Alexandre Nikitenko anikitenApril 10
+
+Dear experts,
+I run combine command:
+combine -M MultiDimFit 2018UL_dimuon_SR1.txt --algo fixed --fixedPointPOIs r=0 --redefineSignalPOIs r --robustFit=1 -v 3 --rMin 0 --rMax 120
+and I see it does first, fit S+B and second, fit B. I have two questions here:
+
+where the second fit (B) takes the initial values for background
+parameters from ? Is it bkg. parameters taken from S+B fit values or
+it my initial values (as S+B fit) ?
+Is there an option to change order of fits: first B, and second S+B ?
+
+Thanks, Sasha.
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

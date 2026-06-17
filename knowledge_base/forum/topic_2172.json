@@ -1,0 +1,23 @@
+{
+  "topic_id": 2172,
+  "title": "Observed significance calculated from HybridNew method",
+  "url": "https://cms-talk.web.cern.ch/t/2172",
+  "category_id": 279,
+  "created_at": "2021-09-24T16:23:23.000Z",
+  "last_posted_at": "2021-09-24T16:23:23.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "vwachira",
+      "name": "Vichayanun Wachirapusitanand",
+      "created_at": "2021-09-24T16:23:23.000Z",
+      "updated_at": "2023-02-07T10:55:43.122Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nRecently my colleague introduced me to this Higgs combine documentation page describing how to calculate observed significance with toys: http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys. I have tried calculating observed significance with the following command:\ncombine -M HybridNew  --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100 -i 10 -s 123456 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerType Minuit\nAs I run the command above, I noticed that the output from this command gives the value of significance directly. Unfortunately I can not find the input grid file to the second command below, introduced in the documentation:\ncombine -M HybridNew datacard.txt --LHCmode LHC-significance --readHybridResult --grid=input.root [\u2013pvalue ]\nFurthermore, I noticed that in some cases the reported significance becomes negative or infinity, and in some cases I noticed that there is an error message \u201cWarning in TMinuitMinimizer::SetLowerLimitedVariable: not implemented - use as upper limit 1.E7 instead of +inf\u201d in both cases giving negative or infinity significance.\nSo now I would like to ask a few questions about this HybridNew method:",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>Recently my colleague introduced me to this Higgs combine documentation page describing how to calculate observed significance with toys: <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#computing-significances-with-toys</a>. I have tried calculating observed significance with the following command:</p>\n<p>combine -M HybridNew  --LHCmode LHC-significance --saveToys --fullBToys --saveHybridResult -T 100 -i 10 -s 123456 --X-rtd MINIMIZER_analytic --cminDefaultMinimizerType Minuit</p>\n<p>As I run the command above, I noticed that the output from this command gives the value of significance directly. Unfortunately I can not find the input grid file to the second command below, introduced in the documentation:</p>\n<p>combine -M HybridNew datacard.txt --LHCmode LHC-significance --readHybridResult --grid=input.root [\u2013pvalue ]</p>\n<p>Furthermore, I noticed that in some cases the reported significance becomes negative or infinity, and in some cases I noticed that there is an error message \u201cWarning in <a>TMinuitMinimizer::SetLowerLimitedVariable</a>: not implemented - use as upper limit 1.E7 instead of +inf\u201d in both cases giving negative or infinity significance.</p>\n<p>So now I would like to ask a few questions about this HybridNew method:</p>"
+    }
+  ]
+}

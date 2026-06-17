@@ -1,0 +1,67 @@
+TOPIC: Segfault when combining multiple years with combine
+URL: https://cms-talk.web.cern.ch/t/32744
+DATE: 2023-12-15T02:48:46.682Z
+SOLVED: no
+============================================================
+
+QUESTION (by phmaster @ 2023-12-15T02:48:47.119Z):
+Hi all!  Recently, I’ve been running into an unusual error with combine.  I currently have four datacards that I would like to merge and run AsymptoticLimits on, located on lxplus at /eos/home-p/phmaster/tth_hqu/CMSSW_11_3_4/src/PlotToolsTTH/ttH/cards/scripts/runspuppi_sig_201*/ttHcc*.txt.  After combining the cards as follows:
+combineCards.py puppi_sig_201*/ttHcc*.txt > ttHcc_SL.txt
+I then run:
+combine -M AsymptoticLimits -d ttHcc_SL.txt
+This results in a segfault with no debugging message:
+...
+=> Total parameter prop_binch4_ttHcc_SLm_catBJ_CR_bin1[0.00,-7.00,7.00] to be gaussian constrained
+------------------------------------------------------------
+Channel ch4_ttHcc_SLm_catBB_CR will use autoMCStats with settings: event-threshold=0, include-signal=0, hist-mode=1
+============================================================
+Analysing bin errors for: prop_binch4_ttHcc_SLm_catBB_CR
+Poisson cut-off: 0
+Processes excluded for sums: ttH_hcc
+============================================================
+Bin        Contents        Error           Notes
+0          693.184195      7.925550        total sum
+0          693.026956      7.925549        excluding marked processes
+0          7646.000000     87.441409       Unweighted events, alpha=0.090660
+=> Total parameter prop_binch4_ttHcc_SLm_catBB_CR_bin0[0.00,-7.00,7.00] to be gaussian constrained
+------------------------------------------------------------
+1          357.465258      5.319881        total sum
+1          357.436395      5.319881        excluding marked processes
+1          4514.000000     67.186308       Unweighted events, alpha=0.079190
+=> Total parameter prop_binch4_ttHcc_SLm_catBB_CR_bin1[0.00,-7.00,7.00] to be gaussian constrained
+------------------------------------------------------------
+Segmentation fault (core dumped)
+
+I’ve noticed something highly unusual:  combining any two of the four datacards does not produce a segfault, while combining three or more does.  The issue does not involve any one card, only three or more together.  I thought that maybe this pointed to a memory issue, but I tried clearing out some old files and switching to a new lxplus node, and I’m still getting the same error.
+Does anyone have any ideas about what’s going on, or how I can debug this when combine isn’t giving me any terminal output?
+----------------------------------------
+
+REPLY 2 (by phmaster @ 2023-12-15T04:12:42.409Z):
+Update:  Running with -v 3 gives slightly more information, although there’s a large amount of extra text that gets written to the output.  The last section is:
+...
+prop_binch4_ttHcc_SLm_catBJ_CR_bin1,prop_binch4_ttHcc_SLm_catBB_CR_bin0,prop_binch4_ttHcc_SLm_catBB_CR_bin1)
+observables:(CMS_th1x,CMS_channel)
+
+generic objects
+---------------
+RooStats::ModelConfig::ModelConfig
+RooStats::ModelConfig::ModelConfig_bonly
+RooArgSet::discreteParams
+
+Segmentation fault (core dumped)
+----------------------------------------
+
+REPLY 3 (by hqu @ 2023-12-15T04:26:54.822Z):
+Hi @phmaster ,
+Maybe you can try increasing the stack size with the command ulimit -s unlimited before running combine?
+Best,
+Huilin
+----------------------------------------
+
+REPLY 4 (by phmaster @ 2023-12-15T07:07:36.340Z):
+Huilin Qu:
+
+ulimit -s unlimited
+
+That got it working.  Thank you so much!
+----------------------------------------

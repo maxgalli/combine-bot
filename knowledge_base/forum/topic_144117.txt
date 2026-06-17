@@ -1,0 +1,50 @@
+TOPIC: Goodness of Fit for many POIs and channels
+URL: https://cms-talk.web.cern.ch/t/144117
+DATE: 2026-04-17T08:52:13.227Z
+SOLVED: no
+============================================================
+
+QUESTION (by gmelachr @ 2026-04-17T08:52:13.915Z):
+Dear experts,
+for the BPH-24-005 analysis, I am working on a fit with 48 channels and 45 POIs. The workspace is ready, and I have plotted successfully the scans of the likelihood and the impact plots for all the POIs. I would like to proceed with the Goodness of Fit. I am mostly following the instructions from the parametric tutorial.
+I ran the first step and I see this message:
+image1832×287 45.4 KB
+In the output I see this message:
+Best fit test statistic: 5758
+Which I have no idea for what it stands…
+then I ran the toy generation step (with and without the –toysFreq option) and I get very different numbers. I would say though, that these numbers could make sense if they are the total entries of the binned datasets.
+image843×489 55.9 KB
+I also tried to plot the GoF and I got this message:
+image739×674 37 KB
+I suspect that the observed value is 5758 which is calculated from the first step. However, this number doesn’t really make any sense and I don’t know which yield or hist entries or normalisation might be. Moreover, I was hoping that the GoF could be used for cases with multiple POIs, for example with the redefineSignalPOIsoption, however, I don’t see in the ploting script plotGof.py an option to plot the GoF for specific POIs.
+Could you please help me understand what are all these numbers and if it feasible and meaningful to perform a GoF for such a fit with many POIs?
+Thank you,
+Giorgos
+----------------------------------------
+
+REPLY 2 (by gmelachr @ 2026-04-18T07:55:11.496Z):
+Dear experts,
+Instead of using all these bins and POIs, I focused only on one. So:
+I ran the commands again and I got this:
+part2_gof596×572 4.91 KB
+What I don’t understand is the values for the x-axis. According to the parametric tutorial, I understood that the values for the x-axis are the normalisations for the signal process using the  toys. However, in my case, the normalisation is ~380 candidates. Please note that the yield in the table in the following table is blinded. I estimated 380 candidates by eyeballing the following plot.
+image853×916 103 KB
+So, I keep wondering what are the values that are calculated for the x-axis. For this reason, I added the option --saveToys in the GoodnessOfFit in order to plot the generated the toys and be sure that the generation is ok. But, now, I am completely lost because I plotted toy #1 and the mass distribution I see is
+image776×565 6.92 KB
+which means that only the background process is generated. I thought that I have messed up completely, so, I added the option --saveToys in the GoF commands for the parametric tutorial and I plotted again the generated mass distributions and I saw again only the background distribution.
+image776×565 8.09 KB
+Therefore, could you please verify that only the background processes should be generated? But if so, the values that are calculated for the GoF, correspond to which process and how are they calculated?
+Best regards,
+Giorgos
+----------------------------------------
+
+REPLY 3 (by gmelachr @ 2026-04-18T17:25:07.969Z):
+Dear experts,
+I read once more the texts from the parametric tutorial, and nowhere is mentioned that the values on the x-axis are the normalisations of the signal process. I also found the code that calculates those values (link) and it uses the values of the NLL for the nominal and the saturated model. The reason I though that the values of the x axis of the GoF are the signal normalisations is that in the combine tutorial, the actual signal normalisation is 180 x r = 280 and the arrow on the plot (tutorial) points to a nearby value. Please correct me if I have misunderstood.
+I investigated a bit more regarding the toy generation. I added the option --trackParameters r in the GoodnessOfFit command which is used for the toy generation and I printed the values for the first ten toys.
+image1370×257 42.6 KB
+the r is not fixed to 0 value it has very small values, which I think it means that the background-only model is used for the toy generation. So, the remaining question is why the GoF is performed with the background-only model? Is it because the purpose of the test is to evaluate how well the background model alone describes the observed data?
+Best,
+Giorgos
+PS. Please accept my apologies for the many questions… It is the first time I deal with Combine and while trying to adopt it for my analysis, I made many wrong assumptios and I misuderstood many things…
+----------------------------------------

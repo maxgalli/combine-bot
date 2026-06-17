@@ -1,0 +1,49 @@
+TOPIC: Problem with scan
+URL: https://cms-talk.web.cern.ch/t/37085
+DATE: 2024-03-19T10:22:19.272Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-03-19T10:22:19.427Z):
+Dear experts,
+I got a problem with scanning width of the signal model. I do
+combine -M MultiDimFit 2017UL_dimuon_SR2.txt --rMin 0 --rMax 10 --algo grid --points 100 -P width --floatOtherPOIs=1
+python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI width
+and got error message:
+In file included from input_line_174:1:
+In file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/lcg/root/6.22.08-ljfedo/include/CPyCppyy/API.h:30:
+In file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/include/python2.7/Python.h:61:
+In file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/include/python2.7/pyport.h:332:
+In file included from /usr/include/sys/time.h:25:
+/usr/include/bits/types/struct_timeval.h:8:8: error: redefinition of ‘timeval’
+struct timeval
+What is wrong ?  I did the same yesterday for SR1 and all was fine.
+Thanks, Sasha.
+----------------------------------------
+
+REPLY 2 (by amarini @ 2024-03-19T10:29:40.640Z):
+Can you confirm that you did cmsenv in the right place? It seems a library problem.
+-Andrea
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-03-19T10:38:05.000Z):
+ah, yes. I did not do
+cmssw-el7
+cmsenv
+now it works !
+Thanks Andrea.
+
+···
+
+From: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch
+Sent: Tuesday, March 19, 2024 11:30
+To: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Problem with scan
+
+Andrea Carlo Marini amariniMarch 19
+
+Can you confirm that you did cmsenv in the right place? It seems a library problem.
+-Andrea
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

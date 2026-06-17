@@ -1,0 +1,20 @@
+TOPIC: How to manually implement Beeston-Barlow lite in RooFit+Combine
+URL: https://cms-talk.web.cern.ch/t/116826
+DATE: 2025-02-26T22:10:29.498Z
+SOLVED: no
+============================================================
+
+QUESTION (by ecannaer @ 2025-02-26T22:10:29.989Z):
+Dear Combine experts,
+I am in search of advice on how to manually implement the Beeston-Barlow lite method via RooFit. My analysis makes use of RooParametricHists for each MC background that consist of RooFormulaVars that attach bin-by-by uncertainties to the nominal yields in each bin. These RooParametricHists are then imported into combine via the data card and used as the templates for their corresponding background. The idea is that these uncertainties should absorb data/MC differences that aren’t covered by the normal shape uncertainties. If you are curious how this works, the script that prepares these workspaces is attached below in [1].
+In putting together this stat model, I discovered that the normal autoMCStats method in Combine does not support RooParametricHists, which means I need to implement the stat uncertainties via the Barlow-Beeston lite method manually in each of these. I have only ever used autoMCStats, and I realize that I don’t actually know the exact details of how stat uncertainties are generally handled in Combine/RooFit with BB lite. My (limited) understanding is that the stat uncertainty value can be calculated exactly for each bin, and these are therefore not treated as parameters to be fit, so it is not clear to me how this is dictated to Combine. My questions are:
+
+how does Combine treat/calculate BB lite stat uncertainties?
+how do I implement this manually with RooFit? In particular, how do I create the relevant parameters in my RooFit workspace such that when I run combine, it recognizes it should be implementing the BB lite method for each bin? For each bin, I of course have the scaled bin yields for each MC background, and the total fractional stat uncertainty that is calculated from the combined backgrounds.
+
+I have been unable to find examples or resources that give an explanation for setting this up in RooFit. Please let me know if there are experts that can help me out with this. Cheers!
+
+Ethan
+
+[1] create_workspaces.C (51.7 KB)
+----------------------------------------

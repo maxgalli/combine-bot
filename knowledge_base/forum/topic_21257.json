@@ -1,0 +1,161 @@
+{
+  "topic_id": 21257,
+  "title": "Wrong error bar in the binned fit in Combine",
+  "url": "https://cms-talk.web.cern.ch/t/21257",
+  "category_id": 279,
+  "created_at": "2023-03-09T21:38:05.224Z",
+  "last_posted_at": "2023-03-20T18:27:10.923Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2023-03-09T21:38:05.793Z",
+      "updated_at": "2023-03-09T21:38:05.793Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI am doing some test binned fits with weighted MC samples. Although the fit itself looks normal, when I plot the dataset in the bestfit snapshot root file or the datacard.root file that actually got fitted, I see wrong error bars.\n\nEach bin has an error bar as large as the number of events in it. The events are weighted and sumW2() is enable. Even without sumW2(), the error bar shouldn\u2019t look like this. Before the RooDataHist is imported into datacar.root, the error bars are normal.\nCan anyone explain what is happening here? Does it mean Combine uses these uncertainties in the fit?\nBest\nXingchen",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I am doing some test binned fits with weighted MC samples. Although the fit itself looks normal, when I plot the dataset in the bestfit snapshot root file or the datacard.root file that actually got fitted, I see wrong error bars.<br>\n<img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/b/b8320f045e0260afe6825ac100c69c84a26cfe26.png\" alt=\"Picture1\" data-base62-sha1=\"qht6uElNXkqjPXje8TNrucXNucu\" width=\"425\" height=\"312\"><br>\nEach bin has an error bar as large as the number of events in it. The events are weighted and sumW2() is enable. Even without sumW2(), the error bar shouldn\u2019t look like this. Before the RooDataHist is imported into datacar.root, the error bars are normal.</p>\n<p>Can anyone explain what is happening here? Does it mean Combine uses these uncertainties in the fit?</p>\n<p>Best<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-03-10T11:22:38.737Z",
+      "updated_at": "2023-03-10T11:22:38.737Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nI would like to help you out, but I\u2019m not entirely clear on how this plot is being produced. Are you able to provide a minimal working example, linking to relevant info (datacards, input histograms) that reproduces the problem, so that I could take a look?\nBest,\nKyle",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>I would like to help you out, but I\u2019m not entirely clear on how this plot is being produced. Are you able to provide a minimal working example, linking to relevant info (datacards, input histograms) that reproduces the problem, so that I could take a look?</p>\n<p>Best,</p>\n<p>Kyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2023-03-10T21:27:34.885Z",
+      "updated_at": "2023-03-10T21:27:34.885Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThank you for your help! Here are the datacard and two relevant workspaces. The histogram is stored in the workspace_bkg_pow1.root\nworkspace_sig_pow1.root (9.9 KB)\nworkspace_bkg_pow1.root (320.7 KB)\ndatacard_pow1.txt (604 Bytes)\nTo reproduce the problem, just run text2workspace.py datacard_pow1.txt -m 125.\nXingchen",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>Thank you for your help! Here are the datacard and two relevant workspaces. The histogram is stored in the <code>workspace_bkg_pow1.root</code><br>\n<a class=\"attachment\" href=\"/uploads/short-url/6Ovi2BPH33n69GZ7lBxRJP5Fi2l.root\">workspace_sig_pow1.root</a> (9.9 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/fqbdrtiZy37C7terbiH4Gulh0uB.root\">workspace_bkg_pow1.root</a> (320.7 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/uiohas8hCuS2Ft0gIB1pCMm0zfN.txt\">datacard_pow1.txt</a> (604 Bytes)</p>\n<p>To reproduce the problem, just run <code>text2workspace.py datacard_pow1.txt -m 125.</code></p>\n<p>Xingchen</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2023-03-15T19:53:43.615Z",
+      "updated_at": "2023-03-15T19:53:43.615Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nDid you have a chance to look at the files?\nBest\nXingchen",
+      "cooked_html": "<p>Hi Kyle,<br>\nDid you have a chance to look at the files?</p>\n<p>Best<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-03-15T20:02:51.989Z",
+      "updated_at": "2023-03-15T20:02:51.989Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nYes, sorry for the delay. I\u2019ve taken a look at the files, and can reproduce the issue you showed.\nI\u2019ve at least partially understood why this is happening. But this touches on some aspects I am not very familiar with, so I have asked for a little feedback from some of the more experienced experts as I try to to understand how some of this is handled. Hence the delay.\nI don\u2019t think that this should actually cause any issues in fits etc., but I am not sure of that yet. So I hope to get back to you soon with more information.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>Yes, sorry for the delay. I\u2019ve taken a look at the files, and can reproduce the issue you showed.</p>\n<p>I\u2019ve at least partially understood why this is happening. But this touches on some aspects I am not very familiar with, so I have asked for a little feedback from some of the more experienced experts as I try to to understand how some of this is handled. Hence the delay.</p>\n<p>I don\u2019t think that this should actually cause any issues in fits etc., but I am not sure of that yet. So I hope to get back to you soon with more information.</p>\n<p>Best,</p>\n<p>Kyle</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-03-16T11:58:33.067Z",
+      "updated_at": "2023-03-16T11:58:33.067Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nI\u2019ve gotten confirmation that these errors are not used anywhere in the fits, so this shouldn\u2019t cause any problems in the analysis. I also ran a quick test which confirmed this for one simple test case.\nIt seems to be an issue with how the RooDataHist is recreated as a RooDataSet in the new workspace. If you run into any further issues that may be related, please let us know \u2013 but this shouldn\u2019t effect anything in the fit as these are not actually used.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>I\u2019ve gotten confirmation that these errors are not used anywhere in the fits, so this shouldn\u2019t cause any problems in the analysis. I also ran a quick test which confirmed this for one simple test case.</p>\n<p>It seems to be an issue with how the <code>RooDataHist</code> is recreated as a <code>RooDataSet</code> in the new workspace. If you run into any further issues that may be related, please let us know \u2013 but this shouldn\u2019t effect anything in the fit as these are not actually used.</p>\n<p>Best,</p>\n<p>Kyle</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2023-03-16T15:35:27.417Z",
+      "updated_at": "2023-03-16T15:35:27.417Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThank you so much to confirm that! We suspect that this is an issue in the conversion of RooDataHist to RooDataSet. If these wrong errors are not used in the analysis, can you confirm that the errors that are used in the fit are actually the ones stored in RooDataHist? The concern we have here is that the error information gets lost during the conversion.\nBest\nXingchen",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>Thank you so much to confirm that! We suspect that this is an issue in the conversion of <code>RooDataHist</code> to <code>RooDataSet</code>. If these wrong errors are not used in the analysis, can you confirm that the errors that are used in the fit are actually the ones stored in <code>RooDataHist</code>? The concern we have here is that the error information gets lost during the conversion.</p>\n<p>Best<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-03-16T15:49:58.564Z",
+      "updated_at": "2023-03-16T15:50:07.957Z",
+      "reply_to_post_number": 8,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nI believe that for the data, the errors are not used directly, rather the likelihood function will assume a Poisson distribution for each bin. Does your input data violate this assumption for some reason?\nI think that the Poisson assumption is always made, and therefore the errors on the observed data are not used directly. But I will follow up to try to make sure.\nBest,\nKyle",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>I believe that for the data, the errors are not used directly, rather the likelihood function will assume a Poisson distribution for each bin. Does your input data violate this assumption for some reason?</p>\n<p>I think that the Poisson assumption is always made, and therefore the errors on the observed data are not used directly. But I will follow up to try to make sure.</p>\n<p>Best,</p>\n<p>Kyle</p>"
+    },
+    {
+      "post_number": 10,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2023-03-17T18:55:44.131Z",
+      "updated_at": "2023-03-17T18:55:44.131Z",
+      "reply_to_post_number": 9,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThe problem is that we are treating the MC samples as data (just for testing). This will not be a problem if we actually fit the data, as you said that the Poisson distribution is always assumed in each bin.\nFrom your reply, my understanding is that, by default, combine thinks of the input samples as actually data, thus the Poisson distribution assumption is made.\nIs it possible to force combine to discard that assumption, and use the error from RooDataHist instead?\nBest\nXingchen",
+      "cooked_html": "<p>Hi Kyle,<br>\nThe problem is that we are treating the MC samples as data (just for testing). This will not be a problem if we actually fit the data, as you said that the Poisson distribution is always assumed in each bin.<br>\nFrom your reply, my understanding is that, by default, combine thinks of the input samples as actually data, thus the Poisson distribution assumption is made.<br>\nIs it possible to force combine to discard that assumption, and use the error from <code>RooDataHist</code> instead?</p>\n<p>Best<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 11,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2023-03-20T09:39:35.365Z",
+      "updated_at": "2023-03-20T09:39:35.365Z",
+      "reply_to_post_number": 10,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nYes, combine is really designed for fitting Poisson distributed data, so the likelihood model gets built on this assumption. Unfortunately, there is no easy way to discard that assumption. Note that it can still be used for many tests starting from a MC model despite this (e.g. fits to pseudodata generated from the nominal model). Though it depends on exactly what you\u2019re trying to do of course.\nCheers,\nKyle",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>Yes, combine is really designed for fitting Poisson distributed data, so the likelihood model gets built on this assumption. Unfortunately, there is no easy way to discard that assumption. Note that it can still be used for many tests starting from a MC model despite this (e.g. fits to pseudodata generated from the nominal model). Though it depends on exactly what you\u2019re trying to do of course.</p>\n<p>Cheers,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 12,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2023-03-20T17:13:13.590Z",
+      "updated_at": "2023-03-20T17:13:13.590Z",
+      "reply_to_post_number": 11,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThank you again for your detailed explanation! If it is not easy to change, we will see what we can do under this assumption.\nBest\nXingchen",
+      "cooked_html": "<p>Hi Kyle,<br>\nThank you again for your detailed explanation! If it is not easy to change, we will see what we can do under this assumption.</p>\n<p>Best<br>\nXingchen</p>"
+    },
+    {
+      "post_number": 13,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2023-03-20T17:18:08.439Z",
+      "updated_at": "2023-03-20T17:18:08.439Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Xingchen,\nDid you consider just writing a small script in plain RooFit to do this kind of fit (taking into account MC weights)?  This is the typical approach for analyses that need to first build an analytic model by fitting to binned MC templates.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Xingchen,</p>\n<p>Did you consider just writing a small script in plain RooFit to do this kind of fit (taking into account MC weights)?  This is the typical approach for analyses that need to first build an analytic model by fitting to binned MC templates.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 14,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2023-03-20T18:27:10.923Z",
+      "updated_at": "2023-03-20T18:27:10.923Z",
+      "reply_to_post_number": 13,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nI did do the fit in plain RooFit before I moved to combine. In the RooFit, I can use the option of SumW2 for the error. Is there anything specific I should take a closer look in the plain RooFit fit?\nBest\nXingchen",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>I did do the fit in plain RooFit before I moved to combine. In the RooFit, I can use the option of SumW2 for the error. Is there anything specific I should take a closer look in the plain RooFit fit?</p>\n<p>Best<br>\nXingchen</p>"
+    }
+  ]
+}

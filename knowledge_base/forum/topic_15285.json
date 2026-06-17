@@ -1,0 +1,45 @@
+{
+  "topic_id": 15285,
+  "title": "MultiDimFit and FitDiagnostics with `--robustHesse 1`",
+  "url": "https://cms-talk.web.cern.ch/t/15285",
+  "category_id": 279,
+  "created_at": "2022-09-21T16:27:16.176Z",
+  "last_posted_at": "2022-10-05T13:25:27.412Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dnoll",
+      "name": "Dennis Noll",
+      "created_at": "2022-09-21T16:27:16.424Z",
+      "updated_at": "2023-02-07T10:52:55.887Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nwe are currently performing two types of combine fits within our HH->bbWW analysis:\n\nPulls & Impacts (MultiDimFit)\nPre- & Postfit Plots (FitDiagnostics)\n\nDuring the Pulls & Impacts fits, some O(1-10) nuisances show fit failures.\nWe figured out that these failures can be fixed by using the --robustHesse 1 option during the fit.\nWe have the following questions about this option:\n\nShould/can it be used in both, the Pulls & Impacts and in the Pre- & Postfit Plots?\nWhat exactly does this option do? The documentation is unfortunately rather brief.\nWe saw that when using this option, all impacts are strictly symmetric around 0. Is this concerning?\nWe see that a single nuisance is dropped when using this option, can we neglect this if this particular nuisance does not have a large impact?\n\nThank you very much for your great help!\nBest regards\nDennis",
+      "cooked_html": "<p>Dear experts,</p>\n<p>we are currently performing two types of combine fits within our HH-&gt;bbWW analysis:</p>\n<ul>\n<li>Pulls &amp; Impacts (MultiDimFit)</li>\n<li>Pre- &amp; Postfit Plots (FitDiagnostics)</li>\n</ul>\n<p>During the Pulls &amp; Impacts fits, some O(1-10) nuisances show fit failures.</p>\n<p>We figured out that these failures can be fixed by using the <code>--robustHesse 1</code> option during the fit.<br>\nWe have the following questions about this option:</p>\n<ol>\n<li>Should/can it be used in both, the Pulls &amp; Impacts <strong>and</strong> in the Pre- &amp; Postfit Plots?</li>\n<li>What exactly does this option do? The <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/\" rel=\"noopener nofollow ugc\">documentation</a> is unfortunately rather brief.</li>\n<li>We saw that when using this option, all impacts are strictly symmetric around 0. Is this concerning?</li>\n<li>We see that a single nuisance is dropped when using this option, can we neglect this if this particular nuisance does not have a large impact?</li>\n</ol>\n<p>Thank you very much for your great help!</p>\n<p>Best regards</p>\n<p>Dennis</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-09-26T08:08:24.733Z",
+      "updated_at": "2022-09-26T08:08:24.733Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Dennis,\nTo address each point:\n\nYes, it should be ok to use. Though I get the impression for the impacts you are using the --approx option? This is the only way the use of --robustHesse should have any real effect. The normal way of calculating the impacts (without --approx) doesn\u2019t use the Hessian matrix, and is usually recommended as the most accurate. For the pre- and post-fit plots I think it\u2019s fine.\nIt uses a custom implementation of the Hessian matrix calculation, which is inverted to give the covariance matrix. Essentially we take larger deltaNLL steps in the finite difference calculation, and try to handle cases where parameters are at boundaries a bit better than the plain HESSE implementation in Minuit. The code is here if you want the full details.\n\nNo, this is by design, since the impacts are approximate and derived from the covariance matrix. As above, we normally recommend running the full impact calculation, not the approximate one.\nIt\u2019s probably ok - if a parameter is dropped it usually means there is some strong (anti-)correlation in the model, and you have a redundant degree of freedom somewhere.\n\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Dennis,</p>\n<p>To address each point:</p>\n<ol>\n<li>Yes, it should be ok to use. Though I get the impression for the impacts you are using the <code>--approx</code> option? This is the only way the use of <code>--robustHesse</code> should have any real effect. The normal way of calculating the impacts (without <code>--approx</code>) doesn\u2019t use the Hessian matrix, and is usually recommended as the most accurate. For the pre- and post-fit plots I think it\u2019s fine.</li>\n<li>It uses a custom implementation of the Hessian matrix calculation, which is inverted to give the covariance matrix. Essentially we take larger deltaNLL steps in the finite difference calculation, and try to handle cases where parameters are at boundaries a bit better than the plain HESSE implementation in Minuit. The code is <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/102x/src/RobustHesse.cc\" rel=\"noopener nofollow ugc\">here</a> if you want the full details.</li>\n</ol>\n<ol start=\"3\">\n<li>No, this is by design, since the impacts are approximate and derived from the covariance matrix. As above, we normally recommend running the full impact calculation, not the approximate one.</li>\n<li>It\u2019s probably ok - if a parameter is dropped it usually means there is some strong (anti-)correlation in the model, and you have a redundant degree of freedom somewhere.</li>\n</ol>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "dnoll",
+      "name": "Dennis Noll",
+      "created_at": "2022-10-05T13:25:27.412Z",
+      "updated_at": "2022-10-05T13:25:45.896Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nthank you very much for your detailed answer!\nTo 1: We do not use the CombineHarvester but the HH Inference tools. The use of --method robust here mimics the same combine options as --approx. For the Pulls & Impacts we now found a suitable binning, in which no Failed Fits arise also without this option. For the Pre- and Postfits, we understand that it can savely be used, and will do so.\nThanks.\nBest regards\nDennis",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>thank you very much for your detailed answer!</p>\n<p>To 1: We do not use the CombineHarvester but the <a href=\"https://cms-hh.web.cern.ch/tools/inference/\" rel=\"noopener nofollow ugc\">HH Inference tools</a>. The use of <code>--method robust</code> <a href=\"https://gitlab.cern.ch/hh/tools/inference/-/blob/master/dhi/tasks/pulls_impacts.py#L198-204\" rel=\"noopener nofollow ugc\">here</a> mimics the same combine options as <code>--approx</code>. For the Pulls &amp; Impacts we now found a suitable binning, in which no Failed Fits arise also without this option. For the Pre- and Postfits, we understand that it can savely be used, and will do so.</p>\n<p>Thanks.</p>\n<p>Best regards<br>\nDennis</p>"
+    }
+  ]
+}

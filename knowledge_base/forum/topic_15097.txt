@@ -1,0 +1,34 @@
+TOPIC: Parameter aliases
+URL: https://cms-talk.web.cern.ch/t/15097
+DATE: 2022-09-16T14:12:13.095Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2022-09-16T14:12:13.329Z):
+Hi combine experts,
+I am wondering if it is possible to put parameter aliases when using combine i.e. having parameters pA, pB, … and I want them to be called as p1, p2, … during the course of the run e.g. --setParameters ‘p1=1,p2=1,…’ and the like, and have them to be named such in any file combine outputs. The use case I have in mind is to maximize sharing e.g. bkg toys are the same regardless of the exact signal point, while it would be really nice to retain the ability to call my POIs with their point-specific names, instead of just generic p1 and p2 for example.
+How can I do this? While my specific use case at the moment is POI aliasing, it’s useful to also know how to do this for nuisances.
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 2 (by afiqaize @ 2022-09-22T12:13:43.415Z):
+Hi experts,
+This is a gentle reminder on my question above.
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 3 (by agilbert @ 2022-09-26T07:46:15.771Z):
+Hi Afiq,
+I don’t believe this is possible. While I imagine such functionality could be developed, it would probably involve modifying code in a lot of places (since there are several combine command line options which take parameter names).
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 4 (by afiqaize @ 2022-09-26T10:25:58.669Z):
+Hi Andrew,
+Alright. I had a feeling that this isn’t already available, thanks for confirming this.
+Cheers,
+Afiq
+----------------------------------------

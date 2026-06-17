@@ -1,0 +1,212 @@
+TOPIC: Technicalities about FitDiagnostics --saveShapes and --saveWithUncertainties
+URL: https://cms-talk.web.cern.ch/t/2130
+DATE: 2021-07-26T13:54:33.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by beaucero @ 2021-07-26T13:54:33.000Z):
+Dear all,
+I have produced a rootfile with FitDiagnostics method and --saveShapes and --saveWithUncertainties options.
+The documentation is giving some examples but with only the sentence:
+You will find a script postFitPlot.py in the cms-das-stats repository that can help you get started.
+→ I have no idea how to find the cms-das-stats repository… (And BTW, the answers to tutorial: http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/tutorialanswers/ is giving 404 Page not Found errors)
+[And the text is saying:Click the text below to study the datacard (datacard_part1.txt in the cms-das-stats directory): but nothing is ‘clickable’…]
+So I am not sure to understand how to manipulate the output:
+The data are stored as TGraphAsymmErrors, all the others are stored as TH1.
+First question:
+How does the ‘data’ graph get normalised?
+For 2016, I see the plots in [1] (I am in the repository shapes_fit_b for example) → The data points are not integer as the maximum of the graph is 1.2.
+Is the normalisation factor stored also in the Rootuple? Under which label? (ie I was not able to find it knowing that I am looking for a factor ~40) [I am using C++ code and I do not know RooFit]
+Second question:
+I would like to produce ‘data-total_background’ plot. There is no function “Add” for TGraphAsymmErrors. There is only the possibility to Divide/Multiply the Graphs…
+When I am casting TGraphAsymmErrors into a TH1, I have a crash if I am trying to add data and total_background, I have a crash… What would be the best way to do it? (google search is not successful, I know I could take the input histograms for the data, but I prefer to take everything from the same rootfile).
+Thanks!
+Stephanie
+PS: If I miss things in the documentation, thanks to point them to me.
+[1]:
+Stephanie Beauceron
+stephanie.beauceron@cern.ch
+IP2I - Batiment Dirac - Piece 122
+Cern Office: 40-4B-16
+Cern Phone: 71558
+Outside Cern: +41 22 76 71 558
+Skype: stephanie.beauceron
+----------------------------------------
+
+REPLY 2 (by adewit @ 2021-07-26T14:29:04.000Z):
+*** Discussion title: Higgs Combination
+Hi Stephanie,
+
+Dear all,
+I have produced a rootfile with FitDiagnostics method and --saveShapes
+
+and --saveWithUncertainties options.
+
+The documentation is giving some examples but with only the sentence:
+You will find a script postFitPlot.py in the cms-das-stats repository
+
+that can help you get started.
+
+--> I have no idea how to find the cms-das-stats repository... (And
+
+BTW, the answers to tutorial:
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/tutorialanswers/
+is giving 404 Page not Found errors)
+See
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#getting-started
+, at the beginning of the page.
+The link to the answers is indeed not correct, it should point to this:
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexerciseanswers.html
+(also accessible from the menu at the top of the page under 'Tutorials >
+Solutions to long exercise')
+
+[And the text is saying:Click the text below to study the datacard
+
+(datacard_part1.txt in the cms-das-stats directory): but nothing is
+'clickable'...]
+This refers to the arrow with 'Show Datacards', you can click on that to
+see the card.
+
+So I am not sure to understand how to manipulate the output:
+The data are stored as TGraphAsymmErrors, all the others are stored as
+
+TH1.
+
+First question:
+How does the 'data' graph get normalised?
+
+It should be the actual values of the data points that are in the input
+dataset, at least for a histogram-based analysis. Are your observed data
+a 1D histogram or do you pass these in a different way?
+
+For 2016, I see the plots in [1] (I am in the repository shapes_fit_b
+
+for example) --> The data points are not integer as the maximum of the
+graph is 1.2.
+The attachment was stripped so we can't see what you're seeing.
+
+Is the normalisation factor stored also in the Rootuple? Under which
+
+label? (ie I was not able to find it knowing that I am looking for a
+factor ~40) [I am using C++ code and I do not know RooFit]
+
+Second question:
+I would like to produce 'data-total_background' plot. There is no
+
+function "Add" for TGraphAsymmErrors. There is only the possibility to
+Divide/Multiply the Graphs...
+
+When I am casting TGraphAsymmErrors into a TH1, I have a crash if I am
+
+trying to add data and total_background, I have a crash... What would be
+the best way to do it? (google search is not successful, I know I could
+take the input histograms for the data, but I prefer to take everything
+from the same rootfile).
+When I've had to do something similar in the past I've made the
+TGraphAsymmErrors into a TH1 manually. Maybe someone else has a better
+solution!
+Alternatively you could make the shapes with PostFitShapesFromWorkspace
+( http://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html
+) which also outputs a TH1 for the data.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by beaucero @ 2021-07-26T14:58:24.000Z):
+Hi Adinda,
+Thanks for the prompt answer.
+
+Dear all,
+I have produced a rootfile with FitDiagnostics method and --saveShapes and --saveWithUncertainties options.
+The documentation is giving some examples but with only the sentence:
+You will find a script postFitPlot.py in the cms-das-stats repository that can help you get started.
+--> I have no idea how to find the cms-das-stats repository... (And BTW, the answers to tutorial: http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/tutorialanswers/is giving 404 Page not Found errors)
+
+See
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise.html#getting-started
+, at the beginning of the page.
+
+Ok, missed it.
+
+The link to the answers is indeed not correct, it should point to this:
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexerciseanswers.html
+(also accessible from the menu at the top of the page under 'Tutorials >
+Solutions to long exercise')
+
+[And the text is saying:Click the text below to study the datacard (datacard_part1.txt in the cms-das-stats directory): but nothing is 'clickable'...]
+
+This refers to the arrow with 'Show Datacards', you can click on that to
+see the card.
+
+Ah, Ok, not clear for me, for me below is in the main core of the text....
+
+So I am not sure to understand how to manipulate the output:
+The data are stored as TGraphAsymmErrors, all the others are stored as TH1.
+First question:
+How does the 'data' graph get normalised?
+
+It should be the actual values of the data points that are in the input
+dataset, at least for a histogram-based analysis. Are your observed data
+a 1D histogram or do you pass these in a different way?
+
+Yes, they are passed this way in RooParametricHist:
+TH1 *Data3T = (TH1*)f2->Get("data_obs"); //We take the background as Data 3T
+RooDataHist data3T("data3T_2017","data3T",*w->var("TMass"),Data3T);
+w->import(data3T);
+All the others TH1 suffer from the same normalisation issues (so if I draw them on the same canvas they all agree but it is not good for publication plots)
+
+For 2016, I see the plots in [1] (I am in the repository shapes_fit_b for example) --> The data points are not integer as the maximum of the graph is 1.2.
+
+The attachment was stripped so we can't see what you're seeing.
+
+I though it went in, find it here:
+https://cernbox.cern.ch/index.php/s/JH9LMK6ORsQ7YOL
+
+Is the normalisation factor stored also in the Rootuple? Under which label? (ie I was not able to find it knowing that I am looking for a factor ~40) [I am using C++ code and I do not know RooFit]
+Second question:
+I would like to produce 'data-total_background' plot. There is no function "Add" for TGraphAsymmErrors. There is only the possibility to Divide/Multiply the Graphs...
+When I am casting TGraphAsymmErrors into a TH1, I have a crash if I am trying to add data and total_background, I have a crash... What would be the best way to do it? (google search is not successful, I know I could take the input histograms for the data, but I prefer to take everything from the same rootfile).
+
+When I've had to do something similar in the past I've made the
+TGraphAsymmErrors into a TH1 manually. Maybe someone else has a better
+solution!
+
+Ok... I though to have something simpler (as storing the data as TH1)
+
+Alternatively you could make the shapes with PostFitShapesFromWorkspace
+( http://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html
+) which also outputs a TH1 for the data.
+
+Ok, I did not know I will have a look.
+Thanks!
+Steph
+
+Best,
+Adinda
+
+Thanks!
+Stephanie
+PS: If I miss things in the documentation, thanks to point them to me.
+[1]: [ cid:E6074418-6562-45EB-9FA0-5314E38AF221 ]
+Stephanie Beauceron
+stephanie.beauceron@cern.ch <mailto: stephanie.beauceron@cern.ch >
+IP2I - Batiment Dirac - Piece 122
+Cern Office: 40-4B-16
+Cern Phone: 71558
+Outside Cern: +41 22 76 71 558
+Skype: stephanie.beauceron
+[ MIME part of type text/html without a name stripped ]
+[ MIME part of 516140 bytes (>150000) stripped ]
+
+-------------------------------------------------------------
+Visit this CMS message (to reply or unsubscribe) at:
+https://hypernews.cern.ch/HyperNews/CMS/get/higgs-combination/1659/1.html
+
+Stephanie Beauceron
+stephanie.beauceron@cern.ch
+IP2I - Batiment Dirac - Piece 122
+Cern Office: 40-4B-16
+Cern Phone: 71558
+Outside Cern: +41 22 76 71 558
+Skype: stephanie.beauceron
+----------------------------------------

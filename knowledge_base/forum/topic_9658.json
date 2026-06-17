@@ -1,0 +1,89 @@
+{
+  "topic_id": 9658,
+  "title": "GoodnessOfFit with unconstrained nuisance",
+  "url": "https://cms-talk.web.cern.ch/t/9658",
+  "category_id": 279,
+  "created_at": "2022-04-25T09:20:11.819Z",
+  "last_posted_at": "2022-04-26T08:19:08.567Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dmeuser",
+      "name": "Danilo Meuser",
+      "created_at": "2022-04-25T09:20:11.967Z",
+      "updated_at": "2023-02-07T10:57:32.790Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nfor our data/MC validation of DNN input variables we are currently using the GOF test as described in [1]. Here, the test statistic is obviously based on the postfit distributions with the nuisance parameters shifted and constraint. But we would actually need a GOF test based on our prefit distributions using fixed and unconstrained nuisance. Is there a way to perform this kind of GOF test with combine, while ideally still having a floating signal parameter r?\nCheers\nDanilo\n[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>for our data/MC validation of DNN input variables we are currently using the GOF test as described in [1]. Here, the test statistic is obviously based on the postfit distributions with the nuisance parameters shifted and constraint. But we would actually need a GOF test based on our prefit distributions using fixed and unconstrained nuisance. Is there a way to perform this kind of GOF test with combine, while ideally still having a floating signal parameter r?</p>\n<p>Cheers<br>\nDanilo</p>\n<p>[1] <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#goodness-of-fit-tests</a></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-04-25T11:00:59.903Z",
+      "updated_at": "2022-04-25T11:00:59.903Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Danilo,\nI\u2019m not sure it\u2019s right to think of the GoF test in combine as a \u201cpost-fit\u201d (as opposed to \u201cpre-fit\u201d) test as such - it\u2019s true a fit is performed to calculate the saturated model likelihood ratio, but it really quantifies the ability of your model (inc. uncertainties) to describe the observation - and this is usually what we\u2019re interested in. What you are asking for could perhaps be obtained by freezing all nuisance parameters, floating only r in the fit, but then still generating fluctuated nuisance parameters in the toys you use to get the test statistic distribution (so using -M GenerateOnly to produce the toys first). However it\u2019s not immediately clear to me if such a test is useful/meaningful.\nPerhaps you can describe in more detail why the normal test is not appropriate here?\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Danilo,</p>\n<p>I\u2019m not sure it\u2019s right to think of the GoF test in combine as a \u201cpost-fit\u201d (as opposed to \u201cpre-fit\u201d) test as such - it\u2019s true a fit is performed to calculate the saturated model likelihood ratio, but it really quantifies the ability of your model (inc. uncertainties) to describe the observation - and this is usually what we\u2019re interested in. What you are asking for could perhaps be obtained by freezing all nuisance parameters, floating only <code>r</code> in the fit, but then still generating fluctuated nuisance parameters in the toys you use to get the test statistic distribution (so using <code>-M GenerateOnly</code> to produce the toys first). However it\u2019s not immediately clear to me if such a test is useful/meaningful.</p>\n<p>Perhaps you can describe in more detail why the normal test is not appropriate here?</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "dmeuser",
+      "name": "Danilo Meuser",
+      "created_at": "2022-04-25T12:13:05.517Z",
+      "updated_at": "2022-04-25T12:13:05.517Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nfirst of all thanks for your reply. As I mentioned in my initial message, we are using the GOF test to study if our DNN inputs have a reasonable data/MC agreement. If this is not true for a given variable, we will not use this variable for our DNN inputs. We perform these kind of tests for the 1D, but also for 2D distributions to check for correlations.\nThe main reason why we want to test our data/MC agreement based on unconstrained nuisance is that for our final cross section measurement we will use TUnfold for the unfolding part and not combine. This essentially means that we will not make use of the constrained nuisance in our final result, but, as far as we understand, these constrained nuisance are evaluated in the GOF of combine. In the end this currently leads to ruling out variables, which look perfectly fine when comparing data with the prefit distributions, but have a worse agreement when comparing data with postfit due to the constrained nuisance.\nI hope this explains our problem a bit better.\nCheers\nDanilo",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>first of all thanks for your reply. As I mentioned in my initial message, we are using the GOF test to study if our DNN inputs have a reasonable data/MC agreement. If this is not true for a given variable, we will not use this variable for our DNN inputs. We perform these kind of tests for the 1D, but also for 2D distributions to check for correlations.<br>\nThe main reason why we want to test our data/MC agreement based on unconstrained nuisance is that for our final cross section measurement we will use TUnfold for the unfolding part and not combine. This essentially means that we will not make use of the constrained nuisance in our final result, but, as far as we understand, these constrained nuisance are evaluated in the GOF of combine. In the end this currently leads to ruling out variables, which look perfectly fine when comparing data with the prefit distributions, but have a worse agreement when comparing data with postfit due to the constrained nuisance.</p>\n<p>I hope this explains our problem a bit better.</p>\n<p>Cheers<br>\nDanilo</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-04-25T12:38:55.265Z",
+      "updated_at": "2022-04-25T12:38:55.265Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Danilo,\nJust to clarify - the saturated model test statistic doesn\u2019t know anything about the nuisance parameter constraints (i.e. these numbers are not an input to the calculation). It is simply a function of the likelihood, which depends only on the fitted parameter values. Where the constraints come in (indirectly) is via the distribution of test statistic values expected under some hypothesis.\nWhen you say that prefit some variables look perfectly fine, but then get ruled out - how do you define this? Comparing the data points to the prefit uncertainty band by eye, or some other method?\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Danilo,</p>\n<p>Just to clarify - the saturated model test statistic doesn\u2019t know anything about the nuisance parameter constraints (i.e. these numbers are not an input to the calculation). It is simply a function of the likelihood, which depends only on the fitted parameter values. Where the constraints come in (indirectly) is via the distribution of test statistic values expected under some hypothesis.</p>\n<p>When you say that prefit some variables look perfectly fine, but then get ruled out - how do you define this? Comparing the data points to the prefit uncertainty band by eye, or some other method?</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "dmeuser",
+      "name": "Danilo Meuser",
+      "created_at": "2022-04-25T13:23:28.371Z",
+      "updated_at": "2022-04-25T13:23:28.371Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nthanks for the clarification, we were actually not aware of this point. But when the constraints have an impact on the distribution of the test statistic, which is used to generate the toys, it will in the end effect the p-value, right? So if we rule out all variables with a p-value less than 5%, the constraint nuisance should still have an impact on your variable selection. Please correct me, if I\u2019m wrong here.\nThe statement regarding the agreement between data and prefit distributions is indeed based on comparing the prefit uncertainty band by eye with data.\nWe have one particular example, which leaves us a bit puzzled: In this slide Slide1.pdf (273.0 KB) you find two different variable combinations, which look quite similar in terms of prefit data/MC agreement. Based on this agreement, we would usually say that both combinations can be used as DNN inputs. However, the GOF test for variable combination in the upper row yields is ruled out with a p-value of 2%, while the combination in the lower three plots is confirmed with a p-value of 40%.\nCheers\nDanilo",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>thanks for the clarification, we were actually not aware of this point. But when the constraints have an impact on the distribution of the test statistic, which is used to generate the toys, it will in the end effect the p-value, right? So if we rule out all variables with a p-value less than 5%, the constraint nuisance should still have an impact on your variable selection. Please correct me, if I\u2019m wrong here.</p>\n<p>The statement regarding the agreement between data and prefit distributions is indeed based on comparing the prefit uncertainty band by eye with data.<br>\nWe have one particular example, which leaves us a bit puzzled: In this slide <a class=\"attachment\" href=\"/uploads/short-url/Aqqq5tRnYmFN7GllQdkWRBf7UPN.pdf\">Slide1.pdf</a> (273.0 KB) you find two different variable combinations, which look quite similar in terms of prefit data/MC agreement. Based on this agreement, we would usually say that both combinations can be used as DNN inputs. However, the GOF test for variable combination in the upper row yields is ruled out with a p-value of 2%, while the combination in the lower three plots is confirmed with a p-value of 40%.</p>\n<p>Cheers<br>\nDanilo</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-04-25T14:06:25.424Z",
+      "updated_at": "2022-04-25T14:06:25.424Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Danilo,\nThe comparison with the prefit uncertainties could give very misleading impressions about whether the model is able to describe the data well. I\u2019ve attached a small sketch as an example. Here we have the data/MC (prefit) distribution for some observable - there\u2019s a clear slope in the trend. Let\u2019s say the only systematic uncertainty I consider is a fairly large, but flat, normalisation uncertainty on the MC prediction (the +/- 1sigma indicated by the horizontal red lines). All the data points are within these red lines, so I might claim this indicates good prefit agreement, but running the saturated model test would tell us that the model is a very poor description of the data - there is no degree of freedom which can significantly reduce the tension between the two.\n\nDatalmc1536\u00d7562 47.1 KB\n\nI could imagine that the same kind of effect is happening in your slide - because just looking at the uncertainty band doesn\u2019t tell you about the DoFs and correlations between bins and distributions.\nSo this is why I worry about the sort of \u201cprefit\u201d GoF test you are asking for - that it will miss genuine problems like this. My gut feeling is that you want to be using the standard GoF test, even if in the end you will use TUnfold.\nIf it would help to discuss in more detail we could arrange a short meeting, just send a message off cms-talk.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Danilo,</p>\n<p>The comparison with the prefit uncertainties could give very misleading impressions about whether the model is able to describe the data well. I\u2019ve attached a small sketch as an example. Here we have the data/MC (prefit) distribution for some observable - there\u2019s a clear slope in the trend. Let\u2019s say the only systematic uncertainty I consider is a fairly large, but flat, normalisation uncertainty on the MC prediction (the +/- 1sigma indicated by the horizontal red lines). All the data points are within these red lines, so I might claim this indicates good prefit agreement, but running the saturated model test would tell us that the model is a very poor description of the data - there is no degree of freedom which can significantly reduce the tension between the two.</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/d/dcf01b15d73bc22e2ad300c8b7a72c53cf66ee4a.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/dcf01b15d73bc22e2ad300c8b7a72c53cf66ee4a\" title=\"Datalmc\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dcf01b15d73bc22e2ad300c8b7a72c53cf66ee4a_2_690x252.png\" alt=\"Datalmc\" data-base62-sha1=\"vwvt0fwYUsD4WZMo5lSAP8p7FY6\" width=\"690\" height=\"252\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dcf01b15d73bc22e2ad300c8b7a72c53cf66ee4a_2_690x252.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dcf01b15d73bc22e2ad300c8b7a72c53cf66ee4a_2_1035x378.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dcf01b15d73bc22e2ad300c8b7a72c53cf66ee4a_2_1380x504.png 2x\" data-small-upload=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/d/dcf01b15d73bc22e2ad300c8b7a72c53cf66ee4a_2_10x10.png\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Datalmc</span><span class=\"informations\">1536\u00d7562 47.1 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>\n<p>I could imagine that the same kind of effect is happening in your slide - because just looking at the uncertainty band doesn\u2019t tell you about the DoFs and correlations between bins and distributions.</p>\n<p>So this is why I worry about the sort of \u201cprefit\u201d GoF test you are asking for - that it will miss genuine problems like this. My gut feeling is that you want to be using the standard GoF test, even if in the end you will use TUnfold.</p>\n<p>If it would help to discuss in more detail we could arrange a short meeting, just send a message off cms-talk.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "dmeuser",
+      "name": "Danilo Meuser",
+      "created_at": "2022-04-26T08:19:08.567Z",
+      "updated_at": "2022-04-26T08:19:08.567Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrew,\nthanks a lot for your detailed reply and your nice sketch! This really helped us to better understand the results of our GOF tests. We agreed on sticking to the standard test as you suggested and will have a closer look at our nuisance to understand why combinations, like the one discussed, end up with a poor p-value.\nI guess at this point a meeting is not necessary, but nevertheless thank for your offer. We might come back to this at a later point.\nCheers\nDanilo",
+      "cooked_html": "<p>Hi Andrew,</p>\n<p>thanks a lot for your detailed reply and your nice sketch! This really helped us to better understand the results of our GOF tests. We agreed on sticking to the standard test as you suggested and will have a closer look at our nuisance to understand why combinations, like the one discussed, end up with a poor p-value.</p>\n<p>I guess at this point a meeting is not necessary, but nevertheless thank for your offer. We might come back to this at a later point.</p>\n<p>Cheers<br>\nDanilo</p>"
+    }
+  ]
+}

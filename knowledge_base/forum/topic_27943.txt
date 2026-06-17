@@ -1,0 +1,97 @@
+TOPIC: Segmentation fault (core dumped) in Combine v9
+URL: https://cms-talk.web.cern.ch/t/27943
+DATE: 2023-08-03T11:22:30.998Z
+SOLVED: no
+============================================================
+
+QUESTION (by kjaffel @ 2023-08-03T11:22:31.357Z):
+Dear experts,
+I recently wanted to upgrade my Combine version following this setup:http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version
+but I am having Segmentation fault combine  from all Combine methods.
+If I switch back to cmsrel CMSSW_10_2_13 using tag  v8.2.0 I don’t see this error.
+If you would like to have a look at the datacards and combine commands I am running, I put everything here where you can reproduce the error
+/afs/cern.ch/user/k/kjaffel/public/bug_combine_v9
+Simply run as follow:
+cd CMSSW_11_3_4/src
+cmsenv
+
+bash AToZHTo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_split_OSSF_dnn_MA_550.0_MH_300.0_run_goodness_of_fit.sh
+
+the above will process GOF for full run2 Datacard combined using UL16, UL17, and UL18 datacards (the individual datacard and shapes files are in the sjain directory).
+Let me know if you need any further details.
+Many thanks in advance for any feedback.
+Cheers,
+Khawla
+----------------------------------------
+
+REPLY 2 (by nckw @ 2023-08-03T11:59:24.000Z):
+Dear Khawla,
+I have tried and indeed I also get the core dump when running over this workspace. It seems to be fine if I increase my user memory (via ulimit) on lxplus so this seems to be a virtual memory issue. Are you able to increase the memory available to you to test this?
+The other experts might have some tips to reduce the memory footprint of your workspace (we have some optimisations that were used with the Higgs combination that were necessary to reduce this).
+Best,
+Nick
+
+···
+From: Khawla Jaffel via CMS talk noreply@cms-talk.web.cern.ch
+Date: Thursday, 3 August 2023 at 12:25
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Segmentation fault (core dumped) in Combine v9
+
+Khawla Jaffel kjaffelAugust 3
+
+Dear experts,
+I recently wanted to upgrade my Combine version following this setup:http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version
+but I am having Segmentation fault combine from all Combine methods.
+If I switch back to cmsrel CMSSW_10_2_13 using tag v8.2.0 I don’t see this error.
+If you would like to have a look at the datacards and combine commands I am running, I put everything here where you can reproduce the error
+/afs/cern.ch/user/k/kjaffel/public/bug_combine_v9
+Simply run as follow:
+cd CMSSW_11_3_4/src
+
+cmsenv
+
+bash AToZHTo2L2B_bb_associatedProduction_nb2PLusnb3_resolved_boosted_split_OSSF_dnn_MA_550.0_MH_300.0_run_goodness_of_fit.sh
+
+the above will process GOF for full run2 Datacard combined using UL16, UL17, and UL18 datacards (the individual datacard and shapes files are in the sjain directory).
+Let me know if you need any further details.
+Many thanks in advance for any feedback.
+Cheers,
+Khawla
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by kjaffel @ 2023-08-03T13:32:53.223Z):
+Dear Nick,
+Thank you very much for the quick response. If I understand correctly the ulimit -v is unlimited on lxplus. May I ask what ulimit  command did you use to make the test work?
+Also, I am using my home institute ingrid-ui1 machine,  where my user memory is unlimited too.
+Here are the details of all the resources available to me
+[kjaffel@ingrid-ui1 ~]$ ulimit -a
+core file size          (blocks, -c) 0
+data seg size           (kbytes, -d) unlimited
+scheduling priority             (-e) 0
+file size               (blocks, -f) unlimited
+pending signals                 (-i) 514839
+max locked memory       (kbytes, -l) 64
+max memory size         (kbytes, -m) unlimited
+open files                      (-n) 2048
+pipe size            (512 bytes, -p) 8
+POSIX message queues     (bytes, -q) 819200
+real-time priority              (-r) 0
+stack size              (kbytes, -s) 8192
+cpu time               (seconds, -t) unlimited
+max user processes              (-u) 4096
+virtual memory          (kbytes, -v) unlimited
+file locks                      (-x) unlimited
+
+Cheers,
+Khawla
+----------------------------------------
+
+REPLY 4 (by kjaffel @ 2023-08-03T13:43:55.995Z):
+Dear Nick,
+I just tried to increase the “stack size” by doing ulimit -Ss 131072. It worked for me :).
+Cheers,
+Khawla
+----------------------------------------

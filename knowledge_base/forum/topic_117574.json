@@ -1,0 +1,51 @@
+{
+  "topic_id": 117574,
+  "title": "How to manually specify observables to combine",
+  "url": "https://cms-talk.web.cern.ch/t/117574",
+  "category_id": 279,
+  "created_at": "2025-03-07T23:49:29.593Z",
+  "last_posted_at": "2025-03-11T02:25:57.362Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "ecannaer",
+      "name": "Ethan Michael Cannaert",
+      "created_at": "2025-03-07T23:49:30.029Z",
+      "updated_at": "2025-03-07T23:49:30.029Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nIs there any insight on how one manually sets the main observable for a channel in Combine? I have created some RooParametricHists that are functions of an arbitrary observable that I defined, and I can see after running text2workspace.py on my data card that each RooParametricHist is recognized as depending on these observables (e.g. lines like these in the workspace printout: RooParametricHist::shapeBkg_QCD_AT0b_15[ observable=MdiSJ_MSJ_uw_AT_16preAPV _pars=(QCD_AT0b_bin1 \u2026 where MdiSJ_MSJ_uw_AT_16preAPV is the observable I defined). However, when I try to run combine with FitDiagnostics, I get messages like these:\n[#1] INFO:InputArguments -- The formula CMS_channel==CMS_channel::AT0b_15 claims to use the variables (MdiSJ_MSJ_uw_AT_16preAPV,MdiSJ_MSJ_uw_AT_17,MdiSJ_MSJ_uw_AT_18,CMS_channel) but only (CMS_channel) seem to be in use.   inputs:         CMS_channel==CMS_channel::AT0b_15\nThis make it seem like Combine isn\u2019t recognizing my observables as valid. Is there anyone familiar with what this means? I don\u2019t know to what extent this actually affects how the fit is done, but I use separate binning in different eras and regions, so I need to be sure that Combine doesn\u2019t use the same observable for all eras and regions. Strangely enough, I only get these printouts when I include the FitDiagnostics options --saveShapes. Any thoughts?\n\nEthan",
+      "cooked_html": "<p>Dear experts,</p>\n<p>Is there any insight on how one manually sets the main observable for a channel in Combine? I have created some RooParametricHists that are functions of an arbitrary observable that I defined, and I can see after running text2workspace.py on my data card that each RooParametricHist is recognized as depending on these observables (e.g. lines like these in the workspace printout: RooParametricHist::shapeBkg_QCD_AT0b_15[ observable=MdiSJ_MSJ_uw_AT_16preAPV _pars=(QCD_AT0b_bin1 \u2026 where MdiSJ_MSJ_uw_AT_16preAPV is the observable I defined). However, when I try to run combine with FitDiagnostics, I get messages like these:</p>\n<p><code>[#1] INFO:InputArguments -- The formula CMS_channel==CMS_channel::AT0b_15 claims to use the variables (MdiSJ_MSJ_uw_AT_16preAPV,MdiSJ_MSJ_uw_AT_17,MdiSJ_MSJ_uw_AT_18,CMS_channel) but only (CMS_channel) seem to be in use.   inputs:         CMS_channel==CMS_channel::AT0b_15</code></p>\n<p>This make it seem like Combine isn\u2019t recognizing my observables as valid. Is there anyone familiar with what this means? I don\u2019t know to what extent this actually affects how the fit is done, but I use separate binning in different eras and regions, so I need to be sure that Combine doesn\u2019t use the same observable for all eras and regions. Strangely enough, I only get these printouts when I include the FitDiagnostics options --saveShapes. Any thoughts?</p>\n<ul>\n<li>Ethan</li>\n</ul>"
+    },
+    {
+      "post_number": 2,
+      "username": "gortona",
+      "name": "Giacomo Ortona",
+      "created_at": "2025-03-10T14:51:40.000Z",
+      "updated_at": "2025-03-10T14:52:53.104Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Dear Ethan,\nI think other experts probably know more than me, but I think you should be safe. CMS_channel is used to pick up the category you are using (so which part of the phase space corresponds to which part of the PDF. If I remember correctly, it is used in fitDiagnostics to cut the observed/expected datasets to the subregion of the phase space where the PDF is actually defined, so the other variables you see listed are those that define such phase space, but once it is defined there\u2019s no more dependence on them, thus the warning.\nCheers,\nGiacomo\n\nOn 8 Mar 2025, at 00:50, Ethan Michael Cannaert via CMS talk noreply-cms-talk@cern.ch wrote:\n\nEthan Michael Cannaert ecannaerMarch 7\n\nDear experts,\nIs there any insight on how one manually sets the main observable for a channel in Combine? I have created some RooParametricHists that are functions of an arbitrary observable that I defined, and I can see after running text2workspace.py on my data card that each RooParametricHist is recognized as depending on these observables (e.g. lines like these in the workspace printout: RooParametricHist::shapeBkg_QCD_AT0b_15[ observable=MdiSJ_MSJ_uw_AT_16preAPV _pars=(QCD_AT0b_bin1 \u2026 where MdiSJ_MSJ_uw_AT_16preAPV is the observable I defined). However, when I try to run combine with FitDiagnostics, I get messages like these:\n[#1] INFO:InputArguments -- The formula CMS_channel==CMS_channel::AT0b_15 claims to use the variables (MdiSJ_MSJ_uw_AT_16preAPV,MdiSJ_MSJ_uw_AT_17,MdiSJ_MSJ_uw_AT_18,CMS_channel) but only (CMS_channel) seem to be in use. inputs: CMS_channel==CMS_channel::AT0b_15\nThis make it seem like Combine isn\u2019t recognizing my observables as valid. Is there anyone familiar with what this means? I don\u2019t know to what extent this actually affects how the fit is done, but I use separate binning in different eras and regions, so I need to be sure that Combine doesn\u2019t use the same observable for all eras and regions. Strangely enough, I only get these printouts when I include the FitDiagnostics options --saveShapes. Any thoughts?\n\nEthan\n\nVisit Topic or reply to this email to respond.\nYou are receiving this because you enabled mailing list mode.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Dear Ethan,</p>\n<p>I think other experts probably know more than me, but I think you should be safe. CMS_channel is used to pick up the category you are using (so which part of the phase space corresponds to which part of the PDF. If I remember correctly, it is used in fitDiagnostics to cut the observed/expected datasets to the subregion of the phase space where the PDF is actually defined, so the other variables you see listed are those that define such phase space, but once it is defined there\u2019s no more dependence on them, thus the warning.</p>\n<p>Cheers,<br>\nGiacomo</p>\n<blockquote>\n<p>On 8 Mar 2025, at 00:50, Ethan Michael Cannaert via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/e/cdc98d/45.png\" title=\"ecannaer\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/ecannaer\">Ethan Michael Cannaert</a> ecannaer<br>March 7</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear experts,</p>\n<p>Is there any insight on how one manually sets the main observable for a channel in Combine? I have created some RooParametricHists that are functions of an arbitrary observable that I defined, and I can see after running text2workspace.py on my data card that each RooParametricHist is recognized as depending on these observables (e.g. lines like these in the workspace printout: RooParametricHist::shapeBkg_QCD_AT0b_15[ observable=MdiSJ_MSJ_uw_AT_16preAPV _pars=(QCD_AT0b_bin1 \u2026 where MdiSJ_MSJ_uw_AT_16preAPV is the observable I defined). However, when I try to run combine with FitDiagnostics, I get messages like these:</p>\n<p><code>[#1] INFO:InputArguments -- The formula CMS_channel==CMS_channel::AT0b_15 claims to use the variables (MdiSJ_MSJ_uw_AT_16preAPV,MdiSJ_MSJ_uw_AT_17,MdiSJ_MSJ_uw_AT_18,CMS_channel) but only (CMS_channel) seem to be in use. inputs: CMS_channel==CMS_channel::AT0b_15</code></p>\n<p>This make it seem like Combine isn\u2019t recognizing my observables as valid. Is there anyone familiar with what this means? I don\u2019t know to what extent this actually affects how the fit is done, but I use separate binning in different eras and regions, so I need to be sure that Combine doesn\u2019t use the same observable for all eras and regions. Strangely enough, I only get these printouts when I include the FitDiagnostics options --saveShapes. Any thoughts?</p>\n<ul>\n<li>Ethan</li>\n</ul>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/how-to-manually-specify-observables-to-combine/117574/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>You are receiving this because you enabled mailing list mode.</p>\n<p>To unsubscribe from these emails, <a>click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 3,
+      "username": "ecannaer",
+      "name": "Ethan Michael Cannaert",
+      "created_at": "2025-03-11T02:25:57.362Z",
+      "updated_at": "2025-03-11T02:25:57.362Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Giacomo,\nThanks very much for the info! My models seemed to be working, but those printouts were making me concerned that I had missed something. Cheers!\n\nEthan",
+      "cooked_html": "<p>Dear Giacomo,</p>\n<p>Thanks very much for the info! My models seemed to be working, but those printouts were making me concerned that I had missed something. Cheers!</p>\n<ul>\n<li>Ethan</li>\n</ul>"
+    }
+  ]
+}

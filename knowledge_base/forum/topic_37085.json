@@ -1,0 +1,45 @@
+{
+  "topic_id": 37085,
+  "title": "Problem with scan",
+  "url": "https://cms-talk.web.cern.ch/t/37085",
+  "category_id": 279,
+  "created_at": "2024-03-19T10:22:19.272Z",
+  "last_posted_at": "2024-03-19T10:38:05.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-19T10:22:19.427Z",
+      "updated_at": "2024-03-19T10:22:19.427Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI got a problem with scanning width of the signal model. I do\ncombine -M MultiDimFit 2017UL_dimuon_SR2.txt --rMin 0 --rMax 10 --algo grid --points 100 -P width --floatOtherPOIs=1\npython plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI width\nand got error message:\nIn file included from input_line_174:1:\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/lcg/root/6.22.08-ljfedo/include/CPyCppyy/API.h:30:\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/include/python2.7/Python.h:61:\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/include/python2.7/pyport.h:332:\nIn file included from /usr/include/sys/time.h:25:\n/usr/include/bits/types/struct_timeval.h:8:8: error: redefinition of \u2018timeval\u2019\nstruct timeval\nWhat is wrong ?  I did the same yesterday for SR1 and all was fine.\nThanks, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I got a problem with scanning width of the signal model. I do</p>\n<p>combine -M MultiDimFit 2017UL_dimuon_SR2.txt --rMin 0 --rMax 10 --algo grid --points 100 -P width --floatOtherPOIs=1</p>\n<p>python plot1DScan.py higgsCombineTest.MultiDimFit.mH120.root --POI width</p>\n<p>and got error message:</p>\n<p>In file included from input_line_174:1:<br>\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/lcg/root/6.22.08-ljfedo/include/CPyCppyy/API.h:30:<br>\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/include/python2.7/Python.h:61:<br>\nIn file included from /cvmfs/cms.cern.ch/slc7_amd64_gcc900/external/python/2.7.15-bcolbf2/include/python2.7/pyport.h:332:<br>\nIn file included from /usr/include/sys/time.h:25:<br>\n/usr/include/bits/types/struct_timeval.h:8:8: error: redefinition of \u2018timeval\u2019<br>\nstruct timeval</p>\n<p>What is wrong ?  I did the same yesterday for SR1 and all was fine.</p>\n<p>Thanks, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-03-19T10:29:40.640Z",
+      "updated_at": "2024-03-19T10:29:40.640Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Can you confirm that you did cmsenv in the right place? It seems a library problem.\n-Andrea",
+      "cooked_html": "<p>Can you confirm that you did <code>cmsenv</code> in the right place? It seems a library problem.</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-19T10:38:05.000Z",
+      "updated_at": "2024-03-19T10:41:16.889Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "ah, yes. I did not do\ncmssw-el7\ncmsenv\nnow it works !\nThanks Andrea.\n\n\u00b7\u00b7\u00b7\n\nFrom: Andrea Carlo Marini via CMS talk noreply-cms-talk@cern.ch\nSent: Tuesday, March 19, 2024 11:30\nTo: Alexandre Nikitenko Alexandre.Nikitenko@cern.ch\nSubject: [Common Analysis Tools/Statistical Interpretation Tools] Problem with scan\n\nAndrea Carlo Marini amariniMarch 19\n\nCan you confirm that you did cmsenv in the right place? It seems a library problem.\n-Andrea\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>ah, yes. I did not do</p>\n<p>cmssw-el7<br>\n<strong>cmsenv</strong></p>\n<p><strong>now it works !</strong></p>\n<p><strong>Thanks Andrea.</strong></p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<hr>\n<p><strong>From:</strong> Andrea Carlo Marini via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a><br>\n<strong>Sent:</strong> Tuesday, March 19, 2024 11:30<br>\n<strong>To:</strong> Alexandre Nikitenko <a href=\"mailto:Alexandre.Nikitenko@cern.ch\">Alexandre.Nikitenko@cern.ch</a><br>\n<strong>Subject:</strong> [Common Analysis Tools/Statistical Interpretation Tools] Problem with scan</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img title=\"amarini\" width=\"45\" height=\"45\" src=\"https://cms-talk.web.cern.ch/user_avatar/cms-talk.web.cern.ch/amarini/45/309_2.png\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/amarini\">Andrea Carlo Marini</a> amarini<br>March 19</th>\n</tr>\n</thead>\n</table>\n</div><p>Can you confirm that you did <code>cmsenv</code> in the right place? It seems a library problem.</p>\n<p>-Andrea</p>\n<p><a href=\"https://cms-talk.web.cern.ch/t/problem-with-scan/37085/2\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/3813ed06ef7995ab90049f7e1413c26a4637a6af4d9ce143f2359d06c3da14a4\">click here</a>.</p>\n<hr>\n</details>"
+    }
+  ]
+}

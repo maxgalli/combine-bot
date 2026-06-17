@@ -1,0 +1,56 @@
+{
+  "topic_id": 45162,
+  "title": "Understanding rateParam from long Exercise",
+  "url": "https://cms-talk.web.cern.ch/t/45162",
+  "category_id": 279,
+  "created_at": "2024-08-05T16:07:15.206Z",
+  "last_posted_at": "2024-08-05T19:01:34.638Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-08-05T16:07:15.638Z",
+      "updated_at": "2024-08-05T16:07:15.638Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI have a noob question, and I apologize if this question has been already answered (I have an inkling that this question has been asked before, but I couldn\u2019t find it). In the long exercises, there\u2019s a section that introduces rateParam option, stating that without it, \u201c\u2026 in the fit both (processes) would be adjusted by the nuisance parameters only, and constrained to the nominal yields.\u201d\nI had been assuming that a Log normal nuisance parameter directly impacts the yields of the process (ie by up and down 5 percent if the value is 1.05 on the data card), but the quotation above implies that that\u2019s not what\u2019s happening given the condition of being \u201cconstrained to the nominal yields\u201d. If that\u2019s the case, what would this example logN nuisance parameter be impacting instead?\nThank you in advance!",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I have a noob question, and I apologize if this question has been already answered (I have an inkling that this question has been asked before, but I couldn\u2019t find it). In the long exercises, there\u2019s a <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part5/longexercise/?h=ratepar#a-use-of-rateparams\" rel=\"noopener nofollow ugc\">section</a> that introduces <code>rateParam</code> option, stating that without it, \u201c\u2026 in the fit both (processes) would be adjusted by the nuisance parameters only, and constrained to the nominal yields.\u201d</p>\n<p>I had been assuming that a Log normal nuisance parameter directly impacts the yields of the process (ie by up and down 5 percent if the value is 1.05 on the data card), but the quotation above implies that that\u2019s not what\u2019s happening given the condition of being \u201cconstrained to the nominal yields\u201d. If that\u2019s the case, what would this example logN nuisance parameter be impacting instead?</p>\n<p>Thank you in advance!</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-08-05T16:20:28.918Z",
+      "updated_at": "2024-08-05T16:20:28.918Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Dear Hyeon-Seo,\nNuisance parameters such as those introduced as lnN or shape uncertainties do indeed affect the yields of the processes as you had previously understood. I think the intent of the sentence you quote is not \u2018fixed\u2019 to the nominal yields, but rather \u2018constrained to vary around their nominal yields, only as allowed by their respective nuisance parameters\u2019.\nI hope that clarifies things.\nBest,\nKyle",
+      "cooked_html": "<p>Dear Hyeon-Seo,</p>\n<p>Nuisance parameters such as those introduced as <code>lnN</code> or <code>shape</code> uncertainties do indeed affect the yields of the processes as you had previously understood. I think the intent of the sentence you quote is not \u2018fixed\u2019 to the nominal yields, but rather \u2018constrained to vary around their nominal yields, only as allowed by their respective nuisance parameters\u2019.</p>\n<p>I hope that clarifies things.</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-08-05T16:44:15.636Z",
+      "updated_at": "2024-08-05T16:44:15.636Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Kyle,\nThank you for the quick response. I have a quick follow-up question if you don\u2019t mind:\nYou mentioned that  shape uncertainties also impact the yields of the processes. In what specific setting do shape nuisance parameters impact this scalar value? For example, when doing the template fits, if you specify the rate of the process with a value instead of -1 flag, ie:\n---------------\nbin                                      Bin1\nprocess                                  Proc1\nprocess                                  1\nrate                                     1389.00\n---------------\n\nwould the shape nuisance parameter still override that said rate with its sum weights value?\nThank you in advance,\nHyeon-Seo",
+      "cooked_html": "<p>Dear Kyle,</p>\n<p>Thank you for the quick response. I have a quick follow-up question if you don\u2019t mind:</p>\n<p>You mentioned that  <code>shape</code> uncertainties also impact the yields of the processes. In what specific setting do <code>shape</code> nuisance parameters impact this scalar value? For example, when doing the template fits, if you specify the rate of the process with a value instead of <code>-1</code> flag, ie:</p>\n<pre><code class=\"lang-auto\">---------------\nbin                                      Bin1         \nprocess                                  Proc1                    \nprocess                                  1                  \nrate                                     1389.00          \n---------------\n</code></pre>\n<p>would the <code>shape</code> nuisance parameter still override that said rate with its sum weights value?<br>\nThank you in advance,<br>\nHyeon-Seo</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-08-05T19:01:34.638Z",
+      "updated_at": "2024-08-05T19:01:34.638Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Hyeon-Seo,\nThere is probably a little bit of confusion on what a fit or a nuisance is supposed to do.\nshape uncertainties modify the process normalization with a log-normal uncertainty (as well as the shape). Thus, I we can here discuss only log-normal uncertainty effect.\nThe shape/rate specification with -1 or with the actual value as integral is identical, and it refers to the prefit normalization. The -1 will read your 1389 from the histogram, instead specifying it manually.  Nuisance parameters may allow to modify a normalization (postfit) with (eventually) a penalty term related to how much the nuisance is pulled.\nIn your example, the likelihood is going to be a Poisson likelihood with a rate value of 1389, given the observation (n_obs).\n\\mathcal{L} = \\mathcal{P}(\\lambda = 1389 + \\dots |n_\\text{obs}) (the + will refer to the parts with the actual pameters, like the signal strength r)\nIf you include a log-normal uncertainty on that process (let\u2019s say eg with a kappa of k=1.05), you allow this 1389 to be slightly different and can vary within ~5%.\nThis means that an additional parameter is added to the likelihood and (approx) constraint within 5% to allow this to happen.  The likelihood is going to be:\n\\mathcal{L}=\\mathcal{P}( \\lambda \\cdot k^\\theta + \\dots| n_\\text{obs}) \\mathcal{N}(\\theta,0,1).     (Now, you have one more parameter, \\theta)\nAs you can see, the prefit value (\\lambda) didn\u2019t change, but postfit the nuisance parameter \\theta can move and thus also the best fit value for you yields. The nuisance parameter is not free to float (as for the rate parameters), but it is actually constraint to a gaussian distribution.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi Hyeon-Seo,</p>\n<p>There is probably a little bit of confusion on what a fit or a nuisance is supposed to do.</p>\n<p><code>shape</code> uncertainties modify the process normalization with a log-normal uncertainty (as well as the shape). Thus, I we can here discuss only log-normal uncertainty effect.</p>\n<p>The shape/rate specification with <code>-1</code> or with the actual value as integral is identical, and it refers to the prefit normalization. The <code>-1</code> will read your 1389 from the histogram, instead specifying it manually.  Nuisance parameters may allow to modify a normalization (postfit) with (eventually) a penalty term related to how much the nuisance is pulled.</p>\n<p>In your example, the likelihood is going to be a Poisson likelihood with a rate value of 1389, given the observation (n_obs).</p>\n<p><span class=\"math\">\\mathcal{L} = \\mathcal{P}(\\lambda = 1389 + \\dots |n_\\text{obs})</span> (the + will refer to the parts with the actual pameters, like the signal strength <code>r</code>)</p>\n<p>If you include a log-normal uncertainty on that process (let\u2019s say eg with a kappa of <span class=\"math\">k=1.05</span>), you allow this 1389 to be slightly different and can vary within ~5%.<br>\nThis means that an additional parameter is added to the likelihood and (approx) constraint within 5% to allow this to happen.  The likelihood is going to be:</p>\n<p><span class=\"math\">\\mathcal{L}=\\mathcal{P}( \\lambda \\cdot k^\\theta + \\dots| n_\\text{obs}) \\mathcal{N}(\\theta,0,1)</span>.     (Now, you have one more parameter, <span class=\"math\">\\theta</span>)</p>\n<p>As you can see, the prefit value (<span class=\"math\">\\lambda</span>) didn\u2019t change, but postfit the nuisance parameter <span class=\"math\">\\theta</span> can move and thus also the best fit value for you yields. The nuisance parameter is not free to float (as for the rate parameters), but it is actually constraint to a gaussian distribution.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    }
+  ]
+}

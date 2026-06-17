@@ -1,0 +1,71 @@
+TOPIC: Expected limit increases when excluding some categories
+URL: https://cms-talk.web.cern.ch/t/31626
+DATE: 2023-11-14T08:11:13.858Z
+SOLVED: no
+============================================================
+
+QUESTION (by chenghan @ 2023-11-14T08:11:14.014Z):
+Dear experts,
+I am attempting to compare the expected limits calculated by the combine with and without including the insensitive categories. I anticipated that by including those insensitive categories, the expected limit would remain the same as when considering only sensitive categories, rather than increasing the expected limit. However, in my case, excluding those insensitive categories (labeled as Loose cats in the plot) seems to improve the performance. I am wondering if this is reasonable or if my original expectation is wrong. Do you have any idea about this?
+Any feedback and discussion are appreciated.
+截圖 2023-11-14 下午3.49.05707×683 41.6 KB
+Best,
+Cheng-Han
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-11-14T09:41:45.121Z):
+Hi Cheng-Han,
+I think your intuition is largely right - in principle adding categories should at best only improve the expected sensitivity. However, by default combine calculates the expected limit using a fit to the data, and it could be that your extra categories, via correlations with the signal region categories, increase the background normalisation there such that the sensitivity in the signal region is reduced.
+To test this, you can run limits without fit to data first, see the instructions here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#blind-limits
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by chenghan @ 2023-11-14T10:18:38.732Z):
+Hi Andrew,
+Thanks for your prompt reply and explanation.
+The strange thing is that I have requested combine to calculate the a-priori limit by adding the option --run=blind --noFitAsimov and the results are shown in the above plot.
+The commands I use are
+combine datacard_heeg_runII_NoLoose_comb_125.txt -M AsymptoticLimits -n _test_noloose -m 125 --run=blind --noFitAsimov
+combine datacard_heeg_runII_comb_125.txt -M AsymptoticLimits -n _test_loose -m 125 --run=blind --noFitAsimov
+
+So it seems that the problem is not the background normalization.
+Do you think this might be because of the statistical fluctuation or which places I can do a further check to figure out this?
+Best,
+Cheng-Han
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2023-11-14T10:33:05.063Z):
+Hi Cheng-Han,
+In that case it’s a bit strange. Can you share the datacards and ROOT inputs?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by chenghan @ 2023-11-14T13:26:01.946Z):
+Hi Andrew,
+Sure, I put the cards and the models in /afs/cern.ch/user/c/chenghan/public/Combine/cards.
+Thanks for your help!
+Best,
+Cheng-Han
+----------------------------------------
+
+REPLY 6 (by agilbert @ 2023-11-15T13:53:10.350Z):
+Hi Cheng-Han,
+My best guess: it seems some (all?) of your signal pdfs have a common set of dependent variable names, however in each input workspace these have different values. When you build the combined workspace, these parameters are merged - e.g. there is only one frac_dcb parameter - connected to all the signal pdfs, and taking essentially a random value (probably the values in the last pdf parsed by text2workspace).
+I think you probably want to name the RooRealVars so they are unique for each pdf?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 7 (by chenghan @ 2023-11-16T06:35:17.857Z):
+Hi Andrew,
+Your guess is exactly correct.
+The problem disappeared after I modified the variable names.
+I did not notice this would happen before.
+Originally, I supposed combine would open the root input and extract the variables and pdfs independently for each category.
+It looks like it is better to give every pdf and variable unique names now.
+Thank you very much!
+Best,
+Cheng-Han
+----------------------------------------

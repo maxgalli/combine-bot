@@ -1,0 +1,48 @@
+TOPIC: Statistical uncertainty in counting datacard and use of rateParam to calculate the BK normalization from control region
+URL: https://cms-talk.web.cern.ch/t/44698
+DATE: 2024-07-30T11:09:37.842Z
+SOLVED: no
+============================================================
+
+QUESTION (by kmandal @ 2024-07-30T11:09:37.944Z):
+Dear Experts,
+I am involved in a single-lepton channel SUSY analysis. We are trying to prepare the counting datacard (DC). Here is a preliminary counting DC where all the backgrounds are taken from simulation and five channels/ search bins are used.
+I have a few queries regarding the implementation of statistical uncertainty.
+i. What should we use as stat unc when yield is zero?
+ii. What stat unc to be used when yield is negative? (This happens for rare processes, the rates of  which are taken from simulation; sometimes stat error is larger than the rate)
+iii. We’ll have around 100 search bins, using the stat unc in the current way will make the processing time quite long. Is there any work around or is it better to use shape DC to avail autoMCStats?
+Now we normalize the prompt lepton backgrounds, i.e., Wjets and ttbar processes using the control region (CR). Wjets and ttbar are normalized simultaneously, so we use a single normalization factor for both ttbar and Wjets. Here is an evolving DC utilizing rateParam for normalization purposes.
+I also have a few questions (some may be very naive)
+i. is the rateParam syntax (implemented in the card) correct?
+ii. Can we put ttbar and Wjets contribution with a single process, like process name WjetsAndttbar (adding their yields together), and using rateParam only once?
+iii. In the presence of CR bins (where imax equals to SR + CR bins), how does the combine tool recognize only the SR bins? I mean not using CR bin information except for calculating the normalization factor
+It would be very helpful to get experts’ suggestions and views on the aforementioned issues.
+Many thanks in advance.
+Koushik Mandal
+----------------------------------------
+
+REPLY 2 (by gortona @ 2024-07-30T12:31:26.806Z):
+Dear Koushik,
+About the statistical uncertainties, can you please clarify if you mean the proper statistical uncertainty on the process yield, or the effect of limited MC sample size, which actually is a systematic uncertainty?
+Uncertainty on processes yields are computed directly by combine according to a Poissonian distribution, so you should not include them explicitly in the datacard, otherwise you will double count them.
+About your questions:
+i. For processes with a zero event yield, you should use Gamma distributions for your systematic uncertainties instead of log-normal. For the statistical one, it will be handled by combine.
+ii. In general, I would advise against having processes with negative yields, especially if such a prediction is clearly unphysical. I would rather set it to 0 with a larger systematic uncertainty or you need to write a proper physics model to deal with it http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/#interference, but in this case it looks to me a bit of an overkill. You should in any case make sure that the total PDF never goes negative.
+iii. It is abit surprising to me that including a few uncertainties in a counting datacard has a visible effect on combine processing time. In any case, if you want to use the autoMCStats feature you can build a 1-bin TH1 histogram for each process (with the correct uncertainty attached) and then build a shape datacard from it.
+About the CR usage, the sintax looks correct to me. The way you wrote you will force WJets and TTbar to scale together in the CR, and this scaling will be the same applied to all the SRs. Is this the intended behaviour?
+ii. From the point of view of combine it is perfectly fine to merge the 2 processes. Note that in this case ttbar will become almost negligible. I don’t know If this makes sense from the point of view of the analysis or in the context of the PAG.
+iii. Combine will always fit the CR and SR together, so it will not make any distinctions. This is the whole point of having CR inside combine. Since the signal contribution in the CR should be negligible, the presence of the CR should only affect the background determination (there are some commands to exclude some channels/regions from the fit, but this is another topic).
+I hope it helps,
+Best regards,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by kmandal @ 2024-07-31T07:07:31.385Z):
+Dear Giacomo,
+Thanks very much for the prompt reply with explanation and clarification! It is very beneficial.
+For the statistical uncertainty, I included the yield’s statistical error, which I’ll discard now to avoid double counting. Later, if we need to include any statistical uncertainty for some BK process (effect of limited MC sample size), we’ll follow your suggestion.
+Regarding CR usage, normalization from CR is done using lepton pT distribution. We have several SR bins for lepton pT 3- 50 GeV and pT>50 region is served as CR bin. We normalize Wjets & ttbar together in the CR bin and the normalization factor is applied to the associative SR bins.
+Thanks again,
+Best,
+Koushik
+----------------------------------------

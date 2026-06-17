@@ -1,0 +1,129 @@
+TOPIC: Likelihood scan using CMS Combine
+URL: https://cms-talk.web.cern.ch/t/129825
+DATE: 2025-08-21T22:36:46.400Z
+SOLVED: no
+============================================================
+
+QUESTION (by amaria @ 2025-08-21T22:36:46.653Z):
+Hi everyone,
+I am currently working with CMS Combine and I am using it for applying discrete profiling to some model and then running  AsymptoticLimits  for setting an upper limit. We are also running a likelihood scan using MultiDimFit, and this is where things get weird. In some of the mass ranges we are studying, the envelope has a very weird shape and does not actually just follow the least-NLL PDF. I have attached an image for clarity. What I am plotting is 2*(deltaNLL+nll+nll0) as I found in the documentation.
+nll_d86_m1.188_bias_correction1396×872 47.7 KB
+The Combine command I am running is:
+combine -M MultiDimFit -d my_datacard.txt -m X.XXX -n _d_suffix --algo grid --points 70 -v 1 –setParameters pdf_index=-1  –freezeParameters parameters,of,gaussian  –setParameterRanges r=-0.35,0.35 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance=0.001 --robustFit=1 --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1  --saveWorkspace --redefineSignalPOIs r --X-rtd MINIMIZER_freezeDisassociatedParams
+For the envelope, whereas for the individual PDFs, pdf_index is set to a certain value and then frozen. I have tried a bunch of options, like changing the strategy, the number of points, increasing tolerance or try some other suggested options in the documentation, but nothing works. Why am I getting this weird behavior? I made sure most of the points for all PDFs have a converging fit.
+Thank you
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-08-22T07:04:13.000Z):
+Dear Andrea,
+This kind of behaviour sometimes happens when there is a second (local) minima in the likelihood shape, and for some unfortunate set of parameters the fit procedure ends up there.
+Usually it can be cured by some tuning of the allowed ranges of the fit parameters. Running lilkelihood scans for individual parameters or looking at the log output of the failing MultidimFit points for some parameters with extreme values might help identify the culprits.
+But in your case, may I ask if this option:
+
+–freezeParameters parameters,of,gaussian
+
+is actually intended as it is? You really have 3 parameters in your workspaces called parameters, of, and gaussian, respectively?
+Best regards,
+Giacomo
+
+On 22 Aug 2025, at 00:37, Andrea Siddharta Maria via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Andrea Siddharta Maria amariaAugust 21
+
+Hi everyone,
+I am currently working with CMS Combine and I am using it for applying discrete profiling to some model and then running AsymptoticLimits for setting an upper limit. We are also running a likelihood scan using MultiDimFit, and this is where things get weird. In some of the mass ranges we are studying, the envelope has a very weird shape and does not actually just follow the least-NLL PDF. I have attached an image for clarity. What I am plotting is 2*(deltaNLL+nll+nll0) as I found in the documentation.
+
+The Combine command I am running is:
+combine -M MultiDimFit -d my_datacard.txt -m X.XXX -n _d_suffix --algo grid --points 70 -v 1 –setParameters pdf_index=-1 –freezeParameters parameters,of,gaussian –setParameterRanges r=-0.35,0.35 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance=0.001 --robustFit=1 --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --saveWorkspace --redefineSignalPOIs r --X-rtd MINIMIZER_freezeDisassociatedParams
+For the envelope, whereas for the individual PDFs, pdf_index is set to a certain value and then frozen. I have tried a bunch of options, like changing the strategy, the number of points, increasing tolerance or try some other suggested options in the documentation, but nothing works. Why am I getting this weird behavior? I made sure most of the points for all PDFs have a converging fit.
+Thank you
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by amaria @ 2025-08-22T13:17:11.345Z):
+Hi Giacomo,
+thank you for the quick reply. Our background modeling has a 4 different PDFs acting as a main background component (which could be polynomial, sum of eponentials, …) and additional gaussians to model some secondary background events. In the RooWorkspace an indpendent set of Gaussians is included for each of the PDFs that is being discrete profiled and the parameters of these gaussian are frozen while running the likelihood scan.
+Thank you.
+Best,
+Andrea
+----------------------------------------
+
+REPLY 4 (by gortona @ 2025-08-22T14:02:23.000Z):
+Dear Andrea,
+Yes, my question is what are the names of the Gaussian’s parameters. Because in the command you sent before there’s the instruction "–freezeParameters parameters,of,gaussian” which looks rather odd, so I wanted to be sure there was no typo there.
+If those parameters are not frozen, this could in principle explain the behaviour you observe.
+Cheers,
+Giacomo
+
+On 22 Aug 2025, at 15:18, Andrea Siddharta Maria via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Andrea Siddharta Maria amariaAugust 22
+
+Hi Giacomo,
+thank you for the quick reply. Our background modeling has a 4 different PDFs acting as a main background component (which could be polynomial, sum of eponentials, …) and additional gaussians to model some secondary background events. In the RooWorkspace an indpendent set of Gaussians is included for each of the PDFs that is being discrete profiled and the parameters of these gaussian are frozen while running the likelihood scan.
+Thank you.
+Best,
+Andrea
+
+Visit Topic or reply to this email to respond.
+
+Previous Replies
+
+Giacomo Ortona gortonaAugust 22
+
+Dear Andrea,
+This kind of behaviour sometimes happens when there is a second (local) minima in the likelihood shape, and for some unfortunate set of parameters the fit procedure ends up there.
+Usually it can be cured by some tuning of the allowed ranges of the fit parameters. Running lilkelihood scans for individual parameters or looking at the log output of the failing MultidimFit points for some parameters with extreme values might help identify the culprits.
+But in your case, may I ask if this option:
+
+–freezeParameters parameters,of,gaussian
+
+is actually intended as it is? You really have 3 parameters in your workspaces called parameters, of, and gaussian, respectively?
+Best regards,
+Giacomo
+
+On 22 Aug 2025, at 00:37, Andrea Siddharta Maria via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Andrea Siddharta Maria amariaAugust 21
+
+Hi everyone,
+I am currently working with CMS Combine and I am using it for applying discrete profiling to some model and then running AsymptoticLimitsfor setting an upper limit. We are also running a likelihood scan using MultiDimFit, and this is where things get weird. In some of the mass ranges we are studying, the envelope has a very weird shape and does not actually just follow the least-NLL PDF. I have attached an image for clarity. What I am plotting is 2*(deltaNLL+nll+nll0) as I found in the documentation.
+
+The Combine command I am running is:
+combine -M MultiDimFit -d my_datacard.txt -m X.XXX -n _d_suffix --algo grid --points 70 -v 1 –setParameters pdf_index=-1 –freezeParameters parameters,of,gaussian –setParameterRanges r=-0.35,0.35 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance=0.001 --robustFit=1 --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --saveWorkspace --redefineSignalPOIs r --X-rtd MINIMIZER_freezeDisassociatedParams
+For the envelope, whereas for the individual PDFs, pdf_index is set to a certain value and then frozen. I have tried a bunch of options, like changing the strategy, the number of points, increasing tolerance or try some other suggested options in the documentation, but nothing works. Why am I getting this weird behavior? I made sure most of the points for all PDFs have a converging fit.
+Thank you
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+
+Andrea Siddharta Maria amariaAugust 21
+
+Hi everyone,
+I am currently working with CMS Combine and I am using it for applying discrete profiling to some model and then running AsymptoticLimits for setting an upper limit. We are also running a likelihood scan using MultiDimFit, and this is where things get weird. In some of the mass ranges we are studying, the envelope has a very weird shape and does not actually just follow the least-NLL PDF. I have attached an image for clarity. What I am plotting is 2*(deltaNLL+nll+nll0) as I found in the documentation.
+
+The Combine command I am running is:
+combine -M MultiDimFit -d my_datacard.txt -m X.XXX -n _d_suffix --algo grid --points 70 -v 1 –setParameters pdf_index=-1 –freezeParameters parameters,of,gaussian –setParameterRanges r=-0.35,0.35 --cminDefaultMinimizerStrategy 0 --cminDefaultMinimizerTolerance=0.001 --robustFit=1 --saveNLL --X-rtd REMOVE_CONSTANT_ZERO_POINT=1 --saveWorkspace --redefineSignalPOIs r --X-rtd MINIMIZER_freezeDisassociatedParams
+For the envelope, whereas for the individual PDFs, pdf_index is set to a certain value and then frozen. I have tried a bunch of options, like changing the strategy, the number of points, increasing tolerance or try some other suggested options in the documentation, but nothing works. Why am I getting this weird behavior? I made sure most of the points for all PDFs have a converging fit.
+Thank you
+
+Visit Topic or reply to this email to respond.
+You are receiving this because you enabled mailing list mode.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by amaria @ 2025-08-22T14:09:57.557Z):
+Hi Giacomo,
+thank you for getting back to me. In the workspace some gaussians are added to model the tail of some quarkonia peaks. The peak is set to constant (RooRealVar::setConstant) to the nominal value of the quarkonia mass and the width and coefficient of the gaussian is left to free float. Each of the PDFs that will be discrete profiled are then built, we do a fit using RooFit::chi2fit and then the RooWorkspace is saved. When running the AsymptoticLimit, the widths and coefficients are finally frozen through –freezeParameters. Please let me know if this is clearer
+Thanks
+Best,
+Andrea
+----------------------------------------
+
+REPLY 6 (by amaria @ 2025-08-22T14:12:35.595Z):
+They are not called “parameters”, “of” and “gaussian”, it was meant to be a placeholder.
+----------------------------------------

@@ -1,0 +1,45 @@
+{
+  "topic_id": 22878,
+  "title": "Using transfer function to constrain QCD background: how to include other backgrounds in the fit?",
+  "url": "https://cms-talk.web.cern.ch/t/22878",
+  "category_id": 279,
+  "created_at": "2023-04-18T17:22:54.269Z",
+  "last_posted_at": "2023-04-21T02:26:01.863Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hnguyen",
+      "name": "Duong Hai Nguyen",
+      "created_at": "2023-04-18T17:22:54.534Z",
+      "updated_at": "2023-04-18T17:22:54.534Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear all,\nI am trying to build a fit model including a signal region and a control region of QCD multijet background. In this model the QCD background in the signal region correlates with QCD in the control region using a transfer function so that QCD background in the signal region can be estimated from data in the control region.\nI followed the example here:\nhttp://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/ (RooParametricHist gammaN for shapes)\nAt first, in other to follow as close as possible this example, I subtracted all other backgrounds (top, V+jets \u2026) from data and fit the fit model of signal and only QCD background to this non-QCD background subtracted data. The fit converges using MultiDimFit method.\nHowever, when I do not subtract non-QCD backgrounds from data but include them in the fit, the fit produces unreasonable values (~0) with some messages as seen in [1]. Since the above example does not show explicitly how to include other backgrounds in the fit model, I am not sure what I am doing is correct. Can you please take a look at the data card to see if this is the right way to include other backgrounds in the fit (dataCard_allBkgr.txt)? If the fit works when other backgrounds are subtracted from data, why doesn\u2019t it when they are included in the fit model?\nIn the fit_QCD.tar you can find two data cards and supported files to perform the fits (combine -M MultiDimFit -v 3):\n\ndataCard_allBkgr.txt: data card includes all backgrounds\ndataCard_onlyQCD.txt: data card includes only QCD. Other backgrounds are subtracted from data\n\nThank you in advance for your help,\nDuong\n[1] INFO: (function: evaluate) CachingNLL.cc: 707 \u2013 underflow (expected events <=0) in total event yield for pdf_binSR_obsOnly, expected yield = -13943.3 (observed: 3330)\nINFO: (function: anyParameterAtBoundaries) utils.cc: 1039 \u2013 Found parameter qcd_CR_bin0 at boundary (within ~1sigma): 7.64209e-08+/-0.398997\ndataCard_allBkgr.txt (2.6 KB)\nfit_QCD.tar (50 KB)",
+      "cooked_html": "<p>Dear all,</p>\n<p>I am trying to build a fit model including a signal region and a control region of QCD multijet background. In this model the QCD background in the signal region correlates with QCD in the control region using a transfer function so that QCD background in the signal region can be estimated from data in the control region.</p>\n<p>I followed the example here:<br>\n<a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/</a> (RooParametricHist gammaN for shapes)</p>\n<p>At first, in other to follow as close as possible this example, I subtracted all other backgrounds (top, V+jets \u2026) from data and fit the fit model of signal and only QCD background to this non-QCD background subtracted data. The fit converges using MultiDimFit method.</p>\n<p>However, when I do not subtract non-QCD backgrounds from data but include them in the fit, the fit produces unreasonable values (~0) with some messages as seen in [1]. Since the above example does not show explicitly how to include other backgrounds in the fit model, I am not sure what I am doing is correct. Can you please take a look at the data card to see if this is the right way to include other backgrounds in the fit (dataCard_allBkgr.txt)? If the fit works when other backgrounds are subtracted from data, why doesn\u2019t it when they are included in the fit model?</p>\n<p>In the fit_QCD.tar you can find two data cards and supported files to perform the fits (combine -M MultiDimFit -v 3):</p>\n<ol>\n<li>dataCard_allBkgr.txt: data card includes all backgrounds</li>\n<li>dataCard_onlyQCD.txt: data card includes only QCD. Other backgrounds are subtracted from data</li>\n</ol>\n<p>Thank you in advance for your help,<br>\nDuong</p>\n<p>[1] INFO: (function: evaluate) CachingNLL.cc: 707 \u2013 underflow (expected events &lt;=0) in total event yield for pdf_binSR_obsOnly, expected yield = -13943.3 (observed: 3330)</p>\n<p>INFO: (function: anyParameterAtBoundaries) utils.cc: 1039 \u2013 Found parameter qcd_CR_bin0 at boundary (within ~1sigma): 7.64209e-08+/-0.398997</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/k1KKm5pgxBU8d3Vn3wlu3TDZprC.txt\">dataCard_allBkgr.txt</a> (2.6 KB)<br>\n<a class=\"attachment\" href=\"/uploads/short-url/nlS2O3g4NlnuVECsvVcxambCng7.tar\">fit_QCD.tar</a> (50 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2023-04-19T15:18:27.860Z",
+      "updated_at": "2023-04-19T15:18:27.860Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Duong,\nCan you try including the other backgrounds in the same way you did it for the signal? Ie, convert the TH1F to a RooDataHist, and see if that helps?\nIf that doesn\u2019t work, maybe others have better suggestions.\nBest,\nAdinda\nPS By the way, are you including real data in the signal region? If so remember that you should run MultiDimFit on an asimov dataset (-t -1) - you can also use channel masking to fit the control region by itself, if you need to.",
+      "cooked_html": "<p>Dear Duong,</p>\n<p>Can you try including the other backgrounds in the same way you did it for the signal? Ie, convert the TH1F to a RooDataHist, and see if that helps?</p>\n<p>If that doesn\u2019t work, maybe others have better suggestions.</p>\n<p>Best,<br>\nAdinda</p>\n<p>PS By the way, are you including real data in the signal region? If so remember that you should run MultiDimFit on an asimov dataset (-t -1) - you can also use channel masking to fit the control region by itself, if you need to.</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "hnguyen",
+      "name": "Duong Hai Nguyen",
+      "created_at": "2023-04-21T02:26:01.863Z",
+      "updated_at": "2023-04-21T02:26:01.863Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nThank you for your suggestion. It works! I added\n\nqcd_estimate_ws_preparation.C  \u2192 script to prepare workspace using RooDataHist for non-QCD backgrounds\ndataCard_allBkgr_usingRooDataHist.txt \u2192 data card\n\nto the tar file attached here (This file is the same as fit_QCD.tar in the previous message but containing above script and data card). Why it works for RooDataHist but not for TH1 as usual is out of my knowledge.\nThe signal region in this fit is actually validation region (I still keep thing blinded).\nBest,\nDuong\nfit_QCD_1.tar (90 KB)",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>Thank you for your suggestion. It works! I added</p>\n<ol>\n<li>qcd_estimate_ws_preparation.C  \u2192 script to prepare workspace using RooDataHist for non-QCD backgrounds</li>\n<li>dataCard_allBkgr_usingRooDataHist.txt \u2192 data card</li>\n</ol>\n<p>to the tar file attached here (This file is the same as fit_QCD.tar in the previous message but containing above script and data card). Why it works for RooDataHist but not for TH1 as usual is out of my knowledge.</p>\n<p>The signal region in this fit is actually validation region (I still keep thing blinded).</p>\n<p>Best,<br>\nDuong</p>\n<p><a class=\"attachment\" href=\"/uploads/short-url/H4yNcjvyUrYagRrdIxZCkQH3rU.tar\">fit_QCD_1.tar</a> (90 KB)</p>"
+    }
+  ]
+}

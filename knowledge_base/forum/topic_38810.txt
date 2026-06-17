@@ -1,0 +1,55 @@
+TOPIC: Setting up Combine on EL9 machine other than lxplus9
+URL: https://cms-talk.web.cern.ch/t/38810
+DATE: 2024-04-09T13:43:57.796Z
+SOLVED: no
+============================================================
+
+QUESTION (by jspah @ 2024-04-09T13:43:57.998Z):
+Dear Combine experts,
+I am trying to set up Combine under EL9 (an slc9 architecture). I perform the following steps based on the instructions available at https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#compilation-on-lxplus9 to perform the compilation in an slc7 environment using apptainer.
+git clone git@github.com:cms-analysis/HiggsAnalysis-CombinedLimit.git HiggsAnalysis/CombinedLimit
+cd HiggsAnalysis/CombinedLimit/
+git checkout v9.2.0
+source /cvmfs/cms.cern.ch/cmsset_default.sh
+cmssw-el7
+. env_standalone.sh
+make -j 4
+exit
+source env_standalone.sh
+
+The compilation succeeds without any warnings on a) lxplus9 and b) on an EL9 machine of my institute (called lxbatch01), where I also have access to cvmfs. I can use Combine on lxplus9 with this setup. However, it does not work on the lxbatch01 machine. Even executing root fails due to shared library issues:
+root
+Fatal in <TROOT::InitInterpreter>: cannot load library libtinfo.so.5: cannot open shared object file: No such file or directory
+which root
+/cvmfs/cms.cern.ch/slc7_amd64_gcc900/lcg/root/6.22.08-ljfedo/bin/root
+
+I checked that the basic ROOT setup is the same for lxplus9 and lxbatch01 in clean shells: The ROOT version is 6.30/04 and which root shows /usr/bin/root in both cases. After sourcing the standalone environment, the same path as above is shown also for lxplus9 with a ROOT version of 6.22/09.
+Do you have any advice on how to set up Combine on EL9 machines where the configuration might differ slightly from the lxplus9 configuration?
+Best,
+Jan Lukas
+----------------------------------------
+
+REPLY 2 (by sqian @ 2024-04-09T14:19:38.806Z):
+For a missing library I guess you might want to check with ldd -v /xxx/yyy/root command to see what are the exact libraries the executable was calling?
+Also from the command and the root version I guess you are not modifying the env_standalone.sh which entirely uses CMSSW libraries. Therefore, just out of my own curiosity, why don’t you choose to use the CMSSW setup?
+----------------------------------------
+
+REPLY 3 (by amarini @ 2024-04-09T15:37:14.460Z):
+Please,
+see thread: Error while compiling combine v9 in lxplus
+-Andrea
+----------------------------------------
+
+REPLY 4 (by sqian @ 2024-04-09T15:46:40.673Z):
+Exactly what I meant by not using CMSSW setup
+----------------------------------------
+
+REPLY 5 (by jspah @ 2024-04-09T21:30:53.738Z):
+Dear Sitian, Andrea,
+thanks a lot for your advice. I followed the steps given by Nick in Error while compiling combine v9 in lxplus - #2 by nckw to set up the standalone compilation under EL9 within a CMSSW area. However, I get the same error as already mentioned in the initial post.
+I also ran ldd -v /cvmfs/cms.cern.ch/slc7_amd64_gcc900/lcg/root/6.22.08-ljfedo/bin/root to check the libraries that are called. I was not able to find libtinfo.so.5 in the output of this command, unfortunately, so this also did not bring me closer to a solution.
+lddv_output.txt (7.9 KB)
+As another option, I tried to set up Combine with conda (https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/#standalone-compilation-with-conda). This actually works: The compilation make CONDA=1 -j 8 finishes without errors on EL9 (both lxplus and my local lxbatch01 machine) and Combine works nicely. This is a really convenient option to install Combine for lightweight use cases, thanks a lot to the developers for providing it.
+Best,
+Jan Lukas
+----------------------------------------

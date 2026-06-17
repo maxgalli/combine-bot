@@ -1,0 +1,38 @@
+TOPIC: Implementing bin correction factors
+URL: https://cms-talk.web.cern.ch/t/41937
+DATE: 2024-06-04T02:41:03.034Z
+SOLVED: no
+============================================================
+
+QUESTION (by ecannaer @ 2024-06-04T02:41:03.440Z):
+Dear Combine experts,
+I work on the diquark to VLQ pair to jets analysis in B2G, and am in search of advice on how to implement some features of our proposed combine model. In a nutshell, our analysis requires HT > 1600 GeV and 3+ AK8 jets (two of which have M > 45 GeV). We then define a signal region where we have tagged two VLQs and have identified 1+ b-tagged AK4 jets (tight deepJet WP), and a signal-depleted (referred to as the CR) region that has two tagged VLQs and 0 b-tagged AK4 jets. The quantities of interest are the diquark and VLQ masses, and for the statistical analysis we are using an “unwrapped” (=linearized, 1D histogram) version of the average VLQ vs diquark mass.
+Our proposed technique for estimating the background in the SR involves using background (mainly QCD, but some TTbar and single top) MC where the QCD MC has data/MC correction factors applied to each bin (about 45 bins per era). The idea is that QCD MC in particular is notoriously inaccurate, but can be improved by data/MC corrections from the CR. These bin correction factors would also be applied to the corresponding bins in the CR. Both regions would be simultaneously fit over such that these bin corrections maximize the overall likelihood. The CR has about 4x the stats of the SR, so the correction factors are mostly coming from the data/MC agreement there. It would look something like this -
+image1194×140 14.6 KB
+where \mu_{CR}/ \mu_{SR} are the expected number events in the CR/SR for a given bin, \beta_{QCD} are the QCD data/MC correction factors for that bin, N_{XR,XXX} are the MC BR yields in that bin, \beta_{XR,BB} are the Beeston-Barlow factors, and r is the signal strength for the signal process.
+This can be mostly implemented by following the method in " RooParametricHist gammaN for shapes" in the combine documentation. What is not clear to me, however, is how to tie the signal strength in the above expression to the signal strength parameter that that is being varied by combine in the datacards.  Does anyone know the best way to establish this connection, and more broadly, are there thoughts from experts on this model and how to best implement it? Thanks in advance.
+
+Ethan
+----------------------------------------
+
+REPLY 3 (by amarini @ 2024-06-04T06:28:42.088Z):
+Hi Ethan,
+it is not clear to me what you want to do exactly. Especially the last message.
+The data observation is usually not a pdf but a histogram (template), i.e. includes the observed number of events and no parametric dependency. This is because combine constructs a likelihood function of the form \mathcal{L}(\cdot|\text{data}). You should use data events histogram in the data_obs and express the pdf for the different processes/channel as shapes [ shape-analyses ].
+What I understood from your first email is that you want to improve the QCD predictions with the  \beta_{QCD} and these are all fitted to data events, where \beta_{BB} is constrained and \beta_{QCD}, r are freely floating.
+Replying to your question, the simplest way to implement the signal in the datacard is to assign it to a different (signal) process. Your expected events are linear to the N_sig events in MC, so you should be able to do it. Just construct the background prediction separately from the signal one and add them as two separate processes in the dc.
+Note: If you use RooFit pdfs in one (as a RooParametricHist), you may need to write the signal as well as a RooFit pdf (RooDataHist should work, otherwise RooHistPdf + normalization).
+Another possibility, but with some caveats, is to implement a signal dependent shape, i.e., hard-encoding the functional dependence on the signal paramter (r).  I would avoid this, if not needed.
+-A
+----------------------------------------
+
+REPLY 5 (by ecannaer @ 2024-06-10T18:43:47.949Z):
+Hi Andrea,
+Thanks for your response, and apologies that some of my response was confusing. I realized I was mixing up parts of the approach here with a different model we had looked at in the past. I should really only have to create the QCD pdfs (as RooParametricHists with bin uncertainties) in a RooFit workspace and then import them into the datacard to be used alongside the other backgrounds and signal (as I interpreted from your response). I put together a rudimentary script (attached) that imports the SR and CR QCD MC, creates a RooArgList of RooFormulaVars equal to the QCD MC yields multiplied by lnN bin uncertainties, and then saves them as a RooParametricHists in a workspace. I then import the QCD pdfs in a datacard (attached), and do a test Asimov fit with
+combine datacard_Suu4_chi1_2018_test.txt -M MultiDimFit -t -1 -v 3
+The fit is resulting in errors stemming from negative-yield bins, so I will have to do some debugging, but is this consistent with what you were thinking? I have experience with combine, but my knowledge of RooFit directly is very limited, so apologies if this is something very trivial. Let me know if you have other suggestions - thanks!
+Ethan
+
+datacard_Suu4_chi1_2018_test.txt (2.7 KB)
+create_ws_test.C (4.2 KB)
+----------------------------------------

@@ -1,0 +1,50 @@
+TOPIC: Toy generation for unequal binning RooDataHist
+URL: https://cms-talk.web.cern.ch/t/10333
+DATE: 2022-05-11T11:32:40.648Z
+SOLVED: no
+============================================================
+
+QUESTION (by xuyan @ 2022-05-11T11:32:40.863Z):
+Hello experts,
+Recently I have been trying to generate toys for unequal binning RooDataHists using the combine tool method "combine -M GenerateOnly ", but somehow when plotting the toys generated, I found something weird, as shown in the plot (blue points: data from exp function, blue curve, exp function, red points, toy generated with combine tool):
+
+toy_52396×1772 55.4 KB
+
+Do you know if this is expected?
+If you would need some additional information, I do have a minimum working example, using a simple exponential function to generate the toy and plot it.
+generate_debug.zip (79.3 KB)
+Thanks a lot!
+Best regards,
+Sebastian
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-05-11T12:57:52.000Z):
+You have a lot of bins at 0 for the red (induced somehow by the binning).
+The dataset seems to be correct. Probably, you will have to clean up the plotting.
+Below the comparison of data (blue) and a toy (red).
+toy_1_0.png2396×1772 47.4 KB
+On Wed, May 11, 2022 at 1:35 PM Xuli Yan via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Xuli Yan xuyanMay 11
+
+Hello experts,
+Recently I have been trying to generate toys for unequal binning RooDataHists using the combine tool method "combine -M GenerateOnly ", but somehow when plotting the toys generated, I found something weird, as shown in the plot (blue points: data from exp function, blue curve, exp function, red points, toy generated with combine tool):
+
+Do you know if this is expected?
+If you would need some additional information, I do have a minimum working example, using a simple exponential function to generate the toy and plot it.
+Generation_debug.zip (131.6 KB)
+Thanks a lot!
+Best regards,
+Sebastian
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by xuyan @ 2022-05-11T15:18:01.177Z):
+Hi Andrea,
+Ah okay! Indeed it seems we need to set the binning when plotting explicitly.
+Thanks a lot for your kind help!
+Best regards,
+Sebastian
+----------------------------------------

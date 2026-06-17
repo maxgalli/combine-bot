@@ -1,0 +1,53 @@
+TOPIC: fitDiagnostics blows up pre-fit error bars
+URL: https://cms-talk.web.cern.ch/t/124721
+DATE: 2025-05-12T13:22:33.256Z
+SOLVED: no
+============================================================
+
+QUESTION (by lnoehte @ 2025-05-12T13:22:33.513Z):
+Dear combine experts,
+I am performing a combine fit with the following command:
+combine -M FitDiagnostics ../datacards/datacard_${IDENTIFIER}.txt -n .${IDENTIFIER} \
+--saveShapes \
+--saveWorkspace \
+--saveNormalizations \
+--saveWithUncertainties \
+--plots \
+--skipBOnlyFit \
+--verbose 9
+
+In my datacard I use ∗ autoMCStats 0 1 1.
+In the output root file I find the TDirectory shapes_prefit. The histograms stored in there have significantly higher error bars compared to my input histograms.
+The following screenshot shows in the left TBrowser window one of the nominal input histograms I created. The right TBrowser shows the equivalent histogram in the output file under the shapes_prefit TDirectroy.
+Screenshot From 2025-05-12 15-08-341600×540 84.1 KB
+I hope you can see the difference in the size of the error bars.
+Why are the error bars not the same and is this of any concern for my fit? What does combine make out of the prefit error bars?
+Hoping to get an answer.
+Best Lars
+----------------------------------------
+
+REPLY 2 (by ineuteli @ 2025-05-12T13:35:08.035Z):
+Hi Lars,
+It is as expected that pre-fit histograms have larger bin errors because Combine propagates the (symmetrized?) uncertainties from the nuisances to the histogram bin errors, before they are constrained in the fit. If you could constrain the nuisances, the postfit shapes should look more reasonable. You can confirm this is the case by removing most or all nuisances from the datacards (not sure if freezing will do the same trick), including autoMCStats.
+Cheers,
+Izaak
+----------------------------------------
+
+REPLY 3 (by lnoehte @ 2025-05-15T14:10:19.207Z):
+Indeed, leaving only one nuisance parameter in the datacard shrunk the error bars.
+Thanks a lot for the insight. This was not obvious to me but I am relieved that this is intended behavior.
+----------------------------------------
+
+REPLY 4 (by ineuteli @ 2025-05-15T14:34:48.301Z):
+Hi Lars,
+Okay, good to know!
+Just to add one point: Combine does not really use the bin errors of the input histograms, except if you use autoMCStats in the datacards, which computes the thresholds and size of the statistical uncertainty from the histogram bin errors with the Barlow–Beeston-lite algorithm, see the manual.
+So if you include bin-by-bin uncertainties via autoMCStats, you should make sure that the histogram bin errors are just the statistical uncertainty in those bins, which is typically the square root of the sum of squared weights. This can be ensured if you call TH1::Sumw2 before filling the histogram, although in my understanding this setting should be the default upon initiation of the TH1 object in most newer ROOT version.
+By design, the systematic uncertainties is fully taken care of by the nuisance parameters defined in the datacard, which later get added to the output histograms if you use --saveShapes.
+Hope that helps,
+Izaak
+----------------------------------------
+
+REPLY 5 (by lnoehte @ 2025-05-15T14:43:38.610Z):
+Thanks for clarification. I believe I am doing things correctly then. I also use Sumw2 just to be sure.
+----------------------------------------

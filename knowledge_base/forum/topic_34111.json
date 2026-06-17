@@ -1,0 +1,78 @@
+{
+  "topic_id": 34111,
+  "title": "Combine: warning the pull could not be computed",
+  "url": "https://cms-talk.web.cern.ch/t/34111",
+  "category_id": 279,
+  "created_at": "2024-02-05T21:56:41.983Z",
+  "last_posted_at": "2024-02-18T09:26:46.061Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2024-02-05T21:56:42.143Z",
+      "updated_at": "2024-02-05T21:56:42.143Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to interpret one of the combine warnings for calculating pulls.\nAfter executing sequence of commands from combine documentation for making pulls, I receive the following warnings for some of the uncertainties:\n>>Warning, the pull for Unc1 could not be computed\n>> Warning, the pull for Unc2 could not be computed\n\nTo get the pulls I ran the following commands from combine documentation:\ntext2workspace.py  $1 -o workspace_v35_Nom_$2.root\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --doInitialFit --robustFit 1  --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --robustFit 1  --doFits --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 -o impacts_v35_Nom_$2.json\nplotImpacts.py -i impacts_v35_Nom_$2.json -o impacts_v35_Nom_$2\n\nCould you please suggest how one can interpret these warnings? Are there any combine options or recipes for such cases?\nkind regards,\nAnton",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to interpret one of the combine warnings for calculating pulls.<br>\nAfter executing sequence of commands from combine documentation for making pulls, I receive the following warnings for some of the uncertainties:</p>\n<pre><code class=\"lang-auto\">&gt;&gt;Warning, the pull for Unc1 could not be computed\n&gt;&gt; Warning, the pull for Unc2 could not be computed\n\n</code></pre>\n<p>To get the pulls I ran the following commands from combine documentation:</p>\n<pre><code class=\"lang-auto\">text2workspace.py  $1 -o workspace_v35_Nom_$2.root\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --doInitialFit --robustFit 1  --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --robustFit 1  --doFits --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 -o impacts_v35_Nom_$2.json\nplotImpacts.py -i impacts_v35_Nom_$2.json -o impacts_v35_Nom_$2\n</code></pre>\n<p>Could you please suggest how one can interpret these warnings? Are there any combine options or recipes for such cases?</p>\n<p>kind regards,<br>\nAnton</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2024-02-06T07:34:45.936Z",
+      "updated_at": "2024-02-06T07:34:45.936Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Anton,\nIt\u2019s likely the case that the pull is calculated following the diffPullAsym definition here. As noted in the docs, if the post-fit uncertainty is the same or larger than the pre-fit, the pull is not defined. In principle this shouldn\u2019t happen, but sometimes it does because of the finite precision of the interval finding in combine, or perhaps some more significant failure.  In this case I\u2019d recommend just checking the post-fit values and uncertainties of these parameters make sense.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Anton,</p>\n<p>It\u2019s likely the case that the pull is calculated following the <code>diffPullAsym</code> definition <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#pre-and-post-fit-nuisance-parameters\" rel=\"noopener nofollow ugc\">here</a>. As noted in the docs, if the post-fit uncertainty is the same or larger than the pre-fit, the pull is not defined. In principle this shouldn\u2019t happen, but sometimes it does because of the finite precision of the interval finding in combine, or perhaps some more significant failure.  In this case I\u2019d recommend just checking the post-fit values and uncertainties of these parameters make sense.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-02-06T07:36:26.000Z",
+      "updated_at": "2024-02-06T07:40:59.511Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Dear Anton,\nI think this warning appears when the denominator for the pull is smaller than some threshold (ie if sigma_init^2-sigma_fit^2 is very small, which means the fit is not constraining the parameter much). In this case the calculated pull would blow up if the numerator were nonzero.\nIn the impact plot you will have the fitted value and the constraint for these parameters as well, so you\u2019ll be able to check whether there is a problem (if the parameter is shifted significantly from its initial value, even though the fit does not constrain it, that could be an indication of an issue), or whether this is purely a numerical effect.\nHope that helps,\nAdinda\n\nOn 5 Feb 2024, at 22:58, Anton Stepennov via CMS talk noreply-cms-talk@cern.ch wrote:\n\nAnton Stepennov astepennFebruary 5\n\nDear experts,\nI\u2019m trying to interpret one of the combine warnings for calculating pulls.\nAfter executing sequence of commands from combine documentation for making pulls, I receive the following warnings for some of the uncertainties:\n>>Warning, the pull for Unc1 could not be computed\n>> Warning, the pull for Unc2 could not be computed\n\nTo get the pulls I ran the following commands from combine documentation:\ntext2workspace.py  $1 -o workspace_v35_Nom_$2.root\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --doInitialFit --robustFit 1  --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --robustFit 1  --doFits --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 -o impacts_v35_Nom_$2.json\nplotImpacts.py -i impacts_v35_Nom_$2.json -o impacts_v35_Nom_$2\n\nCould you please suggest how one can interpret these warnings? Are there any combine options or recipes for such cases?\nkind regards,\nAnton\n\nVisit Topic or reply to this email to respond.\nYou are receiving this because you enabled mailing list mode.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>Dear Anton,</p>\n<p>I think this warning appears when the denominator for the pull is smaller than some threshold (ie if sigma_init^2-sigma_fit^2 is very small, which means the fit is not constraining the parameter much). In this case the calculated pull would blow up if the numerator were nonzero.</p>\n<p>In the impact plot you will have the fitted value and the constraint for these parameters as well, so you\u2019ll be able to check whether there is a problem (if the parameter is shifted significantly from its initial value, even though the fit does not constrain it, that could be an indication of an issue), or whether this is purely a numerical effect.</p>\n<p>Hope that helps,<br>\nAdinda</p>\n<blockquote>\n<p>On 5 Feb 2024, at 22:58, Anton Stepennov via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/a/87869e/45.png\" title=\"astepenn\" width=\"45\" height=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/astepenn\">Anton Stepennov</a> astepenn<br>February 5</th>\n</tr>\n</thead>\n</table>\n</div><p>Dear experts,</p>\n<p>I\u2019m trying to interpret one of the combine warnings for calculating pulls.<br>\nAfter executing sequence of commands from combine documentation for making pulls, I receive the following warnings for some of the uncertainties:</p>\n<pre><code class=\"lang-auto\">&gt;&gt;Warning, the pull for Unc1 could not be computed\n&gt;&gt; Warning, the pull for Unc2 could not be computed\n\n</code></pre>\n<p>To get the pulls I ran the following commands from combine documentation:</p>\n<pre><code class=\"lang-auto\">text2workspace.py  $1 -o workspace_v35_Nom_$2.root\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --doInitialFit --robustFit 1  --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 --robustFit 1  --doFits --rMax 10 --rMin -10\ncombineTool.py -M Impacts -d workspace_v35_Nom_$2.root -m $3 -o impacts_v35_Nom_$2.json\nplotImpacts.py -i impacts_v35_Nom_$2.json -o impacts_v35_Nom_$2\n\n</code></pre>\n<p>Could you please suggest how one can interpret these warnings? Are there any combine options or recipes for such cases?</p>\n<p>kind regards,<br>\nAnton</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/combine-warning-the-pull-could-not-be-computed/34111/1\">Visit Topic</a> or reply to this email to respond.</p>\n<p>You are receiving this because you enabled mailing list mode.</p>\n<p>To unsubscribe from these emails, <a href=\"https://cms-talk.web.cern.ch/email/unsubscribe/f3630b2699d2aaf47e17221df1f0c0e97a0d68902d069a5745457b4d8fe1da61\">click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 4,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2024-02-06T15:38:30.332Z",
+      "updated_at": "2024-02-06T15:38:30.332Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Andrew and Adinda,\nThanks a lot for your suggestions. We checked the uncertainties on these parameters using FitDiagnostics and as Andrew said, those sources have postfit uncertainties larger than 1 (larger than initial prefit uncertainty):\nBTagSFLightUnCorr2018    0.0000e+00 +/-  1.17e+00\nHEM   -1.3562e-02 +/-  1.01e+00\nPOGSFEle   -7.8599e-02 +/-  1.01e+00\nTTFRhighpt   -7.5636e-02 +/-  1.09e+00\n\nCould you please suggest, what (and if) we should do anything about these uncertainties ? Do we need to do smth with the option for calculating pulls?\nVisually these shape uncertainties look ok, they don\u2019t differ from any other uncertainties in the analysis, which don\u2019t cause any problem.\nkind regards,\nAnton",
+      "cooked_html": "<p>Dear Andrew and Adinda,</p>\n<p>Thanks a lot for your suggestions. We checked the uncertainties on these parameters using FitDiagnostics and as Andrew said, those sources have postfit uncertainties larger than 1 (larger than initial prefit uncertainty):</p>\n<pre><code class=\"lang-auto\">  BTagSFLightUnCorr2018    0.0000e+00 +/-  1.17e+00\nHEM   -1.3562e-02 +/-  1.01e+00\nPOGSFEle   -7.8599e-02 +/-  1.01e+00\nTTFRhighpt   -7.5636e-02 +/-  1.09e+00\n</code></pre>\n<p>Could you please suggest, what (and if) we should do anything about these uncertainties ? Do we need to do smth with the option for calculating pulls?<br>\nVisually these shape uncertainties look ok, they don\u2019t differ from any other uncertainties in the analysis, which don\u2019t cause any problem.</p>\n<p>kind regards,<br>\nAnton</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-02-07T16:41:29.117Z",
+      "updated_at": "2024-02-07T16:41:29.117Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Anton,\nIt may be worth investigating those uncertainties a little more. There\u2019s a little bit of information in the FAQ page here: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/#faq (\" Why do some of my nuisance parameters have uncertainties > 1?\").\nOne thing I could suggest is to try to scan these parameters with MultiDimFit as suggested there, to check that the likelihood shapes as a function of these parameters don\u2019t look suspicious (e.g. a shape like the plot here:  https://indico.cern.ch/event/976099/contributions/4138476/attachments/2163625/3651175/CombineTutorial-2020-debugging.pdf#page=13 would indicate some issue).\nBest,\nAdinda",
+      "cooked_html": "<p>Dear Anton,</p>\n<p>It may be worth investigating those uncertainties a little more. There\u2019s a little bit of information in the FAQ page here: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/#faq\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part4/usefullinks/#faq</a> (\" <em>Why do some of my nuisance parameters have uncertainties &gt; 1?</em>\").</p>\n<p>One thing I could suggest is to try to scan these parameters with MultiDimFit as suggested there, to check that the likelihood shapes as a function of these parameters don\u2019t look suspicious (e.g. a shape like the plot here:  <a href=\"https://indico.cern.ch/event/976099/contributions/4138476/attachments/2163625/3651175/CombineTutorial-2020-debugging.pdf#page=13\">https://indico.cern.ch/event/976099/contributions/4138476/attachments/2163625/3651175/CombineTutorial-2020-debugging.pdf#page=13</a> would indicate some issue).</p>\n<p>Best,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "astepenn",
+      "name": "Anton Stepennov",
+      "created_at": "2024-02-18T09:26:46.061Z",
+      "updated_at": "2024-02-18T09:26:46.061Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nThanks a lot for the suggestion!\nI\u2019ll try to do MultiDImFIt.\nkind regards,\nAnton",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>Thanks a lot for the suggestion!<br>\nI\u2019ll try to do MultiDImFIt.</p>\n<p>kind regards,<br>\nAnton</p>"
+    }
+  ]
+}

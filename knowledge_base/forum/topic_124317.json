@@ -1,0 +1,117 @@
+{
+  "topic_id": 124317,
+  "title": "Multidimensional likelihood scan on promoted nuisance parameters gives error",
+  "url": "https://cms-talk.web.cern.ch/t/124317",
+  "category_id": 279,
+  "created_at": "2025-04-29T16:41:32.229Z",
+  "last_posted_at": "2025-05-16T09:15:19.892Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jduarteq",
+      "name": "Juan Duarte",
+      "created_at": "2025-04-29T16:41:32.494Z",
+      "updated_at": "2025-04-29T16:42:22.169Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI\u2019m trying to perform a likelihood scan freezing my signal strength and all my constrained nuisance parameters, except three of them npar1, npar2, npar3.\nBefore this I successfully ran the scan without freezing the nuisance parameters, only the signal strength, using MultiDimFit with the following options:\n--algo grid --points 1000 --robustFit 1 -n scanExpected --setParameterRange rgx{npar.+}=-1,1 --redefineSignalPOIs npar1,npar2,npar3 --setParameters r=1 --freezeParameters r -t -1\n\nThis gives an acceptable result with some points missing due to fit failures but I suppose that\u2019s okay.\nNow, to get the scan with stat only I tried freezing all constrained nuisance parameters using the option --freezeParameters r,allConstrainedNuisances, but it gave me a result with only one point (the initial fit), then I used the verbose option and saw the error: Error in <ROOT::Math::Fitter::SetFCN>: FCN function has zero parameters showing me problems with the likelihood, to try and debug this I created a group of nuisances parameters adding this line to the datacard:\ng1 group = npar1 npar2 npar3\n\nand freezing now with the options --freezeParameters r --freezeNuisanceGroups=^g1. This gave me the same result as before when fitting the 3 parameters, then I tried just fitting two (npar1, npar2) and leaving the other floating (npar3), which result in a successful scan.\nThen I tried freezing npar3, which gave the same error. Later, I tried freezing both npar2 and npar3, and it ran successfully.\nLastly, just to test, I ran the scan for all 3 parameters, but leaving some random nuisance parameter floating. This gave me a correct scan (but not stat only since this nuisance parameter was being fitted).\nAll this suggests to me that the likelihood is not well constructed for multiple POIs promoted from nuisance parameters, which leaves the likelihood constant when doing a scan giving the error before.\nIs the likelihood well-defined (in the default model) when promoting multiple nuisance parameters as POIs? I could run the scan for npar1 and npar2, leaving npar3 floating (tracking it), but I want to be sure that this scan is valid.\nAlso, I wanted to try building the workspace using a multisignal model. How can I promote these nuisance parameters as POIs in a multisignal model?\nThanks for your help.\nCheers,\nJuan.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I\u2019m trying to perform a likelihood scan freezing my signal strength and all my constrained nuisance parameters, except three of them <code>npar1</code>, <code>npar2</code>, <code>npar3</code>.<br>\nBefore this I successfully ran the scan without freezing the nuisance parameters, only the signal strength, using <code>MultiDimFit</code> with the following options:</p>\n<pre><code class=\"lang-auto\">--algo grid --points 1000 --robustFit 1 -n scanExpected --setParameterRange rgx{npar.+}=-1,1 --redefineSignalPOIs npar1,npar2,npar3 --setParameters r=1 --freezeParameters r -t -1\n</code></pre>\n<p>This gives an acceptable result with some points missing due to fit failures but I suppose that\u2019s okay.</p>\n<p>Now, to get the scan with stat only I tried freezing all constrained nuisance parameters using the option <code>--freezeParameters r,allConstrainedNuisances</code>, but it gave me a result with only one point (the initial fit), then I used the verbose option and saw the error: <code>Error in &lt;ROOT::Math::Fitter::SetFCN&gt;: FCN function has zero parameters</code> showing me problems with the likelihood, to try and debug this I created a group of nuisances parameters adding this line to the datacard:</p>\n<pre><code class=\"lang-auto\">g1 group = npar1 npar2 npar3\n</code></pre>\n<p>and freezing now with the options <code>--freezeParameters r --freezeNuisanceGroups=^g1</code>. This gave me the same result as before when fitting the 3 parameters, then I tried just fitting two (<code>npar1</code>, <code>npar2</code>) and leaving the other floating (<code>npar3</code>), which result in a successful scan.</p>\n<p>Then I tried freezing <code>npar3</code>, which gave the same error. Later, I tried freezing both <code>npar2</code> and <code>npar3</code>, and it ran successfully.</p>\n<p>Lastly, just to test, I ran the scan for all 3 parameters, but leaving some random nuisance parameter floating. This gave me a correct scan (but not stat only since this nuisance parameter was being fitted).</p>\n<p>All this suggests to me that the likelihood is not well constructed for multiple POIs promoted from nuisance parameters, which leaves the likelihood constant when doing a scan giving the error before.</p>\n<p>Is the likelihood well-defined (in the default model) when promoting multiple nuisance parameters as POIs? I could run the scan for <code>npar1</code> and <code>npar2</code>, leaving <code>npar3</code> floating (tracking it), but I want to be sure that this scan is valid.</p>\n<p>Also, I wanted to try building the workspace using a multisignal model. How can I promote these nuisance parameters as POIs in a multisignal model?</p>\n<p>Thanks for your help.</p>\n<p>Cheers,<br>\nJuan.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-04-29T20:19:41.040Z",
+      "updated_at": "2025-04-29T20:19:41.040Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Juan,\nCould you please explain what are you trying to achieve in general by promoting nuisance parameters to the POIs so that we can provide a better advice?\nIn case you just wanted to produce the scans for the nuisance parameters for e.g. debugging purposes, please keep in mind that when the --redefineSignalPOIs is used the associated constrain terms are dropped from the total likelihood, as explained also in the documentation here.\nNow to those errors, I suspect that when you freeze both r and constrained nuisances with --freezeParameters r,allConstrainedNuisances you just don\u2019t have any other parameters that can be varied in the fit, and this is exactly what this error tells you Error in <ROOT::Math::Fitter::SetFCN>: FCN function has zero parameters.\nAbout all other cases, I think something similar happens, but hard to say without looking at the model.\nBest,\nAliya",
+      "cooked_html": "<p>Dear Juan,</p>\n<p>Could you please explain what are you trying to achieve in general by promoting nuisance parameters to the POIs so that we can provide a better advice?<br>\nIn case you just wanted to produce the scans for the nuisance parameters for e.g. debugging purposes, please keep in mind that when the <code>--redefineSignalPOIs</code> is used the associated constrain terms are dropped from the total likelihood, as explained also in the documentation <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/?h=redefine#common-command-line-options\" rel=\"noopener nofollow ugc\">here</a>.</p>\n<p>Now to those errors, I suspect that when you freeze both <code>r</code> and constrained nuisances with <code>--freezeParameters r,allConstrainedNuisances</code> you just don\u2019t have any other parameters that can be varied in the fit, and this is exactly what this error tells you <code>Error in &lt;ROOT::Math::Fitter::SetFCN&gt;: FCN function has zero parameters</code>.<br>\nAbout all other cases, I think something similar happens, but hard to say without looking at the model.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "jduarteq",
+      "name": "Juan Duarte",
+      "created_at": "2025-04-29T20:43:24.058Z",
+      "updated_at": "2025-04-29T20:43:24.058Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Dear Aliya,\nWhat I try to achieve is to actually measure these nuisance parameters, they represent shape variations of my MC, you can see a similar process on TOP-23-001 for one POI.\nAbout the errors, even if I constrain r and allConstrainedNuisances that should only leave the promoted POIs in the model I would assume. However, in the next cases using the group tag, I don\u2019t freeze those promoted, but why for Combine they\u2019re not in the likelihood? If I freeze everything except one promoted POI, still works.\nAbout the model, I\u2019m using the default one.\nThanks,\nJuan.",
+      "cooked_html": "<p>Dear Aliya,</p>\n<p>What I try to achieve is to actually measure these nuisance parameters, they represent shape variations of my MC, you can see a similar process on TOP-23-001 for one POI.</p>\n<p>About the errors, even if I constrain <code>r</code> and <code>allConstrainedNuisances</code> that should only leave the promoted POIs in the model I would assume. However, in the next cases using the group tag, I don\u2019t freeze those promoted, but why for Combine they\u2019re not in the likelihood? If I freeze everything except one promoted POI, still works.</p>\n<p>About the model, I\u2019m using the default one.</p>\n<p>Thanks,<br>\nJuan.</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-04-30T14:38:01.821Z",
+      "updated_at": "2025-04-30T14:38:23.452Z",
+      "reply_to_post_number": 3,
+      "is_accepted_answer": false,
+      "text": "Dear Juan,\nOk, I see, it is strange indeed.\nCould you please check when you run in a verbose mode you see that the parameters are indeed promoted and this message is printed, just to rule out typos. Other I can suggest you to share the workspace and we can take a closer look.\nAliya",
+      "cooked_html": "<p>Dear Juan,</p>\n<p>Ok, I see, it is strange indeed.<br>\nCould you please check when you run in a verbose mode you see that the parameters are indeed promoted and <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/ed97b500919d20a51dcff218d8a013a5feac80fe/src/Combine.cc#L605\" rel=\"noopener nofollow ugc\">this</a> message is printed, just to rule out typos. Other I can suggest you to share the workspace and we can take a closer look.<br>\nAliya</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "jduarteq",
+      "name": "Juan Duarte",
+      "created_at": "2025-04-30T18:37:45.207Z",
+      "updated_at": "2025-04-30T18:37:45.207Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "I checked with verbose and got that message, here\u2019s the workspaces:\nworkspace__13_fine__6bins_rebin_1_combined.root (668.5 KB)\nThe command that I use to obtain a likelihood scan without freezing nuisance parameters is:\ncombine workspaces/workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit --algo grid --points 1000 --robustFit 1 -n no_spin_corrExpected --setParameterRange CMS_TOPXXYYY_EWK=0,7:CMS_TOPXXYYY_COLORREC_QCDINSPIRED=0,7:CMS_TOPXXYYY_COLORREC_GLUONMOVE=0,7:CMS_TOPXXYYY_COLORREC_ERDON=0,7:top_pt_reweighting=0,7:rgx{no_spin_corr.+}=-1,1 --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_rr,no_spin_corr_c_nn --setParameters r=1 --freezeParameters r -t -1\n\nFor the statOnly (the one giving error), this is the command I run:\ncombine workspaces/workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit --algo grid --points 6000 --robustFit 1 -n no_spin_corrExpected_Stat  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters r --freezeNuisanceGroups=^nosc --setParameterRange rgx{no_spin_corr.+}=-1,1 --parameters no_spin_corr_c_kk,no_spin_corr_c_rr,no_spin_corr_c_nn -t -1\n\nLet me know if you get something.\nThanks,\nJuan.",
+      "cooked_html": "<p>I checked with verbose and got that message, here\u2019s the workspaces:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/kkI6YNd3grQqOUkogecyKx5W4rK.root\">workspace__13_fine__6bins_rebin_1_combined.root</a> (668.5 KB)</p>\n<p>The command that I use to obtain a likelihood scan without freezing nuisance parameters is:</p>\n<pre><code class=\"lang-auto\">combine workspaces/workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit --algo grid --points 1000 --robustFit 1 -n no_spin_corrExpected --setParameterRange CMS_TOPXXYYY_EWK=0,7:CMS_TOPXXYYY_COLORREC_QCDINSPIRED=0,7:CMS_TOPXXYYY_COLORREC_GLUONMOVE=0,7:CMS_TOPXXYYY_COLORREC_ERDON=0,7:top_pt_reweighting=0,7:rgx{no_spin_corr.+}=-1,1 --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_rr,no_spin_corr_c_nn --setParameters r=1 --freezeParameters r -t -1\n</code></pre>\n<p>For the statOnly (the one giving error), this is the command I run:</p>\n<pre><code class=\"lang-auto\">combine workspaces/workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit --algo grid --points 6000 --robustFit 1 -n no_spin_corrExpected_Stat  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters r --freezeNuisanceGroups=^nosc --setParameterRange rgx{no_spin_corr.+}=-1,1 --parameters no_spin_corr_c_kk,no_spin_corr_c_rr,no_spin_corr_c_nn -t -1\n</code></pre>\n<p>Let me know if you get something.</p>\n<p>Thanks,<br>\nJuan.</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-05-05T16:43:57.392Z",
+      "updated_at": "2025-05-05T16:43:57.392Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Hi Juan,\nWith the following command\ncombine workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters  r,allConstrainedNuisances --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr  --floatOtherPOIs 1 -v 3 --algo grid -P no_spin_corr_c_kk\n\nI managed to run the stat-only scans for the nuisance parameters no_spin_corr_c_kk,no_spin_corr_c_nn and no_spin_corr_c_rr promoted to POIs with --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr (please make sure you read the docs here ). When you run the scans for the model with multiple signal parameters you have to select which parameter you are scanning  -P <name>, as also shown above. It is also possible to control how are the other commands treated: --floatOtherPOIs 1 will profile over other parameters.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Juan,</p>\n<p>With the following command</p>\n<pre><code class=\"lang-auto\">combine workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters  r,allConstrainedNuisances --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr  --floatOtherPOIs 1 -v 3 --algo grid -P no_spin_corr_c_kk \n\n</code></pre>\n<p>I managed to run the stat-only scans for the nuisance parameters no_spin_corr_c_kk,no_spin_corr_c_nn and no_spin_corr_c_rr promoted to POIs with <code>--redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr</code> (please make sure you read the docs <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/runningthetool/?h=redefine#common-command-line-options\" rel=\"noopener nofollow ugc\">here</a> ). When you run the scans for the model with multiple signal parameters you have to select which parameter you are scanning  <code>-P &lt;name&gt;</code>, as also shown above. It is also possible to control how are the other commands treated: <code>--floatOtherPOIs 1</code> will profile over other parameters.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 7,
+      "username": "jduarteq",
+      "name": "Juan Duarte",
+      "created_at": "2025-05-06T16:26:01.993Z",
+      "updated_at": "2025-05-06T16:26:01.993Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Aliya,\nI tried your command but it runs separate scans for each POI, and therefore if I use it I would have to perform manual scans for each POI and combine the likelihoods somewhat. I tried using -P on each promoted POI but gave me ROOT error as before.\nIf this is the extend of what Combine can do at this point, I suppose I\u2019ll have to look into the combinations of multiple likelihood scans.\nThanks,\nJuan.",
+      "cooked_html": "<p>Hi Aliya,</p>\n<p>I tried your command but it runs separate scans for each POI, and therefore if I use it I would have to perform manual scans for each POI and combine the likelihoods somewhat. I tried using <code>-P</code> on each promoted POI but gave me <code>ROOT</code> error as before.</p>\n<p>If this is the extend of what Combine can do at this point, I suppose I\u2019ll have to look into the combinations of multiple likelihood scans.</p>\n<p>Thanks,<br>\nJuan.</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "anigamov",
+      "name": "Aliya Nigamova",
+      "created_at": "2025-05-07T16:34:50.791Z",
+      "updated_at": "2025-05-07T16:35:18.022Z",
+      "reply_to_post_number": 7,
+      "is_accepted_answer": false,
+      "text": "Hi Juan,\nI do not understand why would you get an error if we are both running the command on the same workspace. Could you please check again if it is the case and/or past the command which gives you an error here?\nThe set of options I provided in my previous post allows to extract confidence intervals for promoted nuisances with other POIs floating in the fit because of --floatOtherPOIs 1. So you don\u2019t have to do anything about the likelihood scans if you just want to have the CI for each parameter. Now if you would like to produce 2D likelihood scans you can run the same command specifying 2 parameters e.g.  -P no_spin_corr_c_kk -P no_spin_corr_c_rr . More on this in the documentation.\nBest,\nAliya",
+      "cooked_html": "<p>Hi Juan,</p>\n<p>I do not understand why would you get an error if we are both running the command on the same workspace. Could you please check again if it is the case and/or past the command which gives you an error here?</p>\n<p>The set of options I provided in my previous post allows to extract confidence intervals for promoted nuisances with other POIs floating in the fit because of <code>--floatOtherPOIs 1</code>. So you don\u2019t have to do anything about the likelihood scans if you just want to have the CI for each parameter. Now if you would like to produce 2D likelihood scans you can run the same command specifying 2 parameters e.g. <code> -P no_spin_corr_c_kk -P no_spin_corr_c_rr</code> . More on this in the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/?h=2d#likelihood-fits-and-scans\" rel=\"noopener nofollow ugc\">documentation</a>.</p>\n<p>Best,<br>\nAliya</p>"
+    },
+    {
+      "post_number": 9,
+      "username": "gallim",
+      "name": "Massimiliano Galli",
+      "created_at": "2025-05-16T09:15:19.892Z",
+      "updated_at": "2025-05-16T09:15:19.892Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Juan,\nif we got it right, this PR should fix the issue. We tested it on your workspace with\ncombine workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters  r,allConstrainedNuisances --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr  --floatOtherPOIs 1 -v 3 --algo grid -P no_spin_corr_c_kk -P no_spin_corr_c_nn -P no_spin_corr_c_rr\n\nCould you maybe give it a try and let us know?\nThanks,\nMassimiliano",
+      "cooked_html": "<p>Hi Juan,<br>\nif we got it right, <a href=\"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/1091\" rel=\"noopener nofollow ugc\">this PR</a> should fix the issue. We tested it on your workspace with</p>\n<pre><code class=\"lang-auto\">combine workspace__13_fine__6bins_rebin_1_combined.root -M MultiDimFit  --setParameters r=1,no_spin_corr_c_kk=0,no_spin_corr_c_rr=0,no_spin_corr_c_nn=0 --freezeParameters  r,allConstrainedNuisances --redefineSignalPOIs no_spin_corr_c_kk,no_spin_corr_c_nn,no_spin_corr_c_rr  --floatOtherPOIs 1 -v 3 --algo grid -P no_spin_corr_c_kk -P no_spin_corr_c_nn -P no_spin_corr_c_rr\n</code></pre>\n<p>Could you maybe give it a try and let us know?</p>\n<p>Thanks,<br>\nMassimiliano</p>"
+    }
+  ]
+}

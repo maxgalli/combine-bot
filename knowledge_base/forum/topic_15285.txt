@@ -1,0 +1,49 @@
+TOPIC: MultiDimFit and FitDiagnostics with `--robustHesse 1`
+URL: https://cms-talk.web.cern.ch/t/15285
+DATE: 2022-09-21T16:27:16.176Z
+SOLVED: no
+============================================================
+
+QUESTION (by dnoll @ 2022-09-21T16:27:16.424Z):
+Dear experts,
+we are currently performing two types of combine fits within our HH->bbWW analysis:
+
+Pulls & Impacts (MultiDimFit)
+Pre- & Postfit Plots (FitDiagnostics)
+
+During the Pulls & Impacts fits, some O(1-10) nuisances show fit failures.
+We figured out that these failures can be fixed by using the --robustHesse 1 option during the fit.
+We have the following questions about this option:
+
+Should/can it be used in both, the Pulls & Impacts and in the Pre- & Postfit Plots?
+What exactly does this option do? The documentation is unfortunately rather brief.
+We saw that when using this option, all impacts are strictly symmetric around 0. Is this concerning?
+We see that a single nuisance is dropped when using this option, can we neglect this if this particular nuisance does not have a large impact?
+
+Thank you very much for your great help!
+Best regards
+Dennis
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-09-26T08:08:24.733Z):
+Hi Dennis,
+To address each point:
+
+Yes, it should be ok to use. Though I get the impression for the impacts you are using the --approx option? This is the only way the use of --robustHesse should have any real effect. The normal way of calculating the impacts (without --approx) doesn’t use the Hessian matrix, and is usually recommended as the most accurate. For the pre- and post-fit plots I think it’s fine.
+It uses a custom implementation of the Hessian matrix calculation, which is inverted to give the covariance matrix. Essentially we take larger deltaNLL steps in the finite difference calculation, and try to handle cases where parameters are at boundaries a bit better than the plain HESSE implementation in Minuit. The code is here if you want the full details.
+
+No, this is by design, since the impacts are approximate and derived from the covariance matrix. As above, we normally recommend running the full impact calculation, not the approximate one.
+It’s probably ok - if a parameter is dropped it usually means there is some strong (anti-)correlation in the model, and you have a redundant degree of freedom somewhere.
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by dnoll @ 2022-10-05T13:25:27.412Z):
+Hi Andrew,
+thank you very much for your detailed answer!
+To 1: We do not use the CombineHarvester but the HH Inference tools. The use of --method robust here mimics the same combine options as --approx. For the Pulls & Impacts we now found a suitable binning, in which no Failed Fits arise also without this option. For the Pre- and Postfits, we understand that it can savely be used, and will do so.
+Thanks.
+Best regards
+Dennis
+----------------------------------------

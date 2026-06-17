@@ -1,0 +1,56 @@
+{
+  "topic_id": 36502,
+  "title": "Once again: combining SR1 and SR2 2017 data with two signal strenghts",
+  "url": "https://cms-talk.web.cern.ch/t/36502",
+  "category_id": 279,
+  "created_at": "2024-03-07T08:18:07.969Z",
+  "last_posted_at": "2024-03-11T08:31:18.548Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-07T08:18:08.106Z",
+      "updated_at": "2024-03-07T08:18:08.106Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am working now with the recommended combine version in CMSSW_11_3_4 and tag. v9.1.0 as written in\nCombine (cms-analysis.github.io)\nI am combining Search Regions SR1 and SR2 for 2017 data using two independent signal strengths.  Can you check that I use a proper commands below:\n\ncombineCards.py SR1_2017=2017UL_dimuon_SR1ptj20.txt SR2mod13_2017=2017UL_dimuon_SR2mod13.txt > 2017UL_dimuon_SR1andSR2mod13.txt\n\ntext2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1_2017/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2mod13_2017/sig:r_sig2[1,0,200]\u2019 2017UL_dimuon_SR1andSR2mod13.txt -o 2017UL_dimuon_SR1andSR2mod13.root\n\ncombine -M MultiDimFit --algo fixed --fixedPataointPOIs r_sig1=0,r_sig2=0 --redefineSignalPOIs r_sig1,r_sig2 2017UL_dimuon_SR1andSR2mod13.root -v 3\ndatacards are on\n/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test\nThank you, Sasha.",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am working now with the recommended combine version in CMSSW_11_3_4 and tag. v9.1.0 as written in</p>\n<p><a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/#combine-v9-recommended-version\" rel=\"noopener nofollow ugc\">Combine (cms-analysis.github.io)</a></p>\n<p>I am combining Search Regions SR1 and SR2 for 2017 data using two independent signal strengths.  Can you check that I use a proper commands below:</p>\n<ol>\n<li></li>\n</ol>\n<p>combineCards.py SR1_2017=2017UL_dimuon_SR1ptj20.txt SR2mod13_2017=2017UL_dimuon_SR2mod13.txt &gt; 2017UL_dimuon_SR1andSR2mod13.txt</p>\n<ol start=\"2\">\n<li></li>\n</ol>\n<p>text2workspace.py -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel --PO verbose --PO \u2018map=SR1_2017/sig:r_sig1[1,0,200]\u2019 --PO \u2018map=SR2mod13_2017/sig:r_sig2[1,0,200]\u2019 2017UL_dimuon_SR1andSR2mod13.txt -o 2017UL_dimuon_SR1andSR2mod13.root</p>\n<ol start=\"3\">\n<li></li>\n</ol>\n<p>combine -M MultiDimFit --algo fixed --fixedPataointPOIs r_sig1=0,r_sig2=0 --redefineSignalPOIs r_sig1,r_sig2 2017UL_dimuon_SR1andSR2mod13.root -v 3</p>\n<p>datacards are on</p>\n<p>/afs/cern.ch/work/a/anikiten/public/CMSSW_11_3_4/src/HiggsAnalysis/CombinedLimit/test</p>\n<p>Thank you, Sasha.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-07T08:20:26.342Z",
+      "updated_at": "2024-03-07T08:20:26.342Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "sorry, typo in command 3.  I do\ncombine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --redefineSignalPOIs r_sig1,r_sig2 2017UL_dimuon_SR1andSR2mod13.root -v 3",
+      "cooked_html": "<p>sorry, typo in command 3.  I do</p>\n<p>combine -M MultiDimFit --algo fixed --fixedPointPOIs r_sig1=0,r_sig2=0 --redefineSignalPOIs r_sig1,r_sig2 2017UL_dimuon_SR1andSR2mod13.root -v 3</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-03-08T11:27:41.123Z",
+      "updated_at": "2024-03-08T11:27:41.123Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Sasha,\nI\u2019ve taken a look at the commands you posted, and ran the commands on inputs from the /afs area you mention in your post. I\u2019d just like to be clear in advance that this is not a validation of the analysis or of the statistical model used in the analysis, or even of the content of all your datacards and workspaces. This channel is really for technical help, and proper validation of those things requires discussion of the physics and statistical model in general etc, which really needs to be done in the appropriate forums. That includes validation of the datacards themselves, which should be done by the combine contacts for the PAG.\nWith those preliminaries out of the way\nThe commands you are running look fine to me for combining the two datacards, providing independent signal strengths for the two channels and determining the delta log likelihood between the best fit point and the fixed parameter point where the signal strengths are both equal to 0.  There is a warning which comes about the pdf not factorizing, which in this case is just coming from the fact that you have no nuisance parameters or constrained parameters in the model as far as I see.\nI hope that helps,\nKyle",
+      "cooked_html": "<p>Hi Sasha,</p>\n<p>I\u2019ve taken a look at the commands you posted, and ran the commands on inputs from the <code>/afs</code> area you mention in your post. I\u2019d just like to be clear in advance that this is not a validation of the analysis or of the statistical model used in the analysis, or even of the content of all your datacards and workspaces. This channel is really for technical help, and proper validation of those things requires discussion of the physics and statistical model in general etc, which really needs to be done in the appropriate forums. That includes validation of the datacards themselves, which should be done by the combine contacts for the PAG.</p>\n<p>With those preliminaries out of the way <img src=\"https://cms-talk.web.cern.ch/images/emoji/twitter/slight_smile.png?v=12\" title=\":slight_smile:\" class=\"emoji\" alt=\":slight_smile:\" loading=\"lazy\" width=\"20\" height=\"20\"></p>\n<p>The commands you are running look fine to me for combining the two datacards, providing independent signal strengths for the two channels and determining the delta log likelihood between the best fit point and the fixed parameter point where the signal strengths are both equal to 0.  There is a warning which comes about the pdf not factorizing, which in this case is just coming from the fact that you have no nuisance parameters or constrained parameters in the model as far as I see.</p>\n<p>I hope that helps,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "anikiten",
+      "name": "Alexandre Nikitenko",
+      "created_at": "2024-03-11T08:31:18.548Z",
+      "updated_at": "2024-03-11T08:31:18.548Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Thank you very much, Kyle !\nCheers, Sasha.",
+      "cooked_html": "<p>Thank you very much, Kyle !<br>\nCheers, Sasha.</p>"
+    }
+  ]
+}

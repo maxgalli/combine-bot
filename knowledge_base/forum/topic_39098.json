@@ -1,0 +1,210 @@
+{
+  "topic_id": 39098,
+  "title": "Confidence Bands with HybridNew for low (~O(1)) background prediction",
+  "url": "https://cms-talk.web.cern.ch/t/39098",
+  "category_id": 279,
+  "created_at": "2024-04-15T18:04:26.858Z",
+  "last_posted_at": "2024-04-23T15:07:32.928Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-15T18:04:27.020Z",
+      "updated_at": "2024-04-15T18:04:27.020Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am using the HybridNew approach in combine for a simple counting experiment, and am encountering some bizarre behavior where the confidence bands are very jagged and asymmetrical, in particular for the -1 and -2 sigma bands:\nWonkyBottomLimits1846\u00d71323 140 KB\nHere is a datacard for one of the mass points - what I suspect is the cause of this behavior is that the background prediction is of order ~1:\ndatacard_1p85GeV_BDTCUT0p355_signalRate_0p49.txt (532 Bytes)\nThe commands which generated the median and bands for this mass point (similar treatment for the other mass points in the plot) were as follows:\ntext2workspace.py datacard_1p85GeV_BDTCUT0p355_signalRate_0p49.txt -o ws.root\ncombine -M GenerateOnly ws.root -t -1  --saveToys\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.5\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.84\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.16\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.975\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.025\n\nIs this low count indeed the cause of these asymmetrical confidence bands? And if that is the case, is there some other treatment which would be more appropriate for the regime of extremely low statistics, or is this the correct approach, and the asymmetrical uncertainty bands are simply an inescapable feature of the low (expected) number of events?",
+      "cooked_html": "<p>Dear Experts,<br>\nI am using the HybridNew approach in combine for a simple counting experiment, and am encountering some bizarre behavior where the confidence bands are very jagged and asymmetrical, in particular for the -1 and -2 sigma bands:<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/3/369c70752b2b18a5ab7e3aadc14a60e3186049e2.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/369c70752b2b18a5ab7e3aadc14a60e3186049e2\" title=\"WonkyBottomLimits\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/369c70752b2b18a5ab7e3aadc14a60e3186049e2_2_690x494.png\" alt=\"WonkyBottomLimits\" data-base62-sha1=\"7N6X5snamZWFQitjcUj1CAUf0GK\" width=\"690\" height=\"494\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/369c70752b2b18a5ab7e3aadc14a60e3186049e2_2_690x494.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/369c70752b2b18a5ab7e3aadc14a60e3186049e2_2_1035x741.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/3/369c70752b2b18a5ab7e3aadc14a60e3186049e2_2_1380x988.png 2x\" data-dominant-color=\"D6E9B6\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">WonkyBottomLimits</span><span class=\"informations\">1846\u00d71323 140 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>Here is a datacard for one of the mass points - what I suspect is the cause of this behavior is that the background prediction is of order ~1:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/miw0csm5NP9geXo7Mvb9QZKQhmI.txt\">datacard_1p85GeV_BDTCUT0p355_signalRate_0p49.txt</a> (532 Bytes)<br>\nThe commands which generated the median and bands for this mass point (similar treatment for the other mass points in the plot) were as follows:</p>\n<pre><code class=\"lang-auto\">text2workspace.py datacard_1p85GeV_BDTCUT0p355_signalRate_0p49.txt -o ws.root\ncombine -M GenerateOnly ws.root -t -1  --saveToys\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.5\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.84\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.16\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.975\ncombine -M HybridNew ws.root --LHCmode LHC-limits -D higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.025\n</code></pre>\n<p>Is this low count indeed the cause of these asymmetrical confidence bands? And if that is the case, is there some other treatment which would be more appropriate for the regime of extremely low statistics, or is this the correct approach, and the asymmetrical uncertainty bands are simply an inescapable feature of the low (expected) number of events?</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-04-15T20:56:26.022Z",
+      "updated_at": "2024-04-15T20:56:26.022Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\ncan you, e.g., increase the n. of toys?  e.g., -T 10000\n-Andrea\n[*] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#accuracy",
+      "cooked_html": "<p>Hi,</p>\n<p>can you, e.g., increase the n. of toys?  e.g., <code>-T 10000</code></p>\n<p>-Andrea<br>\n[*] <a href=\"http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#accuracy\" rel=\"noopener nofollow ugc\">http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#accuracy</a></p>"
+    },
+    {
+      "post_number": 3,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-16T12:51:00.984Z",
+      "updated_at": "2024-04-16T12:51:00.984Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nIn addition to checking what happens with more Toys, you can also explicitly check the distributions of the test statistic for each value of the signal strength (see https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting and scroll down to the part about the test/plotTestStatCLs.py script). If you see very jagged behaviour, then this can be the cause of the behaviour in the bands you see.\nNow, if you have extremely small backgrounds and you do see the jagged behaviour, it could simply be that the procedure used to calculate the limits is not appropriate. We have an alternative method which behaves better for small yields, which was most recently used in the \\tau\\to3\\mu search - you can find a description of that here : https://indico.cern.ch/event/1284926/#13-cousins-highland-in-zero-ba . This may not be necessary if your test statistic distributions look ok\nBest,\nNick",
+      "cooked_html": "<p>Hi,</p>\n<p>In addition to checking what happens with more Toys, you can also explicitly check the distributions of the test statistic for each value of the signal strength (see <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting</a> and scroll down to the part about the <code>test/plotTestStatCLs.py</code> script). If you see very jagged behaviour, then this can be the cause of the behaviour in the bands you see.</p>\n<p>Now, if you have extremely small backgrounds and you do see the jagged behaviour, it could simply be that the procedure used to calculate the limits is not appropriate. We have an alternative method which behaves better for small yields, which was most recently used in the <span class=\"math\">\\tau\\to3\\mu</span> search - you can find a description of that here : <a href=\"https://indico.cern.ch/event/1284926/#13-cousins-highland-in-zero-ba\">https://indico.cern.ch/event/1284926/#13-cousins-highland-in-zero-ba</a> . This may not be necessary if your test statistic distributions look ok</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 4,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-17T12:37:38.936Z",
+      "updated_at": "2024-04-17T12:37:38.936Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea and Nicholas,\n\ncan you, e.g., increase the n. of toys? e.g., -T 10000\n\nThis must be a feature in a newer version of Combine, because when I try it I get an \u201cunrecognized option\u201d error\n$ combine -M GenerateOnly ws_test.root -t -1 -T 10000 --saveToys\n<<< Combine >>>\nInvalid options: unrecognised option '-T'\nInvalid options: unrecognised option '-T'\nUse combine --help to get a list of all the allowed options\n\nRegarding the Test statistic distribution, I have some condor jobs producing it right now, so I will update shortly and in the meantime read about this new method.\nThanks,\nWren",
+      "cooked_html": "<p>Hi Andrea and Nicholas,</p>\n<blockquote>\n<p>can you, e.g., increase the n. of toys? e.g., <code>-T 10000</code></p>\n</blockquote>\n<p>This must be a feature in a newer version of Combine, because when I try it I get an \u201cunrecognized option\u201d error</p>\n<pre><code class=\"lang-auto\">$ combine -M GenerateOnly ws_test.root -t -1 -T 10000 --saveToys\n &lt;&lt;&lt; Combine &gt;&gt;&gt; \nInvalid options: unrecognised option '-T'\nInvalid options: unrecognised option '-T'\nUse combine --help to get a list of all the allowed options\n</code></pre>\n<p>Regarding the Test statistic distribution, I have some condor jobs producing it right now, so I will update shortly and in the meantime read about this new method.<br>\nThanks,<br>\nWren</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-04-17T12:41:06.341Z",
+      "updated_at": "2024-04-17T12:41:06.341Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nin the HybridNew step.\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<p>in the <code>HybridNew</code> step.</p>\n<p>-Andrea</p>"
+    },
+    {
+      "post_number": 6,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-17T14:52:07.402Z",
+      "updated_at": "2024-04-17T14:52:07.402Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Andrea,\nThanks, running the test now. I will report back here once it finishes.\nFor Nicholas,\nIt looks relatively smooth to me, so for now peraps HybridNew is still best\ngridscan691\u00d7471 6.12 KB",
+      "cooked_html": "<p>Hi Andrea,<br>\nThanks, running the test now. I will report back here once it finishes.</p>\n<p>For Nicholas,<br>\nIt looks relatively smooth to me, so for now peraps HybridNew is still best<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/0/061cd4a45b030539863105633de52be74ac39785.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/061cd4a45b030539863105633de52be74ac39785\" title=\"gridscan\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/0/061cd4a45b030539863105633de52be74ac39785.png\" alt=\"gridscan\" data-base62-sha1=\"S4DjKahbeY925mYWSb53hFkuwZ\" width=\"690\" height=\"470\" data-dominant-color=\"EFEEEE\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">gridscan</span><span class=\"informations\">691\u00d7471 6.12 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 7,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-19T09:19:43.755Z",
+      "updated_at": "2024-04-19T09:19:43.755Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi, it seems that when I try to run with many toys (i.e. 10000), the task gets killed (both locally and condor) for using too much wall clock time. Is there a workaround strategy for this?",
+      "cooked_html": "<p>Hi, it seems that when I try to run with many toys (i.e. 10000), the task gets killed (both locally and condor) for using too much wall clock time. Is there a workaround strategy for this?</p>"
+    },
+    {
+      "post_number": 8,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-19T10:01:38.000Z",
+      "updated_at": "2024-04-19T10:02:43.116Z",
+      "reply_to_post_number": 6,
+      "is_accepted_answer": false,
+      "text": "Hi Wren,\nThanks for this check, my apologies that I probably wasn\u2019t very clear in what I was asking about. I was interested in the distributions of the test statistic that goes into this calculation that you\u2019re showing.\nAs an example, you can see one that we have in the docs (if you check here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting and scroll down the the drop down box, you\u2019ll see the plot attached below) \u2013 you can see in this case its very smooth but that\u2019s because its for an analysis that has pretty decent statistics. You can make these plots using the script we have (python test/plotTestStatCLs.py --input mygrid.root --poi r --val all --mass MASS) as explained in the same part of the docs.\nMy point was that if that distribution looks jagged, then you can easily see the jagged behaviour in the bands on the limits too. As Andreas pointed out too, increasing the toys can help but if these plots are intrinsically bumpy, using a larger -T won\u2019t help.\nApologies again for not being clear enough before,\nNick\nA graph showing the results of a test Description automatically generated with medium confidence1424\u00d71090 224 KB",
+      "cooked_html": "<p>Hi Wren,</p>\n<p>Thanks for this check, my apologies that I probably wasn\u2019t very clear in what I was asking about. I was interested in the <em><strong>distributions</strong></em> of the test statistic that goes into this calculation that you\u2019re showing.</p>\n<p>As an example, you can see one that we have in the docs (if you check here : <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/#plotting</a> and scroll down the the drop down box, you\u2019ll see the plot attached below) \u2013 you can see in this case its very smooth but that\u2019s because its for an analysis that has pretty decent statistics. You can make these plots using the script we have (<code>python test/plotTestStatCLs.py --input mygrid.root --poi r --val all --mass MASS</code>) as explained in the same part of the docs.</p>\n<p>My point was that if that distribution looks jagged, then you can easily see the jagged behaviour in the bands on the limits too. As Andreas pointed out too, increasing the toys can help but if these plots are intrinsically bumpy, using a larger -T won\u2019t help.</p>\n<p>Apologies again for not being clear enough before,</p>\n<p>Nick</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/5/5146b48d70b48e28cb8db8e402643bee75cc23f4.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/5146b48d70b48e28cb8db8e402643bee75cc23f4\" title=\"A graph showing the results of a test Description automatically generated with medium confidence\"><img width=\"653\" height=\"500\" src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/5/5146b48d70b48e28cb8db8e402643bee75cc23f4_2_653x500.jpeg\" data-base62-sha1=\"bB09WSa5EIIzJn3ajBaEA6ddqok\" alt=\"A graph showing the results of a test Description automatically generated with medium confidence\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/5/5146b48d70b48e28cb8db8e402643bee75cc23f4_2_653x500.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/5/5146b48d70b48e28cb8db8e402643bee75cc23f4_2_979x750.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/5/5146b48d70b48e28cb8db8e402643bee75cc23f4_2_1306x1000.jpeg 2x\" data-dominant-color=\"E9EBEA\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">A graph showing the results of a test Description automatically generated with medium confidence</span><span class=\"informations\">1424\u00d71090 224 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 9,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-19T11:26:30.649Z",
+      "updated_at": "2024-04-19T11:26:30.649Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Nicholas,\nI see. Though, when I execute this command, the root file is full of many canvases and I am not sure how useful the information in any of them is or which would be best to show\u2026 here is an example:\nTestStat2216\u00d71176 34.9 KB",
+      "cooked_html": "<p>Hi Nicholas,<br>\nI see. Though, when I execute this command, the root file is full of many canvases and I am not sure how useful the information in any of them is or which would be best to show\u2026 here is an example:<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/9/949257cb5bff98aa257c680aef0bbb5bc2073dd7.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/949257cb5bff98aa257c680aef0bbb5bc2073dd7\" title=\"TestStat\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/949257cb5bff98aa257c680aef0bbb5bc2073dd7_2_690x366.png\" alt=\"TestStat\" data-base62-sha1=\"lckcDXxog67bnTZrRGBPxzx3r8z\" width=\"690\" height=\"366\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/949257cb5bff98aa257c680aef0bbb5bc2073dd7_2_690x366.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/949257cb5bff98aa257c680aef0bbb5bc2073dd7_2_1035x549.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/9/949257cb5bff98aa257c680aef0bbb5bc2073dd7_2_1380x732.png 2x\" data-dominant-color=\"FAFAFA\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">TestStat</span><span class=\"informations\">2216\u00d71176 34.9 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>"
+    },
+    {
+      "post_number": 10,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-19T11:57:23.000Z",
+      "updated_at": "2024-04-19T11:58:02.432Z",
+      "reply_to_post_number": 9,
+      "is_accepted_answer": false,
+      "text": "Aha! This indeed looks like you\u2019re unlikely to get smooth limit bands,\nYou could check one of the figures corresponding to an r value near the expected limit just to see if it looks much better there .\nI would think that in this case it makes sense to use the version of toys that I describe in the slides I pointed to in my first mail. That version typically smooths things out a bit so you may find it solves the jagged limit bands. In the end this method is known to behave a little better than the standard approach when event yields are small (but it\u2019s a bit slower to run and one has to abandon the purely frequentist way of thinking)\nBest\nNick",
+      "cooked_html": "<p>Aha! This indeed looks like you\u2019re unlikely to get smooth limit bands,</p>\n<p>You could check one of the figures corresponding to an r value near the expected limit just to see if it looks much better there .</p>\n<p>I would think that in this case it makes sense to use the version of toys that I describe in the slides I pointed to in my first mail. That version typically smooths things out a bit so you may find it solves the jagged limit bands. In the end this method is known to behave a little better than the standard approach when event yields are small (but it\u2019s a bit slower to run and one has to abandon the purely frequentist way of thinking)</p>\n<p>Best<br>\nNick</p>"
+    },
+    {
+      "post_number": 11,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-22T10:32:09.103Z",
+      "updated_at": "2024-04-22T10:32:09.103Z",
+      "reply_to_post_number": 10,
+      "is_accepted_answer": false,
+      "text": "Hi Nick and Andrea,\nThanks so much for all your help and recommendations. As I understand it, the LHC-style test statistic is still used with the \u201cHybridNew\u201d approach, and only the Toy model would change. Is that right?\nIs this method of toy model generation something which is implemented within the combine tool or would I need to create a custom model? I am also a bit confused if it is the priors of the nuisance parameters which must be generated with flat priors or if it is the value of the background yield?",
+      "cooked_html": "<p>Hi Nick and Andrea,<br>\nThanks so much for all your help and recommendations. As I understand it, the LHC-style test statistic is still used with the \u201cHybridNew\u201d approach, and only the Toy model would change. Is that right?<br>\nIs this method of toy model generation something which is implemented within the combine tool or would I need to create a custom model? I am also a bit confused if it is the priors of the nuisance parameters which must be generated with flat priors or if it is the value of the background yield?</p>"
+    },
+    {
+      "post_number": 12,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-22T10:54:36.323Z",
+      "updated_at": "2024-04-22T10:54:36.323Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Wren,\nRight, its just the way the toys are handled thats different. You can certainly run this method in combine. You just need to remove the option --LHC-model LHC-limits and replace it with --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC\nThe subtlety about the flat priors in the \\tau \\to 3\\mu analysis is really only important if you have \u201cfree floating\u201d parameters in your model (i.e things other than log-normals, or param type nuisances). for small yields, one can argue that the major effect is from the background normalisation but you could produce flat priors for any/all such parameters. Note that in combine, we only talk about priors on parameters so if the background yield is fixed, there\u2019s no prior but if you usually let it float (eg rateParam or similar), then you should include a flat prior for that in this setup. Let me know, as there is an extra step in this case to get things to work properly.\nBest,\nNick",
+      "cooked_html": "<p>Hi Wren,</p>\n<p>Right, its just the way the toys are handled thats different. You can certainly run this method in <code>combine</code>. You just need to remove the option <code>--LHC-model LHC-limits</code> and replace it with <code>--generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC</code></p>\n<p>The subtlety about the flat priors in the <span class=\"math\">\\tau \\to 3\\mu</span> analysis is really only important if you have \u201cfree floating\u201d parameters in your model (i.e things other than log-normals, or <code>param</code> type nuisances). for small yields, one can argue that the major effect is from the background normalisation but you could produce flat priors for any/all such parameters. Note that in combine, we only talk about priors on parameters so if the background yield is fixed, there\u2019s no prior but if you usually let it float (eg rateParam or similar), then you should include a flat prior for that in this setup. Let me know, as there is an extra step in this case to get things to work properly.</p>\n<p>Best,<br>\nNick</p>"
+    },
+    {
+      "post_number": 13,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-22T14:02:37.636Z",
+      "updated_at": "2024-04-22T14:02:37.636Z",
+      "reply_to_post_number": 12,
+      "is_accepted_answer": false,
+      "text": "Hi Nick,\nThanks for the many detailed responses. For now our background yield is fixed, so I will try with this method.\nI notice that when I run the method, I get a few warnings of the following form, should they be a cause for concern?\n[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model",
+      "cooked_html": "<p>Hi Nick,<br>\nThanks for the many detailed responses. For now our background yield is fixed, so I will try with this method.<br>\nI notice that when I run the method, I get a few warnings of the following form, should they be a cause for concern?</p>\n<pre><code class=\"lang-auto\">[#0] WARNING:Eval -- RooStatsUtils::MakeNuisancePdf - no constraints found on nuisance parameters in the input model\n</code></pre>"
+    },
+    {
+      "post_number": 14,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-22T14:08:13.000Z",
+      "updated_at": "2024-04-22T14:10:54.951Z",
+      "reply_to_post_number": 13,
+      "is_accepted_answer": false,
+      "text": "Hi Wren,\nOk, let me know how it goes. This warning might be harmless but I wouldn\u2019t have expected it if you have systematic uncertainties in your datacard. Let\u2019s follow up once you get some results back with this method of running HybridNew\nBest,\nNick",
+      "cooked_html": "<p>Hi Wren,</p>\n<p>Ok, let me know how it goes. This warning might be harmless but I wouldn\u2019t have expected it if you have systematic uncertainties in your datacard. Let\u2019s follow up once you get some results back with this method of running HybridNew</p>\n<p>Best,</p>\n<p>Nick</p>"
+    },
+    {
+      "post_number": 15,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-22T16:06:40.495Z",
+      "updated_at": "2024-04-22T16:06:40.495Z",
+      "reply_to_post_number": 14,
+      "is_accepted_answer": false,
+      "text": "UhOh1796\u00d71300 143 KB\nWell, the method runs, but the results now seem rather nonsensical\u2026",
+      "cooked_html": "<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/4/4640755236b420c0cd140a7c16757245a13fdd4f.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/4640755236b420c0cd140a7c16757245a13fdd4f\" title=\"UhOh\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/4640755236b420c0cd140a7c16757245a13fdd4f_2_690x499.png\" alt=\"UhOh\" data-base62-sha1=\"a1twuUN79154sPZANRVnZ8Btsbd\" width=\"690\" height=\"499\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/4640755236b420c0cd140a7c16757245a13fdd4f_2_690x499.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/4640755236b420c0cd140a7c16757245a13fdd4f_2_1035x748.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/4/4640755236b420c0cd140a7c16757245a13fdd4f_2_1380x998.png 2x\" data-dominant-color=\"D7ECC6\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">UhOh</span><span class=\"informations\">1796\u00d71300 143 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div><br>\nWell, the method runs, but the results now seem rather nonsensical\u2026</p>"
+    },
+    {
+      "post_number": 16,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-22T16:33:24.000Z",
+      "updated_at": "2024-04-22T16:35:58.142Z",
+      "reply_to_post_number": 15,
+      "is_accepted_answer": false,
+      "text": "Hmm,\nDid you also make the any example plots of the test statistic distribution like before?\nBest\nNick\n\n| Wren Vetens wvetensApril 22 |\n\n| - |\n\nWell, the method runs, but the results now seem rather nonsensical\u2026",
+      "cooked_html": "<p>Hmm,</p>\n<p>Did you also make the any example plots of the test statistic distribution like before?</p>\n<p>Best<br>\nNick</p>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/w/41988e/45.png\" title=\"wvetens\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/wvetens\">Wren Vetens</a> wvetens<br>April 22 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p><a href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/4/4640755236b420c0cd140a7c16757245a13fdd4f.png\"></a></p>\n<p>Well, the method runs, but the results now seem rather nonsensical\u2026</p>"
+    },
+    {
+      "post_number": 17,
+      "username": "wvetens",
+      "name": "Wren Vetens",
+      "created_at": "2024-04-23T11:15:48.298Z",
+      "updated_at": "2024-04-23T11:15:48.298Z",
+      "reply_to_post_number": 16,
+      "is_accepted_answer": false,
+      "text": "Hi Nicholas,\nHere is a plot of the test statistic distribution for 1.8 GeV/c^2 since that may give an idea of some of the wonky behavior we are seeing. This r value is the r value of the median.\nTestStats1p82370\u00d71280 54.1 KB\nI will also include the commands I ran and the datacard so there\u2019s no ambiguity about what I did:\ndatacard_1p8GeV_BDTCUT0p355_signalRate_0p5.txt (530 Bytes)\ntext2workspace.py datacard_1p8GeV_BDTCUT0p355_signalRate_0p5.txt  -o ws_1p8.root\ncombine -d ws_1p8.root -M GenerateOnly -t -1 --saveToys -n 1p8\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.500\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.840\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.160\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.975\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.025\n\nAnd then to make the grid and plot\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --singlePoint 7.64644 --saveHybridResult\npython test/plotTestStatCLs.py --input higgsCombine1p8GeV.HybridNew.mH120.root --poi r --val all --mass 120",
+      "cooked_html": "<p>Hi Nicholas,<br>\nHere is a plot of the test statistic distribution for 1.8 GeV/c^2 since that may give an idea of some of the wonky behavior we are seeing. This r value is the r value of the median.<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/2/2cb251b58c09188c9efda5c5fffd0b7792ea6442.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/2cb251b58c09188c9efda5c5fffd0b7792ea6442\" title=\"TestStats1p8\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2cb251b58c09188c9efda5c5fffd0b7792ea6442_2_690x372.png\" alt=\"TestStats1p8\" data-base62-sha1=\"6np3sokVtt1aUt4JRdKmDN1Toga\" width=\"690\" height=\"372\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2cb251b58c09188c9efda5c5fffd0b7792ea6442_2_690x372.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2cb251b58c09188c9efda5c5fffd0b7792ea6442_2_1035x558.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/2/2cb251b58c09188c9efda5c5fffd0b7792ea6442_2_1380x744.png 2x\" data-dominant-color=\"F8F8F7\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">TestStats1p8</span><span class=\"informations\">2370\u00d71280 54.1 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div><br>\nI will also include the commands I ran and the datacard so there\u2019s no ambiguity about what I did:<br>\n<a class=\"attachment\" href=\"/uploads/short-url/aaDD6pYNTNCA7Cd9N4sI7pY44uL.txt\">datacard_1p8GeV_BDTCUT0p355_signalRate_0p5.txt</a> (530 Bytes)</p>\n<pre><code class=\"lang-auto\">text2workspace.py datacard_1p8GeV_BDTCUT0p355_signalRate_0p5.txt  -o ws_1p8.root\ncombine -d ws_1p8.root -M GenerateOnly -t -1 --saveToys -n 1p8\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.500\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.840\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.160\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.975\ncombine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --expectedFromGrid 0.025\n</code></pre>\n<p>And then to make the grid and plot</p>\n<pre><code class=\"lang-auto\">combine -d ws_1p8.root -M HybridNew --generateNuisances=1 --generateExternalMeasurements=0 --fitNuisances=1 --testStat LHC n 1p8 -D higgsCombine1p8.GenerateOnly.mH120.123456.root:toys/toy_asimov --singlePoint 7.64644 --saveHybridResult\npython test/plotTestStatCLs.py --input higgsCombine1p8GeV.HybridNew.mH120.root --poi r --val all --mass 120\n</code></pre>"
+    },
+    {
+      "post_number": 18,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-23T15:07:32.928Z",
+      "updated_at": "2024-04-23T15:07:32.928Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Wren,\nThanks for checking and sending the commands + datacard. Indeed, nothing you\u2019ve written seems wrong to me.\nI think given what you see here, we really are stuck into the discrete nature of Poisson statistics. Bascially, each of these spikes corresponds to a specific number of events that gets generated (0,1,2) which yields a specific value of the test statistic. The method you tried here can sometimes help to smoothen out the distribution since generating this way convolutes the Poisson with the log-normal terms but given the size of the systematics you have, it won\u2019t make a huge effect (which is what you see here)\nI don\u2019t think there\u2019s more that can be, or indeed should be done as I think you have essentially proven here that for your analysis, the distribution of the test statistic is discrete (and not due to lack of toys or the way in which the toys are generated) and so there will necessarily be jumps in the bands due to this. My only piece of advice then would be to not try to connect the bands when you draw the brazil plot since it could be misleading for points inbetween those that you calculate the limit for (if that makes sense).\nThanks again for the detailed checks, feel free to pick this thread up again later in the review in case things change or if there are questions during the review about it.\nAll the best,\nNick",
+      "cooked_html": "<p>Hi Wren,</p>\n<p>Thanks for checking and sending the commands + datacard. Indeed, nothing you\u2019ve written seems wrong to me.</p>\n<p>I think given what you see here, we really are stuck into the discrete nature of Poisson statistics. Bascially, each of these spikes corresponds to a specific number of events that gets generated (0,1,2) which yields a specific value of the test statistic. The method you tried here can sometimes help to smoothen out the distribution since generating this way convolutes the Poisson with the log-normal terms but given the size of the systematics you have, it won\u2019t make a huge effect (which is what you see here)</p>\n<p>I don\u2019t think there\u2019s more that can be, or indeed should be done as I think you have essentially proven here that for your analysis, the distribution of the test statistic is discrete (and not due to lack of toys or the way in which the toys are generated) and so there will necessarily be jumps in the bands due to this. My only piece of advice then would be to not try to connect the bands when you draw the brazil plot since it could be misleading for points inbetween those that you calculate the limit for (if that makes sense).</p>\n<p>Thanks again for the detailed checks, feel free to pick this thread up again later in the review in case things change or if there are questions during the review about it.</p>\n<p>All the best,<br>\nNick</p>"
+    }
+  ]
+}

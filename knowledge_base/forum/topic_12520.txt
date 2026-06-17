@@ -1,0 +1,191 @@
+TOPIC: Fluctuations in Upper 95 CL Limits in Parametric Unbinned Model
+URL: https://cms-talk.web.cern.ch/t/12520
+DATE: 2022-07-06T08:37:03.032Z
+SOLVED: no
+============================================================
+
+QUESTION (by shigginb @ 2022-07-06T08:37:03.289Z):
+Hello Combine Experts,
+In my computation of the upper 95% CL limit on my branching fraction I am obtaining strange fluctuations/wiggles in the limit that often seems to be dependent on the amount of significant figures I store in my shape parameters. Please see attached photos. The first one is one channel and year (2016 mmmt) and the other all channels and years.
+I’m conducting an un-binned parametric likelihood fit.
+My current method for running is (for example mass point 30):
+combine -M AsymptoticLimits -m 30 -n _mass_30 --X-rtd ADDNLL_RECURSIVE=0 --X-rtd MINIMIZER_analytic --freezeParameters MH --run blind dc_a30.txt
+Is there a prescription to handle this setup or to change this behavior?
+Many thanks for your help and time,
+Sam Higginbotham
+
+plotLimit_aa_2016_mmmt_2016700×550 10.3 KB
+
+plotLimit_aa_2022_all_2022_zoom700×550 11.7 KB
+----------------------------------------
+
+REPLY 2 (by amarini @ 2022-07-06T08:55:39.372Z):
+Hi,
+can you run for these points:
+-M FitDiagnostics --expectSignal=0
+and --expectSignal=1 (or relevant value) ?
+do they close ?
+-A
+----------------------------------------
+
+REPLY 3 (by shigginb @ 2022-07-06T09:21:11.206Z):
+Thanks for the quick response,
+Yes it seems to close.
+I’m using the combined results.
+combine -M FitDiagnostics -m 30 -n mass30 --expectSignal=0 --X-rtd ADDNLL_RECURSIVE=0 --X-rtd MINIMIZER_analytic --freezeParameters MH dc_a30.txt
+— FitDiagnostics —
+Best fit r: 8.41884e-07  -8.41884e-07/+0.0245292  (68% CL)
+Done in 0.14 min (cpu), 0.16 min (real)
+Although it complains that the number of events maybe negative at certain points. I think this is not an issue? The PDFs I put in my RooWorkspaces are positive and smooth - I do have some channels with low stats, but I make sure that the fit parameters have a positive nominal value and smaller error. Fyi: I use a bernstein for the background shape along the 20-60GeV range and a sharp Voigtian spline for the signal.
+and for a different expected signal strength
+combine -M FitDiagnostics -m 30 -n mass30 --expectSignal=1 --X-rtd ADDNLL_RECURSIVE=0 --X-rtd MINIMIZER_analytic --freezeParameters MH dc_a30.txt
+— FitDiagnostics —
+Best fit r: 8.41884e-07  -8.41884e-07/+0.0245292  (68% CL)
+Done in 0.14 min (cpu), 0.14 min (real)
+Cheers,
+Sam
+----------------------------------------
+
+REPLY 4 (by amarini @ 2022-07-07T12:43:24.000Z):
+Hi,
+(You may want to allow negative tests of the signal strength in debugging FitDiagonstics)
+I realize now that you are using an unbinned distribution.
+Can you try to play w/ the pseudo-asimov generation?
+E.g., --X-rtd TMCSO_PseudoAsimov=5000
+http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#asimov-datasets
+-Andrea
+On Wed, Jul 6, 2022 at 11:22 AM Sam Higginbotham via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Sam Higginbotham shigginbJuly 6
+
+Thanks for the quick response,
+Yes it seems to close.
+I’m using the combined results.
+combine -M FitDiagnostics -m 30 -n mass30 --expectSignal=0 --X-rtd ADDNLL_RECURSIVE=0 --X-rtd MINIMIZER_analytic --freezeParameters MH dc_a30.txt
+— FitDiagnostics —
+Best fit r: 8.41884e-07 -8.41884e-07/+0.0245292 (68% CL)
+Done in 0.14 min (cpu), 0.16 min (real)
+Although it complains that the number of events maybe negative at certain points. I think this is not an issue? The PDFs I put in my RooWorkspaces are positive and smooth - I do have some channels with low stats, but I make sure that the fit parameters have a positive nominal value and smaller error. Fyi: I use a bernstein for the background shape along the 20-60GeV range and a sharp Voigtian spline for the signal.
+and for a different expected signal strength
+combine -M FitDiagnostics -m 30 -n mass30 --expectSignal=1 --X-rtd ADDNLL_RECURSIVE=0 --X-rtd MINIMIZER_analytic --freezeParameters MH dc_a30.txt
+— FitDiagnostics —
+Best fit r: 8.41884e-07 -8.41884e-07/+0.0245292 (68% CL)
+Done in 0.14 min (cpu), 0.14 min (real)
+Cheers,
+Sam
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by shigginb @ 2022-07-12T12:32:52.350Z):
+Hi Andrea,
+The argument --X-rtd TMCSO_PseudoAsimov=5000 seems to help in some cases!
+Indeed it seems I have to change the number of toys depending on my channel and mass points.
+What is going on there? Should I be using HybridNew instead?
+Thanks for your time,
+Sam
+----------------------------------------
+
+REPLY 6 (by amarini @ 2022-07-12T13:38:20.000Z):
+Hi Sam,
+the problem is the definition of the pseudoAsimov for unbinned distribution.
+The Asimov dataset is the data observation that corresponds to the S+B hypothesis (or B-only, accordingly)
+For what concerns an unbinned distribution, we don’t have a binning where to set the yields, but we can create a dataset that mimics the expectations.
+This could be done with different strategies, as explained in the documentation pages.
+You may need to further tune it in some places, according to the shape of the pdf distribution and to how large is the pdf parameter space.
+you can try to have a larger number of events in the pseudo asimov to have an accurate description of the unbinned part.
+Is there still some residual place where --X-rtd TMCSO_PseudoAsimov=5000 is not enough?
+If you want to use toys to compute upper limits, that is also a possible alternative.
+However, also in that case, the number of toys may need to be large, if fluctuations in the distributions can significantly change the value of the test-statistics.
+So you may still need some optimization in this case as well. Is there a reason to believe that the AsymptoticFormula are not valid?
+Cheers,
+-Andrea
+On Tue, Jul 12, 2022 at 2:34 PM Sam Higginbotham via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Sam Higginbotham shigginbJuly 12
+
+Hi Andrea,
+The argument --X-rtd TMCSO_PseudoAsimov=5000 seems to help in some cases!
+Indeed it seems I have to change the number of toys depending on my channel and mass points.
+What is going on there? Should I be using HybridNew instead?
+Thanks for your time,
+Sam
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 7 (by shigginb @ 2022-10-13T14:16:05.631Z):
+Hello Andrea and Combine Experts,
+Thanks for the help in this parametric fit analysis!! I’m reviving this thread as I speed forward toward the preapproval and approval stages.
+I am now conducting HybridNew limits and observe similar fluctuations as I did with the Asymptotic limits. Please see the attached plot. I’ve tried increasing the number of toys to no avail.
+What are some options I can use to smooth this out??
+Thanks for your time and guidance!
+Sam
+
+plotLimit_aa_2016_mmmt_2016_noLHClim100000700×550 11.7 KB
+----------------------------------------
+
+REPLY 8 (by amarini @ 2022-10-13T15:26:39.212Z):
+Hi,
+I think that the main outcome you can take home at the moment is that the expected results from the Asymptotic approximations are reasonably described by toys. the mean is more or less very similar (by eye). This could be enough for a paper. Is there a particular reason why you thing you need the Hybrid limits?
+If you want to use the Hybrid toys you need to increase them much more, as you see large fluctuations also in the median expected.  I don’t know if these fluctuations could be related to the way we generate the Asimov or not, i.e. if you have some outliers in the test-statistcs distribution. Did you try to look at them in some point?
+-Andrea
+----------------------------------------
+
+REPLY 9 (by shigginb @ 2022-10-24T20:53:48.716Z):
+Hello Andrea,
+So the conveners are not convinced that the Asymptotic case and the Hybrid case are close enough. Here was the response:
+“It seems like there is a 30% difference, which is not negligible. If you followup with Andrea and ask if you can use Asymptotic when you expect less than 0.1 event, I doubt he will agree. If you want to convince up the difference is negligible you should at least run a sufficient number of toys for a few mass points.”
+I don’t mind optimizing for the HybridNew limits but I think I need more help. This is an unbinned fit with a small amout of events. Here are my last official release of datacards and RooWorkspaces:
+/afs/cern.ch/user/s/shigginb/public/HAA_datacards/
+How can I create smooth limits with this setup?
+I’ve tried 10^6 toys and the fluctuations still exist. Do I need more??
+If you have a moment to meet and discuss this it could really help too, please feel free to contact me directly.
+skype: https://join.skype.com/invite/r7NsRfmW3ocM
+skype email: samhiggie72@gmail.com
+email: shigginb@cern.ch, samuellh@princeton.edu
+Best,
+Sam
+----------------------------------------
+
+REPLY 10 (by amarini @ 2022-10-24T21:19:52.000Z):
+Hi Sam,
+I agree, 30% is probably a bit too large to neglect it and 0.1 expected events is indeed very little.
+It is also true that 10^6 toys should be fairly enough.
+the things than you should try to to are:
+
+make sure that you are effectively running 10^6 toys, and not asking combine to stop early.
+
+make sure that toys have different seeds if ran on different jobs
+
+plot the test statistics distribution (see under complex models in the documentation) and check if it has weird features.
+
+plot the bands vs the poi and check that more or less is continuous (as above).
+
+Unfortunately, I won’t be able to help you a lot, as I am fully booked for the upcoming weeks.
+Maybe somebody else can step in?
+Cheers,
+-Andrea
+On Mon, Oct 24, 2022 at 10:55 PM Sam Higginbotham via CMS talk <noreply@cms-talk.web.cern.ch> wrote:
+
+Sam Higginbotham shigginbOctober 24
+
+Hello Andrea,
+So the conveners are not convinced that the Asymptotic case and the Hybrid case are close enough. Here was the response:
+“It seems like there is a 30% difference, which is not negligible. If you followup with Andrea and ask if you can use Asymptotic when you expect less than 0.1 event, I doubt he will agree. If you want to convince up the difference is negligible you should at least run a sufficient number of toys for a few mass points.”
+I don’t mind optimizing for the HybridNew limits but I think I need more help. This is an unbinned fit with a small amout of events. Here are my last official release of datacards and RooWorkspaces:
+/afs/cern.ch/user/s/shigginb/public/HAA_datacards/
+How can I create smooth limits with this setup?
+I’ve tried 10^6 toys and the fluctuations still exist. Do I need more??
+If you have a moment to meet and discuss this it could really help too, please feel free to contact me directly.
+skype: https://join.skype.com/invite/r7NsRfmW3ocM
+skype email: samhiggie72@gmail.com
+email: shigginb@cern.ch, samuellh@princeton.edu
+Best,
+Sam
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------

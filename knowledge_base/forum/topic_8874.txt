@@ -1,0 +1,84 @@
+TOPIC: Flat parameter postfit values in GoF test
+URL: https://cms-talk.web.cern.ch/t/8874
+DATE: 2022-04-01T08:06:09.788Z
+SOLVED: no
+============================================================
+
+QUESTION (by mrogulji @ 2022-04-01T08:06:10.023Z):
+Dear experts,
+I am running a 2D fit in two regions (pass and fail) where the dominating background in each bin in the passing region is evaluated as the product of  the yield in the corresponding bin in the failing region with the transfer function evaluated at the bin center. The transfer function is modelled as a 2D polynomial with parameters defined as flatParams in the datacard.
+To determine the order of the polynomial, an F-test is run, for which the GoF saturated test statistic needs to be evaluated. The GoF test (combine -M GoodnessOfFit -d TnP.root --algo=saturated) returns significantly higher test statistic for polynomial of order 3 in one dimension (the order in the second dimensions is fixed) than for order 2: 112 vs. 68, respectively. However, the postfit plots obtained after running FitDiagnostics clearly show that the prediction of polynomial of order 3 provides a better agreement with the data. My questions are the following:
+
+Is the test statistic defined as Eq.5 in this note? That is, a fit with better agreement to the data should return a lower value.
+Does the GoodnessOfFit  method perform the same minimization as FitDiagnostics, provided that the same minimizer options are given, before calculating the test statistic?
+How can I check the values of flat parameters that the GoodnessOfFit uses when calculating the GoF score? I tried setting verbosity level to 4, but it only prints out the values of constrained parameters. Another approach was to use --saveWorkspace, but it only saves the clean snapshot, which looks like prefit to me.
+
+Attached are the two workspaces.
+Thanks in advance
+TnP_2x2.root (149.9 KB)
+TnP_3x2.root (152.7 KB)
+.
+Best regards,
+Matej
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2022-04-01T10:01:17.749Z):
+Hi Matej,
+It’s not clear to me why you need to use the GoF method to perform the F-test. In the end you want the likelihood ratio for the Nth and N+1th order parameterisations, and this could normally be done directly, e.g. with MultiDimFit --algo fixed. Anyway, to answer your questions:
+
+Yes, this is the definition used. So for a given dataset, indeed a lower test-statistic implies better agreement.
+Yes, it should be the same.
+They should be visible with -v 3 - I can’t run your workspaces directly because they have a class (RooParametricHist2D) that is not in the main combine release. However running on other workspaces I see the full minuit fit logs (starting with lines like Minuit2Minimizer: Minimize with max-calls 54500 convergence for edm < 0.1 strategy 1, ending with Minuit2Minimizer : Valid minimum - status = 0, after which the values of all floating parameters are printed. You should look at the first of the two fits that are performed - that one is the fit to the data with the full model, and so should also feature the unconstrained parameters. The second is the fit with the saturated model, where I indeed you would only see the constrained parameters I think.
+
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by mrogulji @ 2022-04-01T12:06:31.503Z):
+Thanks for the quick reply and my apologies for forgetting that I am using a custom class in combine. The third answer was enlightening. The initial fit to the data with the full model was unsuccessful (Invalid Minimum - status = 4) so the parameters were not printed out.
+The strange part is that the minimizer did not fail when running FitDiagnostics. I thought the two methods would give the same fit results. Attached are the logs of the two commands:
+combine -M FitDiagnostics -d TnP.root  -v 3 --cminDefaultMinimizerStrategy 0 > FitDiagnostics.out
+combine -M GoodnessOfFit -d TnP.root --algo saturated -v 3 --cminDefaultMinimizerStrategy 0 > GoF.out
+The only thing which seems “suspicious” in the FitDiagnostics is that the Hessian is forced to be positive definite. Could this be the reason why the minimizer fails with GoF?
+GoF.out (10.1 KB)
+FitDiagnostics.out (149.1 KB)
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2022-04-04T08:45:25.783Z):
+Hi Matej,
+It seems strange that Minuit doesn’t print any other error in this case, and that it fails before progressing at all with the minimisation. I’m not sure the non-pos-def Hessian is a big issue, the main fit completes ok. To test it further I’ll need to be able to run your workspace. Can you point me to a branch of combine that has the necessary code to read your custom class?
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 5 (by mrogulji @ 2022-04-04T09:10:26.274Z):
+Thanks for the followup. A fork containing the additional class can be found here: https://github.com/mroguljic/HiggsAnalysis-CombinedLimit
+----------------------------------------
+
+REPLY 6 (by ncsmith @ 2022-04-04T20:24:53.511Z):
+Hi Matej,
+By chance is this model the same that is in this open PR: https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/pull/545 ? If so, hopefully it will be merged soon.
+Regarding the GoF, I suppose this is the same or similar to the rhalphabet method we used in ggH(bb)/(cc), right? I think the idea to use GoF was to have a statistic that should (eventually) follow a chi-square distribution. I guess since in the end we use toys (because we don’t want to have to rely on our determination of the degrees of freedom) we don’t really need the two GoF values to obey chi-square and could just take the raw nll values out of each fit to build the distribution and compute the quantile of the observed value. Though it won’t be an F distribution.
+As an aside, and perhaps you already implemented it, but something that might affect fit stability in this method that we saw in the past was that it is necessary to rescale the fail bin yield free parameter to have approximately unit variance.
+----------------------------------------
+
+REPLY 7 (by mrogulji @ 2022-04-05T06:22:30.355Z):
+Hi Nick,
+correct, that is the additional class used in the model. And yes, the method used is the same as rhalphabet. We could use the raw nll values to run F-test, but we want to run GoF as well so this still needs to be understood.
+We didn’t try the rescaling yet, but it’s something that we could try. Another thing which may work is saving the snapshot from FitDiagnostics and loading it when running GoF.
+Cheers,
+Matej
+----------------------------------------
+
+REPLY 8 (by agilbert @ 2022-04-06T10:10:23.884Z):
+Hi,
+I think I understand the issue.
+First, on the difference between FitDiagnostics (or MultiDimFit) and GoF. I remembered there is a small difference - by default FitDiagnostics has some optimisation for the constrained parameter ranges, which is not available in the GoF routine. You can disable it with --X-rtd OPTIMIZE_BOUNDS=0, then it will also fail in FitDianostics.
+Now I don’t think this range optimisation is actually that relevant. Your minimisation fails because Minuit exceeds the maximum number of calls it is allowed to make, and I think this happens because the FCN values are rather large in magnitude, and so the edm numerical precision is lower than normal. Best way to deal with this might be to have combine run a loose initial fit before the main fit, by adding --cminApproxPreFitTolerance 1000 or --cminApproxPreFitTolerance 100.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 9 (by mrogulji @ 2022-04-06T10:24:49.386Z):
+Understood. Thanks for looking into it.
+----------------------------------------

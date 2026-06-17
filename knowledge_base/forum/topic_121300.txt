@@ -1,0 +1,84 @@
+TOPIC: Goodness Of Fit with only poisson
+URL: https://cms-talk.web.cern.ch/t/121300
+DATE: 2025-03-31T14:10:13.635Z
+SOLVED: no
+============================================================
+
+QUESTION (by amassiro @ 2025-03-31T14:10:13.771Z):
+Dear combine experts,
+I am wondering if it’s possible to generate toys during a goodness of fit [1] test with only poisson variations (namely toy ~ poisson [expected]) and with all the nusances and POIs fixed to the best fitted value?
+This would be a real test of the goodness of fit, with a current model, to data.
+What would be the exact combine command to obtain this?
+E.g.:
+combine -M GoodnessOfFit combined.root --algo=saturated -t 100  -s 12345 --toysFreq
+
+Best regards,
+Andrea
+[1] https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/commonstatsmethods/?h=goodne#goodness-of-fit-tests
+----------------------------------------
+
+REPLY 2 (by gortona @ 2025-03-31T14:27:28.662Z):
+Hi Andrea,
+Indeed we suggest to use the --toysFreq option when running the saturated model exactly for the reason you quote.
+On the other hand, by default the signal strength is free to float when you use GoodnessOfFit. If you want to fix it, you can use --fixedSignalStrength=
+Cheers,
+Giacomo
+----------------------------------------
+
+REPLY 3 (by amassiro @ 2025-03-31T14:33:30.253Z):
+Dear Giacomo,
+thanks for the fast reply.
+I have a follow up question, since it’s not clear to me. In the documentation [1] I read:
+
+–toysFrequentist the nuisance parameters in each toy are set to their nominal values which are obtained after first fitting to the observed data, with the POIs fixed, before generating the toy data sets. For evaluating likelihoods, the constraint terms are instead randomized within their PDFs around the post-fit nuisance parameter values.
+
+What is not clear to be is if the POIs are fixed to the best value (that is what I would like to have) or fixed to their default value of the model.
+Which is the case?
+Best regards,
+Andrea
+[1] http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/runningthetool/#toy-data-generation
+----------------------------------------
+
+REPLY 4 (by agilbert @ 2025-04-01T09:40:20.816Z):
+Hi Andrea,
+With --toysFrequentist the POIs are frozen to whichever values they happen to have in the workspace at that moment (*). It’s normally recommended to set these explicitly with --setParameters to be sure the values are the desired ones.
+To generate frequentist toys from the global best-fit, the easiest way I can think to do it is to first run a fit with MultiDimFit, save the workspace and a snapshot, then run again, load the snapshot, add --bypassFrequentistFit and the other desired toy generation options.
+cheers,
+Andrew
+(*)
+
+github.com/cms-analysis/HiggsAnalysis-CombinedLimit
+
+src/Combine.cc
+
+main
+
+gobs.assignValueOnly(*snap);
+w->saveSnapshot("clean", utils::returnAllVars(w));
+}
+}
+else{
+if (genPdf == 0) throw std::invalid_argument("You can't generate background-only toys if you have no background-only pdf in the workspace and you have set --noMCbonly");
+if (toysFrequentist_) {
+w->saveSnapshot("reallyClean", utils::returnAllVars(w));
+if (dobs == 0) throw std::invalid_argument("Frequentist Asimov datasets can't be generated without a real dataset to fit");
+RooArgSet gobsAsimov;
+utils::setAllConstant(*mc->GetParametersOfInterest(), true); // Fix poi, before fit
+double poiVal = 0.;
+if (mc->GetParametersOfInterest()->getSize()) {
+poiVal = dynamic_cast<RooRealVar *>(mc->GetParametersOfInterest()->first())->getVal();
+}
+dobs = asimovutils::asimovDatasetWithFit(mc, *dobs, gobsAsimov, !bypassFrequentistFit_, poiVal, verbose);
+if (mc->GetGlobalObservables()) {
+RooArgSet gobs(*mc->GetGlobalObservables());
+gobs = gobsAsimov;
+}
+utils::setAllConstant(*mc->GetParametersOfInterest(), false);
+----------------------------------------
+
+REPLY 5 (by amassiro @ 2025-04-01T10:51:31.909Z):
+Dear Andrew,
+thanks for the reply and for the instructions.
+Best regards,
+Andrea
+----------------------------------------

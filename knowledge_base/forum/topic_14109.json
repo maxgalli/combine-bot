@@ -1,0 +1,45 @@
+{
+  "topic_id": 14109,
+  "title": "Signal scaling with different function but same POI",
+  "url": "https://cms-talk.web.cern.ch/t/14109",
+  "category_id": 279,
+  "created_at": "2022-08-20T01:20:41.926Z",
+  "last_posted_at": "2022-08-20T21:12:16.005Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "jihunk",
+      "name": "Jihun Kim",
+      "created_at": "2022-08-20T01:20:42.159Z",
+      "updated_at": "2023-02-07T10:53:07.078Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI have short questions regarding constructing a physics model.\nIn my analysis, I have two signal processes(say S1, S2), and I\u2019d like to scale S1 with r, S2 with r^2.\nBy following the tutorial in https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/#multisignalmodel-ready-made-model-for-multiple-signal-processes, I could easily understand how to assign two independent POIs, or even how to assign a POI to one signal while treating the other signal as a background, etc.\nBut I\u2019m unsure if I understand all the functionalities and having trouble in assigning r to S1, while r^2 to S2.\nThis is a little bit different situation with the tutorial as I\u2019d like to set the limit on the POI \u2018r\u2019 only, while r scales S1 linearly and S2 quadratically.\nMy first trial was something like this:\nfrom HiggsAnalysis.CombinedLimit.PhysicsModel import *\n\nclass MyModel(PhysicsModel):\ndef doParametersOfInterest(self):\nself.modelBuilder.doVar(\"r[0,0,10]\")\nself.modelBuilder.doSet(\"POI\", \",\".join(['r']))\nself.modelBuilder.factory_(\"expr::r2(\\\"(@0)*(@0)\\\", r)\")\n\ndef getYieldScale(self,bin,process):\nif \"S1\" in process:\nreturn 'r'\nelif \"S2\" in process:\nreturn 'r2'\nelse:\nreturn 1\n\nmyModel = MyModel()\n\nwith this model, I could run\ntext2workspace.py -P HiggsAnalysis.CombinedLimit.MyModel:myModel mycard.txt\nand got the result.\nCould you confirm if this is the correct usage or there are any concerns with this?\nAnd It would be appreciated if you let me know any further literature or old hypernews thread for reference.\nMany thanks!\nJihun.",
+      "cooked_html": "<p>Dear Combine experts,<br>\nI have short questions regarding constructing a physics model.</p>\n<p>In my analysis, I have two signal processes(say S1, S2), and I\u2019d like to scale S1 with r, S2 with r^2.</p>\n<p>By following the tutorial in <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/#multisignalmodel-ready-made-model-for-multiple-signal-processes\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/#multisignalmodel-ready-made-model-for-multiple-signal-processes</a>, I could easily understand how to assign two independent POIs, or even how to assign a POI to one signal while treating the other signal as a background, etc.<br>\nBut I\u2019m unsure if I understand all the functionalities and having trouble in assigning r to S1, while r^2 to S2.<br>\nThis is a little bit different situation with the tutorial as I\u2019d like to set the limit on the POI \u2018r\u2019 only, while r scales S1 linearly and S2 quadratically.</p>\n<p>My first trial was something like this:</p>\n<pre><code>from HiggsAnalysis.CombinedLimit.PhysicsModel import *\n\nclass MyModel(PhysicsModel):\n    def doParametersOfInterest(self):\n        self.modelBuilder.doVar(\"r[0,0,10]\")\n        self.modelBuilder.doSet(\"POI\", \",\".join(['r']))\n        self.modelBuilder.factory_(\"expr::r2(\\\"(@0)*(@0)\\\", r)\")\n\n    def getYieldScale(self,bin,process): \n        if \"S1\" in process:\n            return 'r'\n        elif \"S2\" in process:\n            return 'r2'\n        else:\n            return 1\n\nmyModel = MyModel()\n</code></pre>\n<p>with this model, I could run<br>\ntext2workspace.py -P HiggsAnalysis.CombinedLimit.MyModel:myModel mycard.txt<br>\nand got the result.</p>\n<p>Could you confirm if this is the correct usage or there are any concerns with this?<br>\nAnd It would be appreciated if you let me know any further literature or old hypernews thread for reference.</p>\n<p>Many thanks!<br>\nJihun.</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-08-20T17:29:51.278Z",
+      "updated_at": "2022-08-20T17:29:51.278Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Seems correct.\nYou can also add some print() to be convinced.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Seems correct.</p>\n<p>You can also add some print() to be convinced.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "woodson",
+      "name": "Javier Mauricio Duarte",
+      "created_at": "2022-08-20T21:12:16.005Z",
+      "updated_at": "2022-08-20T21:12:16.005Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Jihun,\nYou can also add --PO verbose to the text2workspace command to print out the scaling factors for each process to confirm the correct scaling.\n(see: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/)\nThanks,\nJavier",
+      "cooked_html": "<p>Hi Jihun,</p>\n<p>You can also add <code>--PO verbose</code> to the <code>text2workspace</code> command to print out the scaling factors for each process to confirm the correct scaling.</p>\n<p>(see: <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/physicsmodels/</a>)</p>\n<p>Thanks,<br>\nJavier</p>"
+    }
+  ]
+}

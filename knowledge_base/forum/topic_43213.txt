@@ -1,0 +1,50 @@
+TOPIC: Two questions about toys with feldman-cousins method
+URL: https://cms-talk.web.cern.ch/t/43213
+DATE: 2024-07-07T08:42:56.880Z
+SOLVED: no
+============================================================
+
+QUESTION (by anikiten @ 2024-07-07T08:42:57.390Z):
+Dear experts,
+I am evaluating LEE due to the used ranges of mass (mean) and width with this command (one toy just to see print out):
+combine -d combined.txt -M HybridNew --LHCmode LHC-feldman-cousins --clsAcc 0 --singlePoint mu_sr1_2017=0,mu_sr2_2017=0,mu_sr3_2017=0 --saveToys --saveHybridResult -T 1 -s -1 --freezeParameters sigma,r --setParameterRanges mean=25.0,30.0:width=0.0,5.6:mu_sr1_2017=0.0,100.0:mu_sr2_2017=0.0,100.0:mu_sr3_2017=0.0,150.0 --redefineSignalPOI mu_sr1_2017,mu_sr2_2017,mu_sr3_2017 -n run_1 -v3 > out.log
+1 st question:
+in log file (see attached below)  I see line
+ModelConfig_POI:(r)
+while I used in above command  --freezeParameters sigma,r
+Is it OK or something is wrong ?
+2nd question
+I do not quite understand what is going after line
+Fitting of the signal-plus-background hypothesis done in 0.129842 s
+it prints out few times list of initial values for bkg. parameters and signal mean and width and only after that it seems to print their values after fit.
+Can you check if print out looks reasonable for you.
+My
+combined.txt
+is on
+/afs/cern.ch/work/a/anikiten/public/CMSSW_14_1_0_pre4/src/HiggsAnalysis/CombinedLimit/test
+Thank you, Sasha.
+out.log (47.2 KB)
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2024-07-09T11:47:11.683Z):
+Dear Alexandre,
+To answer the first question: when running Combine with -v 3  option it prints the workspace from text2workspace.py step which Combine runs when you start from .txt datacard file with default model with a single POI - r.  The parameters are redefined and frozen later with --redefineSignalPOI and --freezeParameters options respectively.
+I went through the log file, it seems to me like there are some issues due to the background function in SR2 2018 shapeBkg_bkg_ch2_SR2_2018 which is defined as RooPolynomial.
+I think in some earlier threads it was already discussed that it would be good to use pdfs which are always positive.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by anikiten @ 2024-07-09T11:52:06.741Z):
+Thanks, Aliya !
+I will try to replace RooPolynomial to Chebychev which is by definition is positive and see what will happen.
+Cheers, Sasha.
+----------------------------------------
+
+REPLY 4 (by anikiten @ 2024-07-10T14:29:09.282Z):
+Dear Aliya,
+I was wrong. Chebychev polynomial can also be negative…
+Do you know what happen when pdf gets negative. Does Minuit try to find parameters with positive pdf and continue the minimization, does it stop and set Log(L) to some value ?  I guess machinery with toys and feldman-cousins should be sensitive to that …
+Thanks for all your help,
+Sasha.
+----------------------------------------

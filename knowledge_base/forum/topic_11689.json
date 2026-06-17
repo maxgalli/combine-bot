@@ -1,0 +1,34 @@
+{
+  "topic_id": 11689,
+  "title": "2D binned ML fit with Combine",
+  "url": "https://cms-talk.web.cern.ch/t/11689",
+  "category_id": 279,
+  "created_at": "2022-06-14T19:57:11.941Z",
+  "last_posted_at": "2022-06-14T20:14:46.168Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "dinardo",
+      "name": "Mauro Dinardo",
+      "created_at": "2022-06-14T19:57:12.197Z",
+      "updated_at": "2023-02-09T15:29:21.100Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI would like to know whether performing a 2D binned likelihood fit with Combine is possible.\nThe pdf should be an analytic formula (not a histogram template)\nThe 2D space is, for example, an invariant mass and a DNN score.\nMoreover, I would like to compute limits on the cross-section as a function of the invariant mass:\nbasically very much like in the attached plot used just as an example.\nThe limit for every mass point should be calculated using a likelihood whose pdf is defined on the aforementioned 2D space.\nMany thanks,\n\nMauro.\n\nScreenshot 2022-06-14 at 9.49.41 PM1196\u00d7868 139 KB",
+      "cooked_html": "<p>Dear experts,<br>\nI would like to know whether performing a 2D binned likelihood fit with Combine is possible.<br>\nThe pdf should be an analytic formula (not a histogram template)<br>\nThe 2D space is, for example, an invariant mass and a DNN score.<br>\nMoreover, I would like to compute limits on the cross-section as a function of the invariant mass:<br>\nbasically very much like in the attached plot used just as an example.<br>\nThe limit for every mass point should be calculated using a likelihood whose pdf is defined on the aforementioned 2D space.</p>\n<p>Many thanks,</p>\n<ul>\n<li>Mauro.</li>\n</ul>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/e/ed41dbfba52d92ea7bbfb5947872c34ddd84a29b.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/ed41dbfba52d92ea7bbfb5947872c34ddd84a29b\" title=\"Screenshot 2022-06-14 at 9.49.41 PM\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/ed41dbfba52d92ea7bbfb5947872c34ddd84a29b_2_688x499.jpeg\" alt=\"Screenshot 2022-06-14 at 9.49.41 PM\" data-base62-sha1=\"xQSgkyZhcHtc89rjUUvpWXoT3d1\" width=\"688\" height=\"499\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/ed41dbfba52d92ea7bbfb5947872c34ddd84a29b_2_688x499.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/ed41dbfba52d92ea7bbfb5947872c34ddd84a29b_2_1032x748.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/original/2X/e/ed41dbfba52d92ea7bbfb5947872c34ddd84a29b.jpeg 2x\" data-dominant-color=\"CEE9B1\"><div class=\"meta\">\n<svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">Screenshot 2022-06-14 at 9.49.41 PM</span><span class=\"informations\">1196\u00d7868 139 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg>\n</div></a></div></p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2022-06-14T20:14:46.168Z",
+      "updated_at": "2022-06-14T20:14:46.168Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi,\nyes, it is possible. You need to construct the RooDataHist over the two observables and the pdfs (over the observables) should be a function of the truth invariant mass.\nThe test-statistic and the commands after the datacard is made are the usual ones.\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi,</p>\n<p>yes, it is possible. You need to construct the RooDataHist over the two observables and the pdfs (over the observables) should be a function of the truth invariant mass.</p>\n<p>The test-statistic and the commands after the datacard is made are the usual ones.</p>\n<p>Cheers,<br>\n-Andrea</p>"
+    }
+  ]
+}

@@ -1,0 +1,200 @@
+TOPIC: Faster way to derive covariance matrix
+URL: https://cms-talk.web.cern.ch/t/69575
+DATE: 2024-11-27T18:26:17.404Z
+SOLVED: no
+============================================================
+
+QUESTION (by vhegde @ 2024-11-27T18:26:17.942Z):
+Dear experts,
+I am trying to obtain covariance matrix for a datacard that consists of several bins [1]. I tried using FitDiagnostics using this documentation. But it runs for > 5 days and eventually gets killed because it exceeded wall time. Is there a way to make this faster? I looked at this post Accelerating Postfits (FitDiagnostics) but it seems to be related to deriving post-fit results based on covariance matrix. Is my understanding correct? Is there a way to obtain covariance matrix faster for a big datacard?
+Thanks,
+Vinay
+[1]
+/afs/cern.ch/work/v/vhegde/public/Physics/EW_SUSY/covMat_EWKinoCombRun2/TChiWH_600_200_comb.root
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-11-27T19:12:40.000Z):
+Hi Vinay,
+Just to be clear, you are trying to calculate the covariance between bins in your distribution right, as opposed to between the parameters of the model?
+If the former, FitDiagnostics will sample from the covariance for the parameters to calculate the covariance of the bins, I suspect it is simply the process of looping over all the bins (squared since it’s the covariance) across all channels that is taking so long per toy (this part of the code is really not very smart in all honesty) - you could try reducing the number of samples (see the docs) just to check if that makes things faster.
+Another approach is to run the toys yourself and keep track of the bin contents in each fit (you’ll find options for that too) this has the bonus that you can then parallelise the jobs to do so but the downside is that you’ll probably have to write a bit of code yourself to calculate the covariance from the toys after. If you happen to write something generic, then it would be great to add to the set of tools of course
+Best
+Nick
+
+···
+On 27 Nov 2024 18:40, Vinay Hegde via CMS talk noreply-cms-talk@cern.ch wrote:
+
+Vinay Hegde vhegdeNovember 27
+
+Dear experts,
+I am trying to obtain covariance matrix for a datacard that consists of several bins [1]. I tried using FitDiagnostics using this documentation. But it runs for > 5 days and eventually gets killed because it exceeded wall time. Is there a way to make this faster? I looked at this post Accelerating Postfits (FitDiagnostics) but it seems to be related to deriving post-fit results based on covariance matrix. Is my understanding correct? Is there a way to obtain covariance matrix faster for a big datacard?
+Thanks,
+Vinay
+[1]
+/afs/cern.ch/work/v/vhegde/public/Physics/EW_SUSY/covMat_EWKinoCombRun2/TChiWH_600_200_comb.root
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by vhegde @ 2024-11-28T18:10:17.990Z):
+Hi Nick,
+Thanks for the reply.
+Yes, I am interested in covariance between bins.
+I don’t think I can reduce the number of samples.
+For the toys do you have any simple example that I can try? I started with something like this:
+combine workspaceCard.root -M FitDiagnostics --setParameters rgx{mask_.*SR.*}=1 --toysFrequentist --noErrors --minos none -t 1. I get three different TTrees with a lot of info. I am not sure what’s the next step.
+Regards,
+Vinay
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-11-28T19:03:31.000Z):
+Hi Vinay,
+To be clear, when I say reduce the number of samples I mean to reduce the number of toys combine internally throws to calculate the covariance using the option --numToysForShape
+For the toy generation yourself, your command is ok but you need to include the option --savePredictionsPerToy as mentioned here https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/simplifiedlikelihood/?h=moment#requirements
+Once you do, you will find branches inside the trees “n_exp_*” which gives the number of events in each toy per process, per bin (for details on the naming, see here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/#per-bin-norms-for-shape-analyses
+What you need to do is sum over the background processes in each toy to get the total background in each bin for each toy. From there you can calculate the covariance between bins.
+The tree you want depends on the type of analysis. If you have no control regions, you can simply use the prefit tree, if not then you would need to mask the signal region as usual and use the fit_b tree to get what you need.
+Hope that makes sense,
+Nick
+
+| Vinay Hegde vhegdeNovember 28 |
+
+| - |
+
+Hi Nick,
+Thanks for the reply.
+Yes, I am interested in covariance between bins.
+I don’t think I can reduce the number of samples.
+For the toys do you have any simple example that I can try? I started with something like this:
+combine workspaceCard.root -M FitDiagnostics --setParameters rgx{mask_.*SR.*}=1 --toysFrequentist --noErrors --minos none -t 1. I get three different TTrees with a lot of info. I am not sure what’s the next step.
+Regards,
+Vinay
+
+···
+On 28 Nov 2024 18:26, Vinay Hegde via CMS talk noreply-cms-talk@cern.ch wrote:
+----------------------------------------
+
+REPLY 5 (by vhegde @ 2024-11-29T18:17:22.479Z):
+Hi Nick,
+
+To be clear, when I say reduce the number of samples I mean to reduce the number of toys
+
+OK, I thought you meant number of bins. Even with less number of toys, it seems slow.
+I was able to generate toys myself and make TTrees. It took about 40 hrs (10 jobs x 4hrs) for 1000 toys. Next, I will try to calculate the covariance using a separate script. I will let you know how that goes.
+I am still confused why the usual procedure from FitDiagnostics takes so much time. Even if covariance calculation from these toys takes another 40 hours, which I don’t think will, this is a faster way.
+Thanks for the suggestions!
+Regards,
+Vinay
+----------------------------------------
+
+REPLY 6 (by vhegde @ 2024-12-10T15:32:32.461Z):
+Hi Nick,
+I was able to obtain covariance matrix based on the saved info in the trees.
+I am wondering if there is a way to check my results against the default method from higgs combine for a simple example? The covariance matrices I get from [1] and [2] are not exactly the same, though they are close and seem to use the same default random seed of 123456. Is it possible to save the exact set of toys in both methods? Also, [1] does not give me total_background histogram. I believe it can be obtained from the toy based results using mean and s.d. of background (s.d. = sqrt(covariance matrix for diagonal entries)). Is it correct?
+Thanks,
+Vinay
+[1]
+combine datacard.root -M FitDiagnostics --setParameters rgx{mask_.*SR.*}=1 --toysFrequentist --noErrors --minos none -t 100 --savePredictionsPerToy
+[2]
+combine datacard.root -M FitDiagnostics --saveShapes --saveWithUnc --numToysForShape 100 --setParameters "rgx{mask_.*SR.*}=1" --saveOveral
+----------------------------------------
+
+REPLY 7 (by nckw @ 2024-12-10T15:49:43.000Z):
+Hi Vinay,
+These two are not expected to be the same. The reason is that in [1], you are directly re-fitting each toy to find the yield (it really is the estimator in each toy), and this is actually more correct. In [2], we use a short cut by sampling from the post-fit covariance matrix which makes some assumption about the Gaussianity of the post-fit nuisance uncertainties & correlations – its good that they are similar, but it doesn’t have to be the case.
+Then when calculating the moments, in [2], they are calculated wrt the data fit as the “expected value”, while I suspect in [2], you again calculate the moments properly.
+To get the total background, you should just sum up the different processes (you could either use the average of the toys or the one directly from the fit, though they can be different, and you may find that with the latter one, your “post-fit” results using the simplified likelihood looks more like the full combine ones).
+In the end, You can check that you get a similar result (say when fitting the signal strength) using the simplified likelihood compared to combine – there is an example at the end of the instructions to do that.
+Remember, all of this is an approximation and even what we mean by “uncertainty on the background templates” is an approximation so its not surprising that different assumptions on what these are can lead to different results (slightly).
+Best,
+Nick
+
+···
+From: Vinay Hegde via CMS talk noreply-cms-talk@cern.ch
+Date: Tuesday, 10 December 2024 at 15:37
+To: Nicholas Wardle Nicholas.Wardle@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Faster way to derive covariance matrix
+
+Vinay Hegde vhegdeDecember 10
+
+Hi Nick,
+I was able to obtain covariance matrix based on the saved info in the trees.
+I am wondering if there is a way to check my results against the default method from higgs combine for a simple example? The covariance matrices I get from [1] and [2] are not exactly the same, though they are close and seem to use the same default random seed of 123456. Is it possible to save the exact set of toys in both methods? Also, [1] does not give me total_background histogram. I believe it can be obtained from the toy based results using mean and s.d. of background (s.d. = sqrt(covariance matrix for diagonal entries)). Is it correct?
+Thanks,
+Vinay
+[1]
+combine datacard.root -M FitDiagnostics --setParameters rgx{mask_.*SR.*}=1 --toysFrequentist --noErrors --minos none -t 100 --savePredictionsPerToy
+[2]
+combine datacard.root -M FitDiagnostics --saveShapes --saveWithUnc --numToysForShape 100 --setParameters "rgx{mask_.*SR.*}=1" --saveOveral
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 8 (by vhegde @ 2024-12-19T17:25:19.016Z):
+Hi Nick,
+Here [0] is a comparison between simplified likelihood vs full likelihood results using
+
+default combine method and
+toy based approach in which I calculate the covariance matrix separately.
+
+These results are based on a datacard that includes CRs in it. I am wondering what is the right set of commands for a datacard that does not have a CR and I would like to save the predictions per toy. I used this [1], but it gave me tree_prefit which has the same n_exp_* values for each toy. So, the covariance is zero. Is there something I am missing?
+Also, if you get a chance, could you please have a look at the scripts here: https://gitlab.cern.ch/hadewkino/simplike/-/tree/master ? In particular, getCovMatInputs.C and getCovMatFmProsFile.C are the new ones that I wrote for calculating the covariances.
+Please let me know if you have any questions.
+Thanks,
+Vinay
+[1]
+combineCards.py card.txt -S > shapecard.txt
+text2workspace.py --X-allow-no-signal --X-allow-no-background shapecard.txt -o datacard.root
+combine datacard.root -M FitDiagnostics --preFitValue 0 --minos none --toysFrequentist --noErrors --savePredictionsPerToy -t 100 -s 1
+
+[0]
+datacard: /afs/cern.ch/work/v/vhegde/public/Physics/EW_SUSY/covMat_EWKinoCombRun2/TChiWH_800_100_WX.root
+Toy1248×915 30.4 KB
+default1248×915 30.6 KB
+----------------------------------------
+
+REPLY 9 (by nckw @ 2025-01-21T20:29:34.706Z):
+Hi Vinay,
+Thanks for sending these studies. It looks very convincing to me so I would say in this case the toys-based approach is certainly making sense. It would be great to include instructions (and even the scripts) in the combine repo to allow for this option to be used instead of the default one.
+For the case where there are no control regions in the datacard, essentially what combine does is throw nuisance values from the nuisance pdf and re-evaluate the yields (since there’s no data to account fot). To do this with the same approach as you used for your current study, you need to make sure the toy generation is done in the same way.
+It should be enough to use -t N and check the yields from the pre-fit branch in the fitDiagnostics.root file. You should not use the --toysFreqentist opeion as this will instead sample the observables, which means each toy will have an identical PDF (and hence yield in each bin). So your command is fine, just remove the --toysFrequentist option.
+Hope it makes sense,
+Best,
+Nick
+----------------------------------------
+
+REPLY 10 (by vhegde @ 2025-01-22T12:54:57.511Z):
+Hi Nick,
+Thanks for taking a look at the repo and results. Also, I could produce results for no-CR datacards by removing --toysFreqentist.
+
+It would be great to include instructions (and even the scripts) in the combine repo to allow for this option to be used instead of the default one.
+
+Are you thinking of making it a part of combine tool or SL tool repo with instructions written in combine documentation? Currently, this procedure involves three steps:
+
+Generating toys and saving the predictions using FitDiagnostics in combine. This steps can truly run parallel with different random seed.
+A .C script calculates mean and deviations from mean which does not depend on combine.
+Another .C script calculates covariance (2nd momemnt) and 3rd moments based on step 2 and it also outside combine.
+
+Steps 2 and 3 need just ROOT and can take a few hours each depending on the number of bins. So, it might be easier/flexible to keep them outside and independent of combine and just add instructions in the docs.
+Please let me know what you prefer.
+Thanks,
+Vinay
+----------------------------------------
+
+REPLY 11 (by nckw @ 2025-01-28T13:57:07.275Z):
+Hi Vinay,
+I think its better to make this part of the combine tool since the SL tool repo is really just for the paper (but it has some nice code), and doesn’t assume any ROOT.
+If we also include these tools inside the combine repo, we would then also be able to add a section in the docs here : https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/simplifiedlikelihood/ using this new approach that you’ve created.
+What do you think?
+Best,
+Nick
+----------------------------------------
+
+REPLY 12 (by vhegde @ 2025-01-28T14:19:08.254Z):
+Hi Nick,
+Sounds good. I will prepare a PR to combine. Until the PR is merged, the scripts mentioned in this thread can be used as a temporary solution.
+Thanks,
+Vinay
+----------------------------------------

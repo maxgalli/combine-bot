@@ -1,0 +1,34 @@
+{
+  "topic_id": 108363,
+  "title": "Post-fit error bands from PostFitShapesFromWorkspace",
+  "url": "https://cms-talk.web.cern.ch/t/108363",
+  "category_id": 279,
+  "created_at": "2025-02-03T18:57:27.895Z",
+  "last_posted_at": "2025-02-04T08:21:50.777Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mpresill",
+      "name": "Matteo Presilla",
+      "created_at": "2025-02-03T18:57:27.999Z",
+      "updated_at": "2025-02-03T18:57:27.999Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI am seeking feedback on what to plot for the error bands of some post-fit distributions using PostFitShapesFromWorkspace.\nI execute the following command:\nPostFitShapesFromWorkspace \\\n-w datacard_to_PLOT.root \\\n-d datacard_to_PLOT.txt \\\n--output output.root \\\n--postfit --sampling \\\n--total-shapes \\\n-f fitDiagnosticsTest.root:fit_s\n\nHere datacard_to_PLOT.txt combines the Run 2 datacards of the variables I wish to plot, all included in the ML fit of my analysis, and fitDiagnosticsTest.root is obtained with the options --saveNormalizations --saveWithUncertainties from the datacards combined across all control and signal regions of the analysis.\nSince the resulting output.root file has the following structure:\nKEY: TDirectoryFile\tprefit;1\tprefit\nKEY: TDirectoryFile\tyear2016_prefit;1\tyear2016_prefit\nKEY: TDirectoryFile\tyear2017_prefit;1\tyear2017_prefit\nKEY: TDirectoryFile\tyear2018_prefit;1\tyear2018_prefit\nKEY: TDirectoryFile\tpostfit;1\tpostfit\nKEY: TDirectoryFile\tyear2016_postfit;1\tyear2016_postfit\nKEY: TDirectoryFile\tyear2017_postfit;1\tyear2017_postfit\nKEY: TDirectoryFile\tyear2018_postfit;1\tyear2018_postfit\n\nis it correct to use bin errors from postfit/TotalBkg for the post-fit error bands of the total background contribution?\nOr should I sum in quadrature the bin errors from the different years year2016_postfit/TotalBkg, year2017_postfit/TotalBkg, and year2018_postfit/TotalBkg? My understanding is that using bin errors from postfit/TotalBkg should be the best option as correctly accounts for nuisances correlation across the years.\nBest regards,\nMatteo",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I am seeking feedback on what to plot for the error bands of some post-fit distributions using <a href=\"https://cms-analysis.github.io/CombineHarvester/post-fit-shapes-ws.html\" rel=\"noopener nofollow ugc\">PostFitShapesFromWorkspace</a>.<br>\nI execute the following command:</p>\n<pre><code class=\"lang-auto\">PostFitShapesFromWorkspace \\\n    -w datacard_to_PLOT.root \\\n    -d datacard_to_PLOT.txt \\\n    --output output.root \\\n    --postfit --sampling \\\n    --total-shapes \\\n    -f fitDiagnosticsTest.root:fit_s\n</code></pre>\n<p>Here <code>datacard_to_PLOT.txt</code> combines the Run 2 datacards of the variables I wish to plot, all included in the ML fit of my analysis, and <code>fitDiagnosticsTest.root</code> is obtained with the options <code>--saveNormalizations --saveWithUncertainties</code> from the datacards combined across all control and signal regions of the analysis.<br>\nSince the resulting <code>output.root</code> file has the following structure:</p>\n<pre><code class=\"lang-auto\">  KEY: TDirectoryFile\tprefit;1\tprefit\n  KEY: TDirectoryFile\tyear2016_prefit;1\tyear2016_prefit\n  KEY: TDirectoryFile\tyear2017_prefit;1\tyear2017_prefit\n  KEY: TDirectoryFile\tyear2018_prefit;1\tyear2018_prefit\n  KEY: TDirectoryFile\tpostfit;1\tpostfit\n  KEY: TDirectoryFile\tyear2016_postfit;1\tyear2016_postfit\n  KEY: TDirectoryFile\tyear2017_postfit;1\tyear2017_postfit\n  KEY: TDirectoryFile\tyear2018_postfit;1\tyear2018_postfit\n</code></pre>\n<p>is it correct to use bin errors from <code>postfit/TotalBkg</code> for the post-fit error bands of the total background contribution?<br>\nOr should I sum in quadrature the bin errors from the different years <code>year2016_postfit/TotalBkg</code>, <code>year2017_postfit/TotalBkg</code>, and <code>year2018_postfit/TotalBkg</code>? My understanding is that using bin errors from <code>postfit/TotalBkg</code> should be the best option as correctly accounts for nuisances correlation across the years.</p>\n<p>Best regards,<br>\nMatteo</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "pkeicher",
+      "name": "Philip Keicher",
+      "created_at": "2025-02-04T08:21:50.777Z",
+      "updated_at": "2025-02-04T08:21:50.777Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "Hi Matteo,\nyes, using the postfit/TotalBkg to obtain the post-fit uncertainties should work nicely if you want to compare the data to the background modeling. Depending on the analysis and the message you want to give, you might want to compare the post-fit agreement of your complete model (i.e. with signal) and the data. In this case, you should probably use the complete sum of the processes, I think that should be postfit/TotalProcs.\nAll of this is true provided that you have chosen the binning between your eras to be the same - otherwise, the initial sum over the histograms does not work correctly.\nLet us know if you have more questions.\nCheers,\nPhilip\nSide note: You don\u2019t need to run --saveNormalizations --saveWithUncertainties if you use PostfitShapesFromWorkspace anyhow - both sample the covariance matrix you obtain in the fit and evaluate the post-fit shapes. So running without the two options should greatly speed up your fitting step.",
+      "cooked_html": "<p>Hi Matteo,</p>\n<p>yes, using the <code>postfit/TotalBkg</code> to obtain the post-fit uncertainties should work nicely if you want to compare the data to the background modeling. Depending on the analysis and the message you want to give, you might want to compare the post-fit agreement of your complete model (i.e. with signal) and the data. In this case, you should probably use the complete sum of the processes, I think that should be <code>postfit/TotalProcs</code>.</p>\n<p>All of this is true provided that you have chosen the binning between your eras to be the same - otherwise, the initial sum over the histograms does not work correctly.</p>\n<p>Let us know if you have more questions.</p>\n<p>Cheers,<br>\nPhilip</p>\n<p>Side note: You don\u2019t need to run <code>--saveNormalizations --saveWithUncertainties</code> if you use <code>PostfitShapesFromWorkspace</code> anyhow - both sample the covariance matrix you obtain in the fit and evaluate the post-fit shapes. So running without the two options should greatly speed up your fitting step.</p>"
+    }
+  ]
+}

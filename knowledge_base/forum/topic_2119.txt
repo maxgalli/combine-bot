@@ -1,0 +1,97 @@
+TOPIC: Re: Flag used for the FitDiagnostics
+URL: https://cms-talk.web.cern.ch/t/2119
+DATE: 2021-07-14T08:07:52.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by agilbert @ 2021-07-14T08:07:52.000Z):
+Hi Fabio,
+Sorry for the slow reply.
+Usually it's not a large number of parameters per-se that causes this - it only takes one parameter with an oddly shaped or discontinuous NLL curve, or two highly (anti-)correlated parameters to trigger this. Though it can be with a large number of parameters this is more likely to happen.
+There are a couple of things you could try and look at:
+- plot the unprofiled NLL vs each parameter: https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/debugging.html#analyzing-the-nll-shape-in-each-parameter and look for anything odd
+- Run with -v 3 and see if Minuit gives any hints in the verbose output from the fit
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 2 (by fravera @ 2021-07-27T18:39:00.000Z):
+*** Discussion title: Higgs Combination
+Dear Andrew,
+many thanks for your help!
+I run the two tests you suggested.
+For the FitDiagnostic with the verbose option, I did it for one of our mass hypotheses with and without signal injection. The output is quite long (more than 1 GB) and I added it into this cernbox folder:
+https://cernbox.cern.ch/index.php/s/KBIi8vDvVTvmvhM
+Unfortunately it is not really readable, I searched for key words like error, fail, warning, but I could not find any hint that may explains the problems we observed.
+I just find the warnings I got running the FitDiagnostic without verbose.
+In the same folder you can also find the nll for all the parameters. Also in this case the file is quite big and not easy to read, but I found several parameters with discontinuities in the NLL first derivative, even if (it seems to me) not very close to the minimum. For what I observed, the parameters presenting the issue are the one derived with the autoMCstat, so I do not have too much control on them.
+Do you have any suggestion?
+For completeness, I also attached at the end of the message the datacard used.
+Many thanks in advance.
+Best regards,
+Fabio
+Combination of c2016=DatacardFolder_2016/datacard2016_selectionbJets_SignalRegion.txt  c2017=DatacardFolder_2017/datacard2017_selectionbJets_SignalRegion.txt  c2018=DatacardFolder_2018/datacard2018_selectionbJets_SignalRegion.txt
+imax 3 number of bins
+jmax 1 number of processes minus 1
+kmax 21 number of nuisance parameters
+----------------------------------------
+
+REPLY 3 (by ncsmith @ 2021-07-27T20:09:29.000Z):
+Another possibility is parameters with a wide order of magnitude of uncertainties. It’s a bit of a catch-22 though because you can’t find the uncertainties until you invert the hessian.
+Assuming most mass points in the grid have similar behavior, what I would suggest is to compare the ratio of maximum and minimum uncertainty on any free parameter in the fit result for one of the successful fits (look at fit_s in fitDiagnostics.root), ratios larger than ~1e3 start to be problematic. The easiest way to fix it is to rescale the offending parameters.
+~Nick
+----------------------------------------
+
+REPLY 4 (by fravera @ 2021-07-29T03:32:52.000Z):
+*** Discussion title: Higgs Combination
+Dear Nick,
+many thanks for your suggestion.
+I retrieved the ratio between the maximum and the minimum errors among all free parameters for all the mass hypotheses tested, but in the highest value I found is 57.5.
+Do you have other suggestion that I can check to explain the issue?
+Many thanks in advance.
+Best regards,
+Fabio
+----------------------------------------
+
+REPLY 5 (by fravera @ 2021-07-30T19:43:17.000Z):
+*** Discussion title: Higgs Combination
+Dear All,
+I have another update. I tried to reduce the area of the 2D plane passed to combine selecting only the relevant bins for the considered mass hypothesis. This allowed to have "only" 624 bins for each year (before I was using the full 2D plane which corresponds to ~1500 bins).
+I repeated the fit diagnostic with and without signal injection and in both cases I did not get any warning and the pulls looks reasonable for both background-only and signal+background fits.
+In the previous tests with the full 2D plane, I ran the fit diagnostic for few mass hypotheses getting different results (warning in the background-only fit, warning in the signals+background fit, warnings in both and no warning at all). In that case the background template was always the same for all mass hypotheses. For this reason, I do not think that limiting the number of bins is simply removing the free parameter(s) causing the issue.
+At the same time, running the fit diagnostic for a mass hypothesis showing issues with the full 2D plane fit and not getting any warning when reducing the number of fitted bins, seems to indicate that none of the nuisances affecting the signal are cause of the issue.
+From these observation I would conclude that the issue is caused by the large number of free parameters to be fitted.
+We can solve the issue by simply dividing the 2D plane in ~3 areas and fit only the one relevant for each of the mass hypotheses.
+What is your opinion on that?
+Many thanks in advance.
+Beest regards,
+Fabio
+----------------------------------------
+
+REPLY 6 (by ncsmith @ 2021-08-10T17:34:33.000Z):
+Hi,
+I don’t see any immediate conceptual issue with restricting which bins you fit as a function of mass hypothesis. It is no different than having two analyses setting limits on two different models using different final states. It would be necessary to report the mechanism by which you trim bins then, as it is in effect part of the event selection.
+That said, it is a bit unfortunate to have to employ this procedure to work around what appears to be a technical issue with the model and/or the minimization. If you like, I would be interested in taking a look at the model (cards+inputs) to see if it really is just a numeric issue.
+~Nick
+----------------------------------------
+
+REPLY 7 (by fravera @ 2021-08-10T18:24:11.000Z):
+*** Discussion title: Higgs Combination
+Dear Nick,
+I am very happy if you have time to look at the cards.
+All the files are in the gitlab repository
+https://gitlab.cern.ch/cms-hcg/cadi/hig-20-012.git
+In particular, I was testing the FitDiagnostic for the mass point mX = 1400 and mY = 800
+and the inputs are:
+https://gitlab.cern.ch/cms-hcg/cadi/hig-20-012/-/blob/master/DatacardFolder_2016/outPlotter_2016_sig_NMSSM_bbbb_MX_1400_MY_800.root
+https://gitlab.cern.ch/cms-hcg/cadi/hig-20-012/-/blob/master/DatacardFolder_2017/outPlotter_2017_sig_NMSSM_bbbb_MX_1400_MY_800.root
+https://gitlab.cern.ch/cms-hcg/cadi/hig-20-012/-/blob/master/DatacardFolder_2018/outPlotter_2018_sig_NMSSM_bbbb_MX_1400_MY_800.root
+and the datacard for Run II is
+https://gitlab.cern.ch/cms-hcg/cadi/hig-20-012/-/blob/master/DatacardFolder_RunII/datacard_RunII_sig_NMSSM_bbbb_MX_1400_MY_800.txt
+Regarding the commands, to run the fit diagnostic I use
+combine -M FitDiagnostics -t -1 --expectSignal 0 --rMax 15  --rMin -15 --robustFit 1 --X-rtd MINIMIZER_MaxCalls=999999999 --cminDefaultMinimizerStrategy 0 --redefineSignalPOIs r datacard_RunII_sig_NMSSM_bbbb_MX_1400_MY_800.root
+In case you also would like to run the limits, since there are a lots of free parameters I also add the options (it takes hours without them)&#8232;-X-rtd  MINIMIZER_analytic --X-rtd  FAST_VERTICAL_MORPH
+Many thanks for your help!
+Cheers,
+Fabio
+----------------------------------------

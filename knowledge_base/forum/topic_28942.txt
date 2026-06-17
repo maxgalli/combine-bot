@@ -1,0 +1,64 @@
+TOPIC: Shape vs lnN uncertainty for single-bin histogram
+URL: https://cms-talk.web.cern.ch/t/28942
+DATE: 2023-08-28T22:38:10.695Z
+SOLVED: no
+============================================================
+
+QUESTION (by dittmer @ 2023-08-28T22:38:11.355Z):
+Hi combine experts,
+What is the difference between the implementation of shape and lnN uncertainties for a single-bin histogram? I would expect these to be identical, but this does not seem to be the case.
+As an example, I have a simple analysis with two processes, two channels, and one systematic, which is treated as a shape uncertainty:
+imax 2 number of bins
+jmax 1 number of processes minus 1
+kmax 1 number of nuisance parameters
+--------------------------------------------------------------------------
+shapes *         SR  histos_SR.root histo_$PROCESS histo_$PROCESS_$SYSTEMATIC
+shapes data_obs  SR  histos_SR.root histo_Data
+shapes *         CR  histos_CR.root histo_$PROCESS histo_$PROCESS_$SYSTEMATIC
+shapes data_obs  CR  histos_CR.root histo_Data
+--------------------------------------------------------------------------
+bin           SR   CR
+observation   0    0
+--------------------------------------------------------------------------
+bin                     SR          SR          CR         CR
+process                 WW_B0       top         WW_B0      top
+process                 0           1           0          1
+rate                    1800.9036   16564.9483  163.3056   150477.3214
+--------------------------------------------------------------------------
+CMS_btag_hf     shape   1.0         1.0         1.0        1.0
+SR  autoMCStats 10 0 1
+CR  autoMCStats 10 0 1
+
+The fit histogram in the CR is a single-bin shape. I can therefore modify the datacard to treat CMS_btag_hf as lnN in the CR, with the appropriate values from the histogram normalizations:
+CMS_btag_hf     shape?  1.0         1.0         0.87684639/1.1242483  0.99432712/1.0031020
+
+When I do an Asimov fit with the original datacard, I get
+r : +1.000 -0.065/+0.069
+
+while with the second version, I get
+r : +1.000 -0.066/+0.067
+
+While this is not a large difference, I do see more significant differences using the same approach with more complex datacards. Can anyone explain why this is happening?
+A tarball with the datacards, shape histograms, and workspaces can be found here. I am using combine v9.
+Thanks,
+Susan
+----------------------------------------
+
+REPLY 2 (by agilbert @ 2023-08-29T13:55:12.095Z):
+Hi Susan,
+I would have expected these to give exactly equivalent results, the NLL implementation should be identical in the two cases, up to the shape morphing of the single bin which should always result in the nominal yield.
+Just to check, in the expressions like 0.87684639/1.1242483, the first number is the “Down” hist / nominal integral ratio? The ordering would make a small difference here.
+cheers,
+Andrew
+----------------------------------------
+
+REPLY 3 (by dittmer @ 2023-08-29T17:56:08.210Z):
+Andrew,
+Indeed, I had the ‘Up’ number first, and swapping the order fixed it. Can you explain why this is the case, though? In a fit like this with a single nuisance parameter, I would expect swapping the order to swap the absolute values of the up / down uncertainties on the signal strength, not for the absolute values to change.
+Thanks,
+Susan
+----------------------------------------
+
+REPLY 4 (by dittmer @ 2023-08-29T18:11:40.751Z):
+Never mind, answered my own question – it is of course due to the nuisance being applied to both channels. Thanks for the quick fix!
+----------------------------------------

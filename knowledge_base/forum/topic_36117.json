@@ -1,0 +1,56 @@
+{
+  "topic_id": 36117,
+  "title": "Fitting a ratio (Response)",
+  "url": "https://cms-talk.web.cern.ch/t/36117",
+  "category_id": 279,
+  "created_at": "2024-02-28T14:35:43.990Z",
+  "last_posted_at": "2024-04-09T15:04:51.882Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "rverma",
+      "name": "Ravindra Kumar Verma",
+      "created_at": "2024-02-28T14:35:44.163Z",
+      "updated_at": "2024-02-28T14:35:44.163Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear experts,\nI was curious to know if there is a way to fit a function (e.g. ax+bx^2) to a TProfile (which has ratio of var1/var2 in bins of var2) in combine. For example, in the attache plot, we have \u201cResponse\u201d from three channels:\n\n(a) How to fit the response for each channel separately?\n(b) Since the response could differ for different systematic uncertainties, how to incorporate the uncertainties (stat + systematics)?\n(c) And then how to do a combined fit to the three channels?\n(d) Then how to combine the responses from different years (e.g. full Run-3)?\n\nIf (a) and (b) can be done using a datacard, then I think we can combine the datacards in the usual way for (c) and (d).\nimage1410\u00d71394 115 KB\nThank you,\nRavindra",
+      "cooked_html": "<p>Dear experts,</p>\n<p>I was curious to know if there is a way to fit a function (e.g. a<em>x+b</em>x^2) to a TProfile (which has ratio of var1/var2 in bins of var2) in combine. For example, in the attache plot, we have \u201cResponse\u201d from three channels:</p>\n<ul>\n<li>(a) How to fit the response for each channel separately?</li>\n<li>(b) Since the response could differ for different systematic uncertainties, how to incorporate the uncertainties (stat + systematics)?</li>\n<li>(c) And then how to do a combined fit to the three channels?</li>\n<li>(d) Then how to combine the responses from different years (e.g. full Run-3)?</li>\n</ul>\n<p>If (a) and (b) can be done using a datacard, then I think we can combine the datacards in the usual way for (c) and (d).<br>\n<div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/e/e0e979f4a1657d3eeb0933c6ca28e8b0e37bf2a1.png\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/e0e979f4a1657d3eeb0933c6ca28e8b0e37bf2a1\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e0e979f4a1657d3eeb0933c6ca28e8b0e37bf2a1_2_505x500.png\" alt=\"image\" data-base62-sha1=\"w5FaNLzj0NIY7KmZLnYes0NjxUl\" width=\"505\" height=\"500\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e0e979f4a1657d3eeb0933c6ca28e8b0e37bf2a1_2_505x500.png, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e0e979f4a1657d3eeb0933c6ca28e8b0e37bf2a1_2_757x750.png 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/e/e0e979f4a1657d3eeb0933c6ca28e8b0e37bf2a1_2_1010x1000.png 2x\" data-dominant-color=\"F1F1F0\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1410\u00d71394 115 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>Thank you,<br>\nRavindra</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "kcormier",
+      "name": "Kyle Cormier",
+      "created_at": "2024-03-01T11:05:50.068Z",
+      "updated_at": "2024-03-01T11:05:50.068Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Ravindra,\nAlthough combine is a very useful tool, this is actually one use case it is not really set up for. The tool is really designed for cases where you have a Poisson-distributed count of observations that is the data you are fitting.  But the TProfile point you are using are not poisson distributed observations. The underlying histogram that the TProfile comes from presumably has poisson distributed counts. But I\u2019m not sure that going back to that helps you with your goal. Perhaps someone else can comment if they have a clever idea.\nThat being said, we are happy to try to help with the tools for this, whether or not you use combine. Do you already have some basic fitting set up?\nBest,\nKyle",
+      "cooked_html": "<p>Hi Ravindra,</p>\n<p>Although combine is a very useful tool, this is actually one use case it is not really set up for. The tool is really designed for cases where you have a Poisson-distributed count of observations that is the data you are fitting.  But the TProfile point you are using are not poisson distributed observations. The underlying histogram that the TProfile comes from presumably has poisson distributed counts. But I\u2019m not sure that going back to that helps you with your goal. Perhaps someone else can comment if they have a clever idea.</p>\n<p>That being said, we are happy to try to help with the tools for this, whether or not you use combine. Do you already have some basic fitting set up?</p>\n<p>Best,<br>\nKyle</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "rverma",
+      "name": "Ravindra Kumar Verma",
+      "created_at": "2024-03-13T08:28:42.293Z",
+      "updated_at": "2024-03-13T08:28:42.293Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Kyle,\nThank you for your response.\nWe do have a working standalone code for that [1] which is being used to derive the jet energy correction (JEC). We were wondering if we can do the same thing using combine. If so, we can perfom many fit sanity checks easily. We could also gain when doing combined fits for different years, channels, categories, etc.\nSince the dominant source of systematic uncertainty for many CMS analyes comes from JEC, any improvement in deriving JEC would be beneficial for them.\nThank you,\nRavindra\n[1] https://github.com/miquork/jecsys3/blob/main/src/GlobalFit.cxx#L353-L362",
+      "cooked_html": "<p>Hi Kyle,</p>\n<p>Thank you for your response.</p>\n<p>We do have a working standalone code for that [1] which is being used to derive the jet energy correction (JEC). We were wondering if we can do the same thing using combine. If so, we can perfom many fit sanity checks easily. We could also gain when doing combined fits for different years, channels, categories, etc.</p>\n<p>Since the dominant source of systematic uncertainty for many CMS analyes comes from JEC, any improvement in deriving JEC would be beneficial for them.</p>\n<p>Thank you,<br>\nRavindra<br>\n[1] <a href=\"https://github.com/miquork/jecsys3/blob/main/src/GlobalFit.cxx#L353-L362\" rel=\"noopener nofollow ugc\">https://github.com/miquork/jecsys3/blob/main/src/GlobalFit.cxx#L353-L362</a></p>"
+    },
+    {
+      "post_number": 4,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2024-04-09T15:04:51.882Z",
+      "updated_at": "2024-04-09T15:04:51.882Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Ravindra, all,\nI happened to be chatting to Kyle and Aliya about this and I think there is a way which you could use combine for this.\nI put a short README together [1] (sorry about the formatting, the html worked better locally for me) with a simple example of building a combine-friendly set of inputs. The idea is to fit the parameters of the function form describing the resolution function in my case, but it could be adapted to other scenarios. The nice thing is of course adding backgrounds, systematics and running diagnostics should be simple once things are setup.\nHave a look and let me know if this could be useful - would be very happy to help with more issues.\nCheers,\nNick\n[1] https://nckw.web.cern.ch/CalibrationExample/",
+      "cooked_html": "<p>Hi Ravindra, all,</p>\n<p>I happened to be chatting to Kyle and Aliya about this and I think there is a way which you could use combine for this.</p>\n<p>I put a short README together [1] (sorry about the formatting, the html worked better locally for me) with a simple example of building a combine-friendly set of inputs. The idea is to fit the parameters of the function form describing the resolution function in my case, but it could be adapted to other scenarios. The nice thing is of course adding backgrounds, systematics and running diagnostics <em>should</em> be simple once things are setup.</p>\n<p>Have a look and let me know if this could be useful - would be very happy to help with more issues.</p>\n<p>Cheers,<br>\nNick</p>\n<p>[1] <a href=\"https://nckw.web.cern.ch/CalibrationExample/\">https://nckw.web.cern.ch/CalibrationExample/</a></p>"
+    }
+  ]
+}

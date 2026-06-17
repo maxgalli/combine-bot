@@ -1,0 +1,45 @@
+{
+  "topic_id": 36834,
+  "title": "ValidateDatacards.py not working for RooDataHist",
+  "url": "https://cms-talk.web.cern.ch/t/36834",
+  "category_id": 279,
+  "created_at": "2024-03-14T14:26:14.223Z",
+  "last_posted_at": "2024-03-14T15:52:33.768Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "mcampana",
+      "name": "Mattia Campana",
+      "created_at": "2024-03-14T14:26:15.151Z",
+      "updated_at": "2024-03-14T14:26:15.151Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Experts,\nI am performing an analysis with the signal described by a RooDataHist, while the background is described by a binned PDF. When I try running the ValidateDatacards.py script I get this error:\nimage1920\u00d7302 62.1 KB\nYou can find an example datacard attached, but the root file with the histogram and the pdf are to heavy to be uploaded here.\nHow can I solve the issue to proceed with the analysis pre-approval?\nThanks,\nMattia\ndatacard_std_3par_LQumu_M1000_L1p0.txt (17.4 KB)",
+      "cooked_html": "<p>Dear Experts,</p>\n<p>I am performing an analysis with the signal described by a RooDataHist, while the background is described by a binned PDF. When I try running the ValidateDatacards.py script I get this error:</p>\n<p><div class=\"lightbox-wrapper\"><a class=\"lightbox\" href=\"https://cms-talk.web.cern.ch/uploads/default/original/2X/6/6bc79a49d5749b07db878ca633b2b78c2c0da947.jpeg\" data-download-href=\"https://cms-talk.web.cern.ch/uploads/default/6bc79a49d5749b07db878ca633b2b78c2c0da947\" title=\"image\"><img src=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6bc79a49d5749b07db878ca633b2b78c2c0da947_2_690x108.jpeg\" alt=\"image\" data-base62-sha1=\"fnsJDFIHXqDxjQVGhpHHjUEEo9V\" width=\"690\" height=\"108\" srcset=\"https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6bc79a49d5749b07db878ca633b2b78c2c0da947_2_690x108.jpeg, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6bc79a49d5749b07db878ca633b2b78c2c0da947_2_1035x162.jpeg 1.5x, https://cms-talk.web.cern.ch/uploads/default/optimized/2X/6/6bc79a49d5749b07db878ca633b2b78c2c0da947_2_1380x216.jpeg 2x\" data-dominant-color=\"F2F2F2\"><div class=\"meta\"><svg class=\"fa d-icon d-icon-far-image svg-icon\" aria-hidden=\"true\"><use href=\"#far-image\"></use></svg><span class=\"filename\">image</span><span class=\"informations\">1920\u00d7302 62.1 KB</span><svg class=\"fa d-icon d-icon-discourse-expand svg-icon\" aria-hidden=\"true\"><use href=\"#discourse-expand\"></use></svg></div></a></div></p>\n<p>You can find an example datacard attached, but the root file with the histogram and the pdf are to heavy to be uploaded here.</p>\n<p>How can I solve the issue to proceed with the analysis pre-approval?</p>\n<p>Thanks,</p>\n<p>Mattia<br>\n<a class=\"attachment\" href=\"/uploads/short-url/qnMYTZ6RGdUUNke2sho0Lcxm8NC.txt\">datacard_std_3par_LQumu_M1000_L1p0.txt</a> (17.4 KB)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "adewit",
+      "name": "Adinda de Wit",
+      "created_at": "2024-03-14T15:40:12.614Z",
+      "updated_at": "2024-03-14T15:40:12.614Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Mattia,\nValidateDatacards is mainly intended for histogram(TH1)-based analyses. I thought it exited a bit more gracefully in case of non-TH1-based analyses though - do you know what version of CombineHarvester you are using? (Or alternatively, if you cannot check this, when you checked it out?)\nEither way, I think in your case you\u2019ll probably have to skip this step of the automated validation checks.\nBest wishes,\nAdinda",
+      "cooked_html": "<p>Dear Mattia,</p>\n<p>ValidateDatacards is mainly intended for histogram(TH1)-based analyses. I thought it exited a bit more gracefully in case of non-TH1-based analyses though - do you know what version of CombineHarvester you are using? (Or alternatively, if you cannot check this, when you checked it out?)</p>\n<p>Either way, I think in your case you\u2019ll probably have to skip this step of the automated validation checks.</p>\n<p>Best wishes,<br>\nAdinda</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "mcampana",
+      "name": "Mattia Campana",
+      "created_at": "2024-03-14T15:52:33.768Z",
+      "updated_at": "2024-03-14T15:52:33.768Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Adinda,\nthank you for your quick reply, I am using the CombineHarvester master branch and I did the last pull on 2023-05-11.\nI will skip this step then.\nBest,\nMattia",
+      "cooked_html": "<p>Dear Adinda,</p>\n<p>thank you for your quick reply, I am using the CombineHarvester master branch and I did the last pull on 2023-05-11.</p>\n<p>I will skip this step then.</p>\n<p>Best,<br>\nMattia</p>"
+    }
+  ]
+}

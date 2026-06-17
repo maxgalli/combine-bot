@@ -1,0 +1,121 @@
+TOPIC: Problem with GoodnessOfFit in SUS-23-011
+URL: https://cms-talk.web.cern.ch/t/33497
+DATE: 2024-01-19T12:47:42.172Z
+SOLVED: no
+============================================================
+
+QUESTION (by kodolova @ 2024-01-19T12:47:42.350Z):
+Dear All,
+I have some problem with GoodnessOfFit. I need to compare two cases: fit of data with S+B and fit of data with B only. B=polynom and S=Breit-Wigner
+For S+B I use:
+combine -M GoodnessOfFit -d 2017UL_dimuon_SR2mod13_BestFit.root --algo=saturated --toysNoSystematics -t 500
+and get the 500 numbers looks like:
+Best fit test statistic: 98.4113
+Generate toy 500/500
+Looking into code I have the impression that this is kind of Chi2 according saturated model but
+it is not clear is it normalized to NDF.
+For BG only case I use:
+combine -M GoodnessOfFit -d 2017UL_dimuon_SR2mod13_BestFit.root --algo=saturated --toysNoSystematics -t 500 --freezeParameters r --setParameters r=0
+and again get the same kind of numbers flowing over screen.
+Both attempts produce some root file higgsCombineTest.GoodnessOfFit.mH120.123456.root with
+tree “limit” with 500 of  quantileExpected=-1 and empty directory with toys.
+Could you advice what I am doing wrong and how I could compare these two cases with GoodnessOfFit: S+B and B?
+Best regards,
+Olga
+----------------------------------------
+
+REPLY 2 (by byates @ 2024-01-19T13:35:01.000Z):
+Hi Olga,
+This isn’t an “official” response, since I’m not a part of StatComm, but I’ve done this exact thing a few times. You are correct that the saturated model is a generalization of the chi-square test [1]. What you’ve done with the -t 500 flag is generated a test statistic of 500 toy datasets, where combine starts with an Asimov dataset and fluctuates each bin in the workspace using the Poisson statistics. What you then have to do is run combine one more time without the -t flag to get a saturated test value for your data.
+combine -M GoodnessOfFit -d 2017UL_dimuon_SR2mod13_BestFit.root --algo=saturated
+Then, to get your p-value, you find the number of toys above the data value, and divide by the total number toys. You would do this for both the background only model (toys) and the signal + background model (toys) to see if the data favors one over the other (i.e., if the B only model gave a p-value below some threshold, this would indicate the data does not favor this model).
+Hope this helps, and that StatComm is on board.
+[1] https://www.physics.ucla.edu/~cousins/stats/cousins_saturated.pdf
+
+Brent Yates
+Postdoctoral Researcher
+Department of Physics
+3034 Physics Research Building
+
+···
+From: Olga Kodolova via CMS talk noreply-cms-talk@cern.ch
+Sent: Friday, January 19, 2024 7:50 AM
+To: Yates, Brent yates.313@osu.edu
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Problem with GoodnessOfFit in SUS-23-011
+Olga Kodolova kodolova January 19 Dear All, I have some problem with GoodnessOfFit. I need to compare two cases: fit of data with S+B and fit of data with B only. B=polynom and S=Breit-Wigner For S+B I use: combine -M GoodnessOfFit -d 2017UL_dimuon_SR2mod13_BestFit. root
+
+Olga Kodolova kodolovaJanuary 19
+
+Dear All,
+I have some problem with GoodnessOfFit. I need to compare two cases: fit of data with S+B and fit of data with B only. B=polynom and S=Breit-Wigner
+For S+B I use:
+combine -M GoodnessOfFit -d 2017UL_dimuon_SR2mod13_BestFit.root --algo=saturated --toysNoSystematics -t 500
+and get the 500 numbers looks like:
+Best fit test statistic: 98.4113
+Generate toy 500/500
+Looking into code I have the impression that this is kind of Chi2 according saturated model but
+it is not clear is it normalized to NDF.
+For BG only case I use:
+combine -M GoodnessOfFit -d 2017UL_dimuon_SR2mod13_BestFit.root --algo=saturated --toysNoSystematics -t 500 --freezeParameters r --setParameters r=0
+and again get the same kind of numbers flowing over screen.
+Both attempts produce some root file higgsCombineTest.GoodnessOfFit.mH120.123456.root with
+tree “limit” with 500 of quantileExpected=-1 and empty directory with toys.
+Could you advice what I am doing wrong and how I could compare these two cases with GoodnessOfFit: S+B and B?
+Best regards,
+
+Olga
+
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 3 (by anigamov @ 2024-01-19T15:42:21.909Z):
+Dear Olga,
+Let me just add that once you run the GOF method to calculate the observed test statistics value you can combine the results using combineTool.py as described here.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 4 (by kodolova @ 2024-01-21T11:59:08.000Z):
+Dear Aliya,
+I still have problems.
+I do:
+combine -M GoodnessOfFit 2017UL_dimuon_SR2mod13_chmasks.root --algo=saturated
+combine -M GoodnessOfFit 2017UL_dimuon_SR2mod13_chmasks.root --algo=saturated --toysNoSystematics -t 500 --saveToys
+It gives me two files:
+higgsCombine.scan.MultiDimFit.mH28.root higgsCombineTest.GoodnessOfFit.mH120.123456.root
+combineTool.py -M CollectGoodnessOfFit --input higgsCombine.scan.MultiDimFit.mH28.root higgsCombineTest.GoodnessOfFit.mH120.123456.root -m 125.0 -o gof.json
+Traceback (most recent call last):
+File “/afs/cern.ch/work/k/kodolova/public/UNBLINDING_DIMUONEXCESS/CMSSW_11_3_4/bin/slc7_amd64_gcc900/combineTool.py”, line 84, in
+method.run_method()
+File “/afs/cern.ch/work/k/kodolova/public/UNBLINDING_DIMUONEXCESS/CMSSW_11_3_4/python/CombineHarvester/CombineTools/combine/Output.py”, line 311, in run_method
+js_out[mh][branch][“p”] = float(len([toy for toy in js_out[mh][branch][‘toy’] if toy >= js_out[mh][branch][‘obs’][0]]))/len(js_out[mh][branch][‘toy’])
+ZeroDivisionError: float division by zero
+Could you advice?
+Best regards,
+Olga
+
+···
+
+From: Aliya Nigamova via CMS talk noreply-cms-talk@cern.ch
+Sent: 19 January 2024 19:43
+To: Olga Kodolova Olga.Kodolova@cern.ch
+Subject: [Common Analysis Tools/Statistical Interpretation Tools] Problem with GoodnessOfFit in SUS-23-011
+
+Aliya Nigamova anigamovJanuary 19
+
+Dear Olga,
+Let me just add that once you run the GOF method to calculate the observed test statistics value you can combine the results using combineTool.py as described here.
+Best,
+Aliya
+Visit Topic or reply to this email to respond.
+To unsubscribe from these emails, click here.
+----------------------------------------
+
+REPLY 5 (by agilbert @ 2024-01-22T13:48:30.375Z):
+Hi Olga,
+Just to jump in: I’m guessing the problem is what is set for the mass variable (-m) is not consistent in the two combine calls and the call to combineTool.py. These all need to have the same value set for the scripts to work.
+If there are still problems with the script, note that you can easily open the limit TTree in the combine output and extract all the values you need from there.
+cheers,
+Andrew
+----------------------------------------

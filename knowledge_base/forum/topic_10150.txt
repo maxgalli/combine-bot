@@ -1,0 +1,58 @@
+TOPIC: Details of the Goodness-of-Fit tests
+URL: https://cms-talk.web.cern.ch/t/10150
+DATE: 2022-05-06T13:28:02.038Z
+SOLVED: no
+============================================================
+
+QUESTION (by xuyan @ 2022-05-06T13:28:02.222Z):
+Hello experts,
+Recently when doing GoF tests (saturated model) with the combine for a parametric background function, I start having questions regarding how the GoF tests using toys are performed within the combine tool.
+
+What is the test statistic the combined tool calculates for the saturated model? Is the one in this form?:
+(obtained from PDG https://cds.cern.ch/record/1481544/files/PhysRevD.86.010001.pdf)
+
+When running this method on toys, are the test statistics calculated between the toy data and the observed data, or between the toy data and the background function used to generate the toys? (i.e., in this case, what is the “expected” bin entry \nu_i and what is the “observed” bin entry) n_i)?
+
+From the literature, the saturated model statistic should follow an asymptotic chi2 distribution with (N_bin - n_free-parameter) degrees if freedom. Shall I expect to see the saturated test output to have a roughly similar number to the (# of input binning - # of free parameters)?
+----------------------------------------
+
+REPLY 2 (by adewit @ 2022-05-06T14:05:49.814Z):
+Hi Sebastian,
+You can find a little more information in slide 9 of this talk - the test statistic is indeed of the form you quote here. When you run on toys, n_i (or d_i in the slides) replaces the observed data. Note that by default the signal strength is left floating in the fit when the test statistic is evaluated.
+I’m not sure I understand your third question - the expected distribution will be built up by generating the toys, based on this and the observed value you can then calculate a p-value to assess the goodness of fit - you don’t need anything else.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 3 (by xuyan @ 2022-05-06T15:14:18.387Z):
+Hi Adinda,
+Thanks a lot for your prompt reply!
+“When you run on toys, n_i (or d_i in the slides) replaces the observed data.”
+So can I say that the combine tool uses toys to get the saturated model and calculate the test statistic against the function used to generate the model? (well I think maybe any functions but in the background modeling context I fit the data with a function, generate toys from the fitted function, and naturally evaluate the GoF using the fitted function)
+For my third question, I am a bit concerned as the distribution of the saturated model test statistics I got does not follow the chi2 distribution, see the attached plot (which theoretically speaking they should follow, although asymptotically). I understand that using distributions sampled from toys is always a good way to get the p-value, but given we have a theoretical expectation, I think it is better to understand why they do not agree.
+
+saturated884×619 28.3 KB
+
+I have 830 data bins, and 3 free parameters in by background function, so I would expect the distribution to be centered around 800. The observed value from data is ~575
+Thanks a lot!
+Best regards,
+Sebastian
+----------------------------------------
+
+REPLY 4 (by adewit @ 2022-05-12T09:17:30.236Z):
+Hi Sebastian,
+I wouldn’t say it exactly like that: the toys are used to build up the test statistic distribution (so that you can calculate the p-value), and when evaluating the test statistic on the real data you’re calculating the test statistic between ‘model/background function’ and ‘data’
+For the distribution of the test statistic values - I would expect there is something in your model that means the degree of freedom counting is not perfect (any uncertainties?). If you want to convince yourself that the test statistic distribution does follow a chi2, it is probably easier to construct a toy example with a small number of bins.
+Best,
+Adinda
+----------------------------------------
+
+REPLY 5 (by xuyan @ 2022-05-12T17:35:25.083Z):
+Hi Adinda,
+Thanks for your reply!
+Sorry that I was not clear last time, I meant to say that the toy distribution is sampled for toys against the PDF used to generate the toy. So I think we are on the same page.
+Now I’ve switched to a wider binning for my fit and the distribution now looks more reasonable. I do think when counting the DOF we need to exclude the zero entry bins, however. Please correct me if I am wrong.
+Thanks again for your kind help!
+Best regards,
+Sebastian
+----------------------------------------

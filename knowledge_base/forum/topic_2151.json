@@ -1,0 +1,34 @@
+{
+  "topic_id": 2151,
+  "title": "Parametrization of the signal strength parameters for MLF",
+  "url": "https://cms-talk.web.cern.ch/t/2151",
+  "category_id": 279,
+  "created_at": "2021-08-16T22:39:49.000Z",
+  "last_posted_at": "2021-08-18T18:53:32.000Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "Hugo_Becerril_Gonzal",
+      "name": "Hugo Becerril Gonzalez",
+      "created_at": "2021-08-16T22:39:49.000Z",
+      "updated_at": "2023-02-07T10:55:40.392Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nWe are using Combine to unfold the charge asymmetry to truth level. We only have two bins so we define two signal strengths parameters r_neg and r_pos.\nWe want to have the value of the charge asymmetry directly from the fit. We achieve this by rearranging r_pos as follows:\ntext2workspace.py muon_2016.txt -o muon_2016.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel -m 125 --PO map=\u2018./Ttbar_1:r_neg[1,0,20]\u2019 --PO map='./Ttbar_2:r_pos=expr;;r_pos(\u201c7053.01/7156.152*@0*(100+@1)/(100-@1)\u201d,r_neg,r_Asym[-2,-5,0])\u2019 --PO verbose\nOnce we do the fit and we get the impocats we were confused because some of the systematics that have a low impact in both r_pos and r_neg have a large impact in r_Asym (for example PDF).\nWe were wondering if there is a way to investigate how the errors are propagated and understand why we see this behaviour.\nRegards,\nHugo Becerril\n(Attachment r_neg.pdf is missing)\n(Attachment r_Asym.pdf is missing)\n(Attachment r_pos.pdf is missing)",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>We are using Combine to unfold the charge asymmetry to truth level. We only have two bins so we define two signal strengths parameters r_neg and r_pos.</p>\n<p>We want to have the value of the charge asymmetry directly from the fit. We achieve this by rearranging r_pos as follows:</p>\n<p>text2workspace.py muon_2016.txt -o muon_2016.root -P HiggsAnalysis.CombinedLimit.PhysicsModel:multiSignalModel -m 125 --PO map=\u2018.<em>/Ttbar_1:r_neg[1,0,20]\u2019 --PO map='.</em>/Ttbar_2:r_pos=expr;;r_pos(\u201c7053.01/7156.152*<span class=\"mention\">@0</span>*(100+@1)/(100-<span class=\"mention\">@1</span>)\u201d,r_neg,r_Asym[-2,-5,0])\u2019 --PO verbose</p>\n<p>Once we do the fit and we get the impocats we were confused because some of the systematics that have a low impact in both r_pos and r_neg have a large impact in r_Asym (for example PDF).</p>\n<p>We were wondering if there is a way to investigate how the errors are propagated and understand why we see this behaviour.</p>\n<p>Regards,</p>\n<p>Hugo Becerril</p>\n<p>(Attachment r_neg.pdf is missing)</p>\n<p>(Attachment r_Asym.pdf is missing)</p>\n<p>(Attachment r_pos.pdf is missing)</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "andrea_marini",
+      "name": "andrea marini",
+      "created_at": "2021-08-18T18:53:32.000Z",
+      "updated_at": "2021-11-17T08:39:30.470Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi Hugo,\nIn general, the W asymmetry behaves as a ratio of observables, so common correlated uncertainties usually simplify,\nwhile anticorrelated uncertainties are counted more.\nIn general, it would be wise to make sure that the correlation scheme of the uncertainties is correct (correlated, uncorrelated, vs anticorrelated).\nProbably you would benefit in using finer splitting for jes, jer, pdf, xsec \u2026 as the residuals in each of them will behave differently in the W-asymmetry measurement.\nFor example, for the jet energy scale, you should understand if the sources give you a larger uncertainty when propagated to the W-asymm.\nSimilarly, the jer. For the Pdf you can use the hessian eigenvalues (if available) that represents the different uncorrelated components. For the xsec, you can try to split the two scales or through the different kinematic regions the calculation may be sensitive to, due to different effects (but this may require some inputs from the theorists).\nCheers,\n-Andrea",
+      "cooked_html": "<p>Hi Hugo,</p>\n<p>In general, the W asymmetry behaves as a ratio of observables, so common correlated uncertainties usually simplify,<br>\nwhile anticorrelated uncertainties are counted more.</p>\n<p>In general, it would be wise to make sure that the correlation scheme of the uncertainties is correct (correlated, uncorrelated, vs anticorrelated).</p>\n<p>Probably you would benefit in using finer splitting for jes, jer, pdf, xsec \u2026 as the residuals in each of them will behave differently in the W-asymmetry measurement.</p>\n<p>For example, for the jet energy scale, you should understand if the sources give you a larger uncertainty when propagated to the W-asymm.</p>\n<p>Similarly, the jer. For the Pdf you can use the hessian eigenvalues (if available) that represents the different uncorrelated components. For the xsec, you can try to split the two scales or through the different kinematic regions the calculation may be sensitive to, due to different effects (but this may require some inputs from the theorists).</p>\n<p>Cheers,</p>\n<p>-Andrea</p>"
+    }
+  ]
+}

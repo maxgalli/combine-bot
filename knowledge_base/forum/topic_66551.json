@@ -1,0 +1,34 @@
+{
+  "topic_id": 66551,
+  "title": "Method to Ignore \"RuntimeError: Found x systematics, expected y\" error message",
+  "url": "https://cms-talk.web.cern.ch/t/66551",
+  "category_id": 279,
+  "created_at": "2024-11-21T18:52:06.524Z",
+  "last_posted_at": "2024-11-21T19:51:36.069Z",
+  "tags": [],
+  "accepted_answer_post_number": 2,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "hyeonseo",
+      "name": "Hyeon-Seo Yun",
+      "created_at": "2024-11-21T18:52:06.648Z",
+      "updated_at": "2024-11-21T18:52:06.648Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear Combine experts,\nI am trying to generate a workspace from my datacard, and I am manually removing certain Nuisance parameter lines to see what different it would make in my significance calculation. However, when I remove the said nuisance parameter and do text2workspace.py {datacard_name}.txt it gives me this error:\nFile \"/depot/cms/private/users/yun79/hmm/copperheadV1clean/DmitryMaster_JECoff_GeofitFixed_Nov01/stage3_datacards/score_pytorch_jun27/CMSSW_10_2_13/python/HiggsAnalysis/CombinedLimit/DatacardParser.py\", line 357, in parseCard\nraise RuntimeError, \"Found %d systematics, expected %d\" % (len(ret.systs), nuisances)\nRuntimeError: Found 39 systematics, expected 40\n\nI appreciate that combine automatically found some issues with mistmatching number of NPs, but it there a way that I could tell combine to ignore it? Thank you!",
+      "cooked_html": "<p>Dear Combine experts,</p>\n<p>I am trying to generate a workspace from my datacard, and I am manually removing certain Nuisance parameter lines to see what different it would make in my significance calculation. However, when I remove the said nuisance parameter and do <code>text2workspace.py {datacard_name}.txt</code> it gives me this error:</p>\n<pre><code class=\"lang-auto\">File \"/depot/cms/private/users/yun79/hmm/copperheadV1clean/DmitryMaster_JECoff_GeofitFixed_Nov01/stage3_datacards/score_pytorch_jun27/CMSSW_10_2_13/python/HiggsAnalysis/CombinedLimit/DatacardParser.py\", line 357, in parseCard\n    raise RuntimeError, \"Found %d systematics, expected %d\" % (len(ret.systs), nuisances)\nRuntimeError: Found 39 systematics, expected 40\n</code></pre>\n<p>I appreciate that combine automatically found some issues with mistmatching number of NPs, but it there a way that I could tell combine to ignore it? Thank you!</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "amarini",
+      "name": "Andrea Carlo Marini",
+      "created_at": "2024-11-21T19:51:36.069Z",
+      "updated_at": "2024-11-21T19:51:36.069Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": true,
+      "text": "kmax *\nquoting from the doc\nThe value * can be specified for imax, which tells Combine to determine the number of observables from the rest of the datacard. In order to better catch mistakes, it is recommended to explicitly specify the value.\n\nThis declaration is followed by a specification of the number of background sources to be considered, jmax, and the number of independent sources of systematic uncertainty, kmax:\n\n-A",
+      "cooked_html": "<p><code>kmax *</code></p>\n<p>quoting from the <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part2/settinguptheanalysis/#a-simple-counting-experiment\" rel=\"noopener nofollow ugc\">doc</a></p>\n<pre><code class=\"lang-auto\">The value * can be specified for imax, which tells Combine to determine the number of observables from the rest of the datacard. In order to better catch mistakes, it is recommended to explicitly specify the value.\n\nThis declaration is followed by a specification of the number of background sources to be considered, jmax, and the number of independent sources of systematic uncertainty, kmax:\n</code></pre>\n<p>-A</p>"
+    }
+  ]
+}

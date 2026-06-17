@@ -1,0 +1,46 @@
+TOPIC: dNLL curve as a function of a constrained parameter
+URL: https://cms-talk.web.cern.ch/t/28444
+DATE: 2023-08-16T09:52:19.427Z
+SOLVED: no
+============================================================
+
+QUESTION (by afiqaize @ 2023-08-16T09:52:19.806Z):
+Hi experts,
+I am interested in the dNLL curve as a function of certain parameters. Now, when talking about unconstrained ones, I get it by invoking combine -M MultidimFit --algo fixed --fixedPointPOIs 'param=value', and to append a --redefineSignalPOIs param if param is a NP. So far so good.
+Now I find myself interested in the same thing, but keeping the constraint (Gaussian in this case) on param. Taking away --redefineSignalPOIs param is no go; it plays the double role of removing the constraint and takes param out of the list of parameters to be profiled. Can you please tell me what is the correct option for doing only the latter, if it exists?
+Cheers,
+Afiq
+----------------------------------------
+
+REPLY 2 (by nckw @ 2023-08-16T09:57:39.416Z):
+Hi Afiq,
+I think what you want is MultiDimFits --parameter option (you can put this option multiple times for multiple parameters) , which tells combine to use this as the parameter for scans etc. this can include nuisance parameters but will not remove the constraint term for them,
+Best
+Nick
+----------------------------------------
+
+REPLY 3 (by afiqaize @ 2023-08-16T10:17:30.581Z):
+Hi Nick,
+Thank you. That’s exactly the pointer I needed.
+To be more specific, instead of
+combine -M MultidimFit --algo fixed --redefineSignalPOIs param --fixedPointPOIs 'param=value'
+do
+combine -M MultidimFit --algo fixed -P param --setParameters 'param=value'
+to obtain the same scan with the constraint term.
+Afiq
+----------------------------------------
+
+REPLY 4 (by nckw @ 2023-08-16T10:20:52.101Z):
+Hi Afiq,
+That’s right. Just out of curiosity, if you are performing a scan, why not use the --algo grid option? This avoids having to calculate the best fit point for each fixed point and allows you to break the job into as many points as needed … See here for details http://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/commonstatsmethods/#likelihood-fits-and-scans
+Best
+Nick
+----------------------------------------
+
+REPLY 5 (by afiqaize @ 2023-08-16T10:30:59.747Z):
+Hi Nick,
+Thanks for pointing it out. For the FC contours I found it easier to break the jobs into parts externally, ie not using the facilities combine offers, and the scripts for the NLL scan was inherited off that one, so it just happened to follow the same approach.
+--algo grid is indeed better for the scan, and this is what I will update to.
+Cheers,
+Afiq
+----------------------------------------

@@ -1,0 +1,44 @@
+TOPIC: Signal Injection Test Bias
+URL: https://cms-talk.web.cern.ch/t/108649
+DATE: 2025-02-04T06:31:29.185Z
+SOLVED: no
+============================================================
+
+QUESTION (by shin @ 2025-02-04T06:31:29.463Z):
+Dear Combine Experts,
+My analysis runs shape method of Combine Tools.
+I am working on signal injection test where I inject various signal strength corresponding to ±2σ,  ±1σ, and median limit in blinded limit calculation.
+I run MultiDimFit with following options:
+–toysFile toy.root
+–toysFrequentist
+-t 50
+–expectSignal ??? (change accordingly)
+–cminDefaultMinimizerStrategy 1
+–robustFit 1
+–rMin -15 --rMax 15
+–algo singles
+When I draw the pull distribution (rtruth-rfit)/σfit, I constantly get bias towards negative mean in -2σ, -1σ, and median signal strength injection, where the bias moves towards 0 as the injected signal strength increases.
+For example I get mean of toy runs like, -0.79, -0.54, -0.2, -0.06, 0.01 for -2σ, -1σ, median, +1σ, +2σ respectively.
+I have tried different options like narrowing down the r range to [-2,2], and changed --cminDefaultMinimizerStrategy 0 and --robustFit 0 to expedite the fitting process, as I have many nuisance parameters. Making both changes did not make much difference.
+I want to ask for an advice on how to alleviate this bias.
+If there truly is a bias, what should I do to remove the bias? Change the binning of the input?
+Thank you.
+Sincerely,
+Jihoon Shin
+----------------------------------------
+
+REPLY 2 (by anigamov @ 2025-02-07T16:22:14.815Z):
+Dear Jihoon,
+It is hard to say what is wrong without looking at the model. But I would start with making sure that the fit converges properly. Do you get warnings that parameters hit the predefined boundaries? Perhaps some of the nuisance parameters are pulled?
+In principle running some of the usual validation workflows [1, 2] should help to identify general issues that can be potentially causing biased signal extraction.
+In the meantime, if you share the datacards one of us will try to have a look.
+Best,
+Aliya
+----------------------------------------
+
+REPLY 3 (by amarini @ 2025-02-07T16:36:49.330Z):
+Hi Jihoon,
+you are not running fully blind, but on the postfit asimov. If the data are not meaningful (yet) in the dc, the results may be hard to interpret.
+maybe try first on the prefit asimov dataset? (i.e., remove --toysFrequentist)
+-Andrea
+----------------------------------------

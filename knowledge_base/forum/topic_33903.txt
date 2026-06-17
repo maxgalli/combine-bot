@@ -1,0 +1,57 @@
+TOPIC: Splitting statistical uncertainty in counting experiments
+URL: https://cms-talk.web.cern.ch/t/33903
+DATE: 2024-02-01T10:14:51.575Z
+SOLVED: no
+============================================================
+
+QUESTION (by jleonhol @ 2024-02-01T10:14:51.702Z):
+Dear combine experts,
+I am working on a Dark QCD analysis, where we obtain limits for different signal samples against background (QCD samples enriched in muons). We classify our data into several categories; in the categories where we see enough signal events, we do a parametric fit, while in the other categories we just do a counting experiment (signal vs full background). My question is regarding how to include the background statistical uncertainties in the counting experiments, since we are merging several QCD samples and each of them have different number of events ending up in the analysis categories. I tried including 1 gmN per QCD sample (as shown in https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part2/settinguptheanalysis/#a-simple-counting-experiment), but it seems only 1 stat. uncertainty is allowed for the whole background (attached is a minimal datacard that shows the structure I was following).
+Thank you very much,
+Jaime
+datacard_example.txt (863 Bytes)
+.
+----------------------------------------
+
+REPLY 2 (by nckw @ 2024-02-01T12:10:35.871Z):
+Hi Jaime,
+That’s right - you can only use a single gmN for a given background process since there is only 1 scale factor allowed in the datacard line.
+However, if you want to take account of the different QCD samples each having different numbers of events available in MC, why not also split the background into each of these samples - there’s nothing that says all of the backgrounds need to be merged into one process.
+Have a look at the datacard below, where I have assumed a 50/50 split of the background (assuming each process has 2 MC events) into two background processes. Would something like this work in your case?
+Best,
+Nick
+imax  *
+jmax  *
+kmax  *
+--------------------------------------------------
+bin          muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA
+observation  0.0
+--------------------------------------------------
+bin                   muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA  muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA muonSV_bestchi2_mass_fullrange_tight_bdt_scenarioA
+process               scenarioA_mpi_4_mA_1p33_ctau_10                     background_1                                       background_2
+process               0                                                   1                                                  2
+rate                  9.26                                                0.01                                               0.01
+--------------------------------------------------
+pu              lnN   1.03                                                -                                                  -
+qcd_stat_1      gmN 2 -                                                   0.005                                              -
+qcd_stat_2      gmN 2 -                                                   -	                                             0.005
+----------------------------------------
+
+REPLY 3 (by jleonhol @ 2024-02-01T12:20:18.423Z):
+Hi Nick,
+Yes, I also considered that. However, as in some analysis categories we perform a parametric fit and in that case we want to have all background processes merged together, I guess it doesn’t make a lot of sense to have one set of processes for the counting bins and another one for the parametric bins.
+Cheers,
+Jaime
+----------------------------------------
+
+REPLY 4 (by nckw @ 2024-02-01T13:32:02.051Z):
+Hi,
+Why does it matter if the backgrounds are merged in one category and not in another? There is no reason why every category needs to have the same set of backgrounds or split to the same level (otherwise we would never be able to combine all of the different Higgs decay channels for example).
+Nick
+----------------------------------------
+
+REPLY 5 (by jleonhol @ 2024-02-01T13:53:38.905Z):
+Hi Nick,
+That makes total sense, thank you very much!
+Jaime
+----------------------------------------

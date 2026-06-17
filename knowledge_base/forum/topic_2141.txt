@@ -1,0 +1,18 @@
+TOPIC: Re: Acquiring postfit nuisance templates to compare to prefit
+URL: https://cms-talk.web.cern.ch/t/2141
+DATE: 2021-08-07T19:24:21.000Z
+SOLVED: no
+============================================================
+
+QUESTION (by andrea_marini @ 2021-08-07T19:24:21.000Z):
+Hi,
+you can first run the fit with
+combine -M MultiDimFit --saveWorkspace […]
+→ higgs…root
+and then run FitDiagonstics with saveShapes saveWithUncertainties on the postfit results with the other nuisances frozen.
+combine -M FitDiagnostics -d higgs…root --snapshotName MultiDimFit […]
+(I guess that for CombineHarvester the wrapping should be similar)
+One additional caveat is that you are neglecting the correlation term with the nuisances under study and the frozen parameters. For large constraints, in either fits, these effects may not be negligible.
+Cheers,
+-Andrea
+----------------------------------------

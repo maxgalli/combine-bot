@@ -1,0 +1,73 @@
+{
+  "topic_id": 131325,
+  "title": "FitDiagnostics output file missing a tree",
+  "url": "https://cms-talk.web.cern.ch/t/131325",
+  "category_id": 279,
+  "created_at": "2025-09-09T16:39:46.573Z",
+  "last_posted_at": "2025-09-09T19:31:22.505Z",
+  "tags": [
+    {
+      "id": 97,
+      "name": "combine",
+      "slug": "combine"
+    }
+  ],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2025-09-09T16:39:46.723Z",
+      "updated_at": "2025-09-09T16:39:46.723Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Dear combine experts,\nI am using combine v10.1.0. And want to do a bias study. I use GenerateOnly generates 1000 toys. I run FitDiagnosticsover them and want to check the fitting result of them, following the instruction here. First of all, I don\u2019t see atree_fit_sb tree in the output file, and there is no r branch. Secondly, there are 2816 entries in the limit tree which is way more than the number of toys I fit (given some toys fails in the fitting).\nCan anyone explain how to access the post-fit signal strength of toys and why there are more entries than my toys in the output file?\nThank you in advance!\nXingchen",
+      "cooked_html": "<p>Dear combine experts,</p>\n<p>I am using combine v10.1.0. And want to do a bias study. I use <code>GenerateOnly</code> generates 1000 toys. I run <code>FitDiagnostics</code>over them and want to check the fitting result of them, following the instruction <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#roomultipdf-conventional-bias-studies\" rel=\"noopener nofollow ugc\">here</a>. First of all, I don\u2019t see a<code>tree_fit_sb</code> tree in the output file, and there is no <code>r</code> branch. Secondly, there are 2816 entries in the <code>limit</code> tree which is way more than the number of toys I fit (given some toys fails in the fitting).</p>\n<p>Can anyone explain how to access the post-fit signal strength of toys and why there are more entries than my toys in the output file?</p>\n<p>Thank you in advance!</p>\n<p>Xingchen</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-09-09T17:46:12.000Z",
+      "updated_at": "2025-09-09T17:48:14.244Z",
+      "reply_to_post_number": 1,
+      "is_accepted_answer": false,
+      "text": "Hi,\nAre you sure you\u2019re checking the right output file? As in the docs\n\u201cIn the output file fitDiagnostics.root there is a tree that contains the best fit results under the signal+background hypothesis.\u201d So you need that one, not the usual higgsCombineBlah.root one\nBest\nNick\n\n| Xingchen Fan fanxSeptember 9 |\n\n| - |\n\nDear combine experts,\nI am using combine v10.1.0. And want to do a bias study. I use GenerateOnly generates 1000 toys. I run FitDiagnosticsover them and want to check the fitting result of them, following the instruction here. First of all, I don\u2019t see atree_fit_sb tree in the output file, and there is no r branch. Secondly, there are 2816 entries in the limit tree which is way more than the number of toys I fit (given some toys fails in the fitting).\nCan anyone explain how to access the post-fit signal strength of toys and why there are more entries than my toys in the output file?\nThank you in advance!\nXingchen\n\n\u00b7\u00b7\u00b7\nOn 9 Sept 2025 17:45, Xingchen Fan via CMS talk noreply-cms-talk@cern.ch wrote:",
+      "cooked_html": "<p>Hi,</p>\n<p>Are you sure you\u2019re checking the right output file? As in the docs</p>\n<p>\u201cIn the output file fitDiagnostics.root there is a tree that contains the best fit results under the signal+background hypothesis.\u201d So you need that one, not the usual higgsCombineBlah.root one</p>\n<p>Best<br>\nNick</p>\n<blockquote>\n<p><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/f/7993a0/45.png\" title=\"fanx\" width=\"45\" height=\"45\"> | <a href=\"https://cms-talk.web.cern.ch/u/fanx\">Xingchen Fan</a> fanx<br>September 9 |</p>\n<ul>\n<li>| - |</li>\n</ul>\n</blockquote>\n<p>Dear combine experts,</p>\n<p>I am using combine v10.1.0. And want to do a bias study. I use <code>GenerateOnly</code> generates 1000 toys. I run <code>FitDiagnostics</code>over them and want to check the fitting result of them, following the instruction <a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/part3/nonstandard/#roomultipdf-conventional-bias-studies\" rel=\"noopener nofollow ugc\">here</a>. First of all, I don\u2019t see a<code>tree_fit_sb</code> tree in the output file, and there is no <code>r</code> branch. Secondly, there are 2816 entries in the <code>limit</code> tree which is way more than the number of toys I fit (given some toys fails in the fitting).</p>\n<p>Can anyone explain how to access the post-fit signal strength of toys and why there are more entries than my toys in the output file?</p>\n<p>Thank you in advance!</p>\n<p>Xingchen</p>\n<details class=\"elided\">\n<summary title=\"Show trimmed content\">\u00b7\u00b7\u00b7</summary>\n<p>On 9 Sept 2025 17:45, Xingchen Fan via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n</details>"
+    },
+    {
+      "post_number": 4,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2025-09-09T17:56:10.837Z",
+      "updated_at": "2025-09-09T17:56:10.837Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hi Nicholas,\nYes! Thank you! I was looking at the wrong output file.\nI find the tree_fit_sb tree in the correct file. I have one more question. From some printouts, I know that some toys fail the fitting. Does the branch numbadnll record whether a toy is good or not? Otherwise, what is the way to rule out the failing toys?\nBest\nXingchen",
+      "cooked_html": "<p>Hi Nicholas,</p>\n<p>Yes! Thank you! I was looking at the wrong output file.</p>\n<p>I find the <code>tree_fit_sb</code> tree in the correct file. I have one more question. From some printouts, I know that some toys fail the fitting. Does the branch <code>numbadnll</code> record whether a toy is good or not? Otherwise, what is the way to rule out the failing toys?</p>\n<p>Best</p>\n<p>Xingchen</p>"
+    },
+    {
+      "post_number": 5,
+      "username": "nckw",
+      "name": "Nicholas Wardle",
+      "created_at": "2025-09-09T18:10:17.000Z",
+      "updated_at": "2025-09-09T18:13:18.513Z",
+      "reply_to_post_number": 4,
+      "is_accepted_answer": false,
+      "text": "If I remember right there should be a fit status branch in there that you can use - some info on what this means is given here :https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=fit_st#fit-diagnostics\nBest\nNick\nOn 9 Sept 2025 18:57, Xingchen Fan via CMS talk noreply-cms-talk@cern.ch wrote:\n\nXingchen Fan fanxSeptember 9\n\nHi Nicholas,\nYes! Thank you! I was looking at the wrong output file.\nI find the tree_fit_sb tree in the correct file. I have one more question. From some printouts, I know that some toys fail the fitting. Does the branch numbadnll record whether a toy is good or not? Otherwise, what is the way to rule out the failing toys?\nBest\nXingchen\n\nVisit Topic or reply to this email to respond.\nTo unsubscribe from these emails, click here.",
+      "cooked_html": "<p>If I remember right there should be a fit status branch in there that you can use - some info on what this means is given here :<a href=\"https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=fit_st#fit-diagnostics\" rel=\"noopener nofollow ugc\">https://cms-analysis.github.io/HiggsAnalysis-CombinedLimit/latest/part3/nonstandard/?h=fit_st#fit-diagnostics</a></p>\n<p>Best<br>\nNick</p>\n<p>On 9 Sept 2025 18:57, Xingchen Fan via CMS talk <a href=\"mailto:noreply-cms-talk@cern.ch\">noreply-cms-talk@cern.ch</a> wrote:</p>\n<blockquote>\n<div class=\"md-table\">\n<table>\n<thead>\n<tr>\n<th><img src=\"https://cms-talk.web.cern.ch/letter_avatar_proxy/v4/letter/f/7993a0/45.png\" height=\"45\" width=\"45\"></th>\n<th><a href=\"https://cms-talk.web.cern.ch/u/fanx\">Xingchen Fan</a> fanx<br>September 9</th>\n</tr>\n</thead>\n</table>\n</div><p>Hi Nicholas,</p>\n<p>Yes! Thank you! I was looking at the wrong output file.</p>\n<p>I find the <code>tree_fit_sb</code> tree in the correct file. I have one more question. From some printouts, I know that some toys fail the fitting. Does the branch <code>numbadnll</code> record whether a toy is good or not? Otherwise, what is the way to rule out the failing toys?</p>\n<p>Best</p>\n<p>Xingchen</p>\n<hr>\n<p><a href=\"https://cms-talk.web.cern.ch/t/fitdiagnostics-output-file-missing-a-tree/131325/4\">Visit Topic</a> or reply to this email to respond.</p>\n<p>To unsubscribe from these emails, <a>click here</a>.</p>\n</blockquote>"
+    },
+    {
+      "post_number": 6,
+      "username": "fanx",
+      "name": "Xingchen Fan",
+      "created_at": "2025-09-09T19:31:22.505Z",
+      "updated_at": "2025-09-09T19:31:22.505Z",
+      "reply_to_post_number": 5,
+      "is_accepted_answer": false,
+      "text": "Thank you! I find it. It is very helpful!",
+      "cooked_html": "<p>Thank you! I find it. It is very helpful!</p>"
+    }
+  ]
+}

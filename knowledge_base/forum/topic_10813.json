@@ -1,0 +1,45 @@
+{
+  "topic_id": 10813,
+  "title": "Cannot compute CLs in HybridNew method",
+  "url": "https://cms-talk.web.cern.ch/t/10813",
+  "category_id": 279,
+  "created_at": "2022-05-24T07:58:51.683Z",
+  "last_posted_at": "2022-06-07T18:52:38.914Z",
+  "tags": [],
+  "accepted_answer_post_number": null,
+  "posts": [
+    {
+      "post_number": 1,
+      "username": "prsaha",
+      "name": "Prafulla Saha",
+      "created_at": "2022-05-24T07:58:51.893Z",
+      "updated_at": "2023-02-07T10:57:35.653Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hello Andrew and Experts,\nThanks for your support.\nWe are having an issue in HybridNew method with the datacard [1]. Since we are dealing with a low stat. category[2] and we are calculating the Asymptotic upper limit. During the ARC review of B2G-21-007, having concerns on the validity of the Asymptotic method on these statistics, we have been asked to check the upper limit with the full CLs(HybridNew) method .\nI used the following combine command[3] to calculate it. For other mass points I could get the result which is close to the Asymptotic method. But for the 600GeV mass point the fit couldn\u2019t converge and terminates with the error message[4]\nIt would be very helpful if you suggest some way to get rid of the issue.\nBest\nPrafulla\n[1] /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root\n[2] https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/UL/result_v2/SplusBModels_muFit_unblind/all_CMS_hgg_mass_Tprime600.pdf\n[3]Combine command:\ncombine /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root -M HybridNew -m 125 --freezeParameter MH --saveWorkspace --cminDefaultMinimizerStrategy 0 --LHCmode LHC-limits --saveToys --saveHybridResult --clsAcc 0.5 -T 20\n[4]\nError: Cannot compute CLs because CLb = 0. Returning CLs = -1\nCannot set higher limit: at r = 1280 still get CLs = -1",
+      "cooked_html": "<p>Hello Andrew and Experts,</p>\n<p>Thanks for your support.</p>\n<p>We are having an issue in HybridNew method with the datacard [1]. Since we are dealing with a low stat. category[2] and we are calculating the Asymptotic upper limit. During the ARC review of B2G-21-007, having concerns on the validity of the Asymptotic method on these statistics, we have been asked to check the upper limit with the full CLs(HybridNew) method .</p>\n<p>I used the following combine command[3] to calculate it. For other mass points I could get the result which is close to the Asymptotic method. But for the 600GeV mass point the fit couldn\u2019t converge and terminates with the error message[4]</p>\n<p>It would be very helpful if you suggest some way to get rid of the issue.</p>\n<p>Best<br>\nPrafulla</p>\n<p>[1] /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root</p>\n<p>[2] <a href=\"https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/UL/result_v2/SplusBModels_muFit_unblind/all_CMS_hgg_mass_Tprime600.pdf\" rel=\"noopener nofollow ugc\">https://prsaha.web.cern.ch/prsaha/prafulla/Tprime_analysis/Finalfit_Lite_output/UL/result_v2/SplusBModels_muFit_unblind/all_CMS_hgg_mass_Tprime600.pdf </a></p>\n<p>[3]<strong>Combine command:</strong></p>\n<p>combine /afs/cern.ch/work/p/prsaha/public/Combine_TroubleShoot/Datacard_Tprime600_StatOnly.root -M HybridNew -m 125 --freezeParameter MH --saveWorkspace --cminDefaultMinimizerStrategy 0 --LHCmode LHC-limits --saveToys --saveHybridResult --clsAcc 0.5 -T 20</p>\n<p>[4]</p>\n<p>Error: Cannot compute CLs because CLb = 0. Returning CLs = -1<br>\nCannot set higher limit: at r = 1280 still get CLs = -1</p>"
+    },
+    {
+      "post_number": 2,
+      "username": "agilbert",
+      "name": "Andrew Gilbert",
+      "created_at": "2022-06-03T10:03:48.754Z",
+      "updated_at": "2022-06-03T10:03:48.754Z",
+      "reply_to_post_number": null,
+      "is_accepted_answer": false,
+      "text": "Hi Prafulla,\nSorry for the slow reply on this. I didn\u2019t have a chance to look at this in detail yet, but there might be a couple of things you could try:\n\nThe argument to -T (number of toys per batch) is a little low, I\u2019d suggest setting this to something O(1000), at least for debugging.\nPossible the scan for the limit is terminating early because of the absolute accuracy requirement (this is often a problem if the absolute value of the limit is very small) - you could try setting --rAbsAcc 0\n\nIt\u2019s probably not a good idea to set such a large --clsAcc value either - could you try leaving this as the default - or if the runtime is really too prohibitive then only increase by a small factor\n\nIf none of these address the problem I\u2019ll try to look in more detail.\ncheers,\nAndrew",
+      "cooked_html": "<p>Hi Prafulla,</p>\n<p>Sorry for the slow reply on this. I didn\u2019t have a chance to look at this in detail yet, but there might be a couple of things you could try:</p>\n<ul>\n<li>The argument to <code>-T</code> (number of toys per batch) is a little low, I\u2019d suggest setting this to something O(1000), at least for debugging.</li>\n<li>Possible the scan for the limit is terminating early because of the absolute accuracy requirement (this is often a problem if the absolute value of the limit is very small) - you could try setting <code>--rAbsAcc 0</code>\n</li>\n<li>It\u2019s probably not a good idea to set such a large <code>--clsAcc</code> value either - could you try leaving this as the default - or if the runtime is really too prohibitive then only increase by a small factor</li>\n</ul>\n<p>If none of these address the problem I\u2019ll try to look in more detail.</p>\n<p>cheers,<br>\nAndrew</p>"
+    },
+    {
+      "post_number": 3,
+      "username": "prsaha",
+      "name": "Prafulla Saha",
+      "created_at": "2022-06-07T18:52:38.914Z",
+      "updated_at": "2022-06-07T18:52:38.914Z",
+      "reply_to_post_number": 2,
+      "is_accepted_answer": false,
+      "text": "Hello Andrew,\nThank you so much for your reply.\nNow it worked with the option setting --rAbsAcc 0\nBest\nPrafulla",
+      "cooked_html": "<p>Hello Andrew,</p>\n<p>Thank you so much for your reply.</p>\n<p>Now it worked with the option setting --rAbsAcc 0</p>\n<p>Best<br>\nPrafulla</p>"
+    }
+  ]
+}
