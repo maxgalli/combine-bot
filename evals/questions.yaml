@@ -15,24 +15,33 @@
 #   - theoretical         (paper)
 #   - implementation      (code)
 #   - solved-forum cases  (extract from knowledge_base/forum/topic_*.json)
-- id: debug-fit-1
+- id: debug-fastscan-1
   category: usage
-  question: How can I debug a Combine fit that fails to converge or returns errors on the uncertainties?
+  source_file: docs/part3/debugging.md
+  question: How can I use combineTool.py to analyze the shape of the NLL as a function of each parameter, in order to investigate fit problems?
   gold_answer: |
-    When a Combine fit fails to converge or fails to determine uncertainties on
-    some parameters, the standard steps are:
+    The `FastScan` mode of `combineTool.py` evaluates the NLL as a function of
+    each parameter individually, keeping the other parameters fixed at their
+    workspace default values. The output file contains the NLL together with
+    its first and second derivatives for each parameter. Discontinuities in
+    those derivatives — particularly near a parameter's minimum — are a
+    common source of fit problems and are what `FastScan` is meant to expose.
 
-    1. Use `--robustFit 1`, which switches the minimisation to a more careful
-       strategy that checks the likelihood profile when Migrad fails.
-    2. Tighten the convergence criteria with `--setRobustFitTolerance` (default
-       0.1) and `--setCrossingTolerance` if the robust fit still struggles.
-    3. For missing parameter uncertainties, add `--robustHesse 1` to recompute
-       the Hessian with a more reliable algorithm.
-    4. If specific nuisance parameters are pathological (hitting boundaries or
-       degenerate), restrict their range with `--setParameterRanges`, or freeze
-       them with `--freezeParameters <name>` and validate the impact.
-    5. Consider running a Minuit pre-fit via `--cminPreFit` (0/1/2) to find a
-       better starting point for the main minimisation.
+    Basic usage, which uses the data in the workspace to evaluate the NLL:
 
-    The Debugging Fit Failures section of the documentation collects these
-    suggestions; specific past cases are also discussed on cms-talk.
+        combineTool.py -M FastScan -w workspace.root:w
+
+    To run on an Asimov dataset with `r=1` injected instead, first generate
+    the toy with `-M GenerateOnly`, then point `FastScan` at it:
+
+        combine -M GenerateOnly workspace.root -t -1 --saveToys --setParameters r=1
+        combineTool.py -M FastScan -w workspace.root:w \
+            -d higgsCombineTest.GenerateOnly.mH120.123456.root:toys/toy_asimov
+
+    The first command produces `higgsCombineTest.GenerateOnly.mH120.123456.root`;
+    if you change the mass (`-m`) or the output name prefix (`-n`) on that call,
+    adjust the toy filename in the second command accordingly.
+
+    The debugging section also links to a 2020 Combine tutorial deck with
+    further pointers, but `FastScan` is the only technique covered directly
+    on this page.

@@ -59,6 +59,7 @@ from ragas.metrics import Faithfulness, FactualCorrectness, ResponseRelevancy
 # scripts/ is the script's directory, so plain import works under uv run.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ask import SYSTEM_PROMPT, format_context  # noqa: E402
+from eval_io import save_eval_results  # noqa: E402
 
 DEFAULT_PERSIST = Path("vectorstore")
 DEFAULT_COLLECTION = "combine"
@@ -68,6 +69,7 @@ DEFAULT_BOT_MODEL = "gpt-4.1"
 DEFAULT_JUDGE_MODEL = "gpt-4.1"
 DEFAULT_BASE_URL = "https://llmgw-litellm.web.cern.ch/v1"
 DEFAULT_K = 8
+DEFAULT_RESULTS_DIR = Path("evals/results")
 
 
 def load_questions(path: Path) -> list[dict]:
@@ -109,6 +111,8 @@ def main() -> int:
                    help="LLM that scores the answer (RAGAS metrics)")
     p.add_argument("--base-url", default=DEFAULT_BASE_URL)
     p.add_argument("--k", type=int, default=DEFAULT_K)
+    p.add_argument("--results-dir", type=Path, default=DEFAULT_RESULTS_DIR,
+                   help=f"where to save CSV + meta.json (default: {DEFAULT_RESULTS_DIR})")
     args = p.parse_args()
 
     if not os.environ.get("OPENAI_API_KEY"):
@@ -173,12 +177,31 @@ def main() -> int:
         show_progress=True,
     )
 
-    print("\n=== Generation results ===\n")
     df = result.to_pandas()
-    for col in ("retrieved_contexts", "response", "reference"):
-        if col in df.columns:
-            df = df.drop(columns=[col])
-    print(df.to_string(index=False))
+    if "retrieved_contexts" in df.columns:
+        df = df.drop(columns=["retrieved_contexts"])
+    df.insert(0, "id", [q.get("id", "?") for q in questions])
+
+    # Slim view for the terminal: drop the long-text columns. They're still
+    # in the CSV written below.
+    print("\n=== Generation results ===\n")
+    display_df = df.drop(
+        columns=[c for c in ("user_input", "reference", "response") if c in df.columns]
+    )
+    print(display_df.to_string(index=False))
+
+    run_meta = {
+        "vectorstore": str(args.persist),
+        "collection": args.collection,
+        "embedding_model": args.embedding_model,
+        "judge_model": args.judge_model,
+        "bot_model": args.bot_model,
+        "base_url": args.base_url,
+        "k": args.k,
+        "questions_file": str(args.questions),
+    }
+    csv_path, meta_path = save_eval_results(df, "answers", run_meta, args.results_dir)
+    print(f"\nsaved:\n  {csv_path}\n  {meta_path}")
     print()
     return 0
 
