@@ -1,0 +1,38 @@
+# Evaluation question set for combine-bot.
+#
+# Each entry needs:
+#   id          unique identifier (free-form)
+#   question    the natural-language question the bot will answer
+#   gold_answer the reference answer used by the RAGAS judge LLM
+#               (for both retrieval and generation metrics)
+#
+# Optional:
+#   category    tag for grouping (usage / forum-solved / paper / code / ...)
+#   notes       free-form notes for the human curator
+#
+# Add more questions over time. Aim for diversity across source types:
+#   - usage / debugging   (docs + forum)
+#   - theoretical         (paper)
+#   - implementation      (code)
+#   - solved-forum cases  (extract from knowledge_base/forum/topic_*.json)
+- id: debug-fit-1
+  category: usage
+  question: How can I debug a Combine fit that fails to converge or returns errors on the uncertainties?
+  gold_answer: |
+    When a Combine fit fails to converge or fails to determine uncertainties on
+    some parameters, the standard steps are:
+
+    1. Use `--robustFit 1`, which switches the minimisation to a more careful
+       strategy that checks the likelihood profile when Migrad fails.
+    2. Tighten the convergence criteria with `--setRobustFitTolerance` (default
+       0.1) and `--setCrossingTolerance` if the robust fit still struggles.
+    3. For missing parameter uncertainties, add `--robustHesse 1` to recompute
+       the Hessian with a more reliable algorithm.
+    4. If specific nuisance parameters are pathological (hitting boundaries or
+       degenerate), restrict their range with `--setParameterRanges`, or freeze
+       them with `--freezeParameters <name>` and validate the impact.
+    5. Consider running a Minuit pre-fit via `--cminPreFit` (0/1/2) to find a
+       better starting point for the main minimisation.
+
+    The Debugging Fit Failures section of the documentation collects these
+    suggestions; specific past cases are also discussed on cms-talk.
