@@ -9,6 +9,9 @@
 # Optional:
 #   category    tag for grouping (usage / forum-solved / paper / code / ...)
 #   notes       free-form notes for the human curator
+#   images      list of image paths to attach when asking the bot
+#               (read by eval_answers.py and ask.py --image; ignored by
+#               eval_retrieval.py because retrieval is text-only)
 #
 # Add more questions over time. Aim for diversity across source types:
 #   - usage / debugging   (docs + forum)
@@ -45,3 +48,48 @@
     The debugging section also links to a 2020 Combine tutorial deck with
     further pointers, but `FastScan` is the only technique covered directly
     on this page.
+
+- id: freeze-snapshot-1
+  category: usage
+  source_file: docs/part5/longexercise.md
+  images:
+    - knowledge_base/combine/docs/part5/images/freeze_first_attempt.png
+  question: |
+    I ran a MultiDimFit scan in r, then re-ran the scan with
+    `--freezeParameters allConstrainedNuisances` to overlay a stat-only
+    curve, but as you can see in the attached plot the two curves do not
+    sit on top of each other at the minimum. How can I make them overlay
+    correctly?
+  gold_answer: |
+    The two curves don't overlay because `--freezeParameters` acts
+    *before* the initial fit: the nuisance parameters get frozen at their
+    workspace default values before the best-fit is found, so the
+    stat-only fit ends up shifted. You only want the freeze to apply
+    during the scan, not during the central fit.
+
+    The fix is to run two steps and pass a snapshot of the best-fit
+    parameter values between them:
+
+    1. Do a single fit without freezing, adding `--saveWorkspace` so the
+       output workspace stores a snapshot of the best-fit values:
+
+           combine -M MultiDimFit workspace_part3.root \
+               -n .part3E.snapshot -m 200 --rMin -1 --rMax 2 \
+               --saveWorkspace
+
+       The output file `higgsCombine.part3E.snapshot.MultiDimFit.mH200.root`
+       now contains the workspace plus a snapshot named `MultiDimFit`.
+
+    2. Run the frozen scan against that output file, restoring the
+       snapshot with `--snapshotName MultiDimFit`:
+
+           combine -M MultiDimFit higgsCombine.part3E.snapshot.MultiDimFit.mH200.root \
+               -n .part3E.freezeAll -m 200 --rMin -1 --rMax 2 \
+               --algo grid --points 30 \
+               --freezeParameters allConstrainedNuisances \
+               --snapshotName MultiDimFit
+
+    Now the two curves share the same minimum and the stat-only curve
+    sits inside the full one. You can also pass `--breakdown Syst,Stat`
+    to `plot1DScan.py` to draw the systematic component, defined as
+    `sigma_syst = sqrt(sigma_tot^2 - sigma_stat^2)`.

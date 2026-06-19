@@ -58,7 +58,12 @@ from ragas.metrics import Faithfulness, FactualCorrectness, ResponseRelevancy
 # Reuse the bot's system prompt and context formatter from ask.py.
 # scripts/ is the script's directory, so plain import works under uv run.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from ask import SYSTEM_PROMPT, format_context  # noqa: E402
+from ask import (  # noqa: E402
+    SYSTEM_PROMPT,
+    VISION_PROMPT_SUFFIX,
+    encode_image,
+    format_context,
+)
 from eval_io import save_eval_results  # noqa: E402
 
 DEFAULT_PERSIST = Path("vectorstore")
@@ -77,8 +82,21 @@ def load_questions(path: Path) -> list[dict]:
         return yaml.safe_load(f)
 
 
-def run_bot(question: str, store, k: int, model: str, base_url: str) -> tuple[str, list]:
-    """Reproduce ask.py's RAG call once, non-streaming."""
+def run_bot(
+    question: str,
+    store,
+    k: int,
+    model: str,
+    base_url: str,
+    image_paths: list[Path] | None = None,
+) -> tuple[str, list]:
+    """Reproduce ask.py's RAG call once, non-streaming.
+
+    If image_paths is non-empty, the user message is built as a multimodal
+    content list and VISION_PROMPT_SUFFIX is appended to the system prompt —
+    matching ask.py's behavior so the eval faithfully tests image-bearing
+    questions.
+    """
     docs = store.similarity_search(question, k=k)
     user_prompt = (
         "Context excerpts:\n\n"
@@ -86,12 +104,24 @@ def run_bot(question: str, store, k: int, model: str, base_url: str) -> tuple[st
         "---\n\n"
         f"Question: {question}"
     )
+
+    system_content = SYSTEM_PROMPT + (VISION_PROMPT_SUFFIX if image_paths else "")
+    if image_paths:
+        user_content: list[dict] = [{"type": "text", "text": user_prompt}]
+        for path in image_paths:
+            user_content.append({
+                "type": "image_url",
+                "image_url": {"url": encode_image(path), "detail": "auto"},
+            })
+    else:
+        user_content = user_prompt
+
     response = completion(
         model=model,
         base_url=base_url,
         messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
+            {"role": "system", "content": system_content},
+            {"role": "user", "content": user_content},
         ],
     )
     return response.choices[0].message.content, docs
@@ -138,9 +168,21 @@ def main() -> int:
     print(f"running bot LLM ({args.bot_model}) on each question...")
     samples: list[SingleTurnSample] = []
     for i, q in enumerate(questions, 1):
-        print(f"  [{i}/{len(questions)}] {q['id']}: {q['question'][:70]}")
+        image_paths = [Path(p) for p in q.get("images", [])]
+        for img in image_paths:
+            if not img.exists():
+                raise SystemExit(
+                    f"ERROR: image not found for question {q['id']}: {img}"
+                )
+        marker = f" [+{len(image_paths)} image(s)]" if image_paths else ""
+        print(f"  [{i}/{len(questions)}] {q['id']}: {q['question'][:70]}{marker}")
         answer, docs = run_bot(
-            q["question"], store, args.k, args.bot_model, args.base_url
+            q["question"],
+            store,
+            args.k,
+            args.bot_model,
+            args.base_url,
+            image_paths=image_paths,
         )
         samples.append(
             SingleTurnSample(

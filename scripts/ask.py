@@ -12,10 +12,18 @@ Usage:
     uv run scripts/ask.py "how do I run AsymptoticLimits with toys?"
     uv run scripts/ask.py "..." --k 12 --verbose
     uv run scripts/ask.py "..." --model gpt-4.1-mini
+
+    # With one or more images (PNG, JPG, GIF, WEBP):
+    uv run scripts/ask.py "why does my impact plot look strange?" \\
+        --image plot.png
+    uv run scripts/ask.py "what do these scans show?" \\
+        --image scan1.png --image scan2.png --image-detail high
 """
 from __future__ import annotations
 
 import argparse
+import base64
+import mimetypes
 import os
 import sys
 from pathlib import Path
@@ -41,6 +49,24 @@ Rules:
 - Be precise and concise. Combine users are technical: prefer exact command syntax over hand-waving.
 - If sources disagree (e.g. an old forum reply vs. current docs), trust the docs and note the discrepancy.
 - When a question has both a documentation answer and a relevant forum thread, mention the forum thread as a real-world example."""
+
+VISION_PROMPT_SUFFIX = """
+
+The user has attached one or more images.
+- Before drawing conclusions from an image, briefly describe what you actually see (axes, curves, legend, error messages, etc.).
+- If an image is unclear, cropped, or doesn't show what you'd expect for the question, say so explicitly rather than speculating.
+- Treat the image as supplementary evidence: cross-check what it shows against the provided context excerpts before recommending fixes."""
+
+
+def encode_image(path: Path) -> str:
+    mime, _ = mimetypes.guess_type(path.name)
+    if mime is None or not mime.startswith("image/"):
+        raise SystemExit(
+            f"ERROR: cannot determine image MIME type for {path} "
+            f"(supported: .png, .jpg, .jpeg, .gif, .webp)"
+        )
+    data = base64.b64encode(path.read_bytes()).decode()
+    return f"data:{mime};base64,{data}"
 
 
 def source_tag(doc) -> str:
@@ -116,6 +142,12 @@ def main() -> int:
                    help="print a preview of each retrieved chunk")
     p.add_argument("--quiet", action="store_true",
                    help="print the answer only; suppress sources block")
+    p.add_argument("--image", type=Path, action="append", default=[],
+                   help="attach an image to the question (PNG/JPG/GIF/WEBP); "
+                        "can be passed multiple times")
+    p.add_argument("--image-detail", default="auto", choices=("auto", "low", "high"),
+                   help="image resolution detail (default: auto; use 'high' for "
+                        "screenshots with text)")
     args = p.parse_args()
 
     if not os.environ.get("OPENAI_API_KEY"):
@@ -137,8 +169,18 @@ def main() -> int:
         print("(no chunks retrieved — is the vectorstore populated?)")
         return 1
 
+    for img in args.image:
+        if not img.exists():
+            raise SystemExit(f"ERROR: image not found: {img}")
+
     if not args.quiet:
         print_sources(docs, verbose=args.verbose)
+        if args.image:
+            print(f"=== Attached images ({len(args.image)}) ===\n")
+            for img in args.image:
+                kb = img.stat().st_size / 1024
+                print(f"  {img} ({kb:.1f} KB)")
+            print()
         print("=== Answer ===\n")
 
     user_prompt = (
@@ -147,9 +189,21 @@ def main() -> int:
         "---\n\n"
         f"Question: {args.question}"
     )
+
+    system_content = SYSTEM_PROMPT + (VISION_PROMPT_SUFFIX if args.image else "")
+    if args.image:
+        user_content: list[dict] = [{"type": "text", "text": user_prompt}]
+        for img in args.image:
+            user_content.append({
+                "type": "image_url",
+                "image_url": {"url": encode_image(img), "detail": args.image_detail},
+            })
+    else:
+        user_content = user_prompt
+
     messages = [
-        {"role": "system", "content": SYSTEM_PROMPT},
-        {"role": "user", "content": user_prompt},
+        {"role": "system", "content": system_content},
+        {"role": "user", "content": user_content},
     ]
 
     if args.no_stream:
