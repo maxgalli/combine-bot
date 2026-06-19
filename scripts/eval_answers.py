@@ -68,7 +68,7 @@ from eval_io import save_eval_results  # noqa: E402
 
 DEFAULT_PERSIST = Path("vectorstore")
 DEFAULT_COLLECTION = "combine"
-DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_EMBEDDING_MODEL = "BAAI/bge-base-en-v1.5"
 DEFAULT_QUESTIONS = Path("evals/questions.yaml")
 DEFAULT_BOT_MODEL = "gpt-4.1"
 DEFAULT_JUDGE_MODEL = "gpt-4.1"

@@ -19,8 +19,10 @@ source files.
 
 Usage:
     uv run scripts/build_index.py
-    uv run scripts/build_index.py --chunk-size 800 --chunk-overlap 100
+    # Override defaults per source (each source has its own pair of flags):
+    uv run scripts/build_index.py --chunk-size-docs 2500 --chunk-overlap-docs 400
 """
+
 from __future__ import annotations
 
 import argparse
@@ -45,25 +47,39 @@ DOCS_ROOT = COMBINE_ROOT / "docs"
 MKDOCS_PATH = COMBINE_ROOT / "mkdocs.yml"
 FORUM_ROOT = Path("knowledge_base/forum")
 COMBINE_VERSION = "v10.6.0"  # the submodule is pinned to this tag
-GITHUB_BASE = (
-    f"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/{COMBINE_VERSION}"
-)
+GITHUB_BASE = f"https://github.com/cms-analysis/HiggsAnalysis-CombinedLimit/blob/{COMBINE_VERSION}"
 
 # Forum ingestion knobs
-MIN_POST_CHARS = 50       # skip replies shorter than this ("thanks!", "fixed it", ...)
-Q_CONTEXT_CHARS = 500     # how much of the OP to prepend to each reply chunk
+MIN_POST_CHARS = 50  # skip replies shorter than this ("thanks!", "fixed it", ...)
+Q_CONTEXT_CHARS = 500  # how much of the OP to prepend to each reply chunk
 
 DEFAULT_PERSIST = Path("vectorstore")
-DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_MODEL = "BAAI/bge-base-en-v1.5"
 DEFAULT_COLLECTION = "combine"
+
+# Per-source chunking knobs. Different sources benefit from different sizes:
+#   - paper / forum / code: 1000/150 keeps chunks focused on a single
+#     topic, function, or post.
+#   - docs: 2000/300 because docs sections often pair a problem with its
+#     fix several paragraphs apart (e.g. the snapshot procedure in
+#     longexercise.md). Bigger chunks keep both halves together so a
+#     query on the symptom retrieves the solution as well.
+DEFAULT_CHUNK_SIZE_PAPER = 1000
+DEFAULT_CHUNK_OVERLAP_PAPER = 150
+DEFAULT_CHUNK_SIZE_CODE = 1000
+DEFAULT_CHUNK_OVERLAP_CODE = 150
+DEFAULT_CHUNK_SIZE_DOCS = 1000
+DEFAULT_CHUNK_OVERLAP_DOCS = 300
+DEFAULT_CHUNK_SIZE_FORUM = 1000
+DEFAULT_CHUNK_OVERLAP_FORUM = 150
 
 # (glob relative to COMBINE_ROOT, language tag for metadata, splitter language or None)
 CODE_INCLUDES: list[tuple[str, str, Language | None]] = [
-    ("python/**/*.py",   "python", Language.PYTHON),
-    ("scripts/*.py",     "python", Language.PYTHON),
-    ("scripts/*.sh",     "shell",  None),
-    ("interface/*.h",    "header", Language.CPP),
-    ("bin/*.cpp",        "cpp",    Language.CPP),
+    ("python/**/*.py", "python", Language.PYTHON),
+    ("scripts/*.py", "python", Language.PYTHON),
+    ("scripts/*.sh", "shell", None),
+    ("interface/*.h", "header", Language.CPP),
+    ("bin/*.cpp", "cpp", Language.CPP),
 ]
 
 HEADERS_TO_SPLIT_ON = [("#", "h1"), ("##", "h2"), ("###", "h3")]
@@ -268,7 +284,9 @@ def load_forum_chunks(root: Path, chunk_size: int, chunk_overlap: int):
             make_chunk(content, base_metadata(post))
 
         if accepted_n is not None:
-            accepted = next((p for p in posts if p.get("post_number") == accepted_n), None)
+            accepted = next(
+                (p for p in posts if p.get("post_number") == accepted_n), None
+            )
             if accepted:
                 a_text = (accepted.get("text") or "").strip()
                 a_user = accepted.get("username") or "?"
@@ -320,22 +338,91 @@ def main() -> int:
     p = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    p.add_argument("--paper", type=Path, default=PAPER_PATH,
-                   help=f"path to cleaned paper text (default: {PAPER_PATH})")
-    p.add_argument("--combine-root", type=Path, default=COMBINE_ROOT,
-                   help=f"Combine submodule root (default: {COMBINE_ROOT})")
-    p.add_argument("--forum-root", type=Path, default=FORUM_ROOT,
-                   help=f"forum scrape directory (default: {FORUM_ROOT})")
-    p.add_argument("--persist", type=Path, default=DEFAULT_PERSIST,
-                   help=f"vectorstore directory (default: {DEFAULT_PERSIST})")
-    p.add_argument("--model", default=DEFAULT_MODEL,
-                   help=f"sentence-transformers model (default: {DEFAULT_MODEL})")
-    p.add_argument("--collection", default=DEFAULT_COLLECTION,
-                   help=f"Chroma collection name (default: {DEFAULT_COLLECTION})")
-    p.add_argument("--chunk-size", type=int, default=1000,
-                   help="max characters per chunk (default: 1000)")
-    p.add_argument("--chunk-overlap", type=int, default=150,
-                   help="characters of overlap between adjacent chunks (default: 150)")
+    p.add_argument(
+        "--paper",
+        type=Path,
+        default=PAPER_PATH,
+        help=f"path to cleaned paper text (default: {PAPER_PATH})",
+    )
+    p.add_argument(
+        "--combine-root",
+        type=Path,
+        default=COMBINE_ROOT,
+        help=f"Combine submodule root (default: {COMBINE_ROOT})",
+    )
+    p.add_argument(
+        "--forum-root",
+        type=Path,
+        default=FORUM_ROOT,
+        help=f"forum scrape directory (default: {FORUM_ROOT})",
+    )
+    p.add_argument(
+        "--persist",
+        type=Path,
+        default=DEFAULT_PERSIST,
+        help=f"vectorstore directory (default: {DEFAULT_PERSIST})",
+    )
+    p.add_argument(
+        "--model",
+        default=DEFAULT_MODEL,
+        help=f"sentence-transformers model (default: {DEFAULT_MODEL})",
+    )
+    p.add_argument(
+        "--collection",
+        default=DEFAULT_COLLECTION,
+        help=f"Chroma collection name (default: {DEFAULT_COLLECTION})",
+    )
+    # Per-source chunk knobs. Each source has its own pair so e.g. docs
+    # can use larger chunks for multi-paragraph synthesis questions without
+    # diluting code embeddings.
+    p.add_argument(
+        "--chunk-size-paper",
+        type=int,
+        default=DEFAULT_CHUNK_SIZE_PAPER,
+        help=f"chunk size for the paper (default: {DEFAULT_CHUNK_SIZE_PAPER})",
+    )
+    p.add_argument(
+        "--chunk-overlap-paper",
+        type=int,
+        default=DEFAULT_CHUNK_OVERLAP_PAPER,
+        help=f"chunk overlap for the paper (default: {DEFAULT_CHUNK_OVERLAP_PAPER})",
+    )
+    p.add_argument(
+        "--chunk-size-code",
+        type=int,
+        default=DEFAULT_CHUNK_SIZE_CODE,
+        help=f"chunk size for code (default: {DEFAULT_CHUNK_SIZE_CODE})",
+    )
+    p.add_argument(
+        "--chunk-overlap-code",
+        type=int,
+        default=DEFAULT_CHUNK_OVERLAP_CODE,
+        help=f"chunk overlap for code (default: {DEFAULT_CHUNK_OVERLAP_CODE})",
+    )
+    p.add_argument(
+        "--chunk-size-docs",
+        type=int,
+        default=DEFAULT_CHUNK_SIZE_DOCS,
+        help=f"chunk size for docs (default: {DEFAULT_CHUNK_SIZE_DOCS})",
+    )
+    p.add_argument(
+        "--chunk-overlap-docs",
+        type=int,
+        default=DEFAULT_CHUNK_OVERLAP_DOCS,
+        help=f"chunk overlap for docs (default: {DEFAULT_CHUNK_OVERLAP_DOCS})",
+    )
+    p.add_argument(
+        "--chunk-size-forum",
+        type=int,
+        default=DEFAULT_CHUNK_SIZE_FORUM,
+        help=f"chunk size for forum (default: {DEFAULT_CHUNK_SIZE_FORUM})",
+    )
+    p.add_argument(
+        "--chunk-overlap-forum",
+        type=int,
+        default=DEFAULT_CHUNK_OVERLAP_FORUM,
+        help=f"chunk overlap for forum (default: {DEFAULT_CHUNK_OVERLAP_FORUM})",
+    )
     args = p.parse_args()
 
     if not args.paper.exists():
@@ -352,34 +439,52 @@ def main() -> int:
 
     all_chunks = []
 
-    print(f"\nloading paper from {args.paper}")
-    paper_chunks = load_paper_chunks(args.paper, args.chunk_size, args.chunk_overlap)
+    print(
+        f"\nloading paper from {args.paper} "
+        f"(chunk_size={args.chunk_size_paper}, overlap={args.chunk_overlap_paper})"
+    )
+    paper_chunks = load_paper_chunks(
+        args.paper, args.chunk_size_paper, args.chunk_overlap_paper
+    )
     print(f"  -> {len(paper_chunks)} chunks")
     all_chunks.extend(paper_chunks)
 
-    print(f"\nloading code from {args.combine_root}")
-    code_chunks = load_code_chunks(args.combine_root, args.chunk_size, args.chunk_overlap)
+    print(
+        f"\nloading code from {args.combine_root} "
+        f"(chunk_size={args.chunk_size_code}, overlap={args.chunk_overlap_code})"
+    )
+    code_chunks = load_code_chunks(
+        args.combine_root, args.chunk_size_code, args.chunk_overlap_code
+    )
     print(f"  -> {len(code_chunks)} code chunks total")
     all_chunks.extend(code_chunks)
 
     docs_root = args.combine_root / "docs"
     mkdocs_path = args.combine_root / "mkdocs.yml"
-    print(f"\nloading docs from {docs_root}")
+    print(
+        f"\nloading docs from {docs_root} "
+        f"(chunk_size={args.chunk_size_docs}, overlap={args.chunk_overlap_docs})"
+    )
     docs_chunks = load_docs_chunks(
-        docs_root, mkdocs_path, args.chunk_size, args.chunk_overlap
+        docs_root, mkdocs_path, args.chunk_size_docs, args.chunk_overlap_docs
     )
     print(f"  -> {len(docs_chunks)} docs chunks")
     all_chunks.extend(docs_chunks)
 
     if args.forum_root.exists():
-        print(f"\nloading forum from {args.forum_root}")
-        forum_chunks = load_forum_chunks(args.forum_root, args.chunk_size, args.chunk_overlap)
+        print(
+            f"\nloading forum from {args.forum_root} "
+            f"(chunk_size={args.chunk_size_forum}, overlap={args.chunk_overlap_forum})"
+        )
+        forum_chunks = load_forum_chunks(
+            args.forum_root, args.chunk_size_forum, args.chunk_overlap_forum
+        )
         print(f"  -> {len(forum_chunks)} forum chunks")
         all_chunks.extend(forum_chunks)
     else:
         print(f"\nforum directory not found at {args.forum_root}, skipping")
 
-    print(f"\ntotal: {len(all_chunks)} chunks (chunk_size={args.chunk_size}, overlap={args.chunk_overlap})")
+    print(f"\ntotal: {len(all_chunks)} chunks across all sources")
 
     print(f"\nloading embedding model: {args.model}")
     embeddings = HuggingFaceEmbeddings(model_name=args.model)

@@ -34,7 +34,7 @@ from litellm import completion
 
 DEFAULT_PERSIST = Path("vectorstore")
 DEFAULT_COLLECTION = "combine"
-DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_EMBEDDING_MODEL = "BAAI/bge-base-en-v1.5"
 DEFAULT_MODEL = "gpt-4.1"
 DEFAULT_BASE_URL = "https://llmgw-litellm.web.cern.ch/v1"
 DEFAULT_K = 8

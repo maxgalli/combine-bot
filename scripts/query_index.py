@@ -19,7 +19,7 @@ from langchain_chroma import Chroma
 from langchain_huggingface import HuggingFaceEmbeddings
 
 DEFAULT_PERSIST = Path("vectorstore")
-DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_MODEL = "BAAI/bge-base-en-v1.5"
 DEFAULT_COLLECTION = "combine"
 
 
