@@ -190,3 +190,74 @@
     where p(x; μ, ν) is the primary distribution and each p_k(y_k; ν_k)
     encodes how well the corresponding nuisance is constrained. In
     Combine, the priors on all nuisance parameters are taken to be uniform.
+
+- id: code-adaptive-hybridnew-1
+  category: usage
+  source_file:
+    - docs/part3/commonstatsmethods.md
+    - src/HybridNew.cc
+  question: |
+    What is adaptive sampling in Combine's HybridNew method, and how do
+    I control or disable it from the command line?
+  gold_answer: |
+    By default, HybridNew uses adaptive sampling: toys are thrown in
+    batches and the procedure stops as soon as the statistical
+    uncertainty on CLs (or p_μ) reaches the requested accuracy, or once
+    the current estimate is clearly far from the CL contour of interest.
+    This avoids wasting computation on points whose answer is already
+    statistically unambiguous.
+
+    Two command-line options govern the behaviour:
+
+      • `--toysH N` (or `-T N`): minimum number of toys thrown per batch
+        (default 500). Increase this for higher CL levels (e.g. 99%).
+      • `--clsAcc X`: target absolute accuracy on CLs (default 0.005).
+
+    To disable adaptive sampling and throw a fixed number of toys, set
+    `--clsAcc 0`. The algorithm then runs exactly `--iterations × T`
+    toys without early termination. This is the standard pattern when
+    building a grid of test-statistic distributions for complex models:
+
+        combine datacard.txt -M HybridNew --LHCmode LHC-limits \
+            --singlePoint X --saveToys --saveHybridResult \
+            -T 500 --clsAcc 0
+
+- id: forum-130063
+  category: forum-conceptual
+  topic_url: https://cms-talk.web.cern.ch/t/130063
+  source_file:
+    - docs/part2/settinguptheanalysis.md
+  question: |
+    We are performing a shape-only analysis (total MC entries set to
+    match data entries). Is this already implemented in Combine, or is
+    there an easy way to do it — so that, for example, when one
+    background goes up the other MCs go down to compensate during the
+    fit?
+    We had considered either introducing a global normalisation
+    parameter in the fit with a large uncertainty to fix the MC
+    normalisation, or introducing the systematics with multiplicative
+    factors in the datacards to maintain MC normalisation during the
+    fit. What is the recommended approach?
+  gold_answer: |
+    The recommended approach is to do a template (shape) analysis and
+    add a `rateParam` on the background and/or signal yields. A
+    `rateParam` declares a freely-floating multiplicative parameter for
+    a process's rate, so the yields adjust in the fit to match the
+    data. Because the rate is now a proper fit parameter, the
+    uncertainty on it is propagated automatically — there is no need
+    to introduce a large-uncertainty nuisance by hand or to hand-craft
+    multiplicative systematic factors.
+
+    The datacard syntax is:
+
+        <name> rateParam <channel> <process> <init> [<min>,<max>]
+
+    For example, to let the rate of the `bkg` process float freely in
+    channel `ch1`:
+
+        bkg_norm rateParam ch1 bkg 1 [0,10]
+
+    `rateParam` can be applied to any number of processes (signals,
+    individual backgrounds, or shared across channels), which makes it
+    the right tool for the "shapes carry the information, rates float"
+    pattern the question describes.
