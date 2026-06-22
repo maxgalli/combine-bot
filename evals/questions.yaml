@@ -155,3 +155,38 @@
     into the test statistic as a systematic uncertainty. The penalty
     terms in the envelope ensure that comparisons across pdfs with
     different numbers of free parameters remain well-defined.
+
+- id: paper-statmodel-1
+  category: paper
+  source_file:
+    - paper/paper_clean.txt
+    - docs/what_combine_does/model_and_likelihood.md
+  question: |
+    How is a statistical model built with the Combine tool structured?
+    What are its main components — both parameters and observables — how
+    are they categorized, and how do they combine into the full
+    probability density?
+  gold_answer: |
+    The statistical model built by Combine is a joint probability density
+    p(data; Φ) where Φ collects all model parameters. It factorizes along
+    two axes for numerical efficiency:
+
+    Parameters are split into:
+      • Parameters of interest μ — signal strengths, cross sections, etc.
+      • Nuisance parameters ν — modeling theoretical and experimental
+        uncertainties.
+
+    Observables are split into:
+      • Primary observables x — appear in components containing the POIs.
+        Each element of x is a "channel" and is statistically independent
+        of the others.
+      • Auxiliary observables y — appear only in components containing
+        nuisance parameters. Each ν_k is paired with one y_k.
+
+    The full model factorizes as
+
+        p(x, y; Φ) = p(x; μ, ν) · Π_k p_k(y_k; ν_k),
+
+    where p(x; μ, ν) is the primary distribution and each p_k(y_k; ν_k)
+    encodes how well the corresponding nuisance is constrained. In
+    Combine, the priors on all nuisance parameters are taken to be uniform.

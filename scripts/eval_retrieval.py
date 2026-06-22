@@ -67,15 +67,24 @@ def load_questions(path: Path) -> list[dict]:
         return yaml.safe_load(f)
 
 
-def expected_source_rank(docs, expected_source: str | None) -> int | None:
-    """Deterministic sanity check: at which rank (1-indexed) did the expected
-    source file first appear in the retrieved chunks? Returns None if the
-    question has no `source_file` set, or if the source wasn't retrieved."""
+def expected_source_rank(docs, expected_source) -> int | None:
+    """Deterministic sanity check: at which rank (1-indexed) did one of the
+    expected source files first appear in the retrieved chunks?
+
+    `expected_source` accepts either a single path string or a list of
+    paths (any-of semantics — the check passes if any of them appears,
+    and reports the rank of the first match). Returns None if the
+    question has no `source_file` set, or if none of the expected
+    sources appear in the retrieved chunks.
+    """
     if not expected_source:
         return None
+    expected_list = (
+        [expected_source] if isinstance(expected_source, str) else list(expected_source)
+    )
     for i, doc in enumerate(docs, 1):
         source_path = doc.metadata.get("source_path", "")
-        if source_path.endswith(expected_source):
+        if any(source_path.endswith(exp) for exp in expected_list):
             return i
     return None
 
