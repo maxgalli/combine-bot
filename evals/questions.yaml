@@ -93,3 +93,30 @@
     sits inside the full one. You can also pass `--breakdown Syst,Stat`
     to `plot1DScan.py` to draw the systematic component, defined as
     `sigma_syst = sqrt(sigma_tot^2 - sigma_stat^2)`.
+
+- id: forum-142937
+  category: forum-solved
+  topic_url: https://cms-talk.web.cern.ch/t/142937
+  images:
+    - knowledge_base/forum/images/topic_142937_page2.png
+  question: |
+    I am studying regularization after unfolding in our analysis. We observe
+    sharp spikes in the δ scans of the mean global correlation coefficient.
+    From our study these spikes appear linked to increased correlations
+    between the POIs: individual nuisance parameters tend to reduce
+    POI correlations, but introducing multiple ones simultaneously increases
+    those correlations and seems to generate the spikes.
+    What could be causing this behavior and what is the best way to get rid of these spikes?
+  gold_answer: |
+    The spikes in the mean global correlation coefficient scans are typically
+    caused by limited numerical precision of the correlation/covariance matrix
+    produced by the default Hesse step. The fix is to recompute the covariance
+    matrix with a more robust algorithm and to combine it with a stricter
+    minimizer strategy. In Combine this means passing both:
+
+        --robustHesse 1
+        --cminDefaultMinimizerStrategy 1
+
+    Together these recompute the correlation matrix with higher precision
+    and use a more careful Migrad strategy, which removes the spikes in
+    practice.

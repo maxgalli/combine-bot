@@ -54,7 +54,7 @@ MIN_POST_CHARS = 50  # skip replies shorter than this ("thanks!", "fixed it", ..
 Q_CONTEXT_CHARS = 500  # how much of the OP to prepend to each reply chunk
 
 DEFAULT_PERSIST = Path("vectorstore")
-DEFAULT_MODEL = "BAAI/bge-base-en-v1.5"
+DEFAULT_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 DEFAULT_COLLECTION = "combine"
 
 # Per-source chunking knobs. Different sources benefit from different sizes:
