@@ -120,3 +120,38 @@
     Together these recompute the correlation matrix with higher precision
     and use a more careful Migrad strategy, which removes the spikes in
     practice.
+
+- id: forum-144631
+  category: forum-conceptual
+  source_file: docs/part3/nonstandard.md
+  topic_url: https://cms-talk.web.cern.ch/t/144631
+  question: |
+    In Combine's discrete profiling method (RooMultiPdf / envelope of
+    background pdfs), how is the NLL of the background-only fit computed
+    when there are multiple candidate background functional forms?
+    Specifically: if the S+B fit minimum corresponds to background
+    function `i`, is the same function `i` used to evaluate the NLL of
+    the B-only fit (i.e. at r=0), so that NLL(S+B) − NLL(B) compares the
+    same background model with and without signal? Or is the background
+    function profiled independently at r=0?
+  gold_answer: |
+    The background functional form is profiled independently at each
+    value of r. The envelope is rebuilt fresh at every point of the
+    scan: at any given r, the NLL is minimised over all candidate
+    background pdfs — with the penalty / correction terms that account
+    for their differing numbers of degrees of freedom — and the minimum
+    across the envelope is taken.
+
+    This means the function that minimises the envelope at the S+B
+    best-fit (say, function `i`) is in general different from the
+    function that minimises at r = 0 (say, function `j`). The test
+    statistic NLL(S+B) − NLL(B) therefore compares two independent
+    envelope minima, not the same background function evaluated at two
+    different values of r.
+
+    This is by design. By allowing the choice of background function to
+    vary along the r scan, the discrete profiling method effectively
+    enlarges the ΔNLL profile and folds the choice of functional form
+    into the test statistic as a systematic uncertainty. The penalty
+    terms in the envelope ensure that comparisons across pdfs with
+    different numbers of free parameters remain well-defined.
