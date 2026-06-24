@@ -180,6 +180,15 @@ wheels = [
 ]
 
 [[package]]
+name = "cached-property"
+version = "2.0.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/76/4b/3d870836119dbe9a5e3c9a61af8cc1a8b69d75aea564572e385882d5aefb/cached_property-2.0.1.tar.gz", hash = "sha256:484d617105e3ee0e4f1f58725e72a8ef9e93deee462222dbd51cd91230897641", size = 10574, upload-time = "2024-10-25T15:43:55.667Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/11/0e/7d8225aab3bc1a0f5811f8e1b557aa034ac04bdf641925b30d3caf586b28/cached_property-2.0.1-py3-none-any.whl", hash = "sha256:f617d70ab1100b7bcf6e42228f9ddcb78c676ffa167278d9f730d1c2fba69ccb", size = 7428, upload-time = "2024-10-25T15:43:54.711Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2026.5.20"
 source = { registry = "https://pypi.org/simple" }
@@ -290,6 +299,7 @@ dependencies = [
     { name = "langchain-openai" },
     { name = "langchain-text-splitters" },
     { name = "litellm" },
+    { name = "portkey-ai" },
     { name = "pyyaml" },
     { name = "ragas" },
     { name = "requests" },
@@ -312,6 +322,7 @@ requires-dist = [
     { name = "langchain-openai", specifier = ">=1.3.2" },
     { name = "langchain-text-splitters", specifier = ">=1.1.2" },
     { name = "litellm", specifier = ">=1.89.1" },
+    { name = "portkey-ai", specifier = ">=2.3.2" },
     { name = "pyyaml", specifier = ">=6.0.3" },
     { name = "ragas", specifier = ">=0.2,<0.3" },
     { name = "requests", specifier = ">=2.31" },
@@ -1698,6 +1709,27 @@ wheels = [
 ]
 
 [[package]]
+name = "portkey-ai"
+version = "2.3.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "cached-property" },
+    { name = "distro" },
+    { name = "httpx" },
+    { name = "jiter" },
+    { name = "pydantic" },
+    { name = "sniffio" },
+    { name = "tqdm" },
+    { name = "types-requests" },
+    { name = "typing-extensions" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/0b/ea/1de7246bd5797298979ae17229f5b3cb16854e1305dd4c316e4b573a209a/portkey_ai-2.3.2.tar.gz", hash = "sha256:8867b33ebbb54db19ee93b325736d99b9735585430814681fda89107c872144b", size = 650527, upload-time = "2026-06-15T17:36:11.528Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/a6/fe/6d9b49918f60713503aa701ccbcc75ffa89e3a8f9ecf1b59cd055a5a078c/portkey_ai-2.3.2-py3-none-any.whl", hash = "sha256:497fec89dfa2b7ac046ac884f500cf5d7ed2a1ab0eb9cc6f340cf360dc902df1", size = 1345938, upload-time = "2026-06-15T17:36:09.991Z" },
+]
+
+[[package]]
 name = "prompt-toolkit"
 version = "3.0.52"
 source = { registry = "https://pypi.org/simple" }
@@ -2439,6 +2471,18 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/5e/ed/ef06584ccdd5c410df0837951ecd7e15d9a6144ea1bd4c73cecab1a89891/typer-0.26.7.tar.gz", hash = "sha256:e314a34c617e419c091b2830dda3ea1f257134ff593061a8f5b9717ab8dddb3a", size = 201709, upload-time = "2026-06-03T07:18:06.843Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/24/25/2201973529af2c954de0bb725323c3aaed6d7f0ceee8f550dec9185df013/typer-0.26.7-py3-none-any.whl", hash = "sha256:5c87cfbc5d34491c5346ebf49c23e18d56ccb863268d3a8d592b26087c2f5e58", size = 122456, upload-time = "2026-06-03T07:18:05.732Z" },
+]
+
+[[package]]
+name = "types-requests"
+version = "2.33.0.20260518"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e0/01/c5a19253fe1ac159159ddf9a3a07cec8bb5e486ec4d9002ad2821da0e5d2/types_requests-2.33.0.20260518.tar.gz", hash = "sha256:df7bd3bfe0ca8402dfb841e7d9be714bb5578203283d66d7dc4ef69343449a5e", size = 24752, upload-time = "2026-05-18T06:07:37.966Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1c/bc/b139710a3b6018f7fb2b9508b35c8af564e61bf2bf4fa619d088f3e16f85/types_requests-2.33.0.20260518-py3-none-any.whl", hash = "sha256:626d697d1adaaff76e2044dc8c5c051d8f21abc157bdfe204a75558076fe0bf0", size = 21391, upload-time = "2026-05-18T06:07:37.044Z" },
 ]
 
 [[package]]
