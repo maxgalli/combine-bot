@@ -60,9 +60,13 @@ from ragas.metrics import Faithfulness, FactualCorrectness, ResponseRelevancy
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from ask import (  # noqa: E402
     SYSTEM_PROMPT,
+    TOOL_PROMPT_SUFFIX,
+    TOOL_DEFS,
     VISION_PROMPT_SUFFIX,
     encode_image,
     format_context,
+    run_agent_loop,
+    stage_files,
 )
 from eval_io import save_eval_results  # noqa: E402
 
@@ -89,6 +93,8 @@ def run_bot(
     model: str,
     base_url: str,
     image_paths: list[Path] | None = None,
+    attach_paths: list[Path] | None = None,
+    cmssw_env: dict | None = None,
 ) -> tuple[str, list]:
     """Reproduce ask.py's RAG call once, non-streaming.
 
@@ -96,6 +102,10 @@ def run_bot(
     content list and VISION_PROMPT_SUFFIX is appended to the system prompt —
     matching ask.py's behavior so the eval faithfully tests image-bearing
     questions.
+
+    If attach_paths is non-empty, files are staged into a session sandbox
+    and the agent loop (with tool calls) is used instead of a single
+    completion call.
     """
     docs = store.similarity_search(question, k=k)
     user_prompt = (
@@ -105,9 +115,15 @@ def run_bot(
         f"Question: {question}"
     )
 
-    system_content = SYSTEM_PROMPT + (VISION_PROMPT_SUFFIX if image_paths else "")
+    use_tools = bool(attach_paths)
+    system_content = SYSTEM_PROMPT
+    if use_tools:
+        system_content += TOOL_PROMPT_SUFFIX
     if image_paths:
-        user_content: list[dict] = [{"type": "text", "text": user_prompt}]
+        system_content += VISION_PROMPT_SUFFIX
+
+    if image_paths:
+        user_content: list[dict] | str = [{"type": "text", "text": user_prompt}]
         for path in image_paths:
             user_content.append({
                 "type": "image_url",
@@ -116,13 +132,30 @@ def run_bot(
     else:
         user_content = user_prompt
 
+    messages = [
+        {"role": "system", "content": system_content},
+        {"role": "user", "content": user_content},
+    ]
+
+    if use_tools:
+        sandbox = stage_files(attach_paths)
+        answer = run_agent_loop(
+            messages=messages,
+            model=model,
+            base_url=base_url,
+            tools=TOOL_DEFS,
+            sandbox=sandbox,
+            cmssw_env=cmssw_env,
+            max_rounds=10,
+            quiet=False,
+            stream=False,
+        )
+        return answer or "", docs
+
     response = completion(
         model=model,
         base_url=base_url,
-        messages=[
-            {"role": "system", "content": system_content},
-            {"role": "user", "content": user_content},
-        ],
+        messages=messages,
     )
     return response.choices[0].message.content, docs
 
@@ -143,6 +176,16 @@ def main() -> int:
     p.add_argument("--k", type=int, default=DEFAULT_K)
     p.add_argument("--results-dir", type=Path, default=DEFAULT_RESULTS_DIR,
                    help=f"where to save CSV + meta.json (default: {DEFAULT_RESULTS_DIR})")
+    p.add_argument(
+        "--cmssw-release", type=Path,
+        default=Path(
+            os.environ.get(
+                "CMSSW_RELEASE",
+                "/afs/cern.ch/work/g/gallim/Postdoc/Combine/combine_bot/CMSSW_14_1_0_pre4",
+            )
+        ),
+        help="Path to CMSSW release (needed for agent-mode questions with attach)",
+    )
     args = p.parse_args()
 
     if not os.environ.get("OPENAI_API_KEY"):
@@ -165,6 +208,15 @@ def main() -> int:
     questions = load_questions(args.questions)
     print(f"  -> {len(questions)} questions\n")
 
+    # Capture CMSSW env once if any question uses attach (agent mode).
+    cmssw_env = None
+    has_agent_questions = any(q.get("attach") for q in questions)
+    if has_agent_questions:
+        from combine_runner import capture_cmssw_env
+        print(f"capturing CMSSW env from {args.cmssw_release} (agent questions detected)")
+        cmssw_env = capture_cmssw_env(args.cmssw_release)
+        print(f"  captured {len(cmssw_env)} env vars\n")
+
     print(f"running bot LLM ({args.bot_model}) on each question...")
     samples: list[SingleTurnSample] = []
     for i, q in enumerate(questions, 1):
@@ -174,7 +226,18 @@ def main() -> int:
                 raise SystemExit(
                     f"ERROR: image not found for question {q['id']}: {img}"
                 )
-        marker = f" [+{len(image_paths)} image(s)]" if image_paths else ""
+        attach_paths = [Path(p) for p in q.get("attach", [])]
+        for att in attach_paths:
+            if not att.exists():
+                raise SystemExit(
+                    f"ERROR: attached file not found for question {q['id']}: {att}"
+                )
+        markers = []
+        if image_paths:
+            markers.append(f"+{len(image_paths)} image(s)")
+        if attach_paths:
+            markers.append(f"+{len(attach_paths)} attach(s), agent mode")
+        marker = f" [{', '.join(markers)}]" if markers else ""
         print(f"  [{i}/{len(questions)}] {q['id']}: {q['question'][:70]}{marker}")
         answer, docs = run_bot(
             q["question"],
@@ -183,6 +246,8 @@ def main() -> int:
             args.bot_model,
             args.base_url,
             image_paths=image_paths,
+            attach_paths=attach_paths if attach_paths else None,
+            cmssw_env=cmssw_env,
         )
         samples.append(
             SingleTurnSample(

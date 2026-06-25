@@ -261,3 +261,36 @@
     individual backgrounds, or shared across channels), which makes it
     the right tool for the "shapes carry the information, rates float"
     pattern the question describes.
+
+- id: agent-setparam-range-1
+  category: agent-debug
+  notes: |
+    Agent-mode question. Requires --attach with simple-shapes-TH1.txt
+    and simple-shapes-TH1.root. The bot should run the user's command,
+    read the error, and explain the fix. Not yet covered by
+    eval_answers.py (needs agent eval path).
+  attach:
+    - evals/attachments/agent-setparam-range-1/simple-shapes-TH1.txt
+    - evals/attachments/agent-setparam-range-1/simple-shapes-TH1.root
+  question: |
+    I am trying to run a MultiDimFit on the attached datacard with the
+    following command:
+
+        combine -M MultiDimFit simple-shapes-TH1.txt --setParameterRanges r=0.2,0.4 --setParameters r=10
+
+    but the fit fails. Can you run it and tell me what is wrong?
+  gold_answer: |
+    The fit fails because the starting value of the parameter r (set via
+    ``--setParameters r=10``) is outside the range declared by
+    ``--setParameterRanges r=0.2,0.4``. Combine enforces that a
+    parameter's value must lie within its range and aborts with:
+
+        Parameter r value 10 is outside its range [0.2, 0.4].
+        Use --rMin/--rMax or --setParameterRanges to adjust the range.
+
+    The fix is to make the starting value and the range consistent.
+    Either:
+      1. Change ``--setParameters r=0.3`` (or any value inside
+         [0.2, 0.4]).
+      2. Or widen the range to include 10, e.g.
+         ``--setParameterRanges r=0,20 --setParameters r=10``.
