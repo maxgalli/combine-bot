@@ -20,6 +20,9 @@ dependencies = [
     "requests>=2.31",
     "sentence-transformers>=5.5.1",
     "visidata>=3.3",
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "python-multipart>=0.0.18",
 ]
 
 [tool.uv]

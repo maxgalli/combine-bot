@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combine Bot</title>
+<style>
+  :root {
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --border: #ddd;
+    --primary: #1a73e8;
+    --primary-hover: #1557b0;
+    --text: #333;
+    --text-light: #666;
+    --source-bg: #f8f9fa;
+    --tool-bg: #fff3cd;
+    --code-bg: #f0f0f0;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .container {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+    font-weight: 600;
+  }
+
+  header p {
+    color: var(--text-light);
+    font-size: 0.95rem;
+    margin-top: 0.3rem;
+  }
+
+  .input-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    resize: vertical;
+  }
+
+  textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+  }
+
+  .file-row {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .file-row input[type="file"] {
+    font-size: 0.9rem;
+  }
+
+  .file-hint {
+    color: var(--text-light);
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+  }
+
+  .btn-row {
+    margin-top: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.65rem 1.5rem;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  button:hover { background: var(--primary-hover); }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .spinner {
+    display: none;
+    width: 22px;
+    height: 22px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .spinner.active { display: inline-block; }
+
+  .status-text {
+    color: var(--text-light);
+    font-size: 0.85rem;
+  }
+
+  /* Results */
+  #results {
+    display: none;
+  }
+
+  #results.visible { display: block; }
+
+  .result-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .result-card h2 {
+    font-size: 1.1rem;
+    margin-bottom: 0.8rem;
+    font-weight: 600;
+  }
+
+  #answer-text {
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+    line-height: 1.7;
+  }
+
+  #answer-text code {
+    background: var(--code-bg);
+    padding: 0.15em 0.4em;
+    border-radius: 3px;
+    font-size: 0.88em;
+  }
+
+  #answer-text pre {
+    background: var(--code-bg);
+    padding: 0.8rem;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 0.5rem 0;
+  }
+
+  #answer-text pre code {
+    background: none;
+    padding: 0;
+  }
+
+  .sources-list {
+    list-style: none;
+    font-size: 0.88rem;
+  }
+
+  .sources-list li {
+    padding: 0.4rem 0.6rem;
+    background: var(--source-bg);
+    border-radius: 4px;
+    margin-bottom: 0.35rem;
+  }
+
+  .sources-list li a {
+    color: var(--primary);
+    text-decoration: none;
+  }
+
+  .sources-list li a:hover { text-decoration: underline; }
+
+  .source-idx {
+    font-weight: 600;
+    margin-right: 0.3rem;
+  }
+
+  .tool-list {
+    list-style: none;
+    font-size: 0.85rem;
+    font-family: "SFMono-Regular", Consolas, monospace;
+  }
+
+  .tool-list li {
+    padding: 0.35rem 0.6rem;
+    background: var(--tool-bg);
+    border-radius: 4px;
+    margin-bottom: 0.3rem;
+    word-break: break-all;
+  }
+
+  #error-box {
+    display: none;
+    background: #fdecea;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  #error-box.visible { display: block; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Combine Bot</h1>
+    <p>RAG-powered Q&amp;A for the CMS Combine tool</p>
+  </header>
+
+  <div class="input-card">
+    <label for="question">Question</label>
+    <textarea id="question" placeholder="e.g. How do I run AsymptoticLimits with toys?"></textarea>
+
+    <div class="file-row">
+      <div>
+        <label for="files">Attach files (optional)</label>
+        <input type="file" id="files" multiple>
+        <div class="file-hint">
+          Datacards (.txt), workspaces (.root), images (.png/.jpg) &mdash;
+          attaching files enables agent mode (tool use).
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button id="ask-btn" onclick="submitQuestion()">Ask</button>
+      <div class="spinner" id="spinner"></div>
+      <span class="status-text" id="status"></span>
+    </div>
+  </div>
+
+  <div id="error-box"></div>
+
+  <div id="results">
+    <div class="result-card" id="tools-card" style="display:none">
+      <h2>Tool calls</h2>
+      <ul class="tool-list" id="tool-list"></ul>
+    </div>
+
+    <div class="result-card">
+      <h2>Sources</h2>
+      <ul class="sources-list" id="sources-list"></ul>
+    </div>
+
+    <div class="result-card">
+      <h2>Answer</h2>
+      <div id="answer-text"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function submitQuestion() {
+  const question = document.getElementById('question').value.trim();
+  if (!question) return;
+
+  const filesInput = document.getElementById('files');
+  const btn = document.getElementById('ask-btn');
+  const spinner = document.getElementById('spinner');
+  const status = document.getElementById('status');
+  const results = document.getElementById('results');
+  const errorBox = document.getElementById('error-box');
+
+  // Reset UI
+  btn.disabled = true;
+  spinner.classList.add('active');
+  status.textContent = 'Thinking...';
+  results.classList.remove('visible');
+  errorBox.classList.remove('visible');
+
+  // Build form data
+  const form = new FormData();
+  form.append('question', question);
+  for (const file of filesInput.files) {
+    form.append('files', file);
+  }
+
+  try {
+    const resp = await fetch('/ask', { method: 'POST', body: form });
+    if (!resp.ok) {
+      const text = await resp.text();
+      throw new Error(`Server error ${resp.status}: ${text}`);
+    }
+    const data = await resp.json();
+
+    // Sources
+    const sourcesList = document.getElementById('sources-list');
+    sourcesList.innerHTML = '';
+    for (const s of data.sources) {
+      const li = document.createElement('li');
+      const idx = `<span class="source-idx">[${s.index}]</span>`;
+      if (s.url) {
+        li.innerHTML = `${idx} <a href="${escHtml(s.url)}" target="_blank">${escHtml(s.tag)}</a>`;
+      } else {
+        li.innerHTML = `${idx} ${escHtml(s.tag)}`;
+      }
+      sourcesList.appendChild(li);
+    }
+
+    // Tool calls
+    const toolsCard = document.getElementById('tools-card');
+    const toolList = document.getElementById('tool-list');
+    toolList.innerHTML = '';
+    if (data.tool_calls && data.tool_calls.length > 0) {
+      toolsCard.style.display = '';
+      for (const tc of data.tool_calls) {
+        const li = document.createElement('li');
+        li.textContent = tc;
+        toolList.appendChild(li);
+      }
+    } else {
+      toolsCard.style.display = 'none';
+    }
+
+    // Answer
+    document.getElementById('answer-text').innerHTML = renderMarkdown(data.answer);
+
+    results.classList.add('visible');
+    status.textContent = '';
+  } catch (err) {
+    errorBox.textContent = err.message;
+    errorBox.classList.add('visible');
+    status.textContent = '';
+  } finally {
+    btn.disabled = false;
+    spinner.classList.remove('active');
+  }
+}
+
+// Allow Ctrl+Enter to submit
+document.getElementById('question').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    submitQuestion();
+  }
+});
+
+function escHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function renderMarkdown(text) {
+  // Minimal markdown: code blocks, inline code, bold, line breaks.
+  // Not a full parser — just enough for combine-bot answers.
+  let html = escHtml(text);
+
+  // Fenced code blocks: ```...```
+  html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_, lang, code) => {
+    return `<pre><code>${code}</code></pre>`;
+  });
+
+  // Inline code: `...`
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+  // Bold: **...**
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+  // Line breaks
+  html = html.replace(/\n/g, '<br>');
+
+  // Fix <br> inside <pre> (undo the line-break replacement)
+  html = html.replace(/<pre><code>([\s\S]*?)<\/code><\/pre>/g, (_, code) => {
+    return `<pre><code>${code.replace(/<br>/g, '\n')}</code></pre>`;
+  });
+
+  return html;
+}
+</script>
+
+</body>
+</html>
