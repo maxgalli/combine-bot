@@ -304,6 +304,7 @@ dependencies = [
     { name = "ragas" },
     { name = "requests" },
     { name = "sentence-transformers" },
+    { name = "visidata" },
 ]
 
 [package.dev-dependencies]
@@ -327,6 +328,7 @@ requires-dist = [
     { name = "ragas", specifier = ">=0.2,<0.3" },
     { name = "requests", specifier = ">=2.31" },
     { name = "sentence-transformers", specifier = ">=5.5.1" },
+    { name = "visidata", specifier = ">=3.3" },
 ]
 
 [package.metadata.requires-dev]
@@ -2606,6 +2608,19 @@ wheels = [
 ]
 
 [[package]]
+name = "visidata"
+version = "3.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "python-dateutil" },
+    { name = "windows-curses", marker = "sys_platform == 'win32'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/aa/c0/ab9f01fcacbfbacde960e143f7c168c4de3c4f7e450873f8fd96fa2fcfb3/visidata-3.3.tar.gz", hash = "sha256:a94f4e398477e038541849cf4df1d1f2efc399da544d77db189bdb7f2fc014c4", size = 13248725, upload-time = "2025-09-08T04:50:45.326Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/95/35/9dc5f6e5e3623ff2cbb2d1e0d7307bf055ef9d0ee4057b832073429cd3e5/visidata-3.3-py3-none-any.whl", hash = "sha256:e805d8ad3f3eeb9959ab9a8a1cabe897807df032cf73367a97b399ec8a2d03f5", size = 549087, upload-time = "2025-09-08T04:50:39.976Z" },
+]
+
+[[package]]
 name = "watchfiles"
 version = "1.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2670,6 +2685,15 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d8/75/994634a49b7e12532be6a42103597b71098fd25900f7437d6055ed39930a/websockets-15.0.1-cp311-cp311-win32.whl", hash = "sha256:16b6c1b3e57799b9d38427dda63edcbe4926352c47cf88588c0be4ace18dac85", size = 176388, upload-time = "2025-03-05T20:02:13.32Z" },
     { url = "https://files.pythonhosted.org/packages/98/93/e36c73f78400a65f5e236cd376713c34182e6663f6889cd45a4a04d8f203/websockets-15.0.1-cp311-cp311-win_amd64.whl", hash = "sha256:27ccee0071a0e75d22cb35849b1db43f2ecd3e161041ac1ee9d2352ddf72f065", size = 176828, upload-time = "2025-03-05T20:02:14.585Z" },
     { url = "https://files.pythonhosted.org/packages/fa/a8/5b41e0da817d64113292ab1f8247140aac61cbf6cfd085d6a0fa77f4984f/websockets-15.0.1-py3-none-any.whl", hash = "sha256:f7a866fbc1e97b5c617ee4116daaa09b722101d4a3c170c787450ba409f9736f", size = 169743, upload-time = "2025-03-05T20:03:39.41Z" },
+]
+
+[[package]]
+name = "windows-curses"
+version = "2.4.2"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/d1/58/5fd430fec0ebe1cef88ddccba345ca119f1b44e58f58d6998878a01c9973/windows_curses-2.4.2-cp311-cp311-win32.whl", hash = "sha256:ecf7af9c97002af661d3e47b9c5eb31cdb7629a032adcdab46530efea8ba1864", size = 71135, upload-time = "2026-03-31T12:44:35.863Z" },
+    { url = "https://files.pythonhosted.org/packages/84/62/e2bae0ab9c5c80dca9a708a4cb9c8afaf0ef61c8d4459b57f96785040831/windows_curses-2.4.2-cp311-cp311-win_amd64.whl", hash = "sha256:03c4ef0095ab8212ed964236d51b4d8c815f302c5a7de94831dae468f05ce333", size = 81863, upload-time = "2026-03-31T12:44:36.834Z" },
 ]
 
 [[package]]

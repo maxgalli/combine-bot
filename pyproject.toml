@@ -19,6 +19,7 @@ dependencies = [
     "ragas>=0.2,<0.3",
     "requests>=2.31",
     "sentence-transformers>=5.5.1",
+    "visidata>=3.3",
 ]
 
 [tool.uv]
